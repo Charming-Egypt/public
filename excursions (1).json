@@ -1,0 +1,567 @@
+[
+  {
+    "id": "e1",
+    "category": "Boat trip",
+    "title": {
+      "en": "Ras Mohammed Snorkeling Trip",
+      "ar": "رحلة سنوركل رأس محمد",
+      "ru": "Снорклинг-тур в Рас-Мохаммед",
+      "de": "Ras-Mohammed-Schnorcheltour",
+      "it": "Escursione Snorkeling a Ras Mohammed",
+      "tr": "Ras Muhammed Şnorkel Turu"
+    },
+    "price": 1800,
+    "rating": 4.8,
+    "reviews": 268,
+    "duration": {
+      "en": "Full Day (8h)",
+      "ar": "يوم كامل (٨ ساعات)",
+      "ru": "Целый день (8 ч)",
+      "de": "Ganzer Tag (8 Std.)",
+      "it": "Giornata intera (8h)",
+      "tr": "Tam Gün (8s)"
+    },
+    "image": "images/ras-m/1.jpg",
+    "images": [
+      "images/ras-m/1.jpg",
+      "images/ras-m/2.jpg",
+      "images/ras-m/3.jpg"
+    ],
+    "description": {
+      "en": "Snorkel the coral reefs of Ras Mohammed National Park, one of the world's top dive sites.",
+      "ar": "مارس السنوركل بين الشعاب المرجانية في محمية رأس محمد، أحد أفضل مواقع الغوص في العالم.",
+      "ru": "Понырять с маской у коралловых рифов национального парка Рас-Мохаммед — одного из лучших дайв-сайтов мира.",
+      "de": "Schnorcheln Sie an den Korallenriffen des Ras-Mohammed-Nationalparks, einem der besten Tauchspots der Welt.",
+      "it": "Fai snorkeling tra le barriere coralline del Parco Nazionale di Ras Mohammed, uno dei migliori siti di immersione al mondo.",
+      "tr": "Dünyanın en iyi dalış noktalarından biri olan Ras Muhammed Milli Parkı'nın mercan resiflerinde şnorkel yapın."
+    },
+    "fullDescription": {
+      "en": "Spend a full day exploring the coral gardens and dramatic reef walls of Ras Mohammed National Park. Includes full snorkeling gear, a marine-life briefing, and a beachside lunch. Suitable for beginners and experienced snorkelers alike.",
+      "ar": "اقضِ يومًا كاملاً في استكشاف حدائق المرجان وجدران الشعاب المذهلة في محمية رأس محمد. يشمل معدات سنوركل كاملة وإحاطة عن الحياة البحرية وغداء على الشاطئ.",
+      "ru": "Проведите целый день, исследуя коралловые сады и рифовые стены национального парка Рас-Мохаммед. В программе — снаряжение, инструктаж и обед на пляже.",
+      "de": "Verbringen Sie einen ganzen Tag mit der Erkundung der Korallengärten und Riffwände des Ras-Mohammed-Nationalparks. Inklusive Ausrüstung, Briefing und Strandmittagessen.",
+      "it": "Trascorri un'intera giornata esplorando i giardini di corallo e le pareti della barriera del Parco Nazionale di Ras Mohammed. Include attrezzatura, briefing e pranzo in spiaggia.",
+      "tr": "Ras Muhammed Milli Parkı'nın mercan bahçelerini ve resif duvarlarını keşfederek tam bir gün geçirin. Şnorkel ekipmanı, deniz canlıları brifingi ve sahilde öğle yemeği dahildir."
+    },
+    "includes": {
+      "en": [
+        "Hotel pickup & drop-off",
+        "Snorkeling equipment",
+        "Lunch & soft drinks",
+        "National park entry fees",
+        "English-speaking guide"
+      ],
+      "ar": [
+        "نقل من وإلى الفندق",
+        "معدات سنوركل",
+        "غداء ومشروبات غازية",
+        "رسوم دخول المحمية",
+        "مرشد يتحدث الإنجليزية"
+      ],
+      "ru": [
+        "Трансфер от/до отеля",
+        "Снаряжение для снорклинга",
+        "Обед и напитки",
+        "Входные билеты в парк",
+        "Англоговорящий гид"
+      ],
+      "de": [
+        "Hotelabholung & Rückfahrt",
+        "Schnorchelausrüstung",
+        "Mittagessen & Softdrinks",
+        "Eintritt Nationalpark",
+        "Englischsprachiger Guide"
+      ],
+      "it": [
+        "Transfer da/per l'hotel",
+        "Attrezzatura da snorkeling",
+        "Pranzo e bibite",
+        "Biglietto d'ingresso al parco",
+        "Guida in inglese"
+      ],
+      "tr": [
+        "Otelden alış-bırakış",
+        "Şnorkel ekipmanı",
+        "Öğle yemeği ve içecekler",
+        "Milli park giriş ücreti",
+        "İngilizce konuşan rehber"
+      ]
+    },
+    "meetingPoint": {
+      "en": "Hotel lobby pickup, 7:30 AM",
+      "ar": "الاستلام من لوبي الفندق، ٧:٣٠ صباحًا",
+      "ru": "Встреча в лобби отеля, 7:30",
+      "de": "Abholung Hotellobby, 7:30 Uhr",
+      "it": "Ritiro in hotel, ore 7:30",
+      "tr": "Otel lobisinden alış, 07:30"
+    },
+    "excludes": {
+      "en": [
+        "Alcoholic beverages",
+        "Underwater camera rental",
+        "Gratuities (optional)"
+      ],
+      "ar": [
+        "المشروبات الكحولية",
+        "استئجار كاميرا تحت الماء",
+        "الإكراميات (اختياري)"
+      ],
+      "ru": [
+        "Алкогольные напитки",
+        "Аренда подводной камеры",
+        "Чаевые (по желанию)"
+      ],
+      "de": [
+        "Alkoholische Getränke",
+        "Unterwasserkamera-Verleih",
+        "Trinkgelder (optional)"
+      ],
+      "it": [
+        "Bevande alcoliche",
+        "Noleggio fotocamera subacquea",
+        "Mance (facoltative)"
+      ],
+      "tr": [
+        "Alkollü içecekler",
+        "Sualtı kamerası kiralama",
+        "Bahşiş (isteğe bağlı)"
+      ]
+    },
+    "whatToBring": {
+      "en": [
+        "Swimsuit",
+        "Towel",
+        "Sunscreen",
+        "Comfortable sandals"
+      ],
+      "ar": [
+        "ملابس سباحة",
+        "منشفة",
+        "واقي شمس",
+        "صندل مريح"
+      ],
+      "ru": [
+        "Купальник",
+        "Полотенце",
+        "Солнцезащитный крем",
+        "Удобные сандалии"
+      ],
+      "de": [
+        "Badeanzug",
+        "Handtuch",
+        "Sonnencreme",
+        "Bequeme Sandalen"
+      ],
+      "it": [
+        "Costume da bagno",
+        "Asciugamano",
+        "Crema solare",
+        "Sandali comodi"
+      ],
+      "tr": [
+        "Mayo",
+        "Havlu",
+        "Güneş kremi",
+        "Rahat sandalet"
+      ]
+    },
+    "itinerary": [
+      {
+        "time": "07:30",
+        "title": {
+          "en": "Hotel Pickup",
+          "ar": "الاستلام من الفندق",
+          "ru": "Встреча в отеле",
+          "de": "Hotelabholung",
+          "it": "Ritiro in hotel",
+          "tr": "Otelden Alış"
+        },
+        "description": {
+          "en": "Our air-conditioned vehicle collects you from your hotel lobby.",
+          "ar": "سيارتنا المكيّفة تستلمك من لوبي الفندق.",
+          "ru": "Наш кондиционируемый автомобиль заберёт вас из лобби отеля.",
+          "de": "Unser klimatisiertes Fahrzeug holt Sie von der Hotellobby ab.",
+          "it": "Il nostro veicolo climatizzato ti preleva dalla hall dell'hotel.",
+          "tr": "Klimalı aracımız sizi otel lobisinden alır."
+        }
+      },
+      {
+        "time": "09:00",
+        "title": {
+          "en": "Arrival & Briefing",
+          "ar": "الوصول والإحاطة",
+          "ru": "Прибытие и инструктаж",
+          "de": "Ankunft & Briefing",
+          "it": "Arrivo e briefing",
+          "tr": "Varış ve Brifing"
+        },
+        "description": {
+          "en": "Meet your guide and get a short safety and marine-life briefing before gearing up.",
+          "ar": "قابل مرشدك واحصل على إحاطة قصيرة عن السلامة والحياة البحرية قبل ارتداء المعدات.",
+          "ru": "Познакомьтесь с гидом и пройдите короткий инструктаж по безопасности перед экипировкой.",
+          "de": "Treffen Sie Ihren Guide und erhalten Sie ein kurzes Sicherheits-Briefing vor der Ausrüstung.",
+          "it": "Incontra la tua guida e ricevi un breve briefing sulla sicurezza prima di equipaggiarti.",
+          "tr": "Rehberinizle tanışın ve ekipman kuşanmadan önce kısa bir güvenlik brifingi alın."
+        }
+      },
+      {
+        "time": "09:30",
+        "title": {
+          "en": "First Snorkeling Stop",
+          "ar": "محطة السنوركل الأولى",
+          "ru": "Первая остановка для снорклинга",
+          "de": "Erster Schnorchelstopp",
+          "it": "Prima tappa snorkeling",
+          "tr": "İlk Şnorkel Durağı"
+        },
+        "description": {
+          "en": "Explore the coral gardens at the first reef site.",
+          "ar": "استكشف حدائق المرجان في موقع الشعاب الأول.",
+          "ru": "Исследуйте коралловые сады на первом рифе.",
+          "de": "Erkunden Sie die Korallengärten am ersten Riff.",
+          "it": "Esplora i giardini di corallo nel primo sito.",
+          "tr": "İlk resif noktasındaki mercan bahçelerini keşfedin."
+        }
+      },
+      {
+        "time": "12:00",
+        "title": {
+          "en": "Lunch on the Beach",
+          "ar": "غداء على الشاطئ",
+          "ru": "Обед на пляже",
+          "de": "Mittagessen am Strand",
+          "it": "Pranzo in spiaggia",
+          "tr": "Sahilde Öğle Yemeği"
+        },
+        "description": {
+          "en": "A relaxed lunch break at a shaded beach spot inside the park.",
+          "ar": "استراحة غداء هادئة في بقعة شاطئية مظللة داخل المحمية.",
+          "ru": "Спокойный обеденный перерыв в тенистом месте на пляже парка.",
+          "de": "Eine entspannte Mittagspause an einem schattigen Strandplatz im Park.",
+          "it": "Una pausa pranzo rilassante in un punto ombreggiato della spiaggia nel parco.",
+          "tr": "Park içinde gölgeli bir sahil noktasında rahat bir öğle yemeği molası."
+        }
+      },
+      {
+        "time": "13:00",
+        "title": {
+          "en": "Second Snorkeling Stop",
+          "ar": "محطة السنوركل الثانية",
+          "ru": "Вторая остановка для снорклинга",
+          "de": "Zweiter Schnorchelstopp",
+          "it": "Seconda tappa snorkeling",
+          "tr": "İkinci Şnorkel Durağı"
+        },
+        "description": {
+          "en": "A second reef site with different marine life to explore.",
+          "ar": "موقع شعاب ثانٍ بحياة بحرية مختلفة لاستكشافها.",
+          "ru": "Второй риф с иной морской живностью для изучения.",
+          "de": "Ein zweites Riff mit anderer Meereswelt zum Erkunden.",
+          "it": "Un secondo sito con una fauna marina diversa da esplorare.",
+          "tr": "Keşfedilecek farklı deniz canlılarına sahip ikinci bir resif noktası."
+        }
+      },
+      {
+        "time": "15:30",
+        "title": {
+          "en": "Return to Hotel",
+          "ar": "العودة إلى الفندق",
+          "ru": "Возвращение в отель",
+          "de": "Rückfahrt zum Hotel",
+          "it": "Ritorno in hotel",
+          "tr": "Otele Dönüş"
+        },
+        "description": {
+          "en": "Relax on the drive back as we drop you at your hotel.",
+          "ar": "استرخِ في الطريق أثناء عودتك إلى فندقك.",
+          "ru": "Отдохните по пути назад, пока мы довезём вас до отеля.",
+          "de": "Entspannen Sie sich auf der Rückfahrt zu Ihrem Hotel.",
+          "it": "Rilassati durante il tragitto di ritorno al tuo hotel.",
+          "tr": "Sizi otelinize bırakırken dönüş yolunda rahatlayın."
+        }
+      }
+    ]
+  },
+  {
+    "id": "e2",
+    "category": "Desert Safari",
+    "title": {
+      "en": "White Desert Safari & BBQ Dinner",
+      "ar": "رحلة سفاري الصحراء البيضاء وعشاء شواء",
+      "ru": "Сафари в Белую пустыню и барбекю-ужин",
+      "de": "Wüstensafari & BBQ-Dinner",
+      "it": "Safari nel Deserto Bianco e cena BBQ",
+      "tr": "Beyaz Çöl Safarisi ve Barbekü Yemeği"
+    },
+    "price": 1350,
+    "rating": 4.7,
+    "reviews": 268,
+    "duration": {
+      "en": "Evening (5h)",
+      "ar": "مسائية (٥ ساعات)",
+      "ru": "Вечер (5 ч)",
+      "de": "Abend (5 Std.)",
+      "it": "Serale (5h)",
+      "tr": "Akşam (5s)"
+    },
+    "image": "images/Safari/1.jpg",
+    "images": [
+      "images/Safari/1.jpg",
+      "images/Safari/2.jpg"
+    ],
+    "description": {
+      "en": "Quad biking, camel rides and a Bedouin BBQ dinner under the stars.",
+      "ar": "قيادة دراجات رباعية وركوب جمال وعشاء شواء بدوي تحت النجوم.",
+      "ru": "Катание на квадроциклах, верблюдах и ужин-барбекю у бедуинов под звездами.",
+      "de": "Quad-Biking, Kamelreiten und ein Beduinen-BBQ-Dinner unter dem Sternenhimmel.",
+      "it": "Quad, giro in cammello e cena BBQ beduina sotto le stelle.",
+      "tr": "ATV sürüşü, deve gezisi ve yıldızların altında Bedevi barbekü yemeği."
+    },
+    "fullDescription": {
+      "en": "Ride a quad bike across the golden dunes, meet a local Bedouin family for tea, take a short camel ride, and finish with a traditional BBQ dinner and stargazing in the open desert.",
+      "ar": "قد دراجة رباعية عبر الكثبان الذهبية، والتقِ بعائلة بدوية لتناول الشاي، واستمتع بجولة قصيرة على الجمل، واختتم يومك بعشاء شواء تقليدي ومراقبة النجوم.",
+      "ru": "Прокатитесь на квадроцикле по золотым дюнам, познакомьтесь с бедуинской семьей за чаем, прокатитесь на верблюде и завершите вечер традиционным ужином-барбекю под звездами.",
+      "de": "Fahren Sie mit dem Quad über goldene Dünen, treffen Sie eine Beduinenfamilie zum Tee, machen Sie eine kurze Kamelfahrt und genießen Sie ein traditionelles BBQ-Dinner unter den Sternen.",
+      "it": "Guida un quad tra le dune dorate, incontra una famiglia beduina per un tè, fai un breve giro in cammello e concludi con una cena BBQ tradizionale sotto le stelle.",
+      "tr": "Altın renkli kum tepelerinde ATV sürün, çay için yerel bir Bedevi ailesiyle tanışın, kısa bir deve turu yapın ve açık çölde geleneksel barbekü yemeği ve yıldız gözlemiyle günü tamamlayın."
+    },
+    "includes": {
+      "en": [
+        "Hotel pickup & drop-off",
+        "Quad ATV bike",
+        "Camel ride",
+        "BBQ dinner",
+        "Tea with Bedouins"
+      ],
+      "ar": [
+        "نقل من وإلى الفندق",
+        "دراجة رباعية الدفع",
+        "ركوب جمل",
+        "عشاء شواء",
+        "شاي مع البدو"
+      ],
+      "ru": [
+        "Трансфер от/до отеля",
+        "Квадроцикл",
+        "Катание на верблюде",
+        "Ужин-барбекю",
+        "Чай с бедуинами"
+      ],
+      "de": [
+        "Hotelabholung & Rückfahrt",
+        "Quad",
+        "Kamelreiten",
+        "BBQ-Dinner",
+        "Tee mit Beduinen"
+      ],
+      "it": [
+        "Transfer da/per l'hotel",
+        "Quad",
+        "Giro in cammello",
+        "Cena BBQ",
+        "Tè con i beduini"
+      ],
+      "tr": [
+        "Otelden alış-bırakış",
+        "ATV",
+        "Deve gezisi",
+        "Barbekü yemeği",
+        "Bedevilerle çay"
+      ]
+    },
+    "meetingPoint": {
+      "en": "Hotel lobby pickup, 3:30 PM",
+      "ar": "الاستلام من لوبي الفندق، ٣:٣٠ عصرًا",
+      "ru": "Встреча в лобби отеля, 15:30",
+      "de": "Abholung Hotellobby, 15:30 Uhr",
+      "it": "Ritiro in hotel, ore 15:30",
+      "tr": "Otel lobisinden alış, 15:30"
+    },
+    "excludes": {
+      "en": [
+        "Personal photos with camels (optional paid service)",
+        "Alcoholic beverages",
+        "Gratuities (optional)"
+      ],
+      "ar": [
+        "صور شخصية مع الجمال (خدمة مدفوعة اختيارية)",
+        "المشروبات الكحولية",
+        "الإكراميات (اختياري)"
+      ],
+      "ru": [
+        "Личные фото с верблюдами (платная услуга по желанию)",
+        "Алкогольные напитки",
+        "Чаевые (по желанию)"
+      ],
+      "de": [
+        "Persönliche Fotos mit Kamelen (optionaler kostenpflichtiger Service)",
+        "Alkoholische Getränke",
+        "Trinkgelder (optional)"
+      ],
+      "it": [
+        "Foto personali con i cammelli (servizio a pagamento facoltativo)",
+        "Bevande alcoliche",
+        "Mance (facoltative)"
+      ],
+      "tr": [
+        "Develerle kişisel fotoğraflar (isteğe bağlı ücretli hizmet)",
+        "Alkollü içecekler",
+        "Bahşiş (isteğe bağlı)"
+      ]
+    },
+    "whatToBring": {
+      "en": [
+        "Closed shoes",
+        "Light jacket (desert cools at night)",
+        "Scarf or bandana (dust)",
+        "Camera"
+      ],
+      "ar": [
+        "حذاء مغلق",
+        "سترة خفيفة (الصحراء تبرد ليلاً)",
+        "وشاح أو بندانا (للغبار)",
+        "كاميرا"
+      ],
+      "ru": [
+        "Закрытая обувь",
+        "Лёгкая куртка (пустыня остывает ночью)",
+        "Шарф или бандана (от пыли)",
+        "Камера"
+      ],
+      "de": [
+        "Geschlossene Schuhe",
+        "Leichte Jacke (Wüste kühlt nachts ab)",
+        "Schal oder Bandana (Staub)",
+        "Kamera"
+      ],
+      "it": [
+        "Scarpe chiuse",
+        "Giacca leggera (il deserto si raffredda di notte)",
+        "Sciarpa o bandana (polvere)",
+        "Fotocamera"
+      ],
+      "tr": [
+        "Kapalı ayakkabı",
+        "Hafif ceket (çöl gece serinler)",
+        "Eşarp veya bandana (toz için)",
+        "Kamera"
+      ]
+    },
+    "itinerary": [
+      {
+        "time": "15:30",
+        "title": {
+          "en": "Hotel Pickup",
+          "ar": "الاستلام من الفندق",
+          "ru": "Встреча в отеле",
+          "de": "Hotelabholung",
+          "it": "Ritiro in hotel",
+          "tr": "Otelden Alış"
+        },
+        "description": {
+          "en": "Our vehicle collects you from your hotel.",
+          "ar": "سيارتنا تستلمك من فندقك.",
+          "ru": "Наш автомобиль заберёт вас из отеля.",
+          "de": "Unser Fahrzeug holt Sie von Ihrem Hotel ab.",
+          "it": "Il nostro veicolo ti preleva dal tuo hotel.",
+          "tr": "Aracımız sizi otelinizden alır."
+        }
+      },
+      {
+        "time": "16:15",
+        "title": {
+          "en": "Quad Biking Adventure",
+          "ar": "مغامرة الدراجات الرباعية",
+          "ru": "Приключение на квадроцикле",
+          "de": "Quad-Biking-Abenteuer",
+          "it": "Avventura in quad",
+          "tr": "ATV Macerası"
+        },
+        "description": {
+          "en": "Ride across the golden dunes as the sun starts to lower.",
+          "ar": "اقطع الكثبان الذهبية مع بدء غروب الشمس.",
+          "ru": "Прокатитесь по золотым дюнам, когда солнце начинает садиться.",
+          "de": "Fahren Sie über die goldenen Dünen, während die Sonne zu sinken beginnt.",
+          "it": "Attraversa le dune dorate mentre il sole inizia a calare.",
+          "tr": "Güneş alçalmaya başlarken altın kum tepelerinde sürün."
+        }
+      },
+      {
+        "time": "17:30",
+        "title": {
+          "en": "Bedouin Tea & Camel Ride",
+          "ar": "شاي بدوي وركوب جمال",
+          "ru": "Бедуинский чай и катание на верблюде",
+          "de": "Beduinentee & Kamelritt",
+          "it": "Tè beduino e giro in cammello",
+          "tr": "Bedevi Çayı ve Deve Turu"
+        },
+        "description": {
+          "en": "Meet a local Bedouin family for sweet tea and a short camel ride.",
+          "ar": "التقِ بعائلة بدوية محلية لتناول الشاي الحلو وركوب قصير على الجمل.",
+          "ru": "Познакомьтесь с местной бедуинской семьёй за сладким чаем и короткой прогулкой на верблюде.",
+          "de": "Treffen Sie eine lokale Beduinenfamilie bei süßem Tee und einem kurzen Kamelritt.",
+          "it": "Incontra una famiglia beduina locale per un tè dolce e un breve giro in cammello.",
+          "tr": "Tatlı çay ve kısa bir deve turu için yerel bir Bedevi ailesiyle tanışın."
+        }
+      },
+      {
+        "time": "18:30",
+        "title": {
+          "en": "Sunset Over the Dunes",
+          "ar": "غروب الشمس فوق الكثبان",
+          "ru": "Закат над дюнами",
+          "de": "Sonnenuntergang über den Dünen",
+          "it": "Tramonto sulle dune",
+          "tr": "Kum Tepelerinde Gün Batımı"
+        },
+        "description": {
+          "en": "Watch the sun set over the desert from a scenic viewpoint.",
+          "ar": "شاهد غروب الشمس فوق الصحراء من نقطة إطلالة بانورامية.",
+          "ru": "Понаблюдайте закат над пустыней с живописной смотровой площадки.",
+          "de": "Beobachten Sie den Sonnenuntergang über der Wüste von einem malerischen Aussichtspunkt.",
+          "it": "Guarda il tramonto sul deserto da un punto panoramico.",
+          "tr": "Manzaralı bir noktadan çöl üzerinde gün batımını izleyin."
+        }
+      },
+      {
+        "time": "19:00",
+        "title": {
+          "en": "BBQ Dinner Under the Stars",
+          "ar": "عشاء شواء تحت النجوم",
+          "ru": "Ужин-барбекю под звёздами",
+          "de": "BBQ-Dinner unter den Sternen",
+          "it": "Cena BBQ sotto le stelle",
+          "tr": "Yıldızların Altında Barbekü Yemeği"
+        },
+        "description": {
+          "en": "A traditional BBQ dinner served in an open-air desert camp.",
+          "ar": "عشاء شواء تقليدي يُقدّم في مخيم صحراوي مفتوح.",
+          "ru": "Традиционный ужин-барбекю в открытом пустынном лагере.",
+          "de": "Ein traditionelles BBQ-Dinner in einem Wüstenlager unter freiem Himmel.",
+          "it": "Una cena BBQ tradizionale servita in un campo nel deserto all'aperto.",
+          "tr": "Açık hava çöl kampında geleneksel bir barbekü yemeği."
+        }
+      },
+      {
+        "time": "20:15",
+        "title": {
+          "en": "Return to Hotel",
+          "ar": "العودة إلى الفندق",
+          "ru": "Возвращение в отель",
+          "de": "Rückfahrt zum Hotel",
+          "it": "Ritorno in hotel",
+          "tr": "Otele Dönüş"
+        },
+        "description": {
+          "en": "We drive you back to your hotel.",
+          "ar": "نُقلك عائدًا إلى فندقك.",
+          "ru": "Мы отвезём вас обратно в отель.",
+          "de": "Wir bringen Sie zurück zu Ihrem Hotel.",
+          "it": "Ti riportiamo al tuo hotel.",
+          "tr": "Sizi otelinize geri götürüyoruz."
+        }
+      }
+    ]
+  }
+]
