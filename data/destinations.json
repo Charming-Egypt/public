@@ -1,0 +1,298 @@
+[
+  {
+    "id": "d1",
+    "name": {
+      "en": "Ras Mohammed National Park",
+      "ar": "محمية رأس محمد",
+      "ru": "Рас-Мохаммед",
+      "de": "Ras Mohammed Nationalpark",
+      "it": "Parco Nazionale di Ras Mohammed",
+      "tr": "Ras Muhammed Milli Parkı"
+    },
+    "tagline": {
+      "en": "Egypt's premier marine national park",
+      "ar": "أول وأشهر محمية طبيعية في مصر",
+      "ru": "Первый национальный парк Египта",
+      "de": "Ägyptens erster Nationalpark",
+      "it": "Il primo parco nazionale d'Egitto",
+      "tr": "Mısır'ın ilk milli parkı"
+    },
+    "description": {
+      "en": "A protected national park where the desert meets world-class coral reefs and rich marine life.",
+      "ar": "محمية طبيعية عالمية تلتقي فيها الصحراء بأجمل الشعاب المرجانية والأحياء البحرية.",
+      "ru": "Заповедный национальный парк, где пустыня встречается с одними из лучших коралловых рифов мира.",
+      "de": "Ein geschützter Nationalpark, in dem die Wüste auf einige der besten Korallenriffe der Welt trifft.",
+      "it": "Un parco nazionale protetto dove il deserto incontra alcune delle migliori barriere coralline del mondo.",
+      "tr": "Çölün, dünyanın en iyi mercan resiflerinden bazılarıyla buluştuğu korunan bir milli park."
+    },
+    "fullDescription": {
+      "en": "Established in 1983, Ras Mohammed National Park sits at the southern tip of the Sinai Peninsula, where the Gulf of Aqaba meets the Gulf of Suez. Its sheer reef walls, mangrove channels, Magic Lake, and the famous Yolanda Wreck make it an unmissable destination for diving and snorkeling.",
+      "ar": "تأسست محمية رأس محمد عام ١٩٨٣ عند الطرف الجنوبي لشبه جزيرة سيناء، حيث يلتقي خليج العقبة بخليج السويس. تتميز بالجدران المرجانية الرأسية، وقنوات المانجروف الفريدة، والبحيرة المسحورة، وحطام سفينة يولاندا، مما يجعلها الوجهة الأولى للغوص والسنوركل.",
+      "ru": "Основанный в 1983 году, национальный парк Рас-Мохаммед расположен на южной оконечности Синайского полуострова. Отвесные рифовые стены, мангровые каналы и затонувший корабль Yolanda делают его одним из самых знаменитых мест для дайвинга в мире.",
+      "de": "Der 1983 gegründete Ras-Mohammed-Nationalpark liegt an der Südspitze der Sinai-Halbinsel. Seine steilen Riffwände, Mangrovenkanäle und das Yolanda-Wrack machen ihn zu einem weltberühmten Tauchziel.",
+      "it": "Istituito nel 1983, il Parco Nazionale di Ras Mohammed si trova all'estremità meridionale della penisola del Sinai. Le sue pareti a strapiombo e il relitto Yolanda ne fanno una meta iconica.",
+      "tr": "1983'te kurulan Ras Muhammed Milli Parkı, Akabe Körfezi'nin Süveyş Körfezi ile buluştuğu noktada yer alır. Dik resif duvarları ve Yolanda Batığı ile dünyaca ünlüdür."
+    },
+    "location": {
+      "en": "South Sinai, ~25km south of Sharm El Sheikh",
+      "ar": "جنوب سيناء، حوالي ٢٥ كم جنوب شرم الشيخ",
+      "ru": "Южный Синай, ~25 км к югу от Шарм-эль-Шейха",
+      "de": "Süd-Sinai, ~25 km südlich von Sharm El Sheikh",
+      "it": "Sinai del Sud, ~25 km a sud di Sharm El Sheikh",
+      "tr": "Güney Sina, Sharm El Sheikh'in ~25km güneyi"
+    },
+    "rating": 4.9,
+    "image": "https://egyptra.pro/uploads/photo_library/photo_67ac8aa74e42f.jpg",
+    "images": [
+      "https://www.egyptpromotion.com/uploads/tour/1635335506full-day-ras-mohammed-national-park-day-trip-by-boat-02.jpg",
+      "https://egyptra.pro/uploads/photo_library/photo_67ac8aa74e42f.jpg",
+      "https://media.tacdn.com/media/attractions-splice-spp-674x446/0b/c8/1d/16.jpg",
+      "https://q-xx.bstatic.com/xdata/images/xphoto/900x600/198969815.jpg?k=afc80abb739cbed3c25955a33706fca256227a2e06416af733fe9e9e14cd5cea&o=",
+      "https://www.shoreexcursionsgroup.com/img/tour/EUSSRMSNRKL-2.jpg",
+      "https://egypt-snorkeling.com/trips/sharm-el-sheikh/ras-mohamed-national-park/5.webp",
+      "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/33/18/41/f7/caption.jpg?w=1200&h=-1&s=1",
+      "https://onetour-egypt.ru/wp-content/uploads/2024/05/sea-trip.jpg"
+    ]
+  },
+  {
+    "id": "d2",
+    "name": {
+      "en": "Naama Bay",
+      "ar": "خليج نعمة",
+      "ru": "Наама Бэй",
+      "de": "Naama Bay",
+      "it": "Naama Bay",
+      "tr": "Naama Bay"
+    },
+    "tagline": {
+      "en": "The vibrant heart of Sharm El Sheikh",
+      "ar": "القلب النابض والمركز السياحي لشرم الشيخ",
+      "ru": "Сердце ночной жизни Шарма",
+      "de": "Das Herz von Sharms Nachtleben",
+      "it": "Il cuore della vita notturna di Sharm",
+      "tr": "Sharm'ın gece hayatının kalbi"
+    },
+    "rating": 4.8,
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Naama_Bay_Sharm_El_Sheikh_Egypt.jpg/800px-Naama_Bay_Sharm_El_Sheikh_Egypt.jpg",
+    "images": [
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Naama_Bay_Sharm_El_Sheikh_Egypt.jpg/1000px-Naama_Bay_Sharm_El_Sheikh_Egypt.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Naama_Bay_Beach_Panorama.jpg/1000px-Naama_Bay_Beach_Panorama.jpg"
+    ],
+    "description": {
+      "en": "A pedestrian promenade lined with resorts, restaurants, cafes, and sandy beaches.",
+      "ar": "ممشى سياحي شهير يضم منتجعات ومطاعم ومقاهي وشواطئ رملية هادئة.",
+      "ru": "Пальмовая набережная с курортами, ресторанами и магазинами прямо на Красном море.",
+      "de": "Eine palmengesäumte Promenade mit Resorts, Restaurants und Geschäften direkt am Roten Meer.",
+      "it": "Una passeggiata fiancheggiata da palme con resort, ristoranti e negozi sul Mar Rosso.",
+      "tr": "Kızıldeniz kıyısında tesisler, restoranlar ve mağazalarla dolu bir yürüyüş yolu."
+    },
+    "fullDescription": {
+      "en": "Naama Bay is Sharm El Sheikh's bustling central hub. Featuring a pedestrianized boulevard, sandy beaches, international dining, and vibrant nightlife.",
+      "ar": "خليج نعمة هو المركز السياحي الرئيسي في شرم الشيخ. يتميز بممشى مشاة حيوي، وشواطئ رملية آمنة للسباحة، ومطاعم عالمية، ومقاهي وشيشة، بالإضافة إلى أنشطة الرياضات البحرية ورحلات اليخوت.",
+      "ru": "Наама Бэй — главный туристический центр Шарм-эль-Шейха с песчаными пляжами, пешеходными променадами, кафе и насыщенной ночной жизнью.",
+      "de": "Naama Bay ist das Zentrum von Sharm El Sheikh mit Sandstränden, Fußgängerpromenade und vielfältigen Gastronomieangeboten.",
+      "it": "Naama Bay è il centro pulsante di Sharm, famoso per le spiagge sabbiose, i locali e i negozi lungo la passeggiata.",
+      "tr": "Naama Bay, kumsalları, yürüyüş caddesi ve canlı akşam hayatıyla Sharm'ın merkez noktasıdır."
+    },
+    "location": {
+      "en": "Central Sharm El Sheikh",
+      "ar": "وسط شرم الشيخ",
+      "ru": "Центр Шарм-эль-Шейха",
+      "de": "Zentrum von Sharm El Sheikh",
+      "it": "Centro di Sharm El Sheikh",
+      "tr": "Sharm El Sheikh Merkez"
+    }
+  },
+  {
+    "id": "d3",
+    "name": {
+      "en": "Farsha Mountain Cafe",
+      "ar": "كافيه فرشة (جبل فرشة)",
+      "ru": "Кафе Фарша",
+      "de": "Farsha Cafe",
+      "it": "Farsha Mountain Cafe",
+      "tr": "Farsha Mountain Cafe"
+    },
+    "tagline": {
+      "en": "Iconic cliffside Bedouin lounge",
+      "ar": "أشهر مقهى جبلي بطراز بدوي فريد",
+      "ru": "Культовое атмосферное кафе на скале",
+      "de": "Kultiges Bedouinen-Café an der Klippe",
+      "it": "Iconico locale beduino sulla scogliera",
+      "tr": "Kayalıkta ikonik Bedevi kafesi"
+    },
+    "rating": 4.9,
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Farsha_Cafe_Ras_Um_Sid.jpg/800px-Farsha_Cafe_Ras_Um_Sid.jpg",
+    "images": [
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Farsha_Cafe_Ras_Um_Sid.jpg/1000px-Farsha_Cafe_Ras_Um_Sid.jpg"
+    ],
+    "description": {
+      "en": "A unique Bohemian-Bedouin cafe built into the cliff side at Hadaba with breathtaking sea views.",
+      "ar": "مقهى بوهيمي بدوي مبني على حافة الهضبة مع إطلالة ساحرة على البحر الأحمر وقت الغروب.",
+      "ru": "Атмосферное кафе в восточном стиле, расположенное на склоне утеса с видом на море.",
+      "de": "Ein einzigartiges Café im Beduinenstil, das in die Klippe gebaut ist und eine tolle Aussicht bietet.",
+      "it": "Un locale suggestivo in stile beduino scavato nella roccia con vista panoramica sul mare.",
+      "tr": "Uçurum kenarına inşa edilmiş, muhteşem deniz manzaralı Bedevi tarzı otantik kafe."
+    },
+    "fullDescription": {
+      "en": "Located in El Hadaba overlooking Ras Um Sid bay, Farsha Lounge is renowned worldwide for its antique decor, traditional floor cushions, warm lanterns, and magical sunset views.",
+      "ar": "يقع في منطقة الهضبة مطلًا على خليج رأس أم سيد، ويعد فرشة من أشهر المقاهي عالميًا بفضل ديكوراته المكونة من التحف والأناديل التقليدية، والوسائد البدوية الأرضية، ولحظات الغروب الخلابة.",
+      "ru": "Кафе Фарша в районе Хадаба славится своим уникальным антикварным декором, традиционными подушками и волшебной атмосферой во время заката.",
+      "de": "Das Farsha in El Hadaba ist weltbekannt für sein Antik-Dekor, gemütliche Sitzkissen und magische Sonnenuntergänge.",
+      "it": "Situato a El Hadaba, Farsha è celebre per gli arredi d'epoca, le lanterne tradizionali e i tramonti spettacolari.",
+      "tr": "El Hadaba'da bulunan Farsha, antik dekorasyonu, otantik fenerleri ve büyüleyici gün batımı manzarasıyla tanınır."
+    },
+    "location": {
+      "en": "Hadaba (Ras Um Sid), Sharm El Sheikh",
+      "ar": "هضبة أم سيد، شرم الشيخ",
+      "ru": "Хадаба (Рас-Умм-Сид), Шарм-эль-Шейх",
+      "de": "Hadaba, Sharm El Sheikh",
+      "it": "Hadaba, Sharm El Sheikh",
+      "tr": "Hadaba, Sharm El Sheikh"
+    }
+  },
+  {
+    "id": "d4",
+    "name": {
+      "en": "Al-Sahaba Mosque",
+      "ar": "مسجد الصحابة",
+      "ru": "Мечеть Сахаба",
+      "de": "Sahaba-Moschee",
+      "it": "Moschea Sahaba",
+      "tr": "Sahaba Camii"
+    },
+    "tagline": {
+      "en": "An architectural masterpiece in the Old Market",
+      "ar": "تحفة معمارية عثمانية وفاطمية في قلب السوق القديم",
+      "ru": "Шедевр архитектуры в Старом городе",
+      "de": "Ein architektonisches Meisterwerk im Alten Markt",
+      "it": "Un capolavoro architettonico nel Vecchio Mercato",
+      "tr": "Eski Çarşı'da bir mimari şaheser"
+    },
+    "rating": 4.9,
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Al_Sahaba_Mosque_Sharm_El_Sheikh.jpg/800px-Al_Sahaba_Mosque_Sharm_El_Sheikh.jpg",
+    "images": [
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Al_Sahaba_Mosque_Sharm_El_Sheikh.jpg/1000px-Al_Sahaba_Mosque_Sharm_El_Sheikh.jpg"
+    ],
+    "description": {
+      "en": "A grand mosque blending Ottoman and Fatimid styles, standing as the focal point of the Old City.",
+      "ar": "مسجد جامع يمزج بين الطرازين العثماني والفاطمي، ويعد المعلم الأساسي للسوق القديم.",
+      "ru": "Роскошная мечеть в османско-фатимидском стиле, главное украшение Старого рынка.",
+      "de": "Eine imposante Moschee im osmanisch-fatimidischen Stil im Zentrum des Alten Marktes.",
+      "it": "Un'imponente moschea che unisce elementi ottomani e fatimidi nel cuore del mercato.",
+      "tr": "Eski Çarşı'nın merkezinde Osmanlı ve Fatımi mimarisini birleştiren görkemli cami."
+    },
+    "fullDescription": {
+      "en": "Inaugurated in 2017, Al-Sahaba Mosque features twin 76-meter minarets, intricate stone carvings, and opulent domes. It is open to international visitors outside prayer times.",
+      "ar": "افتُتح مسجد الصحابة عام ٢٠١٧ بآذنتين ارتفاعهما ٧٦ متراً ونقوش حجرية فريدة وقباب مذهبة. يرحب بالزوار الأجانب للاطلاع على المعالم الإسلامية والتقاط الصور الخلابة خاصة أثناء الإضاءة الليلية.",
+      "ru": "Мечеть Аль-Сахаба открыта в 2017 году. Её 76-метровые минареты и резные элементы фасада привлекают множество туристов со всего мира.",
+      "de": "Die 2017 eröffnete Moschee beeindruckt mit 76 Meter hohen Minaretten und aufwendigen Steinmetzarbeiten.",
+      "it": "Inaugurata nel 2017, la moschea vanta minareti alti 76 metri ed eleganti decorazioni in pietra.",
+      "tr": "2017'de açılan Al-Sahaba Camii, 76 metrelik minareleri ve taş işlemeleriyle dikkat çeker."
+    },
+    "location": {
+      "en": "Old Market, Sharm El Sheikh",
+      "ar": "السوق القديم، شرم الشيخ",
+      "ru": "Старый рынок, Шарм-эль-Шейх",
+      "de": "Alter Markt, Sharm El Sheikh",
+      "it": "Vecchio Mercato, Sharm El Sheikh",
+      "tr": "Eski Çarşı, Sharm El Sheikh"
+    }
+  },
+  {
+    "id": "d5",
+    "name": {
+      "en": "Old Market (Souk)",
+      "ar": "السوق القديم",
+      "ru": "Старый рынок (Сук)",
+      "de": "Alter Markt (Souk)",
+      "it": "Vecchio Mercato (Souk)",
+      "tr": "Eski Çarşı (Sûk)"
+    },
+    "tagline": {
+      "en": "Traditional Egyptian shopping and seafood dining",
+      "ar": "التسوق التقليدي والمأكولات البحرية والتوابل",
+      "ru": "Традиционный базар и морепродукты",
+      "de": "Traditionelles Shopping und Meeresfrüchte",
+      "it": "Shopping tradizionale e ristoranti di pesce",
+      "tr": "Geleneksel alışveriş ve deniz ürünleri"
+    },
+    "rating": 4.6,
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Old_Market_Sharm_el-Sheikh.jpg/800px-Old_Market_Sharm_el-Sheikh.jpg",
+    "images": [
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Old_Market_Sharm_el-Sheikh.jpg/1000px-Old_Market_Sharm_el-Sheikh.jpg"
+    ],
+    "description": {
+      "en": "A lively bazaar offering spices, herbs, leather goods, souvenirs, and authentic seafood dining.",
+      "ar": "سوق شعبي نابض بالحياة يزخر بمحلات التوابل والأعشاب والمنتجات الجلدية والمطاعم البحرية.",
+      "ru": "Оживленный базар со специями, сувенирами, кожаными изделия и рыбными ресторанами.",
+      "de": "Ein lebhafter Basar mit Gewürzen, Souvenirs, Lederwaren und authentischen Fischrestaurants.",
+      "it": "Un vivace bazar ricca di spezie, souvenir, articoli in pelle e ristoranti tipici.",
+      "tr": "Baharatlar, hediyelik eşyalar ve deniz ürünleri restoranlarıyla dolu canlı bir pazar."
+    },
+    "fullDescription": {
+      "en": "The Old Market offers an authentic Egyptian atmosphere where visitors can shop for oriental spices, local handicrafts, Egyptian cotton, and enjoy fresh seafood at renowned local restaurants.",
+      "ar": "يوفر السوق القديم أجواءً مصرية أصيلة لشراء التوابل الشرقية، الأعشاب الطبيعية، القطنيات المصرية، والمشغولات اليدوية، إلى جانب تناول أشهى المأكولات البحرية والمشويات.",
+      "ru": "Старый рынок предлагает погрузиться в местный колорит: купить специи, хлопковые изделия, сувениры и попробовать свежие морепродукты.",
+      "de": "Der Alte Markt bietet ein authentisches ägyptisches Einkaufserlebnis mit Gewürzen, Handwerk und hervorragenden Fischrestaurants.",
+      "it": "Il Vecchio Mercato offre un'autentica atmosfera egiziana per acquistare spezie, artigianato e gustare ottimo pesce fresco.",
+      "tr": "Eski Çarşı, Mısır baharatları, el sanatları ve taze deniz ürünleri restoranlarıyla otantik bir ortam sunar."
+    },
+    "location": {
+      "en": "Old Town, Sharm El Sheikh",
+      "ar": "المدينة القديمة، شرم الشيخ",
+      "ru": "Старый город, Шарм-эль-Шейх",
+      "de": "Altstadt, Sharm El Sheikh",
+      "it": "Città Vecchia, Sharm El Sheikh",
+      "tr": "Eski Şehir, Sharm El Sheikh"
+    }
+  },
+  {
+    "id": "d6",
+    "name": {
+      "en": "SOHO Square",
+      "ar": "سوهو سكوير",
+      "ru": "SOHO Square",
+      "de": "SOHO Square",
+      "it": "SOHO Square",
+      "tr": "SOHO Square"
+    },
+    "tagline": {
+      "en": "Modern entertainment, dining, and shows",
+      "ar": "مركز الترفيه الحديث والنوافير الراقصة والعروض",
+      "ru": "Современные развлечения и танцующий фонтан",
+      "de": "Moderne Unterhaltung, Gastronomie und Shows",
+      "it": "Intrattenimento moderno, spettacoli e ristoranti",
+      "tr": "Modern eğlence, gösteriler ve restoranlar"
+    },
+    "rating": 4.7,
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/SOHO_Square_Sharm_El_Sheikh.jpg/800px-SOHO_Square_Sharm_El_Sheikh.jpg",
+    "images": [
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/SOHO_Square_Sharm_El_Sheikh.jpg/1000px-SOHO_Square_Sharm_El_Sheikh.jpg"
+    ],
+    "description": {
+      "en": "A high-end pedestrian entertainment complex with a dancing fountain, ice rink, and international restaurants.",
+      "ar": "مجمع ترفيهي راقٍ يضم نافورة راقصة، صالة تزلج على الجليد، سينما، ومطاعم عالمية متنوعة.",
+      "ru": "Современный развлекательный комплекс с поющим фонтаном, катком и международными ресторанами.",
+      "de": "Ein moderner Unterhaltungskomplex mit Musikbrunnen, Schlittschuhbahn und internationalen Restaurants.",
+      "it": "Un complesso per lo svago con fontana danzante, pista di pattinaggio e ristoranti internazionali.",
+      "tr": "Dans eden fıskiye, buz pateni pisti ve uluslararası restoranlarla modern eğlence kompleksi."
+    },
+    "fullDescription": {
+      "en": "SOHO Square is a clean, pedestrian-only square packed with family attractions including a musical fountain, ice-skating rink, bowling center, and international dining options.",
+      "ar": "سوهو سكوير ساحة مشاة حديثة وآمنة تماماً للعائلات والأفراد، تمتاز بوجود النافورة الموسيقية الراقصة، صالة تزلج جليدية، صالة بولينج، ومجموعة مطاعم فاخرة من مختلف مطابخ العالم.",
+      "ru": "SOHO Square — безопасная пешеходная зона с развлечениями для всей семьи: музыкальный фонтан, каток, боулинг и рестораны высокой кухни.",
+      "de": "SOHO Square bietet familienfreundliche Unterhaltung mit Tanzbrunnen, Eishalle, Bowling und erstklassigen Restaurants.",
+      "it": "SOHO Square è una piazza pedonale con attrazioni per famiglie, tra cui fontana musicale, bowling e ristoranti di qualità.",
+      "tr": "SOHO Square, müzikli fıskiye, buz pateni, bowling ve kaliteli restoranlarıyla aile dostu bir eğlence merkezidir."
+    },
+    "location": {
+      "en": "Sharks Bay / White Knight Bay",
+      "ar": "خليج القرش / الفارس الأبيض، شرم الشيخ",
+      "ru": "Шаркс Бэй, Шарм-эль-Шейх",
+      "de": "Sharks Bay, Sharm El Sheikh",
+      "it": "Sharks Bay, Sharm El Sheikh",
+      "tr": "Sharks Bay, Sharm El Sheikh"
+    }
+  }
+]
