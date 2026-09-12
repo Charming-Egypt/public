@@ -19,10 +19,10 @@ const SHOW_DESTINATIONS = window.DS_CONFIG.SHOW_DESTINATIONS;
 // transitions while giving every screen its own address (back/forward
 // buttons, refresh, and direct links all land on the right screen).
 
-// The site is served from /h/* on this deployment (not the domain root), so
-// every route needs that prefix. Change this one line if the deployment
-// path ever changes — set to '' if the site moves back to the root.
-const BASE_PATH = '/h';
+// The site is served from the domain root on this deployment
+// (app.discover-sharm.com/*). Set this back to '/h' (or wherever) if the
+// deployment path ever changes again — it's the only line that needs it.
+const BASE_PATH = '';
 
 const ROUTES = {
   home: '/',
