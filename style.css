@@ -1827,11 +1827,11 @@ html[data-theme="light"] .theme-switch .knob {
   z-index: 99999 !important;
 }
 
-.s-area{ margin-top:-20rem;margin-bottom:5rem;}
+.s-area{ margin-top:-25rem; margin-bottom:5rem;}
 
 
 @media (max-width: 480px) {
-  .s-area{ margin-top:-23rem;
+  .s-area{ margin-top:-28rem;
          margin-bottom:6rem;
          }
 
