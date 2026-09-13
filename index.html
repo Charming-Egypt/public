@@ -6,6 +6,22 @@
   <title>Discover Sharm — Luxury Travel</title>
 
   <script>
+    // Single Page Apps for GitHub Pages — decode step.
+    // https://github.com/rafgraph/spa-github-pages
+    // Reverses what 404.html did: turns "/?/excursions/e1" back into the
+    // real "/excursions/e1" in the address bar (via history.replaceState,
+    // no reload) before the router code further down ever looks at the URL.
+    (function (l) {
+      if (l.search[1] === '/') {
+        var decoded = l.search.slice(1).split('&').map(function (s) {
+          return s.replace(/~and~/g, '&');
+        }).join('?');
+        window.history.replaceState(null, null, l.pathname.slice(0, -1) + decoded + l.hash);
+      }
+    }(window.location));
+  </script>
+
+  <script>
     // Defined inline, first thing in <head>, on purpose: the logo <img> tags
     // below start loading as soon as the parser reaches them in <body>, which
     // is long before data.js (loaded at the very end of the page) runs. If
