@@ -280,12 +280,12 @@ let I18N_DICT = {};
 
 async function loadI18nDict() {
   try {
-    const manifestRes = await fetch('data/lang/manifest.json');
+    const manifestRes = await fetch('/data/lang/manifest.json');
     const manifest = await manifestRes.json();
     SUPPORTED_LANGS = manifest.languages.map(l => l.code);
     LANG_LABELS = {};
     manifest.languages.forEach(l => { LANG_LABELS[l.code] = l.label; });
-    const dictResponses = await Promise.all(SUPPORTED_LANGS.map(code => fetch('data/lang/' + code + '.json')));
+    const dictResponses = await Promise.all(SUPPORTED_LANGS.map(code => fetch('/data/lang/' + code + '.json')));
     const dictJsons = await Promise.all(dictResponses.map(r => r.json()));
     SUPPORTED_LANGS.forEach((code, i) => {
       const langDict = dictJsons[i];
