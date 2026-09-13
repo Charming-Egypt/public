@@ -1,6 +1,6 @@
 // ==================== FRONTEND UI & NAVIGATION ====================
 window.DS_CONFIG = window.DS_CONFIG || {
-  SHOW_HOTELS: true,
+  SHOW_HOTELS: false,
   SHOW_EXCURSIONS: true,
   SHOW_TRANSFERS: true,
   SHOW_RESTAURANTS: true,
@@ -29,6 +29,7 @@ const ROUTES = {
   excursions: '/excursions',
   transfers: '/transfers',
   restaurants: '/restaurants',
+  hotels: '/hotels',
   bookings: '/bookings',
   profile: '/profile',
   settings: '/settings',
@@ -40,6 +41,7 @@ const PAGE_TITLES = {
   excursions: 'Excursions in Sharm El-Sheikh — Discover Sharm',
   transfers: 'Airport Transfers — Discover Sharm',
   restaurants: 'Restaurants — Discover Sharm',
+  hotels: 'Hotels — Discover Sharm',
   bookings: 'My Bookings — Discover Sharm',
   profile: 'My Profile — Discover Sharm',
   settings: 'Settings — Discover Sharm',
@@ -1165,6 +1167,7 @@ function applyCategoryVisibility() {
   }
 
   document.getElementById('drawerHotelsLink')?.classList.toggle('hidden', !SHOW_HOTELS);
+  document.getElementById('desktopHotelsLink')?.classList.toggle('hidden', !SHOW_HOTELS);
   document.querySelectorAll('.drawer-link').forEach(link => {
     const onclick = link.getAttribute('onclick') || '';
     if (onclick.includes("nav.go('excursions')") && !SHOW_EXCURSIONS) link.style.display = 'none';
