@@ -330,9 +330,7 @@
         <button onclick="sidebar.open()" class="icon-btn w-10 h-10 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-bars"></i></button>
         <img src="/data/long-logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="sticky-header-logo" alt="Discover Sharm" />
       </div>
- <button onclick="nav.go('profile')" data-page="profile" class="nav-item icon-btn w-11 h-11 rounded-xl flex items-center justify-center">
-        <span class="nav-avatar-circle" id="navProfileAvatarDesktop"></span>
-      </button>
+      <button onclick="nav.go('notifications')" class="icon-btn w-10 h-10 rounded-xl flex items-center justify-center relative text-white"><i class="fa-regular fa-bell"></i><span class="notif-badge hidden absolute top-2 right-2 w-2 h-2 bg-gold-400 rounded-full"></span></button>
     </div>
   </div>
 
@@ -350,6 +348,7 @@
       </button>
       <div class="flex items-center gap-8 text-sm font-semibold">
         <button onclick="nav.go('excursions')" data-page="excursions" class="nav-item drawer-link text-white" data-i18n="navExcursions">Excursions</button>
+        <button onclick="nav.go('hotels')" data-page="hotels" id="desktopHotelsLink" class="nav-item text-white hidden" data-i18n="navHotels">Hotels</button>
         <button onclick="nav.go('transfers')" data-page="transfers" class="nav-item drawer-link text-white" data-i18n="navTransfers">Transfers</button>
         <button onclick="nav.go('restaurants')" data-page="restaurants" class="nav-item drawer-link text-white" data-i18n="navRestaurants">Restaurants</button>
         <button onclick="nav.go('bookings')" data-page="bookings" class="nav-item text-white" data-i18n="myBookings">My Bookings</button>
@@ -471,6 +470,15 @@
           <div id="featuredExcursions" class="results-scroll-snap"></div>
         </div>
 
+        <!-- Featured Hotels -->
+        <div class="px-5 mb-8">
+          <div class="flex items-center justify-between mb-4">
+            <div><p class="section-subtitle" data-i18n="stayEyebrow">— WHERE TO STAY</p><h3 class="section-title" data-i18n="featuredHotelsTitle">Featured Hotels</h3></div>
+            <button onclick="nav.go('hotels')" class="text-violet-500 text-sm font-medium flex items-center gap-1" data-i18n="viewAll">View All <i class="fa-solid fa-arrow-left text-xs"></i></button>
+          </div>
+          <div id="featuredHotels"></div>
+        </div>
+
         <!-- Transfer promo banner -->
         <div class="px-5 mb-8">
           <div class="banner-creative rounded-[26px] relative overflow-hidden cursor-pointer" onclick="nav.go('transfers')" style="background-image:linear-gradient(120deg,rgba(23,16,41,.88),rgba(23,16,41,.35) 60%,rgba(23,16,41,.1)), url('https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1000&q=80')">
@@ -490,6 +498,14 @@
             <button onclick="nav.go('restaurants')" class="text-violet-500 text-sm font-medium flex items-center gap-1" data-i18n="viewAll">View All <i class="fa-solid fa-arrow-left text-xs"></i></button>
           </div>
           <div id="restaurantsRow" class="horizontal-scroll"></div>
+        </div>
+
+        <!-- Destinations Row -->
+        <div class="mb-8">
+          <div class="px-5 flex items-center justify-between mb-4">
+            <div><p class="section-subtitle" data-i18n="exploreEyebrow">— EXPLORE</p><h3 class="section-title" data-i18n="destinationsTitle">Popular Destinations</h3></div>
+          </div>
+          <div id="destinationsRow" class="horizontal-scroll px-5"></div>
         </div>
 
         <!-- Reviews Row -->
@@ -570,6 +586,19 @@
           </div>
         </div>
         <div class="px-5 pt-4 pb-28" id="restaurantsFullList"></div>
+      </div>
+    </div>
+
+    <!-- Hotels Page -->
+    <div id="hotelsPage" class="page">
+      <div class="min-h-screen">
+        <div class="px-5 pt-6 pb-4 header-light">
+          <div class="flex items-center gap-3 mb-2">
+            <button onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right"></i></button>
+            <div><p class="section-subtitle" data-i18n="stayEyebrow">— WHERE TO STAY</p><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)" data-i18n="hotelsTitle">Hotels</h1></div>
+          </div>
+        </div>
+        <div class="px-5 pt-4 pb-28" id="hotelsList"></div>
       </div>
     </div>
 
