@@ -514,14 +514,14 @@ const search = {
   updateHeroContent(tab) {
     const heroData = {
       hotels: {
-        eyebrow: 'LUXURY STAYS IN SHARM EL-SHEIKH',
-        title: 'Find Your <br /><span class="italic text-gold-400">Perfect Stay</span>',
-        subtitle: 'Handpicked resorts and hotels along the Red Sea coast'
+        eyebrow: '',
+        title: '',
+        subtitle: ''
       },
       excursions: {
-        eyebrow: 'UNFORGETTABLE ADVENTURES',
-        title: 'Discover Your <br /><span class="italic text-gold-400">Next Adventure</span>',
-        subtitle: 'Diving, desert safaris, boat trips and more'
+        eyebrow: '',
+        title: '',
+        subtitle: ''
       }
     };
     const data = heroData[tab] || heroData.hotels;
