@@ -31,7 +31,7 @@
     window.FALLBACK_LOGO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23fcd34d'/%3E%3Cstop offset='50%25' stop-color='%23fbbf24'/%3E%3Cstop offset='100%25' stop-color='%23d97706'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='120' height='120' rx='28' fill='url(%23g)'/%3E%3Ctext x='60' y='68' text-anchor='middle' font-family='Georgia,serif' font-weight='700' font-size='42' fill='%230c0918'%3EDS%3C/text%3E%3C/svg%3E";
   </script>
 
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="/style.css" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
@@ -75,7 +75,7 @@
       <div class="w-24 h-24 relative mb-6">
         <div class="absolute inset-0 bg-gold-400 rounded-3xl opacity-25 animate-ping"></div>
         <div class="relative w-full h-full bg-gradient-to-br from-gold-300 via-gold-400 to-gold-600 rounded-3xl flex items-center justify-center shadow-2xl border border-gold-300/50 overflow-hidden">
-          <img src="data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="w-full h-full object-cover" alt="Discover Sharm" />
+          <img src="/data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="w-full h-full object-cover" alt="Discover Sharm" />
         </div>
       </div>
       <h1 class="font-display text-2xl font-bold text-white tracking-tight"><span class="shimmer-text">DISCOVER</span> SHARM</h1>
@@ -281,7 +281,7 @@
     <div class="p-5 flex flex-col h-full">
       <div class="flex items-center justify-between mb-6">
         <div class="flex items-center gap-2">
-          <img src="data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-8 w-8 rounded-lg" alt="logo" />
+          <img src="/data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-8 w-8 rounded-lg" alt="logo" />
           <span class="font-display font-bold text-white text-sm">Discover Sharm</span>
         </div>
         <button onclick="sidebar.close()" class="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-white/70"><i class="fa-solid fa-xmark"></i></button>
@@ -328,7 +328,7 @@
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-3">
         <button onclick="sidebar.open()" class="icon-btn w-10 h-10 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-bars"></i></button>
-        <img src="data/long-logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="sticky-header-logo" alt="Discover Sharm" />
+        <img src="/data/long-logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="sticky-header-logo" alt="Discover Sharm" />
       </div>
       <button onclick="nav.go('notifications')" class="icon-btn w-10 h-10 rounded-xl flex items-center justify-center relative text-white"><i class="fa-regular fa-bell"></i><span class="notif-badge hidden absolute top-2 right-2 w-2 h-2 bg-gold-400 rounded-full"></span></button>
     </div>
@@ -344,7 +344,7 @@
     <div class="flex items-center gap-10">
       <button onclick="sidebar.open()" class="icon-btn w-11 h-11 rounded-xl flex items-center justify-center text-white flex-shrink-0"><i class="fa-solid fa-bars"></i></button>
       <button onclick="nav.go('home')" data-page="home" class="flex items-center gap-2 flex-shrink-0">
-        <img src="data/long-logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-9 w-auto desktop-nav-logo" alt="Discover Sharm" />
+        <img src="/data/long-logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-9 w-auto desktop-nav-logo" alt="Discover Sharm" />
       </button>
       <div class="flex items-center gap-8 text-sm font-semibold">
         <button onclick="nav.go('excursions')" data-page="excursions" class="nav-item drawer-link text-white" data-i18n="navExcursions">Excursions</button>
@@ -375,7 +375,7 @@
             <div class="header-floating">
               <div class="flex items-center gap-3">
                 <button onclick="sidebar.open()" class="icon-btn w-11 h-11 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-bars"></i></button>
-                <img src="data/long-logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="site-logo" alt="Discover Sharm" />
+                <img src="/data/long-logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="site-logo" alt="Discover Sharm" />
               </div>
               <div>
                 <button onclick="nav.go('profile')" data-page="profile" title="Profile" aria-label="Profile" class="icon-btn w-11 h-11 rounded-xl flex items-center justify-center relative">
@@ -687,7 +687,7 @@
         <button onclick="nav.go('excursions')" data-page="excursions" title="Excursions" aria-label="Excursions" class="nav-item flex items-center justify-center relative text-white"><i class="fa-solid fa-umbrella-beach text-[22px]"></i></button>
         <button onclick="nav.go('bookings')" data-page="bookings" title="My Bookings" aria-label="My Bookings" class="nav-item flex items-center justify-center relative text-white"><i class="fa-regular fa-calendar-check text-[22px]"></i></button>
         <button onclick="nav.go('home')" data-page="home" class="nav-item-home flex flex-col items-center justify-center flex-shrink-0">
-          <span class="nav-home-logo"><img src="data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" alt="" class=" rounded-full object-cover" /></span>
+          <span class="nav-home-logo"><img src="/data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" alt="" class=" rounded-full object-cover" /></span>
         </button>
         <button onclick="nav.go('transfers')" data-page="transfers" title="Transfers" aria-label="Transfers" class="nav-item flex items-center justify-center relative text-white"><i class="fa-solid fa-shuttle-van text-[22px]"></i></button>
         <button onclick="nav.go('notifications')" class="nav-item flex items-center justify-center relative text-white"><i class="fa-regular fa-bell"></i><span class="notif-badge hidden absolute top-2.5 right-2.5 w-2 h-2 bg-gold-400 rounded-full"></span></button>
@@ -697,8 +697,8 @@
 
   </div>
 
-  <script src="data.js"></script>
-  <script src="booking.js"></script>
-  <script src="frontend.js"></script>
+  <script src="/data.js"></script>
+  <script src="/booking.js"></script>
+  <script src="/frontend.js"></script>
 </body>
 </html>
