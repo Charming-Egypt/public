@@ -322,10 +322,8 @@
         <button onclick="sidebar.open()" class="icon-btn w-10 h-10 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-bars"></i></button>
         <img src="/data/long-logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="sticky-header-logo" alt="Discover Sharm" />
       </div>
-  <button onclick="nav.go('profile')" data-page="profile" class="nav-item icon-btn w-11 h-11 rounded-xl flex items-center justify-center">
-        <span class="nav-avatar-circle" id="navProfileAvatarDesktop"></span>
-      </button>
-       </div>
+      <button onclick="nav.go('notifications')" class="icon-btn w-10 h-10 rounded-xl flex items-center justify-center relative text-white"><i class="fa-regular fa-bell"></i><span class="notif-badge hidden absolute top-2 right-2 w-2 h-2 bg-gold-400 rounded-full"></span></button>
+    </div>
   </div>
 
   <!-- Desktop Navigation (1024px and up — the bottom tab bar is mobile-only,
@@ -523,20 +521,99 @@
           <div id="articlesRow" class="space-y-4"></div>
         </div>
 
-        <!-- Payment Methods -->
-        <div class="px-5 pb-28">
-          <p class="section-subtitle mb-2" data-i18n="paymentEyebrow">— SECURE CHECKOUT</p>
-          <h3 class="section-title mb-4" data-i18n="acceptedPayments">Accepted Payment Methods</h3>
-          <div class="payment-methods-card rounded-[26px] p-6">
-            <div class="grid grid-cols-4 gap-3 mb-4">
+        <!-- Footer -->
+        <footer id="siteFooter">
+          <!-- Desktop footer -->
+          <div class="hidden lg:block footer-desktop">
+            <div class="footer-grid">
+              <div class="footer-brand-col">
+                <img src="/data/long-logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-8 w-auto mb-4" alt="Discover Sharm" />
+                <p class="footer-tagline" data-i18n="footerTagline">Your trusted guide to hotels, excursions, transfers and dining across Sharm El-Sheikh.</p>
+                <div class="footer-social">
+                  <a href="#" class="footer-social-btn" aria-label="Instagram" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                  <a href="#" class="footer-social-btn" aria-label="Facebook" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                  <a href="#" class="footer-social-btn" aria-label="WhatsApp" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                  <a href="#" class="footer-social-btn" aria-label="TikTok" title="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+                </div>
+              </div>
+
+              <div class="footer-col">
+                <h4 data-i18n="footerExplore">Explore</h4>
+                <a onclick="nav.go('excursions')" data-i18n="navExcursions">Excursions</a>
+                <a onclick="nav.go('hotels')" id="footerHotelsLink" class="hidden" data-i18n="navHotels">Hotels</a>
+                <a onclick="nav.go('transfers')" data-i18n="navTransfers">Transfers</a>
+                <a onclick="nav.go('restaurants')" data-i18n="navRestaurants">Restaurants</a>
+              </div>
+
+              <div class="footer-col">
+                <h4 data-i18n="footerCompany">Company</h4>
+                <a href="#" data-i18n="footerAbout">About Us</a>
+                <a href="#" data-i18n="footerJournal">Travel Journal</a>
+                <a href="#" data-i18n="footerContact">Contact</a>
+              </div>
+
+              <div class="footer-col">
+                <h4 data-i18n="footerSupport">Support</h4>
+                <a onclick="nav.go('bookings')" data-i18n="myBookings">My Bookings</a>
+                <a href="#" data-i18n="footerCancellation">Cancellation Policy</a>
+                <a href="#" data-i18n="footerTerms">Terms of Service</a>
+                <a href="#" data-i18n="footerPrivacy">Privacy Policy</a>
+              </div>
+
+              <div class="footer-col footer-payment-col">
+                <h4 data-i18n="paymentEyebrow">Secure Checkout</h4>
+                <div class="payment-icon-row">
+                  <div class="payment-icon-box"><i class="fa-brands fa-cc-visa"></i></div>
+                  <div class="payment-icon-box"><i class="fa-brands fa-cc-mastercard"></i></div>
+                  <div class="payment-icon-box"><i class="fa-solid fa-wallet"></i></div>
+                  <div class="payment-icon-box"><i class="fa-solid fa-money-bill-wave"></i></div>
+                </div>
+                <p class="footer-payment-note" data-i18n="paymentSecureNote">All payments are processed securely in Egyptian Pounds (EGP). Pay by card, InstaPay/e-wallet, or choose Cash on Arrival.</p>
+                <a href="mailto:hello@discover-sharm.com" class="footer-contact-line"><i class="fa-regular fa-envelope"></i> hello@discover-sharm.com</a>
+                <p class="footer-contact-line"><i class="fa-solid fa-location-dot"></i> Sharm El-Sheikh, South Sinai, Egypt</p>
+              </div>
+            </div>
+
+            <div class="footer-bottom">
+              <p data-i18n="footerCopyright">© 2026 Discover Sharm. All rights reserved.</p>
+              <div class="footer-legal-links">
+                <a href="#" data-i18n="footerTerms">Terms</a>
+                <span>·</span>
+                <a href="#" data-i18n="footerPrivacy">Privacy</a>
+                <span>·</span>
+                <a href="#" data-i18n="footerCookies">Cookies</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mobile footer -->
+          <div class="lg:hidden footer-mobile">
+            <img src="/data/long-logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-7 w-auto mb-4" alt="Discover Sharm" />
+            <div class="payment-icon-row justify-center">
               <div class="payment-icon-box"><i class="fa-brands fa-cc-visa"></i></div>
               <div class="payment-icon-box"><i class="fa-brands fa-cc-mastercard"></i></div>
               <div class="payment-icon-box"><i class="fa-solid fa-wallet"></i></div>
               <div class="payment-icon-box"><i class="fa-solid fa-money-bill-wave"></i></div>
             </div>
-            <p class="text-xs text-center leading-relaxed" style="color:var(--text-secondary)" data-i18n="paymentSecureNote">All payments are processed securely in Egyptian Pounds (EGP). Pay by card, InstaPay/e-wallet, or choose Cash on Arrival.</p>
+            <p class="footer-payment-note" data-i18n="paymentSecureNote">All payments are processed securely in Egyptian Pounds (EGP). Pay by card, InstaPay/e-wallet, or choose Cash on Arrival.</p>
+            <div class="footer-social">
+              <a href="#" class="footer-social-btn" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+              <a href="#" class="footer-social-btn" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+              <a href="#" class="footer-social-btn" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+              <a href="#" class="footer-social-btn" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+            </div>
+            <div class="footer-mobile-links">
+              <a href="#" data-i18n="footerAbout">About</a>
+              <span>·</span>
+              <a href="#" data-i18n="footerContact">Contact</a>
+              <span>·</span>
+              <a href="#" data-i18n="footerTerms">Terms</a>
+              <span>·</span>
+              <a href="#" data-i18n="footerPrivacy">Privacy</a>
+            </div>
+            <p class="footer-copyright" data-i18n="footerCopyright">© 2026 Discover Sharm. All rights reserved.</p>
           </div>
-        </div>
+        </footer>
       </div>
     </div>
 
