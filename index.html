@@ -484,12 +484,12 @@
 
         <!-- Transfer promo banner -->
         <div class="px-5 mb-8">
-          <div class="banner-creative rounded-[26px] relative overflow-hidden cursor-pointer" onclick="nav.go('transfers')" style="background-image:linear-gradient(120deg,rgba(23,16,41,.88),rgba(23,16,41,.35) 60%,rgba(23,16,41,.1)), url('https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1000&q=80')">
-            <div class="relative z-10 p-6 text-white max-w-[75%]">
-              <div class="inline-block bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold mb-3 border border-white/20"><i class="fa-solid fa-shuttle-van text-orange-300 ml-1"></i><span data-i18n="airportTransferBadge">AIRPORT TRANSFERS</span></div>
-              <p class="font-display text-2xl font-bold mb-1" data-i18n="transferPromoTitle">Land & Go</p>
-              <p class="text-sm text-white/80 mb-4" data-i18n="transferPromoSubtitle">Book your ride to the hotel in advance</p>
-              <button onclick="event.stopPropagation(); nav.go('transfers')" class="btn-gold px-6 py-2.5 rounded-xl font-bold text-ink-900 text-sm ripple" data-i18n="bookTransfer">Book a Transfer</button>
+          <div id="transferPromoBanner" class="banner-creative rounded-[26px] relative overflow-hidden cursor-pointer" onclick="nav.go('transfers')" style="background-image:linear-gradient(120deg,rgba(23,16,41,.88),rgba(23,16,41,.35) 60%,rgba(23,16,41,.1)), url('https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1000&q=80')">
+            <div class="relative z-10 p-6 lg:p-12 text-white max-w-[75%] lg:max-w-[50%]">
+              <div class="inline-block bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-[10px] lg:text-xs font-bold mb-3 border border-white/20"><i class="fa-solid fa-shuttle-van text-orange-300 ml-1"></i><span data-i18n="airportTransferBadge">AIRPORT TRANSFERS</span></div>
+              <p class="font-display text-2xl lg:text-4xl font-bold mb-1 lg:mb-2" data-i18n="transferPromoTitle">Land & Go</p>
+              <p class="text-sm lg:text-base text-white/80 mb-4 lg:mb-6" data-i18n="transferPromoSubtitle">Book your ride to the hotel in advance</p>
+              <button onclick="event.stopPropagation(); nav.go('transfers')" class="btn-gold px-6 py-2.5 lg:px-8 lg:py-3.5 rounded-xl font-bold text-ink-900 text-sm lg:text-base ripple" data-i18n="bookTransfer">Book a Transfer</button>
             </div>
           </div>
         </div>
