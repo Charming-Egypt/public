@@ -112,8 +112,13 @@ function ensureCatalogLoaded() {
 async function openDetailFromRoute(section, id, opts = {}) {
   const def = DETAIL_ROUTES[section];
   if (!def || (def.enabled && !def.enabled())) return;
-  await ensureCatalogLoaded();
-  def.open(id, opts);
+  try {
+    await ensureCatalogLoaded();
+    def.open(id, opts);
+  } catch (e) {
+    console.error('openDetailFromRoute failed:', e);
+    toast('Could not load that page', 'error');
+  }
 }
 
 window.addEventListener('popstate', (e) => {
@@ -151,9 +156,7 @@ function updateStickyHeaderState() {
 window.addEventListener('scroll', updateStickyHeaderState, { passive: true });
 
 function enterApp() {
-  hideSplash();
   document.getElementById('authPage').classList.add('hidden');
-  document.getElementById('mainApp').classList.remove('hidden');
   __catalogLoadPromise = loadCatalogFromWorker();
   ui.setDefaultDates();
   search.init();
@@ -178,22 +181,29 @@ function enterApp() {
 
   applyDesktopLayout();
   applyCategoryVisibility();
-  updateStickyHeaderState();
+
+  // Reveals the app shell only once we know which screen to show, so a
+  // direct link to a trip/hotel/etc. never flashes the home page first —
+  // the splash screen stays up until the right screen is actually ready.
+  const reveal = () => {
+    document.getElementById('mainApp').classList.remove('hidden');
+    hideSplash();
+    updateStickyHeaderState();
+  };
+
+  const pending = __pendingRoute;
+  __pendingRoute = null;
 
   // Honor a direct link (e.g. someone opened /excursions or
-  // /excursions/dolphin-house) now that the app shell is visible;
-  // otherwise make sure the URL matches "home".
-  if (__pendingRoute && __pendingRoute.type === 'page' && __pendingRoute.page !== 'home' && ROUTES[__pendingRoute.page]) {
-    const target = __pendingRoute.page;
-    __pendingRoute = null;
-    nav.go(target, { replace: true });
-  } else if (__pendingRoute && __pendingRoute.type === 'detail') {
-    const { section, id } = __pendingRoute;
-    __pendingRoute = null;
-    openDetailFromRoute(section, id, { replace: true });
+  // /excursions/dolphin-house); otherwise make sure the URL matches "home".
+  if (pending && pending.type === 'page' && pending.page !== 'home' && ROUTES[pending.page]) {
+    nav.go(pending.page, { replace: true });
+    reveal();
+  } else if (pending && pending.type === 'detail') {
+    openDetailFromRoute(pending.section, pending.id, { replace: true }).finally(reveal);
   } else {
-    __pendingRoute = null;
     history.replaceState({ page: 'home' }, '', pathForPage('home'));
+    reveal();
   }
 }
 
