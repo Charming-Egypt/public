@@ -1,0 +1,188 @@
+[
+  {
+    "id": "r1",
+    "category": "restaurant",
+    "name": { "en": "Rangoli Indian Restaurant", "ar": "مطعم رانجولي الهندي", "ru": "Индийский ресторан Rangoli", "de": "Rangoli Indisches Restaurant", "it": "Ristorante Indiano Rangoli", "tr": "Rangoli Hint Restoranı" },
+    "cuisine": { "en": "Indian", "ar": "هندي", "ru": "Индийская", "de": "Indisch", "it": "Indiana", "tr": "Hint" },
+    "priceLevel": 3,
+    "rating": 4.7, "reviews": 412,
+    "image": "https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=800&q=80",
+    "images": ["https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=1000&q=85", "https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=1000&q=85"],
+    "description": {
+      "en": "Warm, spice-forward Indian cooking a short walk from Naama Bay.",
+      "ar": "مطبخ هندي دافئ وغني بالتوابل على بعد خطوات من خليج نعمة.",
+      "ru": "Тёплая, насыщенная специями индийская кухня в двух шагах от Наама Бэй.",
+      "de": "Warme, gewürzreiche indische Küche, nur einen kurzen Spaziergang von Naama Bay entfernt.",
+      "it": "Cucina indiana calda e speziata a pochi passi da Naama Bay.",
+      "tr": "Naama Bay'e kısa bir yürüyüş mesafesinde, sıcak ve baharatlı Hint mutfağı."
+    },
+    "fullDescription": {
+      "en": "A long-standing favorite among residents and returning visitors, Rangoli serves North Indian classics — tandoori grills, slow-cooked curries and fresh naan — in a warmly lit dining room just off the Naama Bay strip. The kitchen can adjust spice levels on request, and the mixed tandoori platter is the table's usual centerpiece.",
+      "ar": "من الأماكن المفضلة منذ سنوات لدى المقيمين والزوار المتكررين، يقدم رانجولي أطباقًا هندية شمالية كلاسيكية — مشاوي التندوري وكاري مطهو ببطء وخبز نان طازج — في صالة طعام دافئة الإضاءة على بُعد خطوات من شريط خليج نعمة.",
+      "ru": "Давний фаворит среди местных жителей и постоянных гостей, Rangoli подаёт классику Северной Индии — тандури-гриль, медленно тушёные карри и свежий наан — в уютном зале рядом с Наама Бэй.",
+      "de": "Ein langjähriger Favorit bei Einheimischen und Stammgästen, serviert Rangoli nordindische Klassiker — Tandoori-Grills, langsam gekochte Currys und frisches Naan — in einem warm beleuchteten Speisesaal nahe Naama Bay.",
+      "it": "Preferito da tempo tra residenti e visitatori abituali, Rangoli serve classici del Nord dell'India — grigliate tandoori, curry cotti lentamente e naan fresco — in una sala calda e accogliente vicino a Naama Bay.",
+      "tr": "Yerleşikler ve tekrar gelen ziyaretçiler arasında uzun süredir favori olan Rangoli, Naama Bay şeridine yakın, sıcak ışıklı bir salonda Kuzey Hint klasiklerini — tandır ızgaraları, ağır ateşte pişmiş köriler ve taze naan — sunuyor."
+    },
+    "location": { "en": "Naama Bay, Sharm El Sheikh", "ar": "خليج نعمة، شرم الشيخ", "ru": "Наама Бэй, Шарм-эль-Шейх", "de": "Naama Bay, Sharm El Sheikh", "it": "Naama Bay, Sharm El Sheikh", "tr": "Naama Bay, Sharm El Sheikh" },
+    "openHours": { "en": "1:00 PM – 12:00 AM daily", "ar": "١:٠٠ ظهرًا – ١٢:٠٠ منتصف الليل يوميًا", "ru": "13:00–00:00 ежедневно", "de": "13:00–00:00 Uhr täglich", "it": "13:00–00:00 tutti i giorni", "tr": "Her gün 13:00–00:00" },
+    "menu": [
+      {
+        "category": { "en": "Starters", "ar": "المقبلات", "ru": "Закуски", "de": "Vorspeisen", "it": "Antipasti", "tr": "Başlangıçlar" },
+        "items": [
+          { "name": { "en": "Vegetable Samosas", "ar": "سمبوسة خضار", "ru": "Овощные самосы", "de": "Gemüse-Samosas", "it": "Samosa vegetariani", "tr": "Sebzeli Samosa" }, "description": { "en": "Crisp pastry filled with spiced potatoes and peas.", "ar": "عجينة مقرمشة محشوة بالبطاطس والبازلاء المتبلة.", "ru": "Хрустящее тесто с пряным картофелем и горошком.", "de": "Knuspriger Teig gefüllt mit gewürzten Kartoffeln und Erbsen.", "it": "Pasta croccante ripiena di patate speziate e piselli.", "tr": "Baharatlı patates ve bezelye ile doldurulmuş çıtır hamur." }, "price": 180 },
+          { "name": { "en": "Chicken Tikka", "ar": "دجاج تكة", "ru": "Чикен тикка", "de": "Chicken Tikka", "it": "Chicken Tikka", "tr": "Tavuk Tikka" }, "description": { "en": "Yogurt-marinated chicken grilled in the tandoor.", "ar": "دجاج متبل باللبن ومشوي في فرن التندور.", "ru": "Курица, маринованная в йогурте, приготовленная в тандыре.", "de": "In Joghurt mariniertes Hähnchen aus dem Tandoor.", "it": "Pollo marinato allo yogurt e grigliato nel tandoor.", "tr": "Yoğurtla marine edilip tandırda pişirilmiş tavuk." }, "price": 320 }
+        ]
+      },
+      {
+        "category": { "en": "Mains", "ar": "الأطباق الرئيسية", "ru": "Основные блюда", "de": "Hauptgerichte", "it": "Piatti principali", "tr": "Ana Yemekler" },
+        "items": [
+          { "name": { "en": "Butter Chicken", "ar": "دجاج بالزبدة", "ru": "Баттер чикен", "de": "Butter Chicken", "it": "Butter Chicken", "tr": "Tereyağlı Tavuk" }, "description": { "en": "Tandoori chicken in a creamy tomato-butter sauce.", "ar": "دجاج تندوري في صلصة طماطم وزبدة كريمية.", "ru": "Курица тандури в сливочном томатно-масляном соусе.", "de": "Tandoori-Hähnchen in cremiger Tomaten-Butter-Sauce.", "it": "Pollo tandoori in salsa cremosa di pomodoro e burro.", "tr": "Kremalı domates-tereyağ sosunda tandır tavuğu." }, "price": 420 },
+          { "name": { "en": "Lamb Rogan Josh", "ar": "لحم ضأن روغان جوش", "ru": "Ягнёнок роган джош", "de": "Lamm Rogan Josh", "it": "Agnello Rogan Josh", "tr": "Kuzu Rogan Josh" }, "description": { "en": "Slow-braised lamb in a Kashmiri red chili gravy.", "ar": "لحم ضأن مطهو ببطء في مرق الفلفل الأحمر الكشميري.", "ru": "Тушёная ягнятина в кашмирском соусе из красного перца.", "de": "Langsam geschmortes Lamm in Kaschmiri-Rotchili-Sauce.", "it": "Agnello brasato lentamente in salsa di peperoncino rosso del Kashmir.", "tr": "Keşmir kırmızı biber sosunda ağır ateşte pişmiş kuzu." }, "price": 480 },
+          { "name": { "en": "Vegetable Biryani", "ar": "برياني خضار", "ru": "Овощной бирьяни", "de": "Gemüse-Biryani", "it": "Biryani di verdure", "tr": "Sebzeli Biryani" }, "description": { "en": "Basmati rice layered with spiced vegetables and saffron.", "ar": "أرز بسمتي بطبقات من الخضار المتبلة والزعفران.", "ru": "Рис басмати со слоями пряных овощей и шафраном.", "de": "Basmatireis geschichtet mit gewürztem Gemüse und Safran.", "it": "Riso basmati a strati con verdure speziate e zafferano.", "tr": "Baharatlı sebzeler ve safranla katmanlanmış basmati pirinci." }, "price": 300 }
+        ]
+      },
+      {
+        "category": { "en": "Desserts", "ar": "الحلويات", "ru": "Десерты", "de": "Desserts", "it": "Dolci", "tr": "Tatlılar" },
+        "items": [
+          { "name": { "en": "Gulab Jamun", "ar": "جولاب جامون", "ru": "Гулаб джамун", "de": "Gulab Jamun", "it": "Gulab Jamun", "tr": "Gulab Jamun" }, "description": { "en": "Warm milk dumplings soaked in rose-cardamom syrup.", "ar": "كرات حليب دافئة منقوعة في شراب الورد والهيل.", "ru": "Тёплые молочные шарики в розово-кардамоновом сиропе.", "de": "Warme Milchbällchen in Rosen-Kardamom-Sirup.", "it": "Palline di latte calde immerse in sciroppo di rosa e cardamomo.", "tr": "Gül-kakule şurubunda ıslatılmış ılık süt topları." }, "price": 140 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "r2",
+    "category": "restaurant",
+    "name": { "en": "Il Mercato Italian Kitchen", "ar": "إيل ميركاتو للمطبخ الإيطالي", "ru": "Il Mercato — итальянская кухня", "de": "Il Mercato Italienische Küche", "it": "Il Mercato Cucina Italiana", "tr": "Il Mercato İtalyan Mutfağı" },
+    "cuisine": { "en": "Italian", "ar": "إيطالي", "ru": "Итальянская", "de": "Italienisch", "it": "Italiana", "tr": "İtalyan" },
+    "priceLevel": 3,
+    "rating": 4.6, "reviews": 298,
+    "image": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80",
+    "images": ["https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1000&q=85", "https://images.unsplash.com/photo-1546549032-9571cd6b27df?auto=format&fit=crop&w=1000&q=85"],
+    "description": {
+      "en": "Wood-fired pizza and handmade pasta on a candlelit terrace.",
+      "ar": "بيتزا مخبوزة على الحطب ومعكرونة يدوية على تراس مضاء بالشموع.",
+      "ru": "Пицца на дровах и домашняя паста на террасе при свечах.",
+      "de": "Holzofenpizza und hausgemachte Pasta auf einer kerzenbeleuchteten Terrasse.",
+      "it": "Pizza al forno a legna e pasta fatta a mano su una terrazza illuminata da candele.",
+      "tr": "Mumla aydınlatılmış bir terasta odun ateşinde pişmiş pizza ve el yapımı makarna."
+    },
+    "fullDescription": {
+      "en": "Il Mercato brings a slice of Naples to the Red Sea coast — a proper wood-fired oven, pasta rolled fresh each morning, and an open terrace strung with lights that fills up fast after sunset. The wine list leans Italian, and the tiramisu is made in-house daily.",
+      "ar": "يجلب إيل ميركاتو لمسة من نابولي إلى ساحل البحر الأحمر — فرن حطب حقيقي ومعكرونة تُعد طازجة كل صباح وتراس مفتوح مزين بالأضواء يمتلئ بسرعة بعد الغروب. قائمة النبيذ إيطالية الطابع، والتيراميسو يُحضّر يوميًا في المطعم.",
+      "ru": "Il Mercato привносит частичку Неаполя на побережье Красного моря — настоящая дровяная печь, паста, раскатанная свежей каждое утро, и открытая терраса с гирляндами огней.",
+      "de": "Il Mercato bringt ein Stück Neapel an die Küste des Roten Meeres — ein echter Holzofen, jeden Morgen frisch gerollte Pasta und eine offene, lichterbeleuchtete Terrasse.",
+      "it": "Il Mercato porta un pezzo di Napoli sulla costa del Mar Rosso — un vero forno a legna, pasta fatta fresca ogni mattina e una terrazza aperta illuminata da luci che si riempie rapidamente dopo il tramonto.",
+      "tr": "Il Mercato, Kızıldeniz kıyısına Napoli'den bir parça getiriyor — gerçek bir odun ateşli fırın, her sabah taze açılan makarna ve gün batımından sonra hızla dolan ışıklı açık teras."
+    },
+    "location": { "en": "Il Mercato Old Market, Sharm El Sheikh", "ar": "منطقة السوق القديم، شرم الشيخ", "ru": "Старый рынок, Шарм-эль-Шейх", "de": "Altstadt-Markt, Sharm El Sheikh", "it": "Vecchio Mercato, Sharm El Sheikh", "tr": "Eski Çarşı, Sharm El Sheikh" },
+    "openHours": { "en": "5:00 PM – 1:00 AM daily", "ar": "٥:٠٠ مساءً – ١:٠٠ فجرًا يوميًا", "ru": "17:00–01:00 ежедневно", "de": "17:00–01:00 Uhr täglich", "it": "17:00–01:00 tutti i giorni", "tr": "Her gün 17:00–01:00" },
+    "menu": [
+      {
+        "category": { "en": "Pizza", "ar": "بيتزا", "ru": "Пицца", "de": "Pizza", "it": "Pizza", "tr": "Pizza" },
+        "items": [
+          { "name": { "en": "Margherita", "ar": "مارجريتا", "ru": "Маргарита", "de": "Margherita", "it": "Margherita", "tr": "Margherita" }, "description": { "en": "San Marzano tomato, fior di latte, fresh basil.", "ar": "طماطم سان مارزانو وجبن فيور دي لاتيه وريحان طازج.", "ru": "Томаты Сан-Марцано, моцарелла фьор ди латте, свежий базилик.", "de": "San-Marzano-Tomate, Fior di Latte, frisches Basilikum.", "it": "Pomodoro San Marzano, fior di latte, basilico fresco.", "tr": "San Marzano domates, fior di latte peyniri, taze fesleğen." }, "price": 280 },
+          { "name": { "en": "Quattro Formaggi", "ar": "كواترو فورماجي", "ru": "Кватро формаджи", "de": "Quattro Formaggi", "it": "Quattro Formaggi", "tr": "Quattro Formaggi" }, "description": { "en": "A blend of four Italian cheeses.", "ar": "مزيج من أربعة أنواع من الجبن الإيطالي.", "ru": "Смесь четырёх итальянских сыров.", "de": "Eine Mischung aus vier italienischen Käsesorten.", "it": "Un mix di quattro formaggi italiani.", "tr": "Dört İtalyan peynirinin karışımı." }, "price": 340 }
+        ]
+      },
+      {
+        "category": { "en": "Pasta", "ar": "المعكرونة", "ru": "Паста", "de": "Pasta", "it": "Pasta", "tr": "Makarna" },
+        "items": [
+          { "name": { "en": "Spaghetti alla Carbonara", "ar": "سباجيتي كاربونارا", "ru": "Спагетти карбонара", "de": "Spaghetti Carbonara", "it": "Spaghetti alla Carbonara", "tr": "Spagetti Carbonara" }, "description": { "en": "Guanciale, egg yolk, pecorino, black pepper.", "ar": "لحم خنزير مقدد، صفار بيض، جبن بيكورينو، فلفل أسود.", "ru": "Гуанчале, желток яйца, пекорино, чёрный перец.", "de": "Guanciale, Eigelb, Pecorino, schwarzer Pfeffer.", "it": "Guanciale, tuorlo d'uovo, pecorino, pepe nero.", "tr": "Guanciale, yumurta sarısı, pecorino peyniri, karabiber." }, "price": 360 }
+        ]
+      },
+      {
+        "category": { "en": "Desserts", "ar": "الحلويات", "ru": "Десерты", "de": "Desserts", "it": "Dolci", "tr": "Tatlılar" },
+        "items": [
+          { "name": { "en": "Tiramisu", "ar": "تيراميسو", "ru": "Тирамису", "de": "Tiramisu", "it": "Tiramisù", "tr": "Tiramisu" }, "description": { "en": "Made fresh in-house daily with espresso-soaked ladyfingers.", "ar": "يُحضّر طازجًا يوميًا ببسكويت الليدي فينجر المنقوع بالإسبريسو.", "ru": "Готовится свежим ежедневно с бисквитом, пропитанным эспрессо.", "de": "Täglich frisch zubereitet mit espressogetränkten Löffelbiskuits.", "it": "Preparato fresco ogni giorno con savoiardi imbevuti di espresso.", "tr": "Her gün taze hazırlanan, espresoya batırılmış kedi dili bisküvileriyle." }, "price": 160 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "r3",
+    "category": "cafe",
+    "name": { "en": "Sahara Sunset Cafe", "ar": "مقهى صحارى صانسيت", "ru": "Кафе Sahara Sunset", "de": "Sahara Sunset Café", "it": "Sahara Sunset Café", "tr": "Sahara Sunset Kafe" },
+    "cuisine": { "en": "Cafe & Shisha", "ar": "مقهى وشيشة", "ru": "Кафе и кальян", "de": "Café & Shisha", "it": "Caffè e Narghilè", "tr": "Kafe ve Nargile" },
+    "priceLevel": 2,
+    "rating": 4.5, "reviews": 356,
+    "image": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80",
+    "images": ["https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1000&q=85", "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1000&q=85"],
+    "description": {
+      "en": "Beach-level seating for sunset views, fresh juices and shisha.",
+      "ar": "جلسات على مستوى الشاطئ لمشاهدة الغروب مع عصائر طازجة وشيشة.",
+      "ru": "Места на уровне пляжа для видов на закат, свежие соки и кальян.",
+      "de": "Sitzplätze auf Strandniveau für Sonnenuntergangsblicke, frische Säfte und Shisha.",
+      "it": "Posti a livello spiaggia per la vista del tramonto, succhi freschi e narghilè.",
+      "tr": "Gün batımı manzarası için sahil seviyesinde oturma, taze meyve suları ve nargile."
+    },
+    "fullDescription": {
+      "en": "A low-key beachfront cafe with cushioned floor seating and a front-row view of the sunset over the Red Sea. Menu keeps it simple — fresh juices, Egyptian karkade tea, coffee and a wide shisha flavor list — making it a favorite wind-down spot after a day of diving or touring.",
+      "ar": "مقهى هادئ على الشاطئ بجلسات أرضية مريحة وإطلالة مباشرة على غروب الشمس فوق البحر الأحمر. القائمة بسيطة — عصائر طازجة وكركديه مصري وقهوة وقائمة واسعة من نكهات الشيشة — ما يجعله مكانًا مفضلًا للاسترخاء بعد يوم من الغوص أو الجولات.",
+      "ru": "Спокойное кафе на пляже с подушками на полу и видом на закат над Красным морем. Меню простое — свежие соки, египетский чай каркаде, кофе и большой выбор кальянов.",
+      "de": "Ein unaufgeregtes Strandcafé mit gepolsterten Bodensitzen und einem Blick in der ersten Reihe auf den Sonnenuntergang über dem Roten Meer.",
+      "it": "Un caffè sulla spiaggia rilassato con posti a sedere imbottiti sul pavimento e una vista in prima fila sul tramonto sul Mar Rosso.",
+      "tr": "Yastıklı yer oturağı ve Kızıldeniz üzerinde gün batımına ön sıra manzarası sunan sakin bir sahil kafesi."
+    },
+    "location": { "en": "Ras Um Sid, Sharm El Sheikh", "ar": "رأس أم سيد، شرم الشيخ", "ru": "Рас-Ум-Сид, Шарм-эль-Шейх", "de": "Ras Um Sid, Sharm El Sheikh", "it": "Ras Um Sid, Sharm El Sheikh", "tr": "Ras Um Sid, Sharm El Sheikh" },
+    "openHours": { "en": "10:00 AM – 2:00 AM daily", "ar": "١٠:٠٠ صباحًا – ٢:٠٠ فجرًا يوميًا", "ru": "10:00–02:00 ежедневно", "de": "10:00–02:00 Uhr täglich", "it": "10:00–02:00 tutti i giorni", "tr": "Her gün 10:00–02:00" },
+    "menu": [
+      {
+        "category": { "en": "Drinks", "ar": "المشروبات", "ru": "Напитки", "de": "Getränke", "it": "Bevande", "tr": "İçecekler" },
+        "items": [
+          { "name": { "en": "Fresh Mango Juice", "ar": "عصير مانجو طازج", "ru": "Свежий манговый сок", "de": "Frischer Mangosaft", "it": "Succo di mango fresco", "tr": "Taze Mango Suyu" }, "description": { "en": "Blended fresh to order.", "ar": "يُحضّر طازجًا عند الطلب.", "ru": "Свежевыжатый по заказу.", "de": "Frisch auf Bestellung gemixt.", "it": "Frullato fresco su ordinazione.", "tr": "Sipariş üzerine taze karıştırılır." }, "price": 90 },
+          { "name": { "en": "Karkade (Hibiscus Tea)", "ar": "كركديه", "ru": "Каркаде (чай из гибискуса)", "de": "Karkade (Hibiskustee)", "it": "Karkadè (tè all'ibisco)", "tr": "Karkade (Hibiskus Çayı)" }, "description": { "en": "Served hot or iced.", "ar": "يُقدّم ساخنًا أو مثلجًا.", "ru": "Подаётся горячим или со льдом.", "de": "Heiß oder gekühlt serviert.", "it": "Servito caldo o freddo.", "tr": "Sıcak veya buzlu servis edilir." }, "price": 60 }
+        ]
+      },
+      {
+        "category": { "en": "Shisha", "ar": "الشيشة", "ru": "Кальян", "de": "Shisha", "it": "Narghilè", "tr": "Nargile" },
+        "items": [
+          { "name": { "en": "Double Apple Shisha", "ar": "شيشة تفاحتين", "ru": "Кальян «Двойное яблоко»", "de": "Shisha Doppelapfel", "it": "Narghilè doppia mela", "tr": "Çift Elma Nargile" }, "description": { "en": "The classic Egyptian shisha flavor.", "ar": "نكهة الشيشة المصرية الكلاسيكية.", "ru": "Классический египетский вкус кальяна.", "de": "Der klassische ägyptische Shisha-Geschmack.", "it": "Il classico gusto narghilè egiziano.", "tr": "Klasik Mısır nargile aroması." }, "price": 150 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "r4",
+    "category": "restaurant",
+    "name": { "en": "Blue Reef Seafood Grill", "ar": "بلو ريف لمشاوي المأكولات البحرية", "ru": "Гриль-бар морепродуктов Blue Reef", "de": "Blue Reef Seafood Grill", "it": "Blue Reef Seafood Grill", "tr": "Blue Reef Deniz Ürünleri Izgara" },
+    "cuisine": { "en": "Seafood", "ar": "مأكولات بحرية", "ru": "Морепродукты", "de": "Meeresfrüchte", "it": "Pesce", "tr": "Deniz Ürünleri" },
+    "priceLevel": 4,
+    "rating": 4.8, "reviews": 521,
+    "image": "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80",
+    "images": ["https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1000&q=85", "https://images.unsplash.com/photo-1559847844-5315695dadae?auto=format&fit=crop&w=1000&q=85"],
+    "description": {
+      "en": "Daily catch grilled to order at a pier-side table over the water.",
+      "ar": "صيد اليوم مشوي حسب الطلب على طاولة بجوار الرصيف فوق الماء.",
+      "ru": "Свежий улов дня, приготовленный на гриле по заказу за столиком у воды.",
+      "de": "Täglicher Fang, auf Bestellung gegrillt, an einem Tisch am Pier über dem Wasser.",
+      "it": "Pescato del giorno grigliato su ordinazione a un tavolo sul molo, sopra l'acqua.",
+      "tr": "Su üzerindeki iskele masasında siparişe göre ızgara edilen günün balığı."
+    },
+    "fullDescription": {
+      "en": "Pick your fish straight from the ice display and watch it grilled over charcoal at this pier restaurant built out over the reef. Blue Reef is the splurge choice for a special dinner — whole grilled sea bass, jumbo prawns and a raw bar of oysters, with tables lit by lanterns after dark.",
+      "ar": "اختر سمكك مباشرة من عرض الثلج وشاهده يُشوى على الفحم في هذا المطعم المبني فوق الشعاب المرجانية على الرصيف. بلو ريف هو الخيار المميز لعشاء خاص — سمك قاروص كامل مشوي وجمبري كبير وبار محار طازج، مع طاولات مضاءة بالفوانيس بعد حلول الظلام.",
+      "ru": "Выберите рыбу прямо со льда и посмотрите, как её готовят на углях в этом ресторане на пирсе, построенном над рифом. Blue Reef — вариант для особого ужина.",
+      "de": "Wählen Sie Ihren Fisch direkt von der Eistheke und sehen Sie zu, wie er über Holzkohle gegrillt wird, in diesem über dem Riff gebauten Pier-Restaurant.",
+      "it": "Scegli il tuo pesce direttamente dal banco del ghiaccio e guardalo grigliare sulla brace in questo ristorante sul molo costruito sopra la barriera corallina.",
+      "tr": "Balığınızı buz vitrininden seçin ve resifin üzerine inşa edilmiş bu iskele restoranında kömürde ızgara edilişini izleyin."
+    },
+    "location": { "en": "Ras Um Sid pier, Sharm El Sheikh", "ar": "رصيف رأس أم سيد، شرم الشيخ", "ru": "Пирс Рас-Ум-Сид, Шарм-эль-Шейх", "de": "Ras-Um-Sid-Pier, Sharm El Sheikh", "it": "Molo di Ras Um Sid, Sharm El Sheikh", "tr": "Ras Um Sid iskelesi, Sharm El Sheikh" },
+    "openHours": { "en": "6:00 PM – 12:00 AM daily", "ar": "٦:٠٠ مساءً – ١٢:٠٠ منتصف الليل يوميًا", "ru": "18:00–00:00 ежедневно", "de": "18:00–00:00 Uhr täglich", "it": "18:00–00:00 tutti i giorni", "tr": "Her gün 18:00–00:00" },
+    "menu": [
+      {
+        "category": { "en": "From the Grill", "ar": "من الشواية", "ru": "С гриля", "de": "Vom Grill", "it": "Dalla griglia", "tr": "Izgaradan" },
+        "items": [
+          { "name": { "en": "Whole Grilled Sea Bass", "ar": "قاروص كامل مشوي", "ru": "Морской окунь на гриле целиком", "de": "Gegrillter ganzer Wolfsbarsch", "it": "Branzino intero grigliato", "tr": "Bütün Izgara Levrek" }, "description": { "en": "Priced per kg, served with rice and salad.", "ar": "السعر بالكيلو، يُقدّم مع الأرز والسلطة.", "ru": "Цена за кг, подаётся с рисом и салатом.", "de": "Preis pro kg, serviert mit Reis und Salat.", "it": "Prezzo al kg, servito con riso e insalata.", "tr": "Kilogram başına fiyatlandırılır, pirinç ve salata ile servis edilir." }, "price": 950 },
+          { "name": { "en": "Jumbo Grilled Prawns", "ar": "جمبري جامبو مشوي", "ru": "Гигантские креветки на гриле", "de": "Gegrillte Riesengarnelen", "it": "Gamberoni grigliati", "tr": "Izgara Jumbo Karides" }, "description": { "en": "Six pieces, garlic butter on the side.", "ar": "٦ قطع مع زبدة بالثوم بجانبها.", "ru": "Шесть штук, чесночное масло отдельно.", "de": "Sechs Stück, Knoblauchbutter separat.", "it": "Sei pezzi, burro all'aglio a parte.", "tr": "Altı adet, yanında sarımsaklı tereyağı." }, "price": 620 }
+        ]
+      },
+      {
+        "category": { "en": "Raw Bar", "ar": "بار المحار", "ru": "Устрицы", "de": "Austernbar", "it": "Bar di crudi", "tr": "Çiğ Bar" },
+        "items": [
+          { "name": { "en": "Fresh Oysters (6 pcs)", "ar": "محار طازج (٦ قطع)", "ru": "Свежие устрицы (6 шт)", "de": "Frische Austern (6 Stk.)", "it": "Ostriche fresche (6 pz)", "tr": "Taze İstiridye (6 adet)" }, "description": { "en": "Served on ice with lemon.", "ar": "تُقدّم على الثلج مع الليمون.", "ru": "Подаются на льду с лимоном.", "de": "Serviert auf Eis mit Zitrone.", "it": "Servite su ghiaccio con limone.", "tr": "Buz üzerinde limonla servis edilir." }, "price": 540 }
+        ]
+      }
+    ]
+  }
+]

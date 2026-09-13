@@ -1,0 +1,110 @@
+[
+  {
+    "id": "rv1", "name": "Elena K.", "rating": 5, "section": "hotel",
+    "itemName": { "en": "Discover Grand Hotel", "ar": "فندق ديسكفر جراند", "ru": "Discover Grand Hotel", "de": "Discover Grand Hotel", "it": "Discover Grand Hotel", "tr": "Discover Grand Hotel" },
+    "text": {
+      "en": "The sea view room was even better than the photos. Booking through the app was quick and check-in was seamless.",
+      "ar": "الغرفة المطلة على البحر كانت أجمل من الصور. الحجز عبر التطبيق كان سريعًا والدخول سلس.",
+      "ru": "Номер с видом на море оказался даже лучше, чем на фото. Бронирование через приложение было быстрым.",
+      "de": "Das Zimmer mit Meerblick war noch besser als auf den Fotos. Die Buchung über die App war schnell.",
+      "it": "La camera con vista mare era ancora migliore delle foto. La prenotazione tramite l'app è stata rapida.",
+      "tr": "Deniz manzaralı oda fotoğraflardan bile daha güzeldi. Uygulama üzerinden rezervasyon hızlıydı."
+    }
+  },
+  {
+    "id": "rv2", "name": "Marco B.", "rating": 5, "section": "excursion",
+    "itemName": { "en": "Ras Mohammed Snorkeling Trip", "ar": "رحلة سنوركل رأس محمد", "ru": "Снорклинг-тур в Рас-Мохаммед", "de": "Ras-Mohammed-Schnorcheltour", "it": "Escursione Snorkeling a Ras Mohammed", "tr": "Ras Muhammed Şnorkel Turu" },
+    "text": {
+      "en": "Best snorkeling I've done anywhere. The guide was patient with beginners and the lunch was a nice touch.",
+      "ar": "أفضل سنوركل جربته على الإطلاق. المرشد كان صبورًا مع المبتدئين والغداء كان لمسة جميلة.",
+      "ru": "Лучший снорклинг, который я когда-либо пробовал. Гид был терпелив с новичками.",
+      "de": "Das beste Schnorcheln, das ich je gemacht habe. Der Guide war geduldig mit Anfängern.",
+      "it": "Il miglior snorkeling che abbia mai fatto. La guida è stata paziente con i principianti.",
+      "tr": "Şimdiye kadar yaptığım en iyi şnorkel deneyimi. Rehber yeni başlayanlara karşı sabırlıydı."
+    }
+  },
+  {
+    "id": "rv3", "name": "Fatima A.", "rating": 4, "section": "transfer",
+    "itemName": { "en": "Tourist H1 Airport Transfer", "ar": "ترانسفير مطار H1 سياحي", "ru": "Туристический трансфер H1", "de": "Touristen-H1-Flughafentransfer", "it": "Transfer aeroportuale H1 turistico", "tr": "Turistik H1 Havalimanı Transferi" },
+    "text": {
+      "en": "Driver was waiting with a sign right at arrivals, car was clean and cool. Made a tired flight much easier.",
+      "ar": "السائق كان بانتظارنا بلافتة عند الوصول مباشرة، والسيارة كانت نظيفة ومكيّفة. سهّل الأمر كثيرًا بعد رحلة طويلة.",
+      "ru": "Водитель ждал с табличкой прямо у прилёта, машина была чистой и прохладной.",
+      "de": "Der Fahrer wartete mit einem Schild direkt bei der Ankunft, das Auto war sauber und kühl.",
+      "it": "L'autista aspettava con un cartello proprio all'arrivo, l'auto era pulita e fresca.",
+      "tr": "Şoför tam varışta bir tabelayla bekliyordu, araba temiz ve serindi."
+    }
+  },
+  {
+    "id": "rv4", "name": "Julia S.", "rating": 5, "section": "hotel",
+    "itemName": { "en": "Discover Deluxe Suites", "ar": "ديسكفر ديلوكس سويتس", "ru": "Discover Deluxe Suites", "de": "Discover Deluxe Suites", "it": "Discover Deluxe Suites", "tr": "Discover Deluxe Suites" },
+    "text": {
+      "en": "Loved the private balcony and how close it was to the beach path. Would book again without hesitation.",
+      "ar": "أحببت الشرفة الخاصة وقربها الشديد من ممر الشاطئ. سأحجز مرة أخرى دون تردد.",
+      "ru": "Понравился личный балкон и близость к пляжной дорожке. Забронирую снова без колебаний.",
+      "de": "Ich liebte den privaten Balkon und die Nähe zum Strandweg. Würde ohne Zögern wieder buchen.",
+      "it": "Ho adorato il balcone privato e la vicinanza al sentiero della spiaggia. Prenoterei di nuovo senza esitazione.",
+      "tr": "Özel balkonu ve sahil yoluna yakınlığını çok sevdim. Tereddütsüz tekrar rezervasyon yaparım."
+    }
+  },
+  {
+    "id": "rv5", "name": "Ahmed T.", "rating": 5, "section": "excursion",
+    "itemName": { "en": "White Desert Safari & BBQ Dinner", "ar": "رحلة سفاري الصحراء البيضاء وعشاء شواء", "ru": "Сафари в Белую пустыню и барбекю-ужин", "de": "Wüstensafari & BBQ-Dinner", "it": "Safari nel Deserto Bianco e cena BBQ", "tr": "Beyaz Çöl Safarisi ve Barbekü Yemeği" },
+    "text": {
+      "en": "Quad biking at sunset then dinner under the stars — one of the highlights of the whole trip.",
+      "ar": "قيادة الدراجات الرباعية عند الغروب ثم عشاء تحت النجوم — من أبرز لحظات الرحلة كلها.",
+      "ru": "Катание на квадроцикле на закате, а затем ужин под звёздами — один из главных моментов всей поездки.",
+      "de": "Quad-Biking bei Sonnenuntergang, dann Dinner unter den Sternen — einer der Höhepunkte der ganzen Reise.",
+      "it": "Quad al tramonto e poi cena sotto le stelle — uno dei momenti salienti dell'intero viaggio.",
+      "tr": "Gün batımında ATV sürüşü, ardından yıldızların altında akşam yemeği — tüm gezinin en güzel anlarından biriydi."
+    }
+  },
+  {
+    "id": "rv6", "name": "Nadia R.", "rating": 4, "section": "hotel",
+    "itemName": { "en": "Discover Budget Inn", "ar": "ديسكفر بدجيت إن", "ru": "Discover Budget Inn", "de": "Discover Budget Inn", "it": "Discover Budget Inn", "tr": "Discover Budget Inn" },
+    "text": {
+      "en": "Simple but spotless, and the price for the location near the Old Market is hard to beat.",
+      "ar": "بسيط لكن نظيف تمامًا، والسعر مقابل الموقع القريب من السوق القديم لا يُقارَن.",
+      "ru": "Просто, но безупречно чисто, а цена за расположение рядом со Старым рынком отличная.",
+      "de": "Einfach, aber makellos sauber, und der Preis für die Lage nahe dem Alten Markt ist unschlagbar.",
+      "it": "Semplice ma impeccabile, e il prezzo per la posizione vicino al Vecchio Mercato è imbattibile.",
+      "tr": "Basit ama kusursuz temiz, Eski Çarşı'ya yakın konum için fiyatı geçilmez."
+    }
+  },
+  {
+    "id": "rv7", "name": "Klaus M.", "rating": 5, "section": "excursion",
+    "itemName": { "en": "Tiran Island Boat Trip", "ar": "رحلة بحرية إلى جزيرة تيران", "ru": "Морская прогулка на остров Тиран", "de": "Bootsausflug zur Insel Tiran", "it": "Gita in barca all'isola di Tiran", "tr": "Tiran Adası Tekne Turu" },
+    "text": {
+      "en": "Crystal clear water, friendly crew, fresh fish for lunch. Exactly what we hoped for.",
+      "ar": "مياه صافية كالكريستال وطاقم ودود وسمك طازج للغداء. بالضبط ما كنا نأمله.",
+      "ru": "Кристально чистая вода, дружелюбная команда, свежая рыба на обед. Именно то, на что мы надеялись.",
+      "de": "Kristallklares Wasser, freundliche Crew, frischer Fisch zum Mittagessen. Genau das, was wir uns erhofft hatten.",
+      "it": "Acqua cristallina, equipaggio cordiale, pesce fresco a pranzo. Esattamente ciò che speravamo.",
+      "tr": "Billur gibi berrak su, dost canlısı mürettebat, öğle yemeğinde taze balık. Tam umduğumuz gibi."
+    }
+  },
+  {
+    "id": "rv8", "name": "Sara H.", "rating": 5, "section": "hotel",
+    "itemName": { "en": "Discover Business Hotel", "ar": "فندق ديسكفر بزنس", "ru": "Discover Business Hotel", "de": "Discover Business Hotel", "it": "Discover Business Hotel", "tr": "Discover Business Hotel" },
+    "text": {
+      "en": "Fast WiFi and a quiet room made it easy to work between meetings. Front desk was very responsive.",
+      "ar": "واي فاي سريع وغرفة هادئة سهّلا العمل بين الاجتماعات. الاستقبال كان متجاوبًا جدًا.",
+      "ru": "Быстрый Wi-Fi и тихий номер облегчили работу между встречами. Стойка регистрации была очень отзывчивой.",
+      "de": "Schnelles WLAN und ein ruhiges Zimmer machten die Arbeit zwischen Meetings einfach.",
+      "it": "WiFi veloce e una camera silenziosa hanno reso facile lavorare tra le riunioni.",
+      "tr": "Hızlı WiFi ve sessiz bir oda, toplantılar arasında çalışmayı kolaylaştırdı."
+    }
+  },
+  {
+    "id": "rv9", "name": "Dimitri V.", "rating": 4, "section": "transfer",
+    "itemName": { "en": "Tourist H1 Airport Transfer", "ar": "ترانسفير مطار H1 سياحي", "ru": "Туристический трансфер H1", "de": "Touristen-H1-Flughafentransfer", "it": "Transfer aeroportuale H1 turistico", "tr": "Turistik H1 Havalimanı Transferi" },
+    "text": {
+      "en": "Smooth booking, on-time pickup for our early flight home. No surprises, exactly as described.",
+      "ar": "حجز سلس واستلام في الموعد لرحلتنا الصباحية المبكرة. لا مفاجآت، تمامًا كما هو موصوف.",
+      "ru": "Лёгкое бронирование, своевременная встреча для нашего раннего рейса домой.",
+      "de": "Reibungslose Buchung, pünktliche Abholung für unseren frühen Heimflug.",
+      "it": "Prenotazione semplice, ritiro puntuale per il nostro volo mattutino di ritorno.",
+      "tr": "Sorunsuz rezervasyon, eve dönüş uçuşumuz için zamanında alış."
+    }
+  }
+]
