@@ -1,6 +1,6 @@
 // ==================== FRONTEND UI & NAVIGATION ====================
 window.DS_CONFIG = window.DS_CONFIG || {
-  SHOW_HOTELS: true,
+  SHOW_HOTELS: false,
   SHOW_EXCURSIONS: true,
   SHOW_TRANSFERS: true,
   SHOW_RESTAURANTS: true,
@@ -161,7 +161,6 @@ function enterApp() {
   document.getElementById('authPage').classList.add('hidden');
   __catalogLoadPromise = loadCatalogFromWorker();
   ui.setDefaultDates();
-  search.init();
 
   if (currentUser) {
     updateDrawerUser(currentUser.displayName || currentUser.email, currentUser.email, currentUser.photoURL);
@@ -180,9 +179,6 @@ function enterApp() {
     bookings.render();
     notifications.render();
   }
-
-  applyDesktopLayout();
-  applyCategoryVisibility();
 
   // Reveals the app shell only once we know which screen to show, so a
   // direct link to a trip/hotel/etc. never flashes the home page first —
@@ -518,14 +514,14 @@ const search = {
   updateHeroContent(tab) {
     const heroData = {
       hotels: {
-        eyebrow: '',
-        title: '',
-        subtitle: ''
+        eyebrow: 'LUXURY STAYS IN SHARM EL-SHEIKH',
+        title: 'Find Your <br /><span class="italic text-gold-400">Perfect Stay</span>',
+        subtitle: 'Handpicked resorts and hotels along the Red Sea coast'
       },
       excursions: {
-        eyebrow: '',
-        title: '',
-        subtitle: ''
+        eyebrow: 'UNFORGETTABLE ADVENTURES',
+        title: 'Discover Your <br /><span class="italic text-gold-400">Next Adventure</span>',
+        subtitle: 'Diving, desert safaris, boat trips and more'
       }
     };
     const data = heroData[tab] || heroData.hotels;
@@ -1207,7 +1203,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch {}
   }
 
-  search.switchTab(SHOW_HOTELS ? 'hotels' : 'excursions');
   search.init();
 
   applyDesktopLayout();
