@@ -552,7 +552,6 @@ const search = {
         'all': 'All Categories',
         'Diving': 'Diving & Snorkeling',
         'Desert Safari': 'Desert Safari',
-        'Boat Trip': 'Boat Trip',
         'City Tour': 'City Tour'
       };
       displayEl.textContent = labels[category] || category;
