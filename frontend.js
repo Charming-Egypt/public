@@ -779,24 +779,24 @@ const ui = {
     const img = getImageUrl(h.image);
     const isFav = state.favorites.includes(h.id);
     return `
-      <div onclick="showHotelPage('${h.id}')" class="hotel-card rounded-[20px] overflow-hidden cursor-pointer flex flex-col lg:flex-col">
-        <div class="relative w-full h-48 md:h-56 lg:h-64 flex-shrink-0 overflow-hidden">
-          <img src="${img}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+      <div onclick="showHotelPage('${h.id}')" class="hotel-card cursor-pointer">
+        <div class="hotel-card-img-wrap">
+          <img src="${img}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="hotel-card-img hover:scale-105 transition-transform duration-500">
           ${h.bestseller ? '<div class="absolute top-2 right-2 badge-bestseller text-[8px] font-black px-2 py-0.5 rounded-md">BEST SELLER</div>' : ''}
           <div class="absolute bottom-2 right-2 rating-pill px-1.5 py-0.5 rounded-md flex items-center gap-1"><i class="fa-solid fa-star text-gold-400 text-[8px]"></i><span class="text-[9px] font-bold text-gold-400">${h.rating}</span></div>
         </div>
-        <div class="flex-1 p-4 lg:p-6 flex flex-col justify-between">
+        <div class="hotel-card-body">
           <div>
             <div class="flex items-start justify-between mb-1">
               <h3 class="font-display font-bold text-sm md:text-base line-clamp-1">${h.name}</h3>
-              <button onclick="event.stopPropagation(); favorites.toggle('${h.id}')" class="text-base ${isFav ? 'text-red-500' : 'text-gray-300'}"><i class="fa-${isFav ? 'solid' : 'regular'} fa-heart"></i></button>
+              <button onclick="event.stopPropagation(); favorites.toggle('${h.id}')" class="text-base flex-shrink-0 ${isFav ? 'text-red-500' : 'text-gray-300'}"><i class="fa-${isFav ? 'solid' : 'regular'} fa-heart"></i></button>
             </div>
             <div class="flex items-center gap-1 mb-1">${utils.renderStars(h.rating)}<span class="text-[9px] mr-1">(${h.reviews})</span></div>
             <p class="text-[10px] mb-1.5"><i class="fa-solid fa-location-dot text-violet-500 text-[8px]"></i>${(h.location || '').split(',')[0]}</p>
           </div>
           <div class="flex items-center justify-between">
-            <div class="flex items-center gap-1 text-[8px]">${(h.amenities || []).slice(0, 2).map(a => `<span class="px-1.5 py-0.5 rounded" style="background:var(--bg-field)">${a}</span>`).join('')}</div>
-            <div class="text-left"><p class="text-base md:text-lg font-bold text-violet-500 font-display">${utils.formatPrice(h.price)}</p><p class="text-[8px]">/ Night</p></div>
+            <div class="hotel-card-amenities">${(h.amenities || []).slice(0, 2).map(a => `<span class="px-1.5 py-0.5 rounded" style="background:var(--bg-field)">${a}</span>`).join('')}</div>
+            <div class="text-left flex-shrink-0"><p class="text-base md:text-lg font-bold text-violet-500 font-display">${utils.formatPrice(h.price)}</p><p class="text-[8px]">/ Night</p></div>
           </div>
         </div>
       </div>`;
@@ -805,7 +805,7 @@ const ui = {
     if (!SHOW_HOTELS) return;
     const el = document.getElementById('featuredHotels');
     if (el) {
-      el.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
+      el.className = 'space-y-3 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-6';
       el.innerHTML = CATALOG.hotels.slice(0, 3).map(h => this.renderHotelCard(h)).join('');
     }
   },
@@ -838,7 +838,7 @@ const hotels = {
     let filtered = CATALOG.hotels;
     if (state.currentFilter !== 'all') filtered = filtered.filter(h => h.category === state.currentFilter);
     if (state.searchQuery) filtered = filtered.filter(h => h.name.toLowerCase().includes(state.searchQuery));
-    list.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-28';
+    list.className = 'space-y-3 lg:space-y-0 lg:grid lg:grid-cols-2 xl:grid-cols-3 lg:gap-6 pb-28';
     if (filtered.length === 0) {
       list.innerHTML = `<div class="text-center py-16">No hotels found</div>`;
       return;
@@ -1114,13 +1114,17 @@ const articlesUi = {
   render() {
     const row = document.getElementById('articlesRow');
     if (!row) return;
+    // Mobile: compact horizontal list card. Desktop: switches to a proper
+    // magazine-style grid (image on top, larger) via the CSS media query
+    // on .article-card, with the row itself becoming a real grid at lg.
+    row.className = 'space-y-4 lg:space-y-0 lg:grid lg:grid-cols-2 xl:grid-cols-3 lg:gap-6';
     row.innerHTML = CATALOG.articles.map(a => `
-      <div onclick="showArticlePage('${a.id}')" class="article-card cursor-pointer flex gap-4 p-4 rounded-2xl bg-card shadow-sm hover:shadow-lg transition-all duration-300">
-        <img src="${a.image}" class="w-28 h-28 object-cover rounded-xl flex-shrink-0" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
-        <div class="flex-1 min-w-0">
-          <p class="font-display font-bold text-base mb-1 leading-snug line-clamp-2">${a.title}</p>
-          <p class="text-xs text-gray-500 mb-2 line-clamp-2">${a.excerpt}</p>
-          <p class="text-[10px] text-gray-400"><i class="fa-regular fa-clock"></i> ${a.readTimeMinutes} min read</p>
+      <div onclick="showArticlePage('${a.id}')" class="article-card cursor-pointer">
+        <img src="${a.image}" class="article-card-img" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
+        <div class="article-card-body">
+          <p class="font-display font-bold text-base mb-1 leading-snug line-clamp-2" style="color:var(--text-primary)">${a.title}</p>
+          <p class="text-xs mb-2 line-clamp-2" style="color:var(--text-secondary)">${a.excerpt}</p>
+          <p class="text-[10px]" style="color:var(--text-secondary)"><i class="fa-regular fa-clock"></i> ${a.readTimeMinutes} min read</p>
         </div>
       </div>`).join('');
   }
