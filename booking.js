@@ -84,9 +84,17 @@ function showHotelPage(hotelId, opts = {}) {
   const page = document.createElement('div');
   page.id = 'hotelDetailPage';
   page.className = 'page';
+  const startPrice = (h.rooms && h.rooms[0] ? h.rooms[0].price : h.price);
+  const bookingCard = `
+    <div class="detail-price-row">
+      <div><p class="text-[9px] tracking-wider mb-0.5 font-semibold">SELECTED ROOM</p><p class="text-xl font-bold text-violet-500 font-display detail-sidebar-price">${utils.formatPrice(startPrice)}<span class="text-xs"> / Night</span></p></div>
+      <div class="detail-sidebar-rating"><i class="fa-solid fa-star text-gold-400"></i> ${Number(h.rating).toFixed(1)} <span>(${h.reviews})</span></div>
+    </div>
+    <button onclick="startBooking('${h.id}', 0)" class="btn-gold w-full py-3.5 rounded-2xl font-bold text-ink-900 detail-book-btn">Book Now</button>
+    <p class="detail-sidebar-note"><i class="fa-solid fa-location-dot"></i> ${h.location}</p>`;
   page.innerHTML = `
     <div class="min-h-screen pb-28" style="background:var(--bg-card)">
-      <div class="relative h-80">
+      <div class="relative h-80 detail-gallery">
         <div id="hotelGallery" class="gallery-track w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth" style="scrollbar-width:none" onscroll="onGalleryScroll(this)">
           ${(h.images || [h.image]).map(img => `<img src="${getImageUrl(img)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%">`).join('')}
         </div>
@@ -96,14 +104,15 @@ function showHotelPage(hotelId, opts = {}) {
         ${h.bestseller ? '<div class="absolute top-4 left-1/2 -translate-x-1/2 badge-bestseller px-3 py-1 rounded-full text-[10px] font-black">BEST SELLER</div>' : ''}
         <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10" id="galleryDots">${(h.images || [h.image]).map((_, i) => `<div class="gallery-dot ${i === 0 ? 'active' : ''}"></div>`).join('')}</div>
       </div>
-      <div class="relative -mt-6 rounded-t-[28px] p-5 space-y-6 pb-32" style="background:var(--bg-card)">
+      <div class="detail-layout">
+        <div class="detail-main relative -mt-6 rounded-t-[28px] p-5 space-y-6 pb-32" style="background:var(--bg-card)">
         <div>
           <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold">— ${(h.category || '').toUpperCase()} HOTEL</p>
           <h2 class="font-display text-2xl font-bold mb-1 leading-tight">${h.name}</h2>
           <div class="flex items-center gap-2 text-sm mb-1">${utils.renderStars(h.rating)}<span class="text-xs">${Number(h.rating).toFixed(1)} (${h.reviews} reviews)</span></div>
           <p class="text-xs flex items-center gap-1"><i class="fa-solid fa-location-dot text-violet-500"></i>${h.location}</p>
         </div>
-        <div class="grid grid-cols-3 gap-2">
+        <div class="grid grid-cols-3 lg:grid-cols-6 gap-2">
           ${(h.amenities || []).slice(0, 6).map(a => `<div class="field-box rounded-xl p-2.5 flex flex-col items-center gap-1.5 text-center"><i class="fa-solid ${amenityIcon(a)} text-violet-500"></i><span class="text-[9px] leading-tight">${a}</span></div>`).join('')}
         </div>
         <div>
@@ -114,7 +123,7 @@ function showHotelPage(hotelId, opts = {}) {
         <div>
           <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold">— ROOMS</p>
           <h3 class="font-display text-lg font-bold mb-3">Room Options</h3>
-          <div class="space-y-3" id="hotelRoomsList">
+          <div class="space-y-3 lg:grid lg:grid-cols-2 lg:gap-3 lg:space-y-0" id="hotelRoomsList">
             ${(h.rooms || []).map((r, i) => `
               <div class="card room-option-card rounded-2xl p-3 flex gap-3 cursor-pointer ${i === 0 ? 'room-selected' : ''}" onclick="selectRoomOnDetail('${h.id}', ${i})">
                 <img src="${getImageUrl(r.image)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-24 h-24 rounded-xl object-cover flex-shrink-0">
@@ -140,10 +149,14 @@ function showHotelPage(hotelId, opts = {}) {
           <button onclick="openReviewModal('hotel','${h.id}')" class="w-full py-2.5 rounded-xl text-xs font-bold border border-violet-400/40 text-violet-500 mb-3"><i class="fa-solid fa-pen"></i> Write a Review</button>
           <div class="space-y-3" id="hotelReviewsList"></div>
         </div>
+        </div>
+        <aside class="detail-sidebar">
+          <div class="detail-sidebar-card">${bookingCard}</div>
+        </aside>
       </div>
-      <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto backdrop-blur-xl border-t p-4 flex items-center justify-between z-10" style="background:var(--bg-card); border-color:var(--border-card)">
-        <div><p class="text-[9px] tracking-wider mb-0.5 font-semibold">SELECTED ROOM</p><p class="text-xl font-bold text-violet-500 font-display" id="hotelBottomPriceAmount">${utils.formatPrice((h.rooms && h.rooms[0] ? h.rooms[0].price : h.price))}<span class="text-xs"> / Night</span></p></div>
-        <button onclick="startBooking('${h.id}', 0)" class="btn-gold px-7 py-3 rounded-2xl font-bold text-ink-900">Book Now</button>
+      <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto backdrop-blur-xl border-t p-4 flex items-center justify-between z-10 detail-mobile-bar" style="background:var(--bg-card); border-color:var(--border-card)">
+        <div><p class="text-[9px] tracking-wider mb-0.5 font-semibold">SELECTED ROOM</p><p class="text-xl font-bold text-violet-500 font-display detail-sidebar-price" id="hotelBottomPriceAmount">${utils.formatPrice(startPrice)}<span class="text-xs"> / Night</span></p></div>
+        <button onclick="startBooking('${h.id}', 0)" class="btn-gold px-7 py-3 rounded-2xl font-bold text-ink-900 detail-book-btn">Book Now</button>
       </div>
     </div>`;
   document.getElementById('mainApp').appendChild(page);
@@ -157,7 +170,14 @@ function showHotelPage(hotelId, opts = {}) {
 function closeHotelPage() { const p = document.getElementById('hotelDetailPage'); if (p) p.remove(); nav.go('hotels'); }
 function onGalleryScroll(el) { const idx = Math.round(el.scrollLeft / el.clientWidth); document.querySelectorAll('#galleryDots .gallery-dot').forEach((d, i) => d.classList.toggle('active', i === idx)); }
 function amenityIcon(a) { const map = { 'Free WiFi':'fa-wifi','Breakfast':'fa-mug-saucer','Pool':'fa-water-ladder','Spa':'fa-spa','Gym':'fa-dumbbell','Beach Access':'fa-umbrella-beach','Parking':'fa-square-parking','Business Center':'fa-briefcase','Meeting Rooms':'fa-users-rectangle','Concierge':'fa-bell-concierge','24/7 Reception':'fa-clock' }; return map[a] || 'fa-check'; }
-function selectRoomOnDetail(hotelId, roomIndex) { const h = CATALOG.hotels.find(x => x.id === hotelId); const r = h?.rooms?.[roomIndex]; if (!r) return; const priceEl = document.getElementById('hotelBottomPriceAmount'); if (priceEl) priceEl.innerHTML = `${utils.formatPrice(r.price)}<span class="text-xs"> / Night</span>`; const btn = document.querySelector('#hotelDetailPage [onclick^="startBooking"]'); if (btn) btn.setAttribute('onclick', `startBooking('${hotelId}', ${roomIndex})`); document.querySelectorAll('#hotelRoomsList .room-option-card').forEach((card, i) => card.classList.toggle('room-selected', i === roomIndex)); }
+function selectRoomOnDetail(hotelId, roomIndex) {
+  const h = CATALOG.hotels.find(x => x.id === hotelId); const r = h?.rooms?.[roomIndex]; if (!r) return;
+  // Updates BOTH the mobile fixed bar and the desktop sticky sidebar card,
+  // since a room pick needs to stay in sync wherever the price/button show.
+  document.querySelectorAll('#hotelDetailPage .detail-sidebar-price').forEach(el => { el.innerHTML = `${utils.formatPrice(r.price)}<span class="text-xs"> / Night</span>`; });
+  document.querySelectorAll('#hotelDetailPage .detail-book-btn').forEach(btn => btn.setAttribute('onclick', `startBooking('${hotelId}', ${roomIndex})`));
+  document.querySelectorAll('#hotelRoomsList .room-option-card').forEach((card, i) => card.classList.toggle('room-selected', i === roomIndex));
+}
 
 function startBooking(hotelId, roomIndex) {
   if (!authToken) { toast('Please login to book', 'error'); return; }
@@ -319,9 +339,16 @@ function showExcursionPage(excursionId, opts = {}) {
   state.currentExcursion = x;
   const old = document.getElementById('excursionDetailPage'); if (old) old.remove();
   const page = document.createElement('div'); page.id = 'excursionDetailPage'; page.className = 'page';
+  const bookingCard = `
+    <div class="detail-price-row">
+      <div><p class="text-[9px]">FROM</p><p class="text-xl font-bold text-violet-500 font-display">${utils.formatPrice(x.price)}<span class="text-xs">/person</span></p></div>
+      <div class="detail-sidebar-rating"><i class="fa-solid fa-star text-gold-400"></i> ${Number(x.rating).toFixed(1)} <span>(${x.reviews})</span></div>
+    </div>
+    <button onclick="startExcursionBooking('${x.id}')" class="btn-gold w-full py-3.5 rounded-2xl font-bold text-ink-900">Book Now</button>
+    <p class="detail-sidebar-note"><i class="fa-regular fa-clock"></i> ${x.duration} · <i class="fa-solid fa-location-dot"></i> ${x.meetingPoint || ''}</p>`;
   page.innerHTML = `
     <div class="min-h-screen pb-28" style="background:var(--bg-card)">
-      <div class="relative h-72">
+      <div class="relative h-72 detail-gallery">
         <div id="excursionGallery" class="gallery-track w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth" style="scrollbar-width:none" onscroll="onExcursionGalleryScroll(this)">
           ${(x.images || [x.image]).map(img => `<img src="${getImageUrl(img)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%">`).join('')}
         </div>
@@ -330,7 +357,8 @@ function showExcursionPage(excursionId, opts = {}) {
         <div class="absolute top-4 left-4 bg-violet-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-full z-10">${x.category}</div>
         <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10" id="excursionGalleryDots">${(x.images || [x.image]).map((_, i) => `<div class="gallery-dot ${i === 0 ? 'active' : ''}"></div>`).join('')}</div>
       </div>
-      <div class="relative -mt-6 rounded-t-[28px] p-5 space-y-6 pb-32" style="background:var(--bg-card)">
+      <div class="detail-layout">
+        <div class="detail-main relative -mt-6 rounded-t-[28px] p-5 space-y-6 pb-32" style="background:var(--bg-card)">
         <div>
           <h2 class="font-display text-2xl font-bold mb-1 leading-tight">${x.title}</h2>
           <div class="flex items-center gap-2 text-sm mb-1">${utils.renderStars(x.rating)}<span class="text-xs">${Number(x.rating).toFixed(1)} (${x.reviews} reviews)</span></div>
@@ -342,17 +370,17 @@ function showExcursionPage(excursionId, opts = {}) {
         </div>
         <div>
           <h3 class="font-display text-lg font-bold mb-3">What's Included</h3>
-          <div class="grid grid-cols-1 gap-2">${(x.includes || []).map(i => `<div class="flex items-center gap-2 text-sm"><i class="fa-solid fa-circle-check text-green-500"></i>${i}</div>`).join('')}</div>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-2">${(x.includes || []).map(i => `<div class="flex items-center gap-2 text-sm"><i class="fa-solid fa-circle-check text-green-500"></i>${i}</div>`).join('')}</div>
         </div>
         ${(x.excludes || []).length ? `
           <div>
             <h3 class="font-display text-lg font-bold mb-3">What's Not Included</h3>
-            <div class="grid grid-cols-1 gap-2">${x.excludes.map(i => `<div class="flex items-center gap-2 text-sm"><i class="fa-solid fa-circle-xmark text-red-400"></i>${i}</div>`).join('')}</div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-2">${x.excludes.map(i => `<div class="flex items-center gap-2 text-sm"><i class="fa-solid fa-circle-xmark text-red-400"></i>${i}</div>`).join('')}</div>
           </div>` : ''}
         ${(x.whatToBring || []).length ? `
           <div>
             <h3 class="font-display text-lg font-bold mb-3">What to Bring</h3>
-            <div class="grid grid-cols-1 gap-2">${x.whatToBring.map(i => `<div class="flex items-center gap-2 text-sm"><i class="fa-solid fa-suitcase-rolling text-violet-500"></i>${i}</div>`).join('')}</div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-2">${x.whatToBring.map(i => `<div class="flex items-center gap-2 text-sm"><i class="fa-solid fa-suitcase-rolling text-violet-500"></i>${i}</div>`).join('')}</div>
           </div>` : ''}
         ${(x.itinerary || []).length ? `
           <div>
@@ -377,8 +405,12 @@ function showExcursionPage(excursionId, opts = {}) {
           <button onclick="openReviewModal('excursion','${x.id}')" class="w-full py-2.5 rounded-xl text-xs font-bold border border-violet-400/40 text-violet-500 mb-3">Write a Review</button>
           <div class="space-y-3" id="excursionReviewsList"></div>
         </div>
+        </div>
+        <aside class="detail-sidebar">
+          <div class="detail-sidebar-card">${bookingCard}</div>
+        </aside>
       </div>
-      <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto backdrop-blur-xl border-t p-4 flex items-center justify-between z-10" style="background:var(--bg-card); border-color:var(--border-card)">
+      <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto backdrop-blur-xl border-t p-4 flex items-center justify-between z-10 detail-mobile-bar" style="background:var(--bg-card); border-color:var(--border-card)">
         <div><p class="text-[9px]">FROM</p><p class="text-xl font-bold text-violet-500 font-display">${utils.formatPrice(x.price)}<span class="text-xs">/person</span></p></div>
         <button onclick="startExcursionBooking('${x.id}')" class="btn-gold px-7 py-3 rounded-2xl font-bold text-ink-900">Book Now</button>
       </div>
@@ -716,9 +748,15 @@ function showRestaurantPage(id, opts = {}) {
   const page = document.createElement('div');
   page.id = 'restaurantDetailPage';
   page.className = 'page';
+  const infoCard = `
+    <p class="detail-sidebar-title">${r.name}</p>
+    <div class="flex items-center gap-2 mb-4"><span class="lux-cuisine-badge">${r.cuisine}</span><span class="text-gold-500 text-xs font-semibold">${'$'.repeat(r.priceLevel || 2)}</span></div>
+    <div class="detail-sidebar-rating mb-4"><i class="fa-solid fa-star text-gold-400"></i> ${Number(r.rating).toFixed(1)} <span>(${r.reviews || 0} reviews)</span></div>
+    <div class="detail-sidebar-info-row"><i class="fa-solid fa-location-dot"></i> ${r.location}</div>
+    <div class="detail-sidebar-info-row"><i class="fa-regular fa-clock"></i> ${r.openHours || ''}</div>`;
   page.innerHTML = `
     <div class="min-h-screen pb-28 restaurant-lux" style="background:var(--bg-card)">
-      <div class="relative h-80">
+      <div class="relative h-80 detail-gallery">
         <div class="gallery-track w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth" style="scrollbar-width:none" onscroll="onRestGalleryScroll(this)" id="restGallery">
           ${(r.images || [r.image]).map(img => `<img src="${getImageUrl(img)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%">`).join('')}
         </div>
@@ -734,7 +772,8 @@ function showRestaurantPage(id, opts = {}) {
         </div>
         <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10" id="restGalleryDots">${(r.images || [r.image]).map((_, i) => `<div class="gallery-dot ${i === 0 ? 'active' : ''}"></div>`).join('')}</div>
       </div>
-      <div class="relative -mt-6 rounded-t-[28px] p-6 space-y-2" style="background:var(--bg-card)">
+      <div class="detail-layout">
+        <div class="detail-main relative -mt-6 rounded-t-[28px] p-6 space-y-2" style="background:var(--bg-card)">
         <div class="flex items-center justify-center gap-5 pb-5 mb-1">
           <p class="text-xs flex items-center gap-1.5" style="color:var(--text-secondary)"><i class="fa-solid fa-location-dot text-gold-500"></i>${r.location}</p>
           <span class="w-1 h-1 rounded-full" style="background:var(--border-field)"></span>
@@ -758,6 +797,10 @@ function showRestaurantPage(id, opts = {}) {
               </div>
             </div>`).join('')}
         </div>
+        </div>
+        <aside class="detail-sidebar">
+          <div class="detail-sidebar-card">${infoCard}</div>
+        </aside>
       </div>
     </div>`;
   document.getElementById('mainApp').appendChild(page);
