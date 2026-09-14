@@ -565,10 +565,12 @@ const profileAvatar = {
     const drawerAv = document.getElementById('drawerAvatar');
     const navAv = document.getElementById('navProfileAvatar');
     const navAvDesktop = document.getElementById('navProfileAvatarDesktop');
+    const sidebarAv = document.getElementById('sidebarProfileAvatar');
     if (wrap) wrap.innerHTML = photoURL ? `<img src="${photoURL}" class="w-full h-full object-cover">` : `<span class="font-display text-5xl font-bold text-violet-600" id="profileAvatarLetter">${letter}</span>`;
     if (drawerAv) drawerAv.innerHTML = photoURL ? `<img src="${photoURL}" class="w-full h-full object-cover">` : letter;
     if (navAv) navAv.innerHTML = photoURL ? `<img src="${photoURL}" alt="">` : letter;
     if (navAvDesktop) navAvDesktop.innerHTML = photoURL ? `<img src="${photoURL}" alt="">` : letter;
+    if (sidebarAv) sidebarAv.innerHTML = photoURL ? `<img src="${photoURL}" alt="">` : letter;
   },
   handleFile(e) {
     const file = e.target.files[0];
@@ -623,6 +625,8 @@ function updateDrawerUser(name, email, photoURL) {
   const e = document.getElementById('drawerEmail'); if (e) e.textContent = safeEmail;
   const pn = document.getElementById('profileName'); if (pn) pn.textContent = safeName;
   const pe = document.getElementById('profileEmail'); if (pe) pe.textContent = safeEmail;
+  const sn = document.getElementById('sidebarProfileName'); if (sn) sn.textContent = safeName;
+  const se = document.getElementById('sidebarProfileEmail'); if (se) se.textContent = safeEmail;
   profileAvatar.render(safeName, safePhoto);
 
   // بادج Sharmawy في السايد بار
