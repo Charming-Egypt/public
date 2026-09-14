@@ -1,110 +1,171 @@
 [
   {
-    "id": "rv1", "name": "Elena K.", "rating": 5, "section": "hotel",
-    "itemName": { "en": "Discover Grand Hotel", "ar": "فندق ديسكفر جراند", "ru": "Discover Grand Hotel", "de": "Discover Grand Hotel", "it": "Discover Grand Hotel", "tr": "Discover Grand Hotel" },
-    "text": {
-      "en": "The sea view room was even better than the photos. Booking through the app was quick and check-in was seamless.",
-      "ar": "الغرفة المطلة على البحر كانت أجمل من الصور. الحجز عبر التطبيق كان سريعًا والدخول سلس.",
-      "ru": "Номер с видом на море оказался даже лучше, чем на фото. Бронирование через приложение было быстрым.",
-      "de": "Das Zimmer mit Meerblick war noch besser als auf den Fotos. Die Buchung über die App war schnell.",
-      "it": "La camera con vista mare era ancora migliore delle foto. La prenotazione tramite l'app è stata rapida.",
-      "tr": "Deniz manzaralı oda fotoğraflardan bile daha güzeldi. Uygulama üzerinden rezervasyon hızlıydı."
-    }
-  },
-  {
-    "id": "rv2", "name": "Marco B.", "rating": 5, "section": "excursion",
+    "id": "rv1", "name": "Marco B.", "rating": 5, "section": "excursion",
     "itemName": { "en": "Ras Mohammed Snorkeling Trip", "ar": "رحلة سنوركل رأس محمد", "ru": "Снорклинг-тур в Рас-Мохаммед", "de": "Ras-Mohammed-Schnorcheltour", "it": "Escursione Snorkeling a Ras Mohammed", "tr": "Ras Muhammed Şnorkel Turu" },
+    "image": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80",
     "text": {
-      "en": "Best snorkeling I've done anywhere. The guide was patient with beginners and the lunch was a nice touch.",
-      "ar": "أفضل سنوركل جربته على الإطلاق. المرشد كان صبورًا مع المبتدئين والغداء كان لمسة جميلة.",
-      "ru": "Лучший снорклинг, который я когда-либо пробовал. Гид был терпелив с новичками.",
-      "de": "Das beste Schnorcheln, das ich je gemacht habe. Der Guide war geduldig mit Anfängern.",
-      "it": "Il miglior snorkeling che abbia mai fatto. La guida è stata paziente con i principianti.",
-      "tr": "Şimdiye kadar yaptığım en iyi şnorkel deneyimi. Rehber yeni başlayanlara karşı sabırlıydı."
+      "en": "I almost booked this trip somewhere else, then found Discover Sharm and I'm so glad I switched. The website showed real availability, the price included everything it promised, and their WhatsApp support answered my questions in minutes, even at night. The trip itself was unforgettable, but honestly the booking experience is what made me trust the whole day before it even started.",
+      "ar": "كنت على وشك أحجز الرحلة دي من موقع تاني، لكن لقيت موقع ديسكفر شرم وأنا مبسوطة جدًا إني غيّرت رأيي. الموقع عرض الأماكن المتاحة فعليًا، والسعر شمل كل حاجة موعودة بيها، ودعم الواتساب رد على أسئلتي في دقائق حتى بالليل. الرحلة نفسها ما تتنسيش، لكن بصراحة تجربة الحجز هي اللي خلتني مطمئنة قبل ما اليوم يبدأ أصلاً.",
+      "ru": "Я чуть не забронировала эту поездку на другом сайте, но нашла Discover Sharm — и очень рада, что передумала. Сайт показывал реальную доступность мест, цена включала всё обещанное, а поддержка в WhatsApp отвечала за считанные минуты даже ночью. Сама поездка незабываема, но именно процесс бронирования вызвал доверие ещё до её начала.",
+      "de": "Ich hätte diesen Ausflug fast woanders gebucht, dann fand ich Discover Sharm und bin so froh, dass ich gewechselt habe. Die Website zeigte echte Verfügbarkeit, der Preis enthielt alles Versprochene, und der WhatsApp-Support antwortete selbst nachts innerhalb von Minuten. Der Ausflug selbst war unvergesslich, aber ehrlich gesagt hat mir schon die Buchungserfahrung Vertrauen gegeben, bevor der Tag überhaupt begann.",
+      "it": "Stavo per prenotare questa gita altrove, poi ho trovato Discover Sharm e sono felice di aver cambiato idea. Il sito mostrava disponibilità reale, il prezzo includeva tutto ciò che prometteva, e l'assistenza WhatsApp ha risposto in pochi minuti, anche di notte. La gita è stata indimenticabile, ma onestamente è l'esperienza di prenotazione che mi ha fatto fidare ancora prima che iniziasse la giornata.",
+      "tr": "Bu turu neredeyse başka bir yerden alacaktım, sonra Discover Sharm'ı buldum ve fikrimi değiştirdiğime çok sevindim. Site gerçek uygunluk durumunu gösteriyordu, fiyata söz verilen her şey dahildi ve WhatsApp desteği geceleri bile dakikalar içinde cevap verdi. Turun kendisi unutulmazdı ama dürüst olmak gerekirse gün başlamadan önce bana güven veren rezervasyon deneyimiydi."
     }
   },
   {
-    "id": "rv3", "name": "Fatima A.", "rating": 4, "section": "transfer",
-    "itemName": { "en": "Tourist H1 Airport Transfer", "ar": "ترانسفير مطار H1 سياحي", "ru": "Туристический трансфер H1", "de": "Touristen-H1-Flughafentransfer", "it": "Transfer aeroportuale H1 turistico", "tr": "Turistik H1 Havalimanı Transferi" },
-    "text": {
-      "en": "Driver was waiting with a sign right at arrivals, car was clean and cool. Made a tired flight much easier.",
-      "ar": "السائق كان بانتظارنا بلافتة عند الوصول مباشرة، والسيارة كانت نظيفة ومكيّفة. سهّل الأمر كثيرًا بعد رحلة طويلة.",
-      "ru": "Водитель ждал с табличкой прямо у прилёта, машина была чистой и прохладной.",
-      "de": "Der Fahrer wartete mit einem Schild direkt bei der Ankunft, das Auto war sauber und kühl.",
-      "it": "L'autista aspettava con un cartello proprio all'arrivo, l'auto era pulita e fresca.",
-      "tr": "Şoför tam varışta bir tabelayla bekliyordu, araba temiz ve serindi."
-    }
-  },
-  {
-    "id": "rv4", "name": "Julia S.", "rating": 5, "section": "hotel",
-    "itemName": { "en": "Discover Deluxe Suites", "ar": "ديسكفر ديلوكس سويتس", "ru": "Discover Deluxe Suites", "de": "Discover Deluxe Suites", "it": "Discover Deluxe Suites", "tr": "Discover Deluxe Suites" },
-    "text": {
-      "en": "Loved the private balcony and how close it was to the beach path. Would book again without hesitation.",
-      "ar": "أحببت الشرفة الخاصة وقربها الشديد من ممر الشاطئ. سأحجز مرة أخرى دون تردد.",
-      "ru": "Понравился личный балкон и близость к пляжной дорожке. Забронирую снова без колебаний.",
-      "de": "Ich liebte den privaten Balkon und die Nähe zum Strandweg. Würde ohne Zögern wieder buchen.",
-      "it": "Ho adorato il balcone privato e la vicinanza al sentiero della spiaggia. Prenoterei di nuovo senza esitazione.",
-      "tr": "Özel balkonu ve sahil yoluna yakınlığını çok sevdim. Tereddütsüz tekrar rezervasyon yaparım."
-    }
-  },
-  {
-    "id": "rv5", "name": "Ahmed T.", "rating": 5, "section": "excursion",
+    "id": "rv2", "name": "Ahmed T.", "rating": 5, "section": "excursion",
     "itemName": { "en": "White Desert Safari & BBQ Dinner", "ar": "رحلة سفاري الصحراء البيضاء وعشاء شواء", "ru": "Сафари в Белую пустыню и барбекю-ужин", "de": "Wüstensafari & BBQ-Dinner", "it": "Safari nel Deserto Bianco e cena BBQ", "tr": "Beyaz Çöl Safarisi ve Barbekü Yemeği" },
+    "image": "https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=800&q=80",
     "text": {
-      "en": "Quad biking at sunset then dinner under the stars — one of the highlights of the whole trip.",
-      "ar": "قيادة الدراجات الرباعية عند الغروب ثم عشاء تحت النجوم — من أبرز لحظات الرحلة كلها.",
-      "ru": "Катание на квадроцикле на закате, а затем ужин под звёздами — один из главных моментов всей поездки.",
-      "de": "Quad-Biking bei Sonnenuntergang, dann Dinner unter den Sternen — einer der Höhepunkte der ganzen Reise.",
-      "it": "Quad al tramonto e poi cena sotto le stelle — uno dei momenti salienti dell'intero viaggio.",
-      "tr": "Gün batımında ATV sürüşü, ardından yıldızların altında akşam yemeği — tüm gezinin en güzel anlarından biriydi."
+      "en": "Shoutout to Discover Sharm for making this so easy. I booked from my phone in the hotel lobby, got a confirmation call within the hour, and the pickup was exactly on time the next evening. Quad biking at sunset, then dinner under more stars than I've ever seen in my life — this platform clearly works with people who actually care about the experience, not just the sale.",
+      "ar": "شكرًا لموقع ديسكفر شرم على تسهيل كل حاجة. حجزت من موبايلي وأنا في لوبي الفندق، ووصلني اتصال تأكيد خلال ساعة، والاستلام كان في الميعاد بالظبط مساء اليوم التالي. قيادة الدراجات الرباعية عند الغروب، وبعدين عشاء تحت نجوم أكتر مما شفت في حياتي — واضح إن المنصة دي بتشتغل مع ناس بجد مهتمة بالتجربة مش بس البيع.",
+      "ru": "Отдельное спасибо Discover Sharm за то, что всё было так просто. Я забронировал с телефона прямо в лобби отеля, в течение часа получил подтверждающий звонок, а встреча на следующий вечер была точно вовремя. Катание на квадроцикле на закате, а затем ужин под невероятным звёздным небом — видно, что платформа работает с теми, кому важен сам опыт, а не только продажа.",
+      "de": "Ein großes Dankeschön an Discover Sharm, das alles so einfach gemacht hat. Ich habe von meinem Handy in der Hotellobby gebucht, innerhalb einer Stunde einen Bestätigungsanruf erhalten, und die Abholung war am nächsten Abend genau pünktlich. Quad-Biking bei Sonnenuntergang, dann Dinner unter mehr Sternen, als ich je gesehen habe — diese Plattform arbeitet offensichtlich mit Leuten, denen das Erlebnis wirklich wichtig ist.",
+      "it": "Un grande ringraziamento a Discover Sharm per aver reso tutto così semplice. Ho prenotato dal telefono nella hall dell'hotel, ho ricevuto una chiamata di conferma entro un'ora, e il ritiro la sera successiva è stato puntualissimo. Quad al tramonto, poi cena sotto più stelle di quante ne abbia mai viste — questa piattaforma lavora chiaramente con persone a cui interessa davvero l'esperienza.",
+      "tr": "Her şeyi bu kadar kolaylaştırdığı için Discover Sharm'a çok teşekkürler. Otel lobisinde telefonumdan rezervasyon yaptım, bir saat içinde onay araması aldım ve ertesi akşam alış tam zamanındaydı. Gün batımında ATV sürüşü, ardından hayatımda gördüğümden daha fazla yıldızın altında akşam yemeği — bu platformun gerçekten deneyimi önemseyen insanlarla çalıştığı belli."
     }
   },
   {
-    "id": "rv6", "name": "Nadia R.", "rating": 4, "section": "hotel",
-    "itemName": { "en": "Discover Budget Inn", "ar": "ديسكفر بدجيت إن", "ru": "Discover Budget Inn", "de": "Discover Budget Inn", "it": "Discover Budget Inn", "tr": "Discover Budget Inn" },
+    "id": "rv3", "name": "Dimitri V.", "rating": 5, "section": "transfer",
+    "itemName": { "en": "VIP Hiace AC Airport Transfer", "ar": "ترانسفير مطار VIP هايس مكيف", "ru": "VIP-трансфер Hiace с кондиционером", "de": "VIP-Hiace-Flughafentransfer mit Klimaanlage", "it": "Transfer aeroportuale VIP Hiace con aria condizionata", "tr": "VIP Klimalı Hiace Havalimanı Transferi" },
+    "image": "https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=800&q=80",
     "text": {
-      "en": "Simple but spotless, and the price for the location near the Old Market is hard to beat.",
-      "ar": "بسيط لكن نظيف تمامًا، والسعر مقابل الموقع القريب من السوق القديم لا يُقارَن.",
-      "ru": "Просто, но безупречно чисто, а цена за расположение рядом со Старым рынком отличная.",
-      "de": "Einfach, aber makellos sauber, und der Preis für die Lage nahe dem Alten Markt ist unschlagbar.",
-      "it": "Semplice ma impeccabile, e il prezzo per la posizione vicino al Vecchio Mercato è imbattibile.",
-      "tr": "Basit ama kusursuz temiz, Eski Çarşı'ya yakın konum için fiyatı geçilmez."
+      "en": "After a five-hour delay and a very cranky toddler, landing to find our Discover Sharm driver still waiting patiently with a sign, cold water bottles ready, and the AC already running was genuinely emotional. Nothing fancy about that sentence, I know, but if you've traveled with kids you understand exactly what that moment means. Five stars for the van, ten stars for the peace of mind Discover Sharm gave us before we'd even landed.",
+      "ar": "بعد تأخير خمس ساعات وطفل متعب جدًا، نزلنا ولقينا سائق ديسكفر شرم لسه واقف بصبر ومعاه اللافتة، وزجاجات مياه باردة جاهزة، والتكييف شغال من قبل ما نوصل — بصراحة حسيت بارتياح حقيقي. الكلام ده بسيط، بس لو سافرت مع أطفال هتفهم بالظبط قد إيه اللحظة دي مهمة. خمس نجوم للفان، وعشر نجوم للراحة اللي حسيناها من ديسكفر شرم حتى قبل ما نزلنا من الطيارة.",
+      "ru": "После пятичасовой задержки и очень уставшего малыша, увидеть, что наш водитель от Discover Sharm всё ещё терпеливо ждёт с табличкой, холодной водой наготове и уже включённым кондиционером — это было по-настоящему трогательно. Пять звёзд машине, десять звёзд — спокойствию, которое Discover Sharm подарил нам ещё до посадки.",
+      "de": "Nach fünf Stunden Verspätung und einem sehr quengeligen Kleinkind war es wirklich rührend, zu sehen, dass unser Discover-Sharm-Fahrer geduldig mit Schild, kalten Wasserflaschen und bereits laufender Klimaanlage wartete. Fünf Sterne für den Van, zehn Sterne für die Ruhe, die uns Discover Sharm schon vor der Landung gegeben hat.",
+      "it": "Dopo cinque ore di ritardo e un bambino molto stanco, trovare il nostro autista Discover Sharm ancora lì ad aspettare pazientemente con il cartello, bottiglie d'acqua fredda pronte e l'aria condizionata già accesa è stato davvero commovente. Cinque stelle per il furgone, dieci per la tranquillità che Discover Sharm ci ha dato ancora prima di atterrare.",
+      "tr": "Beş saatlik gecikme ve çok huysuzlaşmış bir bebekten sonra, Discover Sharm şoförümüzün hâlâ sabırla tabelayla, soğuk su şişeleriyle ve klimayı çoktan çalıştırmış halde beklediğini görmek gerçekten duygusaldı. Minibüse beş yıldız, daha inişten önce Discover Sharm'ın bize verdiği huzura on yıldız."
     }
   },
   {
-    "id": "rv7", "name": "Klaus M.", "rating": 5, "section": "excursion",
+    "id": "rv4", "name": "Olga P.", "rating": 5, "section": "excursion",
+    "itemName": { "en": "Blue Hole Dahab Snorkeling & Diving Trip", "ar": "رحلة سنوركل وغطس البحر الأزرق دهب", "ru": "Снорклинг и дайвинг в Голубой дыре, Дахаб", "de": "Blue Hole Dahab Schnorchel- & Tauchtour", "it": "Escursione Snorkeling e Diving al Blue Hole di Dahab", "tr": "Dahab Mavi Delik Şnorkel ve Dalış Turu" },
+    "image": "https://images.unsplash.com/photo-1544551763-92ab472cad5d?auto=format&fit=crop&w=800&q=80",
+    "text": {
+      "en": "What sold me on Discover Sharm was how honestly the trip was described on the site — no exaggerated claims, just clear info about the drive time, what's included, and what to bring. When we actually got there, it matched exactly. That kind of honesty from a booking site is rare, and it's why I'll be using them for everything else on this trip.",
+      "ar": "اللي خلاني أثق في ديسكفر شرم هو الصدق في وصف الرحلة على الموقع — مفيش مبالغات، بس معلومات واضحة عن مدة الطريق واللي متضمن واللي لازم أجيبه. ولما وصلنا فعلاً كل حاجة كانت زي ما اتقالت بالظبط. الصدق ده نادر في مواقع الحجز، وعشان كده هستخدمهم في كل حاجة تانية في الرحلة.",
+      "ru": "Что убедило меня в Discover Sharm, так это честное описание поездки на сайте — никаких преувеличений, только чёткая информация о времени в пути, что включено и что взять с собой. Когда мы приехали, всё совпало один в один. Такая честность у сайтов бронирования встречается редко, поэтому я буду пользоваться ими для всего остального в этой поездке.",
+      "de": "Was mich bei Discover Sharm überzeugt hat, war die ehrliche Beschreibung des Ausflugs auf der Website — keine übertriebenen Angaben, nur klare Infos zur Fahrzeit, was inklusive ist und was mitzubringen ist. Als wir ankamen, stimmte alles genau. Diese Art von Ehrlichkeit ist bei Buchungsseiten selten.",
+      "it": "Ciò che mi ha convinto di Discover Sharm è stata l'onestà nella descrizione della gita sul sito — nessuna esagerazione, solo informazioni chiare sui tempi di viaggio, cosa è incluso e cosa portare. Quando siamo arrivati, tutto corrispondeva esattamente. Questo tipo di onestà è raro nei siti di prenotazione.",
+      "tr": "Discover Sharm'a beni ikna eden şey, sitedeki turun dürüstçe anlatılmasıydı — abartı yok, sadece yol süresi, nelerin dahil olduğu ve ne getirmem gerektiği konusunda net bilgi. Oraya vardığımızda her şey tam olarak anlatıldığı gibiydi. Bir rezervasyon sitesinde böyle bir dürüstlük nadirdir."
+    }
+  },
+  {
+    "id": "rv5", "name": "Priya N.", "rating": 5, "section": "transfer",
+    "itemName": { "en": "Private Minivan Hotel-to-Hotel Transfer", "ar": "ترانسفير خاص من فندق إلى فندق بفان مكيف", "ru": "Частный трансфер на микроавтобусе от отеля к отелю", "de": "Privater Minivan-Transfer von Hotel zu Hotel", "it": "Transfer privato in minivan da hotel a hotel", "tr": "Otelden Otele Özel Klimalı Minivan Transferi" },
+    "image": "https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=800&q=80",
+    "text": {
+      "en": "We changed our plans twice in one day and the Discover Sharm support team rebooked our transfer both times without any fuss or extra charges. The van itself was spotless and freezing cold in the best way after a hot afternoon, but it's really their customer service that earned this review. Rare to find a travel platform that treats last-minute changes like they're no big deal.",
+      "ar": "غيّرنا خططنا مرتين في نفس اليوم وفريق دعم ديسكفر شرم عدّل الترانسفير في المرتين من غير أي تعقيد أو رسوم إضافية. الفان كان نظيف جدًا ومكيف بشكل رائع بعد يوم حر، لكن اللي فعلاً استاهل الريفيو ده هو خدمة العملاء بتاعتهم. نادر تلاقي منصة سفر بتتعامل مع التغييرات المفاجئة وكأنها حاجة عادية جدًا.",
+      "ru": "Мы дважды меняли планы за один день, и служба поддержки Discover Sharm оба раза перебронировала трансфер без лишних хлопот и доплат. Сам микроавтобус был безупречно чист и приятно прохладен после жаркого дня, но именно их сервис заслужил этот отзыв. Редкость найти туристическую платформу, для которой изменения в последний момент — не проблема.",
+      "de": "Wir haben unsere Pläne zweimal an einem Tag geändert, und das Discover-Sharm-Support-Team hat unseren Transfer beide Male ohne Aufwand oder Zusatzkosten umgebucht. Der Van selbst war makellos und angenehm kühl, aber wirklich verdient hat diese Bewertung ihr Kundenservice.",
+      "it": "Abbiamo cambiato i nostri piani due volte in un giorno e il team di supporto di Discover Sharm ha riprenotato il nostro transfer entrambe le volte senza problemi o costi extra. Il furgone era impeccabile e piacevolmente fresco, ma è davvero il loro servizio clienti a meritare questa recensione.",
+      "tr": "Planlarımızı bir günde iki kez değiştirdik ve Discover Sharm destek ekibi transferimizi hiç sorun çıkarmadan ve ek ücret almadan iki kez de yeniden ayarladı. Minibüsün kendisi tertemiz ve sıcak bir günden sonra harika bir şekilde serindi ama bu değerlendirmeyi asıl hak eden onların müşteri hizmetiydi."
+    }
+  },
+  {
+    "id": "rv6", "name": "Klaus M.", "rating": 5, "section": "excursion",
     "itemName": { "en": "Tiran Island Boat Trip", "ar": "رحلة بحرية إلى جزيرة تيران", "ru": "Морская прогулка на остров Тиран", "de": "Bootsausflug zur Insel Tiran", "it": "Gita in barca all'isola di Tiran", "tr": "Tiran Adası Tekne Turu" },
+    "image": "https://images.unsplash.com/photo-1544551763-77ef2d0cfc6c?auto=format&fit=crop&w=800&q=80",
     "text": {
-      "en": "Crystal clear water, friendly crew, fresh fish for lunch. Exactly what we hoped for.",
-      "ar": "مياه صافية كالكريستال وطاقم ودود وسمك طازج للغداء. بالضبط ما كنا نأمله.",
-      "ru": "Кристально чистая вода, дружелюбная команда, свежая рыба на обед. Именно то, на что мы надеялись.",
-      "de": "Kristallklares Wasser, freundliche Crew, frischer Fisch zum Mittagessen. Genau das, was wir uns erhofft hatten.",
-      "it": "Acqua cristallina, equipaggio cordiale, pesce fresco a pranzo. Esattamente ciò che speravamo.",
-      "tr": "Billur gibi berrak su, dost canlısı mürettebat, öğle yemeğinde taze balık. Tam umduğumuz gibi."
+      "en": "I've used a lot of tour booking sites over the years and Discover Sharm's is genuinely one of the smoothest — clear photos, real reviews, instant confirmation, no hidden fees at checkout. The boat trip delivered on every promise: clear water, friendly crew, fresh fish for lunch. It's rare that the platform impresses me as much as the destination did.",
+      "ar": "استخدمت مواقع حجز رحلات كتير على مدار السنين، وموقع ديسكفر شرم فعلاً من أسهل المواقع اللي جربتها — صور واضحة، ريفيوهات حقيقية، تأكيد فوري، ومفيش رسوم مخفية عند الدفع. رحلة القارب حققت كل وعد: مياه صافية، طاقم ودود، وسمك طازج للغداء. نادر إن المنصة نفسها تعجبني بقد الوجهة.",
+      "ru": "Я пользовался множеством сайтов бронирования туров за эти годы, и Discover Sharm — действительно один из самых удобных: чёткие фото, реальные отзывы, мгновенное подтверждение, никаких скрытых сборов при оплате. Морская прогулка выполнила все обещания: чистая вода, дружелюбная команда, свежая рыба на обед.",
+      "de": "Ich habe im Laufe der Jahre viele Tourbuchungsseiten genutzt, und Discover Sharm ist wirklich eine der reibungslosesten — klare Fotos, echte Bewertungen, sofortige Bestätigung, keine versteckten Gebühren beim Checkout. Der Bootsausflug hielt jedes Versprechen: klares Wasser, freundliche Crew, frischer Fisch zum Mittagessen.",
+      "it": "Ho usato molti siti di prenotazione tour negli anni e quello di Discover Sharm è davvero tra i più fluidi — foto chiare, recensioni reali, conferma istantanea, nessuna commissione nascosta al checkout. La gita in barca ha mantenuto ogni promessa: acqua limpida, equipaggio cordiale, pesce fresco a pranzo.",
+      "tr": "Yıllardır birçok tur rezervasyon sitesi kullandım ve Discover Sharm gerçekten en sorunsuzlarından biri — net fotoğraflar, gerçek yorumlar, anında onay, ödemede gizli ücret yok. Tekne turu her sözü tuttu: berrak su, dost canlısı mürettebat, öğle yemeğinde taze balık."
     }
   },
   {
-    "id": "rv8", "name": "Sara H.", "rating": 5, "section": "hotel",
-    "itemName": { "en": "Discover Business Hotel", "ar": "فندق ديسكفر بزنس", "ru": "Discover Business Hotel", "de": "Discover Business Hotel", "it": "Discover Business Hotel", "tr": "Discover Business Hotel" },
+    "id": "rv7", "name": "Youssef E.", "rating": 5, "section": "excursion",
+    "itemName": { "en": "Quad Bike Desert Sunset Safari", "ar": "رحلة سفاري الدراجات الرباعية عند الغروب", "ru": "Сафари на квадроциклах в пустыне на закате", "de": "Quad-Wüstensafari bei Sonnenuntergang", "it": "Safari nel deserto in quad al tramonto", "tr": "Çölde Gün Batımı ATV Safarisi" },
+    "image": "https://images.unsplash.com/photo-1451337516015-6b6e9a44a8a3?auto=format&fit=crop&w=800&q=80",
     "text": {
-      "en": "Fast WiFi and a quiet room made it easy to work between meetings. Front desk was very responsive.",
-      "ar": "واي فاي سريع وغرفة هادئة سهّلا العمل بين الاجتماعات. الاستقبال كان متجاوبًا جدًا.",
-      "ru": "Быстрый Wi-Fi и тихий номер облегчили работу между встречами. Стойка регистрации была очень отзывчивой.",
-      "de": "Schnelles WLAN und ein ruhiges Zimmer machten die Arbeit zwischen Meetings einfach.",
-      "it": "WiFi veloce e una camera silenziosa hanno reso facile lavorare tra le riunioni.",
-      "tr": "Hızlı WiFi ve sessiz bir oda, toplantılar arasında çalışmayı kolaylaştırdı."
+      "en": "My mother doesn't trust booking anything online, but even she admitted Discover Sharm made it painless — she called their hotline before paying, got a real person who answered every question in Arabic, and felt comfortable enough to book on the spot. Watching her laugh on the back of a quad bike at sunset because of that one phone call is a memory I owe entirely to their team.",
+      "ar": "أمي مبتثقش تحجز أونلاين خالص، لكن حتى هي اعترفت إن ديسكفر شرم خلوا الموضوع سهل جدًا — اتصلت بخط الدعم بتاعهم قبل ما تدفع، ورد عليها شخص حقيقي جاوب على كل سؤال بالعربي، وحست بالراحة الكافية إنها تحجز على طول. شفتها بتضحك فوق الدراجة الرباعية وقت الغروب بسبب المكالمة دي، وده فضل بالكامل لفريقهم.",
+      "ru": "Моя мама не доверяет онлайн-бронированию, но даже она признала, что с Discover Sharm всё прошло безболезненно — она позвонила на горячую линию перед оплатой, поговорила с живым человеком, который ответил на все вопросы по-арабски, и почувствовала себя достаточно уверенно, чтобы забронировать сразу. Видеть, как она смеётся на квадроцикле на закате — это заслуга их команды.",
+      "de": "Meine Mutter traut sich normalerweise nicht, online zu buchen, aber selbst sie gab zu, dass Discover Sharm es schmerzlos machte — sie rief vor der Zahlung die Hotline an, sprach mit einer echten Person, die jede Frage auf Arabisch beantwortete, und fühlte sich wohl genug, um sofort zu buchen.",
+      "it": "Mia madre non si fida a prenotare online, ma persino lei ha ammesso che Discover Sharm ha reso tutto semplice — ha chiamato l'assistenza prima di pagare, ha parlato con una persona vera che ha risposto a ogni domanda in arabo, e si è sentita abbastanza tranquilla da prenotare subito.",
+      "tr": "Annem internetten hiçbir şey rezervasyon yaptırmaya güvenmez ama o bile Discover Sharm'ın işi acısız hale getirdiğini itiraf etti — ödemeden önce yardım hattını aradı, her soruyu Arapça yanıtlayan gerçek biriyle konuştu ve orada rezervasyon yapacak kadar rahat hissetti."
     }
   },
   {
-    "id": "rv9", "name": "Dimitri V.", "rating": 4, "section": "transfer",
+    "id": "rv8", "name": "Helena D.", "rating": 5, "section": "excursion",
+    "itemName": { "en": "Colored Canyon & St. Catherine Day Trip", "ar": "رحلة يوم كامل للكانيون الملون ودير سانت كاترين", "ru": "Однодневная поездка в Цветной каньон и монастырь Св. Екатерины", "de": "Tagesausflug zum Colored Canyon & Katharinenkloster", "it": "Gita di un giorno al Canyon Colorato e Santa Caterina", "tr": "Renkli Kanyon ve Aziz Katerina Manastırı Günübirlik Turu" },
+    "image": "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=800&q=80",
+    "text": {
+      "en": "This was a 6am pickup, and I fully expected to be waiting around half-asleep for a driver that showed up late. Instead Discover Sharm's van pulled up two minutes early with cold water and a genuinely warm 'good morning.' Small thing, but it set the tone for an incredible day and told me this company actually respects its guests' time.",
+      "ar": "الاستلام كان الساعة ٦ الصبح، وكنت متوقعة إني هقعد مستنية نص نايمة لسائق هيتأخر. بدل كده عربية ديسكفر شرم وصلت قبل الميعاد بدقيقتين ومعاها مياه باردة و'صباح الخير' دافئة فعلاً. حاجة بسيطة، بس هي اللي حددت طابع يوم رائع وأكدت لي إن الشركة دي فعلاً بتحترم وقت ضيوفها.",
+      "ru": "Встреча была в 6 утра, и я была уверена, что придётся ждать полусонной опоздавшего водителя. Вместо этого микроавтобус Discover Sharm подъехал на две минуты раньше с холодной водой и искренним «доброе утро». Мелочь, но именно она задала тон невероятному дню.",
+      "de": "Die Abholung war um 6 Uhr morgens, und ich erwartete, halb verschlafen auf einen verspäteten Fahrer zu warten. Stattdessen kam der Van von Discover Sharm zwei Minuten früher mit kaltem Wasser und einem herzlichen 'Guten Morgen'. Kleinigkeit, aber sie gab den Ton für einen unglaublichen Tag an.",
+      "it": "Il ritiro era alle 6 del mattino, e mi aspettavo di aspettare mezza addormentata un autista in ritardo. Invece il furgone di Discover Sharm è arrivato due minuti prima con acqua fredda e un caloroso 'buongiorno'. Piccola cosa, ma ha dato il tono a una giornata incredibile.",
+      "tr": "Alış saat 6'daydı ve geç kalan bir şoförü yarı uykulu beklemeyi bekliyordum. Bunun yerine Discover Sharm'ın minibüsü iki dakika erken, soğuk suyla ve samimi bir 'günaydın'la geldi. Küçük bir şeydi ama inanılmaz bir güne bu ayarladı."
+    }
+  },
+  {
+    "id": "rv9", "name": "Chen L.", "rating": 5, "section": "excursion",
+    "itemName": { "en": "Ras Mohammed Snorkeling Trip", "ar": "رحلة سنوركل رأس محمد", "ru": "Снорклинг-тур в Рас-Мохаммед", "de": "Ras-Mohammed-Schnorcheltour", "it": "Escursione Snorkeling a Ras Mohammed", "tr": "Ras Muhammed Şnorkel Turu" },
+    "image": "https://images.unsplash.com/photo-1583212292454-1fe6229603b7?auto=format&fit=crop&w=800&q=80",
+    "text": {
+      "en": "I lost my prescription snorkel mask on the boat and figured that was that. Discover Sharm's team tracked down the boat operator, found it, and had it delivered to my hotel the next morning before checkout. I wasn't even asking for that level of effort. That's the kind of service that turns a one-time booking into a company I'll recommend to everyone I know traveling to Sharm.",
+      "ar": "ضيعت نضارة السنوركل الطبية بتاعتي على القارب وفكرت إن الموضوع خلص كده. فريق ديسكفر شرم تواصل مع مشغّل القارب، لقوها، ووصلوها لفندقي الصبح اللي بعده قبل ما أعمل تشيك أوت. أنا حتى ما كنتش طالبة مجهود بالحجم ده. ده النوع من الخدمة اللي بيحول حجز لمرة واحدة لشركة هنصحها لكل حد بيعرف رايح شرم.",
+      "ru": "Я потеряла свою маску для снорклинга по рецепту на лодке и думала, что всё, пропала. Команда Discover Sharm связалась с оператором лодки, нашла её и доставила в мой отель на следующее утро до выезда. Я даже не просила о таком уровне усилий.",
+      "de": "Ich habe meine Sehstärken-Schnorchelmaske auf dem Boot verloren und dachte, das war's. Das Discover-Sharm-Team kontaktierte den Bootsbetreiber, fand sie und ließ sie am nächsten Morgen vor dem Check-out in mein Hotel liefern. Ich hatte nicht einmal um diesen Aufwand gebeten.",
+      "it": "Ho perso la mia maschera da snorkeling con lenti sulla barca e pensavo fosse persa per sempre. Il team di Discover Sharm ha contattato l'operatore della barca, l'ha trovata e l'ha fatta consegnare al mio hotel la mattina dopo prima del check-out.",
+      "tr": "Teknede numaralı şnorkel maskemi kaybettim ve işin bittiğini düşündüm. Discover Sharm ekibi tekne operatörünü bulup maskeyi buldu ve ertesi sabah check-out'tan önce otelime teslim ettirdi. Bu kadar çaba istememiştim bile."
+    }
+  },
+  {
+    "id": "rv10", "name": "Nadia R.", "rating": 5, "section": "transfer",
     "itemName": { "en": "Tourist H1 Airport Transfer", "ar": "ترانسفير مطار H1 سياحي", "ru": "Туристический трансфер H1", "de": "Touristen-H1-Flughafentransfer", "it": "Transfer aeroportuale H1 turistico", "tr": "Turistik H1 Havalimanı Transferi" },
+    "image": "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=800&q=80",
     "text": {
-      "en": "Smooth booking, on-time pickup for our early flight home. No surprises, exactly as described.",
-      "ar": "حجز سلس واستلام في الموعد لرحلتنا الصباحية المبكرة. لا مفاجآت، تمامًا كما هو موصوف.",
-      "ru": "Лёгкое бронирование, своевременная встреча для нашего раннего рейса домой.",
-      "de": "Reibungslose Buchung, pünktliche Abholung für unseren frühen Heimflug.",
-      "it": "Prenotazione semplice, ritiro puntuale per il nostro volo mattutino di ritorno.",
-      "tr": "Sorunsuz rezervasyon, eve dönüş uçuşumuz için zamanında alış."
+      "en": "My flight number changed twice before departure and I genuinely dreaded having to sort that out with a booking platform. Discover Sharm's system just... handled it. I updated the flight details myself in two taps, got an instant new confirmation, and never had to call anyone. Boring review, I know, but that's exactly what good logistics should feel like: invisible.",
+      "ar": "رقم رحلتي اتغير مرتين قبل السفر وكنت متوترة إني هحتاج أظبط الموضوع ده مع منصة حجز. نظام ديسكفر شرم ببساطة... اتعامل مع الموضوع. عدّلت تفاصيل الرحلة بنفسي بضغطتين، واستلمت تأكيد جديد فوري، وما احتجتش أكلم حد أصلاً. ريفيو ممل أعرف، لكن ده بالظبط شكل اللوجستيات الكويسة: غير محسوسة خالص.",
+      "ru": "Номер моего рейса менялся дважды до вылета, и я боялась, что придётся разбираться с этим через платформу бронирования. Система Discover Sharm просто... справилась. Я сама обновила данные рейса за два клика, получила мгновенное новое подтверждение и ни разу никому не звонила.",
+      "de": "Meine Flugnummer änderte sich zweimal vor der Abreise, und ich fürchtete mich davor, das mit einer Buchungsplattform klären zu müssen. Das System von Discover Sharm hat es einfach... erledigt. Ich habe die Flugdaten selbst in zwei Klicks aktualisiert und sofort eine neue Bestätigung erhalten.",
+      "it": "Il numero del mio volo è cambiato due volte prima della partenza e temevo dover sistemare tutto con una piattaforma di prenotazione. Il sistema di Discover Sharm ha semplicemente... gestito tutto. Ho aggiornato i dettagli del volo io stessa in due tocchi, ricevendo subito una nuova conferma.",
+      "tr": "Uçuş numaram kalkıştan önce iki kez değişti ve bunu bir rezervasyon platformuyla halletmekten gerçekten çekiniyordum. Discover Sharm'ın sistemi bunu basitçe... hallediverdi. Uçuş bilgilerini iki dokunuşla kendim güncelledim ve anında yeni bir onay aldım."
+    }
+  },
+  {
+    "id": "rv11", "name": "Sara H.", "rating": 4, "section": "excursion",
+    "itemName": { "en": "Blue Hole Dahab Snorkeling & Diving Trip", "ar": "رحلة سنوركل وغطس البحر الأزرق دهب", "ru": "Снорклинг и дайвинг в Голубой дыре, Дахаб", "de": "Blue Hole Dahab Schnorchel- & Tauchtour", "it": "Escursione Snorkeling e Diving al Blue Hole di Dahab", "tr": "Dahab Mavi Delik Şnorkel ve Dalış Turu" },
+    "image": "https://images.unsplash.com/photo-1544551763-92ab472cad5d?auto=format&fit=crop&w=800&q=80",
+    "text": {
+      "en": "The trip was great, though the drive back felt long after a full day in the sun. What earned the review is what happened after: I mentioned the long drive in Discover Sharm's feedback form half expecting nothing, and got a genuine reply from their team the next day explaining they'd add a rest stop for future groups. A platform that actually reads and acts on feedback is worth sticking with.",
+      "ar": "الرحلة كانت رائعة، لكن طريق العودة حسيته طويل بعد يوم كامل في الشمس. اللي استاهل الريفيو ده هو اللي حصل بعدين: كتبت عن طول الطريق في نموذج الملاحظات بتاع ديسكفر شرم وأنا مش متوقعة رد، واستلمت رد حقيقي من فريقهم في اليوم اللي بعده بيقولوا هيضيفوا محطة استراحة للمجموعات الجاية. منصة فعلاً بتقرا الملاحظات وتتصرف بناءً عليها تستاهل إنك تفضل معاها.",
+      "ru": "Поездка была отличной, хотя обратный путь показался долгим после целого дня на солнце. Что заслужило этот отзыв — это то, что произошло потом: я упомянула долгую дорогу в форме обратной связи Discover Sharm, почти не ожидая ответа, и на следующий день получила искренний ответ от их команды с объяснением, что они добавят остановку для отдыха для будущих групп.",
+      "de": "Der Ausflug war großartig, obwohl die Rückfahrt nach einem ganzen Tag in der Sonne lang wirkte. Was diese Bewertung verdient hat, ist das, was danach geschah: Ich erwähnte die lange Fahrt im Feedback-Formular von Discover Sharm und erhielt am nächsten Tag eine echte Antwort ihres Teams.",
+      "it": "La gita è stata fantastica, anche se il viaggio di ritorno è sembrato lungo dopo una giornata intera al sole. Ciò che merita questa recensione è quello che è successo dopo: ho menzionato il lungo viaggio nel modulo di feedback di Discover Sharm e il giorno dopo ho ricevuto una risposta genuina dal loro team.",
+      "tr": "Tur harikaydı, ama güneşte geçen tam bir günden sonra dönüş yolu uzun geldi. Bu değerlendirmeyi hak eden şey sonrasında olanlar: Discover Sharm'ın geri bildirim formunda uzun yolu belirttim ve pek bir şey beklemiyordum, ertesi gün ekiplerinden gelecek gruplar için bir mola noktası ekleyeceklerini açıklayan samimi bir yanıt aldım."
+    }
+  },
+  {
+    "id": "rv12", "name": "Robert F.", "rating": 5, "section": "transfer",
+    "itemName": { "en": "Group Shuttle Airport Transfer", "ar": "ترانسفير مطار جماعي (شاتل)", "ru": "Групповой шаттл-трансфер в аэропорт", "de": "Gruppen-Shuttle-Flughafentransfer", "it": "Transfer aeroportuale navetta di gruppo", "tr": "Grup Servisi Havalimanı Transferi" },
+    "image": "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80",
+    "text": {
+      "en": "Booked this as the budget option expecting a hassle, and instead found Discover Sharm had already grouped us with people staying near our hotel to minimize stops. Nobody told me that was even a thing they did — I only figured it out from the driver. That's the kind of quiet, thoughtful planning you don't see mentioned on the website but absolutely notice on the road.",
+      "ar": "حجزت الخيار الاقتصادي متوقعة تعقيد، ولقيت إن ديسكفر شرم كانوا فعلاً جمعونا مع ناس نازلة قريب من فندقنا عشان يقللوا التوقفات. محدش قالي إن ده حاجة بيعملوها — عرفت بس من السائق. ده نوع التخطيط الهادي والمدروس اللي مش مذكور في الموقع بس بتحسه فعلاً على الطريق.",
+      "ru": "Забронировал бюджетный вариант, ожидая хлопот, а вместо этого узнал, что Discover Sharm уже сгруппировал нас с людьми, живущими рядом с нашим отелем, чтобы минимизировать остановки. Никто мне не говорил, что они так делают — я узнал только от водителя.",
+      "de": "Ich habe die günstige Option gebucht und Ärger erwartet, stattdessen stellte sich heraus, dass Discover Sharm uns bereits mit Leuten gruppiert hatte, die in der Nähe unseres Hotels wohnen, um Stopps zu minimieren. Niemand hatte mir gesagt, dass sie das tun — ich erfuhr es nur vom Fahrer.",
+      "it": "Ho prenotato l'opzione economica aspettandomi seccature, e invece ho scoperto che Discover Sharm ci aveva già raggruppato con persone vicine al nostro hotel per ridurre le soste. Nessuno mi aveva detto che lo facessero — l'ho scoperto solo dall'autista.",
+      "tr": "Ekonomik seçeneği zahmetli olur diye rezerve ettim, bunun yerine Discover Sharm'ın durakları en aza indirmek için bizi otelimize yakın kalan kişilerle zaten gruplandırdığını gördüm. Bunu yaptıklarını kimse söylemedi — sadece şoförden öğrendim."
+    }
+  },
+  {
+    "id": "rv13", "name": "Fatima A.", "rating": 5, "section": "excursion",
+    "itemName": { "en": "Colored Canyon & St. Catherine Day Trip", "ar": "رحلة يوم كامل للكانيون الملون ودير سانت كاترين", "ru": "Однодневная поездка в Цветной каньон и монастырь Св. Екатерины", "de": "Tagesausflug zum Colored Canyon & Katharinenkloster", "it": "Gita di un giorno al Canyon Colorato e Santa Caterina", "tr": "Renkli Kanyon ve Aziz Katerina Manastırı Günübirlik Turu" },
+    "image": "https://images.unsplash.com/photo-1533640470979-4d0a55850c30?auto=format&fit=crop&w=800&q=80",
+    "text": {
+      "en": "I travel with a wheelchair-using parent and usually spend hours emailing back and forth before booking anything. On Discover Sharm's site I filled in an accessibility note at checkout, and within the hour someone called to confirm exactly which parts of the canyon walk were manageable and arranged a driver who knew the route well. First platform that's made this kind of trip feel possible without a fight.",
+      "ar": "بسافر مع والد بيستخدم كرسي متحرك، وعادةً بقعد ساعات أبعت إيميلات جاي ورايح قبل ما أحجز أي حاجة. في موقع ديسكفر شرم كتبت ملاحظة عن إمكانية الوصول عند الدفع، وخلال ساعة حد اتصل عشان يأكد بالظبط أنهي أجزاء من مشي الكانيون ممكنة، ورتبوا سائق عارف الطريق كويس. أول منصة خلت رحلة زي دي ممكنة من غير معاناة.",
+      "ru": "Я путешествую с родителем, использующим инвалидную коляску, и обычно провожу часы, переписываясь по почте перед любым бронированием. На сайте Discover Sharm я оставила примечание о доступности при оформлении заказа, и в течение часа мне позвонили, чтобы уточнить, какие именно участки пешей части каньона проходимы.",
+      "de": "Ich reise mit einem Rollstuhl nutzenden Elternteil und verbringe normalerweise Stunden mit E-Mail-Verkehr, bevor ich etwas buche. Auf der Website von Discover Sharm habe ich beim Checkout eine Notiz zur Barrierefreiheit hinterlassen, und innerhalb einer Stunde rief jemand an, um genau zu klären, welche Teile der Canyon-Wanderung machbar waren.",
+      "it": "Viaggio con un genitore su sedia a rotelle e di solito passo ore a scambiare email prima di prenotare qualsiasi cosa. Sul sito di Discover Sharm ho inserito una nota sull'accessibilità al checkout, e entro un'ora qualcuno mi ha chiamato per confermare esattamente quali parti della camminata nel canyon fossero gestibili.",
+      "tr": "Tekerlekli sandalye kullanan bir ebeveynimle seyahat ediyorum ve genellikle herhangi bir şey rezerve etmeden önce saatlerce e-posta yazışması yapıyorum. Discover Sharm'ın sitesinde ödeme sırasında bir erişilebilirlik notu yazdım ve bir saat içinde biri arayıp kanyon yürüyüşünün hangi kısımlarının uygun olduğunu doğruladı."
     }
   }
 ]
