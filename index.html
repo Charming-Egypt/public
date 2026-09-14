@@ -678,6 +678,25 @@
       </div>
     </div>
 
+    <!-- Account Dashboard Sidebar (desktop only — persists across Bookings,
+         Profile, Settings and Notifications so those feel like one section
+         instead of four separate screens). Shown/positioned via CSS when
+         body has the "account-section" class, toggled in nav.go(). -->
+    <aside id="accountSidebar">
+      <div class="account-sidebar-user">
+        <div class="account-sidebar-avatar" id="sidebarProfileAvatar"></div>
+        <p class="account-sidebar-name" id="sidebarProfileName">Guest</p>
+        <p class="account-sidebar-email" id="sidebarProfileEmail"></p>
+      </div>
+      <nav class="account-sidebar-nav">
+        <button onclick="nav.go('profile')" data-page="profile" class="account-sidebar-link"><i class="fa-solid fa-user w-5 text-center"></i><span data-i18n="profileTitle">Profile</span></button>
+        <button onclick="nav.go('bookings')" data-page="bookings" class="account-sidebar-link"><i class="fa-solid fa-ticket w-5 text-center"></i><span data-i18n="myBookings">My Bookings</span></button>
+        <button onclick="nav.go('notifications')" data-page="notifications" class="account-sidebar-link"><i class="fa-regular fa-bell w-5 text-center"></i><span data-i18n="notifications">Notifications</span></button>
+        <button onclick="nav.go('settings')" data-page="settings" class="account-sidebar-link"><i class="fa-solid fa-gear w-5 text-center"></i><span data-i18n="settingsTitle">Settings</span></button>
+      </nav>
+      <button onclick="auth.logout()" class="account-sidebar-logout"><i class="fa-solid fa-right-from-bracket w-5 text-center"></i><span data-i18n="logout">Logout</span></button>
+    </aside>
+
     <!-- Bookings Page -->
     <div id="bookingsPage" class="page">
       <div class="min-h-screen">
