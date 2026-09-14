@@ -23,9 +23,9 @@
     },
     "image": "images/ras-m/1.jpg",
     "images": [
-      "images/ras-m/1.jpg",
-      "images/ras-m/2.jpg",
-      "images/ras-m/3.jpg"
+      "https://www.discover-sharm.com/m/images/ras-m/1.jpg",
+      "https://www.discover-sharm.com/m/images/ras-m/2.jpg",
+      "https://www.discover-sharm.com/m/images/ras-m/3.jpg"
     ],
     "description": {
       "en": "Snorkel the coral reefs of Ras Mohammed National Park, one of the world's top dive sites.",
@@ -306,8 +306,8 @@
     },
     "image": "images/Safari/1.jpg",
     "images": [
-      "images/Safari/1.jpg",
-      "images/Safari/2.jpg"
+      "https://www.discover-sharm.com/m/images/Safari/1.jpg",
+      "https://www.discover-sharm.com/m/images/Safari/2.jpg"
     ],
     "description": {
       "en": "Quad biking, camel rides and a Bedouin BBQ dinner under the stars.",
