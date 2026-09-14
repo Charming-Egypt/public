@@ -454,6 +454,28 @@
 
       <div class="relative z-20 pt-8">
 
+        <!-- Explore by Category -->
+        <div class="px-5 mb-8">
+          <div class="category-tile-grid">
+            <button onclick="nav.go('excursions')" class="category-tile">
+              <div class="category-tile-icon"><i class="fa-solid fa-umbrella-beach"></i></div>
+              <span data-i18n="navExcursions">Excursions</span>
+            </button>
+            <button onclick="nav.go('hotels')" id="categoryTileHotels" class="category-tile hidden">
+              <div class="category-tile-icon"><i class="fa-solid fa-hotel"></i></div>
+              <span data-i18n="navHotels">Hotels</span>
+            </button>
+            <button onclick="nav.go('transfers')" class="category-tile">
+              <div class="category-tile-icon"><i class="fa-solid fa-shuttle-van"></i></div>
+              <span data-i18n="navTransfers">Transfers</span>
+            </button>
+            <button onclick="nav.go('restaurants')" class="category-tile">
+              <div class="category-tile-icon"><i class="fa-solid fa-utensils"></i></div>
+              <span data-i18n="navRestaurants">Restaurants</span>
+            </button>
+          </div>
+        </div>
+
 
    <!-- Destinations Row -->
         <div class="mb-8">
