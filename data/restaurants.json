@@ -2,187 +2,2047 @@
   {
     "id": "r1",
     "category": "restaurant",
-    "name": { "en": "Rangoli Indian Restaurant", "ar": "مطعم رانجولي الهندي", "ru": "Индийский ресторан Rangoli", "de": "Rangoli Indisches Restaurant", "it": "Ristorante Indiano Rangoli", "tr": "Rangoli Hint Restoranı" },
-    "cuisine": { "en": "Indian", "ar": "هندي", "ru": "Индийская", "de": "Indisch", "it": "Indiana", "tr": "Hint" },
-    "priceLevel": 3,
-    "rating": 4.7, "reviews": 412,
-    "image": "https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=800&q=80",
-    "images": ["https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=1000&q=85", "https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=1000&q=85"],
+    "name": {
+      "en": "Mahony Restaurant",
+      "ar": "Mahony Restaurant",
+      "ru": "Mahony Restaurant",
+      "de": "Mahony Restaurant",
+      "it": "Mahony Restaurant",
+      "tr": "Mahony Restaurant"
+    },
+    "cuisine": {
+      "en": "Seafood",
+      "ar": "مأكولات بحرية",
+      "ru": "Морепродукты",
+      "de": "Meeresfrüchte",
+      "it": "Pesce",
+      "tr": "Deniz Ürünleri"
+    },
+    "priceLevel": 2,
+    "rating": 4.6,
+    "reviews": 4053,
+    "image": "",
+    "images": [],
     "description": {
-      "en": "Warm, spice-forward Indian cooking a short walk from Naama Bay.",
-      "ar": "مطبخ هندي دافئ وغني بالتوابل على بعد خطوات من خليج نعمة.",
-      "ru": "Тёплая, насыщенная специями индийская кухня в двух шагах от Наама Бэй.",
-      "de": "Warme, gewürzreiche indische Küche, nur einen kurzen Spaziergang von Naama Bay entfernt.",
-      "it": "Cucina indiana calda e speziata a pochi passi da Naama Bay.",
-      "tr": "Naama Bay'e kısa bir yürüyüş mesafesinde, sıcak ve baharatlı Hint mutfağı."
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
     },
     "fullDescription": {
-      "en": "A long-standing favorite among residents and returning visitors, Rangoli serves North Indian classics — tandoori grills, slow-cooked curries and fresh naan — in a warmly lit dining room just off the Naama Bay strip. The kitchen can adjust spice levels on request, and the mixed tandoori platter is the table's usual centerpiece.",
-      "ar": "من الأماكن المفضلة منذ سنوات لدى المقيمين والزوار المتكررين، يقدم رانجولي أطباقًا هندية شمالية كلاسيكية — مشاوي التندوري وكاري مطهو ببطء وخبز نان طازج — في صالة طعام دافئة الإضاءة على بُعد خطوات من شريط خليج نعمة.",
-      "ru": "Давний фаворит среди местных жителей и постоянных гостей, Rangoli подаёт классику Северной Индии — тандури-гриль, медленно тушёные карри и свежий наан — в уютном зале рядом с Наама Бэй.",
-      "de": "Ein langjähriger Favorit bei Einheimischen und Stammgästen, serviert Rangoli nordindische Klassiker — Tandoori-Grills, langsam gekochte Currys und frisches Naan — in einem warm beleuchteten Speisesaal nahe Naama Bay.",
-      "it": "Preferito da tempo tra residenti e visitatori abituali, Rangoli serve classici del Nord dell'India — grigliate tandoori, curry cotti lentamente e naan fresco — in una sala calda e accogliente vicino a Naama Bay.",
-      "tr": "Yerleşikler ve tekrar gelen ziyaretçiler arasında uzun süredir favori olan Rangoli, Naama Bay şeridine yakın, sıcak ışıklı bir salonda Kuzey Hint klasiklerini — tandır ızgaraları, ağır ateşte pişmiş köriler ve taze naan — sunuyor."
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
     },
-    "location": { "en": "Naama Bay, Sharm El Sheikh", "ar": "خليج نعمة، شرم الشيخ", "ru": "Наама Бэй, Шарм-эль-Шейх", "de": "Naama Bay, Sharm El Sheikh", "it": "Naama Bay, Sharm El Sheikh", "tr": "Naama Bay, Sharm El Sheikh" },
-    "openHours": { "en": "1:00 PM – 12:00 AM daily", "ar": "١:٠٠ ظهرًا – ١٢:٠٠ منتصف الليل يوميًا", "ru": "13:00–00:00 ежедневно", "de": "13:00–00:00 Uhr täglich", "it": "13:00–00:00 tutti i giorni", "tr": "Her gün 13:00–00:00" },
-    "menu": [
-      {
-        "category": { "en": "Starters", "ar": "المقبلات", "ru": "Закуски", "de": "Vorspeisen", "it": "Antipasti", "tr": "Başlangıçlar" },
-        "items": [
-          { "name": { "en": "Vegetable Samosas", "ar": "سمبوسة خضار", "ru": "Овощные самосы", "de": "Gemüse-Samosas", "it": "Samosa vegetariani", "tr": "Sebzeli Samosa" }, "description": { "en": "Crisp pastry filled with spiced potatoes and peas.", "ar": "عجينة مقرمشة محشوة بالبطاطس والبازلاء المتبلة.", "ru": "Хрустящее тесто с пряным картофелем и горошком.", "de": "Knuspriger Teig gefüllt mit gewürzten Kartoffeln und Erbsen.", "it": "Pasta croccante ripiena di patate speziate e piselli.", "tr": "Baharatlı patates ve bezelye ile doldurulmuş çıtır hamur." }, "price": 180 },
-          { "name": { "en": "Chicken Tikka", "ar": "دجاج تكة", "ru": "Чикен тикка", "de": "Chicken Tikka", "it": "Chicken Tikka", "tr": "Tavuk Tikka" }, "description": { "en": "Yogurt-marinated chicken grilled in the tandoor.", "ar": "دجاج متبل باللبن ومشوي في فرن التندور.", "ru": "Курица, маринованная в йогурте, приготовленная в тандыре.", "de": "In Joghurt mariniertes Hähnchen aus dem Tandoor.", "it": "Pollo marinato allo yogurt e grigliato nel tandoor.", "tr": "Yoğurtla marine edilip tandırda pişirilmiş tavuk." }, "price": 320 }
-        ]
-      },
-      {
-        "category": { "en": "Mains", "ar": "الأطباق الرئيسية", "ru": "Основные блюда", "de": "Hauptgerichte", "it": "Piatti principali", "tr": "Ana Yemekler" },
-        "items": [
-          { "name": { "en": "Butter Chicken", "ar": "دجاج بالزبدة", "ru": "Баттер чикен", "de": "Butter Chicken", "it": "Butter Chicken", "tr": "Tereyağlı Tavuk" }, "description": { "en": "Tandoori chicken in a creamy tomato-butter sauce.", "ar": "دجاج تندوري في صلصة طماطم وزبدة كريمية.", "ru": "Курица тандури в сливочном томатно-масляном соусе.", "de": "Tandoori-Hähnchen in cremiger Tomaten-Butter-Sauce.", "it": "Pollo tandoori in salsa cremosa di pomodoro e burro.", "tr": "Kremalı domates-tereyağ sosunda tandır tavuğu." }, "price": 420 },
-          { "name": { "en": "Lamb Rogan Josh", "ar": "لحم ضأن روغان جوش", "ru": "Ягнёнок роган джош", "de": "Lamm Rogan Josh", "it": "Agnello Rogan Josh", "tr": "Kuzu Rogan Josh" }, "description": { "en": "Slow-braised lamb in a Kashmiri red chili gravy.", "ar": "لحم ضأن مطهو ببطء في مرق الفلفل الأحمر الكشميري.", "ru": "Тушёная ягнятина в кашмирском соусе из красного перца.", "de": "Langsam geschmortes Lamm in Kaschmiri-Rotchili-Sauce.", "it": "Agnello brasato lentamente in salsa di peperoncino rosso del Kashmir.", "tr": "Keşmir kırmızı biber sosunda ağır ateşte pişmiş kuzu." }, "price": 480 },
-          { "name": { "en": "Vegetable Biryani", "ar": "برياني خضار", "ru": "Овощной бирьяни", "de": "Gemüse-Biryani", "it": "Biryani di verdure", "tr": "Sebzeli Biryani" }, "description": { "en": "Basmati rice layered with spiced vegetables and saffron.", "ar": "أرز بسمتي بطبقات من الخضار المتبلة والزعفران.", "ru": "Рис басмати со слоями пряных овощей и шафраном.", "de": "Basmatireis geschichtet mit gewürztem Gemüse und Safran.", "it": "Riso basmati a strati con verdure speziate e zafferano.", "tr": "Baharatlı sebzeler ve safranla katmanlanmış basmati pirinci." }, "price": 300 }
-        ]
-      },
-      {
-        "category": { "en": "Desserts", "ar": "الحلويات", "ru": "Десерты", "de": "Desserts", "it": "Dolci", "tr": "Tatlılar" },
-        "items": [
-          { "name": { "en": "Gulab Jamun", "ar": "جولاب جامون", "ru": "Гулаб джамун", "de": "Gulab Jamun", "it": "Gulab Jamun", "tr": "Gulab Jamun" }, "description": { "en": "Warm milk dumplings soaked in rose-cardamom syrup.", "ar": "كرات حليب دافئة منقوعة في شراب الورد والهيل.", "ru": "Тёплые молочные шарики в розово-кардамоновом сиропе.", "de": "Warme Milchbällchen in Rosen-Kardamom-Sirup.", "it": "Palline di latte calde immerse in sciroppo di rosa e cardamomo.", "tr": "Gül-kakule şurubunda ıslatılmış ılık süt topları." }, "price": 140 }
-        ]
-      }
-    ]
+    "location": {
+      "en": "Naama Bay, Sharm El Sheikh",
+      "ar": "خليج نعمة، شرم الشيخ",
+      "ru": "Наама Бэй, Sharm El Sheikh",
+      "de": "Naama Bay, Sharm El Sheikh",
+      "it": "Naama Bay, Sharm El Sheikh",
+      "tr": "Naama Bay, Sharm El Sheikh"
+    },
+    "address_full": "Naama Bay mall number 6, Sharm El Sheikh 1, South Sinai Governorate 46619, Egypt",
+    "coordinates": {
+      "lat": 27.9113979,
+      "lng": 34.3212432
+    },
+    "phone": "+20 11 00100031",
+    "openHours": {
+      "en": "12:00 PM – 12:00 AM daily",
+      "ar": "12:00 PM – 12:00 AM يوميًا",
+      "ru": "12:00 PM – 12:00 AM ежедневно",
+      "de": "12:00 PM – 12:00 AM täglich",
+      "it": "12:00 PM – 12:00 AM tutti i giorni",
+      "tr": "12:00 PM – 12:00 AM her gün"
+    },
+    "google_place_id": "ChIJaYihni04UxQRj03fFSZgnXI",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJaYihni04UxQRj03fFSZgnXI",
+    "menu": []
   },
   {
     "id": "r2",
-    "category": "restaurant",
-    "name": { "en": "Il Mercato Italian Kitchen", "ar": "إيل ميركاتو للمطبخ الإيطالي", "ru": "Il Mercato — итальянская кухня", "de": "Il Mercato Italienische Küche", "it": "Il Mercato Cucina Italiana", "tr": "Il Mercato İtalyan Mutfağı" },
-    "cuisine": { "en": "Italian", "ar": "إيطالي", "ru": "Итальянская", "de": "Italienisch", "it": "Italiana", "tr": "İtalyan" },
-    "priceLevel": 3,
-    "rating": 4.6, "reviews": 298,
-    "image": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80",
-    "images": ["https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1000&q=85", "https://images.unsplash.com/photo-1546549032-9571cd6b27df?auto=format&fit=crop&w=1000&q=85"],
+    "category": "cafe",
+    "name": {
+      "en": "Basata Cafe Sharm El Sheikh",
+      "ar": "Basata Cafe Sharm El Sheikh",
+      "ru": "Basata Cafe Sharm El Sheikh",
+      "de": "Basata Cafe Sharm El Sheikh",
+      "it": "Basata Cafe Sharm El Sheikh",
+      "tr": "Basata Cafe Sharm El Sheikh"
+    },
+    "cuisine": {
+      "en": "Cafe & Seafood",
+      "ar": "مقهى ومأكولات بحرية",
+      "ru": "Кафе и морепродукты",
+      "de": "Café & Meeresfrüchte",
+      "it": "Caffè e pesce",
+      "tr": "Kafe ve Deniz Ürünleri"
+    },
+    "priceLevel": 2,
+    "rating": 4.7,
+    "reviews": 3899,
+    "image": "",
+    "images": [],
     "description": {
-      "en": "Wood-fired pizza and handmade pasta on a candlelit terrace.",
-      "ar": "بيتزا مخبوزة على الحطب ومعكرونة يدوية على تراس مضاء بالشموع.",
-      "ru": "Пицца на дровах и домашняя паста на террасе при свечах.",
-      "de": "Holzofenpizza und hausgemachte Pasta auf einer kerzenbeleuchteten Terrasse.",
-      "it": "Pizza al forno a legna e pasta fatta a mano su una terrazza illuminata da candele.",
-      "tr": "Mumla aydınlatılmış bir terasta odun ateşinde pişmiş pizza ve el yapımı makarna."
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
     },
     "fullDescription": {
-      "en": "Il Mercato brings a slice of Naples to the Red Sea coast — a proper wood-fired oven, pasta rolled fresh each morning, and an open terrace strung with lights that fills up fast after sunset. The wine list leans Italian, and the tiramisu is made in-house daily.",
-      "ar": "يجلب إيل ميركاتو لمسة من نابولي إلى ساحل البحر الأحمر — فرن حطب حقيقي ومعكرونة تُعد طازجة كل صباح وتراس مفتوح مزين بالأضواء يمتلئ بسرعة بعد الغروب. قائمة النبيذ إيطالية الطابع، والتيراميسو يُحضّر يوميًا في المطعم.",
-      "ru": "Il Mercato привносит частичку Неаполя на побережье Красного моря — настоящая дровяная печь, паста, раскатанная свежей каждое утро, и открытая терраса с гирляндами огней.",
-      "de": "Il Mercato bringt ein Stück Neapel an die Küste des Roten Meeres — ein echter Holzofen, jeden Morgen frisch gerollte Pasta und eine offene, lichterbeleuchtete Terrasse.",
-      "it": "Il Mercato porta un pezzo di Napoli sulla costa del Mar Rosso — un vero forno a legna, pasta fatta fresca ogni mattina e una terrazza aperta illuminata da luci che si riempie rapidamente dopo il tramonto.",
-      "tr": "Il Mercato, Kızıldeniz kıyısına Napoli'den bir parça getiriyor — gerçek bir odun ateşli fırın, her sabah taze açılan makarna ve gün batımından sonra hızla dolan ışıklı açık teras."
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
     },
-    "location": { "en": "Il Mercato Old Market, Sharm El Sheikh", "ar": "منطقة السوق القديم، شرم الشيخ", "ru": "Старый рынок, Шарм-эль-Шейх", "de": "Altstadt-Markt, Sharm El Sheikh", "it": "Vecchio Mercato, Sharm El Sheikh", "tr": "Eski Çarşı, Sharm El Sheikh" },
-    "openHours": { "en": "5:00 PM – 1:00 AM daily", "ar": "٥:٠٠ مساءً – ١:٠٠ فجرًا يوميًا", "ru": "17:00–01:00 ежедневно", "de": "17:00–01:00 Uhr täglich", "it": "17:00–01:00 tutti i giorni", "tr": "Her gün 17:00–01:00" },
-    "menu": [
-      {
-        "category": { "en": "Pizza", "ar": "بيتزا", "ru": "Пицца", "de": "Pizza", "it": "Pizza", "tr": "Pizza" },
-        "items": [
-          { "name": { "en": "Margherita", "ar": "مارجريتا", "ru": "Маргарита", "de": "Margherita", "it": "Margherita", "tr": "Margherita" }, "description": { "en": "San Marzano tomato, fior di latte, fresh basil.", "ar": "طماطم سان مارزانو وجبن فيور دي لاتيه وريحان طازج.", "ru": "Томаты Сан-Марцано, моцарелла фьор ди латте, свежий базилик.", "de": "San-Marzano-Tomate, Fior di Latte, frisches Basilikum.", "it": "Pomodoro San Marzano, fior di latte, basilico fresco.", "tr": "San Marzano domates, fior di latte peyniri, taze fesleğen." }, "price": 280 },
-          { "name": { "en": "Quattro Formaggi", "ar": "كواترو فورماجي", "ru": "Кватро формаджи", "de": "Quattro Formaggi", "it": "Quattro Formaggi", "tr": "Quattro Formaggi" }, "description": { "en": "A blend of four Italian cheeses.", "ar": "مزيج من أربعة أنواع من الجبن الإيطالي.", "ru": "Смесь четырёх итальянских сыров.", "de": "Eine Mischung aus vier italienischen Käsesorten.", "it": "Un mix di quattro formaggi italiani.", "tr": "Dört İtalyan peynirinin karışımı." }, "price": 340 }
-        ]
-      },
-      {
-        "category": { "en": "Pasta", "ar": "المعكرونة", "ru": "Паста", "de": "Pasta", "it": "Pasta", "tr": "Makarna" },
-        "items": [
-          { "name": { "en": "Spaghetti alla Carbonara", "ar": "سباجيتي كاربونارا", "ru": "Спагетти карбонара", "de": "Spaghetti Carbonara", "it": "Spaghetti alla Carbonara", "tr": "Spagetti Carbonara" }, "description": { "en": "Guanciale, egg yolk, pecorino, black pepper.", "ar": "لحم خنزير مقدد، صفار بيض، جبن بيكورينو، فلفل أسود.", "ru": "Гуанчале, желток яйца, пекорино, чёрный перец.", "de": "Guanciale, Eigelb, Pecorino, schwarzer Pfeffer.", "it": "Guanciale, tuorlo d'uovo, pecorino, pepe nero.", "tr": "Guanciale, yumurta sarısı, pecorino peyniri, karabiber." }, "price": 360 }
-        ]
-      },
-      {
-        "category": { "en": "Desserts", "ar": "الحلويات", "ru": "Десерты", "de": "Desserts", "it": "Dolci", "tr": "Tatlılar" },
-        "items": [
-          { "name": { "en": "Tiramisu", "ar": "تيراميسو", "ru": "Тирамису", "de": "Tiramisu", "it": "Tiramisù", "tr": "Tiramisu" }, "description": { "en": "Made fresh in-house daily with espresso-soaked ladyfingers.", "ar": "يُحضّر طازجًا يوميًا ببسكويت الليدي فينجر المنقوع بالإسبريسو.", "ru": "Готовится свежим ежедневно с бисквитом, пропитанным эспрессо.", "de": "Täglich frisch zubereitet mit espressogetränkten Löffelbiskuits.", "it": "Preparato fresco ogni giorno con savoiardi imbevuti di espresso.", "tr": "Her gün taze hazırlanan, espresoya batırılmış kedi dili bisküvileriyle." }, "price": 160 }
-        ]
-      }
-    ]
+    "location": {
+      "en": "Sharks Bay, Sharm El Sheikh",
+      "ar": "خليج شارك باي، شرم الشيخ",
+      "ru": "Шаркс Бэй, Sharm El Sheikh",
+      "de": "Sharks Bay, Sharm El Sheikh",
+      "it": "Sharks Bay, Sharm El Sheikh",
+      "tr": "Sharks Bay, Sharm El Sheikh"
+    },
+    "address_full": "Sharks Bay Oasis Resort, Sharm El Sheikh 1, South Sinai Governorate 46619, Egypt",
+    "coordinates": {
+      "lat": 27.9527449,
+      "lng": 34.3864545
+    },
+    "phone": "+20 10 11151888",
+    "openHours": {
+      "en": "10:00 AM – 3:30 AM daily",
+      "ar": "10:00 AM – 3:30 AM يوميًا",
+      "ru": "10:00 AM – 3:30 AM ежедневно",
+      "de": "10:00 AM – 3:30 AM täglich",
+      "it": "10:00 AM – 3:30 AM tutti i giorni",
+      "tr": "10:00 AM – 3:30 AM her gün"
+    },
+    "google_place_id": "ChIJ3TqgLiJJUxQRsfn-7AsqFfs",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJ3TqgLiJJUxQRsfn-7AsqFfs",
+    "menu": []
   },
   {
     "id": "r3",
-    "category": "cafe",
-    "name": { "en": "Sahara Sunset Cafe", "ar": "مقهى صحارى صانسيت", "ru": "Кафе Sahara Sunset", "de": "Sahara Sunset Café", "it": "Sahara Sunset Café", "tr": "Sahara Sunset Kafe" },
-    "cuisine": { "en": "Cafe & Shisha", "ar": "مقهى وشيشة", "ru": "Кафе и кальян", "de": "Café & Shisha", "it": "Caffè e Narghilè", "tr": "Kafe ve Nargile" },
+    "category": "restaurant",
+    "name": {
+      "en": "Dananeer Restaurant Sea Food & Steak House",
+      "ar": "Dananeer Restaurant Sea Food & Steak House",
+      "ru": "Dananeer Restaurant Sea Food & Steak House",
+      "de": "Dananeer Restaurant Sea Food & Steak House",
+      "it": "Dananeer Restaurant Sea Food & Steak House",
+      "tr": "Dananeer Restaurant Sea Food & Steak House"
+    },
+    "cuisine": {
+      "en": "Seafood & Steak House",
+      "ar": "مأكولات بحرية وستيك هاوس",
+      "ru": "Морепродукты и стейк-хаус",
+      "de": "Meeresfrüchte & Steakhaus",
+      "it": "Pesce e steak house",
+      "tr": "Deniz Ürünleri ve Steakhouse"
+    },
     "priceLevel": 2,
-    "rating": 4.5, "reviews": 356,
-    "image": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80",
-    "images": ["https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1000&q=85", "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1000&q=85"],
+    "rating": 4.6,
+    "reviews": 1195,
+    "image": "",
+    "images": [],
     "description": {
-      "en": "Beach-level seating for sunset views, fresh juices and shisha.",
-      "ar": "جلسات على مستوى الشاطئ لمشاهدة الغروب مع عصائر طازجة وشيشة.",
-      "ru": "Места на уровне пляжа для видов на закат, свежие соки и кальян.",
-      "de": "Sitzplätze auf Strandniveau für Sonnenuntergangsblicke, frische Säfte und Shisha.",
-      "it": "Posti a livello spiaggia per la vista del tramonto, succhi freschi e narghilè.",
-      "tr": "Gün batımı manzarası için sahil seviyesinde oturma, taze meyve suları ve nargile."
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
     },
     "fullDescription": {
-      "en": "A low-key beachfront cafe with cushioned floor seating and a front-row view of the sunset over the Red Sea. Menu keeps it simple — fresh juices, Egyptian karkade tea, coffee and a wide shisha flavor list — making it a favorite wind-down spot after a day of diving or touring.",
-      "ar": "مقهى هادئ على الشاطئ بجلسات أرضية مريحة وإطلالة مباشرة على غروب الشمس فوق البحر الأحمر. القائمة بسيطة — عصائر طازجة وكركديه مصري وقهوة وقائمة واسعة من نكهات الشيشة — ما يجعله مكانًا مفضلًا للاسترخاء بعد يوم من الغوص أو الجولات.",
-      "ru": "Спокойное кафе на пляже с подушками на полу и видом на закат над Красным морем. Меню простое — свежие соки, египетский чай каркаде, кофе и большой выбор кальянов.",
-      "de": "Ein unaufgeregtes Strandcafé mit gepolsterten Bodensitzen und einem Blick in der ersten Reihe auf den Sonnenuntergang über dem Roten Meer.",
-      "it": "Un caffè sulla spiaggia rilassato con posti a sedere imbottiti sul pavimento e una vista in prima fila sul tramonto sul Mar Rosso.",
-      "tr": "Yastıklı yer oturağı ve Kızıldeniz üzerinde gün batımına ön sıra manzarası sunan sakin bir sahil kafesi."
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
     },
-    "location": { "en": "Ras Um Sid, Sharm El Sheikh", "ar": "رأس أم سيد، شرم الشيخ", "ru": "Рас-Ум-Сид, Шарм-эль-Шейх", "de": "Ras Um Sid, Sharm El Sheikh", "it": "Ras Um Sid, Sharm El Sheikh", "tr": "Ras Um Sid, Sharm El Sheikh" },
-    "openHours": { "en": "10:00 AM – 2:00 AM daily", "ar": "١٠:٠٠ صباحًا – ٢:٠٠ فجرًا يوميًا", "ru": "10:00–02:00 ежедневно", "de": "10:00–02:00 Uhr täglich", "it": "10:00–02:00 tutti i giorni", "tr": "Her gün 10:00–02:00" },
-    "menu": [
-      {
-        "category": { "en": "Drinks", "ar": "المشروبات", "ru": "Напитки", "de": "Getränke", "it": "Bevande", "tr": "İçecekler" },
-        "items": [
-          { "name": { "en": "Fresh Mango Juice", "ar": "عصير مانجو طازج", "ru": "Свежий манговый сок", "de": "Frischer Mangosaft", "it": "Succo di mango fresco", "tr": "Taze Mango Suyu" }, "description": { "en": "Blended fresh to order.", "ar": "يُحضّر طازجًا عند الطلب.", "ru": "Свежевыжатый по заказу.", "de": "Frisch auf Bestellung gemixt.", "it": "Frullato fresco su ordinazione.", "tr": "Sipariş üzerine taze karıştırılır." }, "price": 90 },
-          { "name": { "en": "Karkade (Hibiscus Tea)", "ar": "كركديه", "ru": "Каркаде (чай из гибискуса)", "de": "Karkade (Hibiskustee)", "it": "Karkadè (tè all'ibisco)", "tr": "Karkade (Hibiskus Çayı)" }, "description": { "en": "Served hot or iced.", "ar": "يُقدّم ساخنًا أو مثلجًا.", "ru": "Подаётся горячим или со льдом.", "de": "Heiß oder gekühlt serviert.", "it": "Servito caldo o freddo.", "tr": "Sıcak veya buzlu servis edilir." }, "price": 60 }
-        ]
-      },
-      {
-        "category": { "en": "Shisha", "ar": "الشيشة", "ru": "Кальян", "de": "Shisha", "it": "Narghilè", "tr": "Nargile" },
-        "items": [
-          { "name": { "en": "Double Apple Shisha", "ar": "شيشة تفاحتين", "ru": "Кальян «Двойное яблоко»", "de": "Shisha Doppelapfel", "it": "Narghilè doppia mela", "tr": "Çift Elma Nargile" }, "description": { "en": "The classic Egyptian shisha flavor.", "ar": "نكهة الشيشة المصرية الكلاسيكية.", "ru": "Классический египетский вкус кальяна.", "de": "Der klassische ägyptische Shisha-Geschmack.", "it": "Il classico gusto narghilè egiziano.", "tr": "Klasik Mısır nargile aroması." }, "price": 150 }
-        ]
-      }
-    ]
+    "location": {
+      "en": "Naama Bay, Sharm El Sheikh",
+      "ar": "خليج نعمة، شرم الشيخ",
+      "ru": "Наама Бэй, Sharm El Sheikh",
+      "de": "Naama Bay, Sharm El Sheikh",
+      "it": "Naama Bay, Sharm El Sheikh",
+      "tr": "Naama Bay, Sharm El Sheikh"
+    },
+    "address_full": "Hussein Salem, Naama Bay, Sharm El Sheikh 1, South Sinai Governorate 8763114, Egypt",
+    "coordinates": {
+      "lat": 27.9108788,
+      "lng": 34.325712
+    },
+    "phone": "+20 12 75434743",
+    "openHours": {
+      "en": "12:00 PM – 12:00 AM daily (Fri from 1:00 PM)",
+      "ar": "12:00 PM – 12:00 AM يوميًا (Fri from 1:00 PM)",
+      "ru": "12:00 PM – 12:00 AM ежедневно (Fri from 1:00 PM)",
+      "de": "12:00 PM – 12:00 AM täglich (Fri from 1:00 PM)",
+      "it": "12:00 PM – 12:00 AM tutti i giorni (Fri from 1:00 PM)",
+      "tr": "12:00 PM – 12:00 AM her gün (Fri from 1:00 PM)"
+    },
+    "google_place_id": "ChIJwctqgCs4UxQRoRFRtrsRJh8",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJwctqgCs4UxQRoRFRtrsRJh8",
+    "menu": []
   },
   {
     "id": "r4",
     "category": "restaurant",
-    "name": { "en": "Blue Reef Seafood Grill", "ar": "بلو ريف لمشاوي المأكولات البحرية", "ru": "Гриль-бар морепродуктов Blue Reef", "de": "Blue Reef Seafood Grill", "it": "Blue Reef Seafood Grill", "tr": "Blue Reef Deniz Ürünleri Izgara" },
-    "cuisine": { "en": "Seafood", "ar": "مأكولات بحرية", "ru": "Морепродукты", "de": "Meeresfrüchte", "it": "Pesce", "tr": "Deniz Ürünleri" },
-    "priceLevel": 4,
-    "rating": 4.8, "reviews": 521,
-    "image": "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80",
-    "images": ["https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1000&q=85", "https://images.unsplash.com/photo-1559847844-5315695dadae?auto=format&fit=crop&w=1000&q=85"],
+    "name": {
+      "en": "جزاره و مطعم المعلم",
+      "ar": "جزارة و مطعم المعلم",
+      "ru": "جزاره و مطعم المعلم",
+      "de": "جزاره و مطعم المعلم",
+      "it": "جزاره و مطعم المعلم",
+      "tr": "جزاره و مطعم المعلم"
+    },
+    "cuisine": {
+      "en": "Seafood & Grill",
+      "ar": "مأكولات بحرية ومشاوي",
+      "ru": "Морепродукты и гриль",
+      "de": "Meeresfrüchte & Grill",
+      "it": "Pesce e griglia",
+      "tr": "Deniz Ürünleri ve Izgara"
+    },
+    "priceLevel": 2,
+    "rating": 4.8,
+    "reviews": 360,
+    "image": "",
+    "images": [],
     "description": {
-      "en": "Daily catch grilled to order at a pier-side table over the water.",
-      "ar": "صيد اليوم مشوي حسب الطلب على طاولة بجوار الرصيف فوق الماء.",
-      "ru": "Свежий улов дня, приготовленный на гриле по заказу за столиком у воды.",
-      "de": "Täglicher Fang, auf Bestellung gegrillt, an einem Tisch am Pier über dem Wasser.",
-      "it": "Pescato del giorno grigliato su ordinazione a un tavolo sul molo, sopra l'acqua.",
-      "tr": "Su üzerindeki iskele masasında siparişe göre ızgara edilen günün balığı."
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
     },
     "fullDescription": {
-      "en": "Pick your fish straight from the ice display and watch it grilled over charcoal at this pier restaurant built out over the reef. Blue Reef is the splurge choice for a special dinner — whole grilled sea bass, jumbo prawns and a raw bar of oysters, with tables lit by lanterns after dark.",
-      "ar": "اختر سمكك مباشرة من عرض الثلج وشاهده يُشوى على الفحم في هذا المطعم المبني فوق الشعاب المرجانية على الرصيف. بلو ريف هو الخيار المميز لعشاء خاص — سمك قاروص كامل مشوي وجمبري كبير وبار محار طازج، مع طاولات مضاءة بالفوانيس بعد حلول الظلام.",
-      "ru": "Выберите рыбу прямо со льда и посмотрите, как её готовят на углях в этом ресторане на пирсе, построенном над рифом. Blue Reef — вариант для особого ужина.",
-      "de": "Wählen Sie Ihren Fisch direkt von der Eistheke und sehen Sie zu, wie er über Holzkohle gegrillt wird, in diesem über dem Riff gebauten Pier-Restaurant.",
-      "it": "Scegli il tuo pesce direttamente dal banco del ghiaccio e guardalo grigliare sulla brace in questo ristorante sul molo costruito sopra la barriera corallina.",
-      "tr": "Balığınızı buz vitrininden seçin ve resifin üzerine inşa edilmiş bu iskele restoranında kömürde ızgara edilişini izleyin."
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
     },
-    "location": { "en": "Ras Um Sid pier, Sharm El Sheikh", "ar": "رصيف رأس أم سيد، شرم الشيخ", "ru": "Пирс Рас-Ум-Сид, Шарм-эль-Шейх", "de": "Ras-Um-Sid-Pier, Sharm El Sheikh", "it": "Molo di Ras Um Sid, Sharm El Sheikh", "tr": "Ras Um Sid iskelesi, Sharm El Sheikh" },
-    "openHours": { "en": "6:00 PM – 12:00 AM daily", "ar": "٦:٠٠ مساءً – ١٢:٠٠ منتصف الليل يوميًا", "ru": "18:00–00:00 ежедневно", "de": "18:00–00:00 Uhr täglich", "it": "18:00–00:00 tutti i giorni", "tr": "Her gün 18:00–00:00" },
-    "menu": [
-      {
-        "category": { "en": "From the Grill", "ar": "من الشواية", "ru": "С гриля", "de": "Vom Grill", "it": "Dalla griglia", "tr": "Izgaradan" },
-        "items": [
-          { "name": { "en": "Whole Grilled Sea Bass", "ar": "قاروص كامل مشوي", "ru": "Морской окунь на гриле целиком", "de": "Gegrillter ganzer Wolfsbarsch", "it": "Branzino intero grigliato", "tr": "Bütün Izgara Levrek" }, "description": { "en": "Priced per kg, served with rice and salad.", "ar": "السعر بالكيلو، يُقدّم مع الأرز والسلطة.", "ru": "Цена за кг, подаётся с рисом и салатом.", "de": "Preis pro kg, serviert mit Reis und Salat.", "it": "Prezzo al kg, servito con riso e insalata.", "tr": "Kilogram başına fiyatlandırılır, pirinç ve salata ile servis edilir." }, "price": 950 },
-          { "name": { "en": "Jumbo Grilled Prawns", "ar": "جمبري جامبو مشوي", "ru": "Гигантские креветки на гриле", "de": "Gegrillte Riesengarnelen", "it": "Gamberoni grigliati", "tr": "Izgara Jumbo Karides" }, "description": { "en": "Six pieces, garlic butter on the side.", "ar": "٦ قطع مع زبدة بالثوم بجانبها.", "ru": "Шесть штук, чесночное масло отдельно.", "de": "Sechs Stück, Knoblauchbutter separat.", "it": "Sei pezzi, burro all'aglio a parte.", "tr": "Altı adet, yanında sarımsaklı tereyağı." }, "price": 620 }
-        ]
-      },
-      {
-        "category": { "en": "Raw Bar", "ar": "بار المحار", "ru": "Устрицы", "de": "Austernbar", "it": "Bar di crudi", "tr": "Çiğ Bar" },
-        "items": [
-          { "name": { "en": "Fresh Oysters (6 pcs)", "ar": "محار طازج (٦ قطع)", "ru": "Свежие устрицы (6 шт)", "de": "Frische Austern (6 Stk.)", "it": "Ostriche fresche (6 pz)", "tr": "Taze İstiridye (6 adet)" }, "description": { "en": "Served on ice with lemon.", "ar": "تُقدّم على الثلج مع الليمون.", "ru": "Подаются на льду с лимоном.", "de": "Serviert auf Eis mit Zitrone.", "it": "Servite su ghiaccio con limone.", "tr": "Buz üzerinde limonla servis edilir." }, "price": 540 }
-        ]
-      }
-    ]
+    "location": {
+      "en": "Naama Bay, Sharm El Sheikh",
+      "ar": "خليج نعمة، شرم الشيخ",
+      "ru": "Наама Бэй, Sharm El Sheikh",
+      "de": "Naama Bay, Sharm El Sheikh",
+      "it": "Naama Bay, Sharm El Sheikh",
+      "tr": "Naama Bay, Sharm El Sheikh"
+    },
+    "address_full": "El-Salam, Naama Bay, Sharm El Sheikh 1, South Sinai Governorate 8761334, Egypt",
+    "coordinates": {
+      "lat": 27.9105886,
+      "lng": 34.316618
+    },
+    "phone": "+20 10 92746519",
+    "openHours": {
+      "en": "11:00 AM – 3:00 AM (Fri: 24 hours)",
+      "ar": "11:00 AM – 3:00 AM (Fri: 24 hours)",
+      "ru": "11:00 AM – 3:00 AM (Fri: 24 hours)",
+      "de": "11:00 AM – 3:00 AM (Fri: 24 hours)",
+      "it": "11:00 AM – 3:00 AM (Fri: 24 hours)",
+      "tr": "11:00 AM – 3:00 AM (Fri: 24 hours)"
+    },
+    "google_place_id": "ChIJ027UPwA5UxQRoyYVU17SRhw",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJ027UPwA5UxQRoyYVU17SRhw",
+    "menu": []
+  },
+  {
+    "id": "r5",
+    "category": "restaurant",
+    "name": {
+      "en": "Egyptians Restaurant Naama Bay",
+      "ar": "مطعم المصريين خليج نعمة",
+      "ru": "Egyptians Restaurant Naama Bay",
+      "de": "Egyptians Restaurant Naama Bay",
+      "it": "Egyptians Restaurant Naama Bay",
+      "tr": "Egyptians Restaurant Naama Bay"
+    },
+    "cuisine": {
+      "en": "Egyptian",
+      "ar": "مصري",
+      "ru": "Египетская",
+      "de": "Ägyptisch",
+      "it": "Egiziana",
+      "tr": "Mısır"
+    },
+    "priceLevel": 2,
+    "rating": 4.0,
+    "reviews": 2760,
+    "image": "",
+    "images": [],
+    "description": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "fullDescription": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "location": {
+      "en": "Naama Bay, Sharm El Sheikh",
+      "ar": "خليج نعمة، شرم الشيخ",
+      "ru": "Наама Бэй, Sharm El Sheikh",
+      "de": "Naama Bay, Sharm El Sheikh",
+      "it": "Naama Bay, Sharm El Sheikh",
+      "tr": "Naama Bay, Sharm El Sheikh"
+    },
+    "address_full": "Al Sultan Qaboos, Naama Bay, Sharm El Sheikh, South Sinai Governorate 8763015, Egypt",
+    "coordinates": {
+      "lat": 27.9106209,
+      "lng": 34.3230171
+    },
+    "phone": "+20 10 26699642",
+    "openHours": {
+      "en": "12:00 PM – 5:00 AM daily",
+      "ar": "12:00 PM – 5:00 AM يوميًا",
+      "ru": "12:00 PM – 5:00 AM ежедневно",
+      "de": "12:00 PM – 5:00 AM täglich",
+      "it": "12:00 PM – 5:00 AM tutti i giorni",
+      "tr": "12:00 PM – 5:00 AM her gün"
+    },
+    "google_place_id": "ChIJL4o1VCw4UxQRVw0Rbdrivro",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJL4o1VCw4UxQRVw0Rbdrivro",
+    "menu": []
+  },
+  {
+    "id": "r6",
+    "category": "restaurant",
+    "name": {
+      "en": "Verde Basilico Italian Restaurant",
+      "ar": "Verde Basilico Italian Restaurant",
+      "ru": "Verde Basilico Italian Restaurant",
+      "de": "Verde Basilico Italian Restaurant",
+      "it": "Verde Basilico Italian Restaurant",
+      "tr": "Verde Basilico Italian Restaurant"
+    },
+    "cuisine": {
+      "en": "Italian",
+      "ar": "إيطالي",
+      "ru": "Итальянская",
+      "de": "Italienisch",
+      "it": "Italiana",
+      "tr": "İtalyan"
+    },
+    "priceLevel": 2,
+    "rating": 4.8,
+    "reviews": 316,
+    "image": "",
+    "images": [],
+    "description": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "fullDescription": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "location": {
+      "en": "Old Market, Sharm El Sheikh",
+      "ar": "السوق القديم، شرم الشيخ",
+      "ru": "Старый рынок, Sharm El Sheikh",
+      "de": "Altstadt-Markt, Sharm El Sheikh",
+      "it": "Vecchio Mercato, Sharm El Sheikh",
+      "tr": "Eski Çarşı, Sharm El Sheikh"
+    },
+    "address_full": "El Souk El Kadim (Old Market), Sharm El Sheikh 1, South Sinai Governorate 8761130, Egypt",
+    "coordinates": {
+      "lat": 27.8651394,
+      "lng": 34.2935148
+    },
+    "phone": "+20 11 17704710",
+    "openHours": {
+      "en": "6:00 PM – 12:00 AM daily",
+      "ar": "6:00 PM – 12:00 AM يوميًا",
+      "ru": "6:00 PM – 12:00 AM ежедневно",
+      "de": "6:00 PM – 12:00 AM täglich",
+      "it": "6:00 PM – 12:00 AM tutti i giorni",
+      "tr": "6:00 PM – 12:00 AM her gün"
+    },
+    "google_place_id": "ChIJEaSrwuA5UxQRe50axK0CGZQ",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJEaSrwuA5UxQRe50axK0CGZQ",
+    "menu": []
+  },
+  {
+    "id": "r7",
+    "category": "restaurant",
+    "name": {
+      "en": "Boharat Restaurant",
+      "ar": "Boharat Restaurant",
+      "ru": "Boharat Restaurant",
+      "de": "Boharat Restaurant",
+      "it": "Boharat Restaurant",
+      "tr": "Boharat Restaurant"
+    },
+    "cuisine": {
+      "en": "Grill & Vegan",
+      "ar": "مشاوي ونباتي",
+      "ru": "Гриль и веганская кухня",
+      "de": "Grill & Vegan",
+      "it": "Griglia e vegano",
+      "tr": "Izgara ve Vegan"
+    },
+    "priceLevel": 2,
+    "rating": 4.5,
+    "reviews": 555,
+    "image": "",
+    "images": [],
+    "description": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "fullDescription": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "location": {
+      "en": "Naama Bay, Sharm El Sheikh",
+      "ar": "خليج نعمة، شرم الشيخ",
+      "ru": "Наама Бэй, Sharm El Sheikh",
+      "de": "Naama Bay, Sharm El Sheikh",
+      "it": "Naama Bay, Sharm El Sheikh",
+      "tr": "Naama Bay, Sharm El Sheikh"
+    },
+    "address_full": "Naama Bay, Sharm El Sheikh 2, South Sinai Governorate 8763021, Egypt",
+    "coordinates": {
+      "lat": 27.9080977,
+      "lng": 34.3242445
+    },
+    "phone": "+20 15 03566977",
+    "openHours": {
+      "en": "1:00 PM – 1:00 AM daily",
+      "ar": "1:00 PM – 1:00 AM يوميًا",
+      "ru": "1:00 PM – 1:00 AM ежедневно",
+      "de": "1:00 PM – 1:00 AM täglich",
+      "it": "1:00 PM – 1:00 AM tutti i giorni",
+      "tr": "1:00 PM – 1:00 AM her gün"
+    },
+    "google_place_id": "ChIJg0evtyw4UxQRBRtXkOeEXdI",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJg0evtyw4UxQRBRtXkOeEXdI",
+    "menu": []
+  },
+  {
+    "id": "r8",
+    "category": "restaurant",
+    "name": {
+      "en": "Reef Beach",
+      "ar": "Reef Beach",
+      "ru": "Reef Beach",
+      "de": "Reef Beach",
+      "it": "Reef Beach",
+      "tr": "Reef Beach"
+    },
+    "cuisine": {
+      "en": "Beach Restaurant",
+      "ar": "مطعم على الشاطئ",
+      "ru": "Пляжный ресторан",
+      "de": "Strandrestaurant",
+      "it": "Ristorante sulla spiaggia",
+      "tr": "Sahil Restoranı"
+    },
+    "priceLevel": 2,
+    "rating": 4.4,
+    "reviews": 2043,
+    "image": "",
+    "images": [],
+    "description": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "fullDescription": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "location": {
+      "en": "Ras Um Sid, Sharm El Sheikh",
+      "ar": "رأس أم سيد، شرم الشيخ",
+      "ru": "Рас-Ум-Сид, Sharm El Sheikh",
+      "de": "Ras Um Sid, Sharm El Sheikh",
+      "it": "Ras Um Sid, Sharm El Sheikh",
+      "tr": "Ras Um Sid, Sharm El Sheikh"
+    },
+    "address_full": "Salah Taher, Sharm El Sheikh 1, South Sinai Governorate 8762640, Egypt",
+    "coordinates": {
+      "lat": 27.8709671,
+      "lng": 34.3226624
+    },
+    "phone": "+20 12 24149590",
+    "openHours": {
+      "en": "8:00 AM – 6:00 PM daily",
+      "ar": "8:00 AM – 6:00 PM يوميًا",
+      "ru": "8:00 AM – 6:00 PM ежедневно",
+      "de": "8:00 AM – 6:00 PM täglich",
+      "it": "8:00 AM – 6:00 PM tutti i giorni",
+      "tr": "8:00 AM – 6:00 PM her gün"
+    },
+    "google_place_id": "ChIJ5bA8nvk5UxQRkx982c-hBHI",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJ5bA8nvk5UxQRkx982c-hBHI",
+    "menu": []
+  },
+  {
+    "id": "r9",
+    "category": "restaurant",
+    "name": {
+      "en": "Buddha-Bar Sharm El-Sheikh",
+      "ar": "Buddha-Bar Sharm El-Sheikh",
+      "ru": "Buddha-Bar Sharm El-Sheikh",
+      "de": "Buddha-Bar Sharm El-Sheikh",
+      "it": "Buddha-Bar Sharm El-Sheikh",
+      "tr": "Buddha-Bar Sharm El-Sheikh"
+    },
+    "cuisine": {
+      "en": "Asian Fine Dining",
+      "ar": "مطبخ آسيوي فاخر",
+      "ru": "Изысканная азиатская кухня",
+      "de": "Gehobene asiatische Küche",
+      "it": "Cucina asiatica raffinata",
+      "tr": "Asya Fine Dining"
+    },
+    "priceLevel": "",
+    "rating": 4.0,
+    "reviews": 687,
+    "image": "",
+    "images": [],
+    "description": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "fullDescription": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "location": {
+      "en": "Naama Bay, Sharm El Sheikh",
+      "ar": "خليج نعمة، شرم الشيخ",
+      "ru": "Наама Бэй, Sharm El Sheikh",
+      "de": "Naama Bay, Sharm El Sheikh",
+      "it": "Naama Bay, Sharm El Sheikh",
+      "tr": "Naama Bay, Sharm El Sheikh"
+    },
+    "address_full": "Naama Bay, Sharm El Sheikh 1, South Sinai Governorate 46628, Egypt",
+    "coordinates": {
+      "lat": 27.9082936,
+      "lng": 34.3240722
+    },
+    "phone": "+20 12 82041567",
+    "openHours": {
+      "en": "4:00 PM – 3:00 AM daily",
+      "ar": "4:00 PM – 3:00 AM يوميًا",
+      "ru": "4:00 PM – 3:00 AM ежедневно",
+      "de": "4:00 PM – 3:00 AM täglich",
+      "it": "4:00 PM – 3:00 AM tutti i giorni",
+      "tr": "4:00 PM – 3:00 AM her gün"
+    },
+    "google_place_id": "ChIJbYPVxiw4UxQROi5qZc3PBIA",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJbYPVxiw4UxQROi5qZc3PBIA",
+    "menu": []
+  },
+  {
+    "id": "r10",
+    "category": "restaurant",
+    "name": {
+      "en": "Albaladi Restaurant",
+      "ar": "مطعم البلدي",
+      "ru": "Albaladi Restaurant",
+      "de": "Albaladi Restaurant",
+      "it": "Albaladi Restaurant",
+      "tr": "Albaladi Restaurant"
+    },
+    "cuisine": {
+      "en": "Egyptian",
+      "ar": "مصري",
+      "ru": "Египетская",
+      "de": "Ägyptisch",
+      "it": "Egiziana",
+      "tr": "Mısır"
+    },
+    "priceLevel": 2,
+    "rating": 4.0,
+    "reviews": 829,
+    "image": "",
+    "images": [],
+    "description": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "fullDescription": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "location": {
+      "en": "Naama Bay, Sharm El Sheikh",
+      "ar": "خليج نعمة، شرم الشيخ",
+      "ru": "Наама Бэй, Sharm El Sheikh",
+      "de": "Naama Bay, Sharm El Sheikh",
+      "it": "Naama Bay, Sharm El Sheikh",
+      "tr": "Naama Bay, Sharm El Sheikh"
+    },
+    "address_full": "Naama Bay, El-Salam, Sharm El Sheikh 1, South Sinai Governorate 8763015, Egypt",
+    "coordinates": {
+      "lat": 27.9115177,
+      "lng": 34.3201471
+    },
+    "phone": "+20 12 83200227",
+    "openHours": {
+      "en": "Open 24 hours daily",
+      "ar": "مفتوح ٢٤ ساعة يوميًا",
+      "ru": "Круглосуточно, ежедневно",
+      "de": "Täglich 24 Stunden geöffnet",
+      "it": "Aperto 24 ore su 24, tutti i giorni",
+      "tr": "Her gün 24 saat açık"
+    },
+    "google_place_id": "ChIJY3VmmTI4UxQRtyPguCUXxeI",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJY3VmmTI4UxQRtyPguCUXxeI",
+    "menu": []
+  },
+  {
+    "id": "r11",
+    "category": "restaurant",
+    "name": {
+      "en": "Sky Bar & Lounge",
+      "ar": "Sky Bar & Lounge",
+      "ru": "Sky Bar & Lounge",
+      "de": "Sky Bar & Lounge",
+      "it": "Sky Bar & Lounge",
+      "tr": "Sky Bar & Lounge"
+    },
+    "cuisine": {
+      "en": "Bar & Grill",
+      "ar": "بار ومشاوي",
+      "ru": "Бар и гриль",
+      "de": "Bar & Grill",
+      "it": "Bar e griglia",
+      "tr": "Bar ve Izgara"
+    },
+    "priceLevel": "",
+    "rating": 4.7,
+    "reviews": 180,
+    "image": "",
+    "images": [],
+    "description": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "fullDescription": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "location": {
+      "en": "Naama Bay, Sharm El Sheikh",
+      "ar": "خليج نعمة، شرم الشيخ",
+      "ru": "Наама Бэй, Sharm El Sheikh",
+      "de": "Naama Bay, Sharm El Sheikh",
+      "it": "Naama Bay, Sharm El Sheikh",
+      "tr": "Naama Bay, Sharm El Sheikh"
+    },
+    "address_full": "Naama Bay, Sharm El Sheikh 1, South Sinai Governorate 46911, Egypt",
+    "coordinates": {
+      "lat": 27.9084485,
+      "lng": 34.3264214
+    },
+    "phone": "+20 12 82041567",
+    "openHours": {
+      "en": "5:00 PM – 2:00 AM daily",
+      "ar": "5:00 PM – 2:00 AM يوميًا",
+      "ru": "5:00 PM – 2:00 AM ежедневно",
+      "de": "5:00 PM – 2:00 AM täglich",
+      "it": "5:00 PM – 2:00 AM tutti i giorni",
+      "tr": "5:00 PM – 2:00 AM her gün"
+    },
+    "google_place_id": "ChIJ4Xk7JdM5UxQR6RXj3FPOTJM",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJ4Xk7JdM5UxQR6RXj3FPOTJM",
+    "menu": []
+  },
+  {
+    "id": "r12",
+    "category": "restaurant",
+    "name": {
+      "en": "Pomodoro",
+      "ar": "Pomodoro",
+      "ru": "Pomodoro",
+      "de": "Pomodoro",
+      "it": "Pomodoro",
+      "tr": "Pomodoro"
+    },
+    "cuisine": {
+      "en": "Italian",
+      "ar": "إيطالي",
+      "ru": "Итальянская",
+      "de": "Italienisch",
+      "it": "Italiana",
+      "tr": "İtalyan"
+    },
+    "priceLevel": 2,
+    "rating": 4.5,
+    "reviews": 618,
+    "image": "",
+    "images": [],
+    "description": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "fullDescription": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "location": {
+      "en": "Naama Bay, Sharm El Sheikh",
+      "ar": "خليج نعمة، شرم الشيخ",
+      "ru": "Наама Бэй, Sharm El Sheikh",
+      "de": "Naama Bay, Sharm El Sheikh",
+      "it": "Naama Bay, Sharm El Sheikh",
+      "tr": "Naama Bay, Sharm El Sheikh"
+    },
+    "address_full": "St Naama Bay, Malek Al Bahrein, Sharm El Sheikh 1, South Sinai Governorate 46619, Egypt",
+    "coordinates": {
+      "lat": 27.9095081,
+      "lng": 34.3251488
+    },
+    "phone": "+20 10 00003173",
+    "openHours": {
+      "en": "6:30–10:30 AM & 12:30–11:30 PM daily",
+      "ar": "6:30–10:30 AM & 12:30–11:30 PM يوميًا",
+      "ru": "6:30–10:30 AM & 12:30–11:30 PM ежедневно",
+      "de": "6:30–10:30 AM & 12:30–11:30 PM täglich",
+      "it": "6:30–10:30 AM & 12:30–11:30 PM tutti i giorni",
+      "tr": "6:30–10:30 AM & 12:30–11:30 PM her gün"
+    },
+    "google_place_id": "ChIJQzRzgyw4UxQRVcqjgBXsNmg",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJQzRzgyw4UxQRVcqjgBXsNmg",
+    "menu": []
+  },
+  {
+    "id": "r13",
+    "category": "restaurant",
+    "name": {
+      "en": "La Rose Seafood",
+      "ar": "La Rose Seafood",
+      "ru": "La Rose Seafood",
+      "de": "La Rose Seafood",
+      "it": "La Rose Seafood",
+      "tr": "La Rose Seafood"
+    },
+    "cuisine": {
+      "en": "Seafood",
+      "ar": "مأكولات بحرية",
+      "ru": "Морепродукты",
+      "de": "Meeresfrüchte",
+      "it": "Pesce",
+      "tr": "Deniz Ürünleri"
+    },
+    "priceLevel": "",
+    "rating": 4.0,
+    "reviews": 231,
+    "image": "",
+    "images": [],
+    "description": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "fullDescription": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "location": {
+      "en": "Naama Bay, Sharm El Sheikh",
+      "ar": "خليج نعمة، شرم الشيخ",
+      "ru": "Наама Бэй, Sharm El Sheikh",
+      "de": "Naama Bay, Sharm El Sheikh",
+      "it": "Naama Bay, Sharm El Sheikh",
+      "tr": "Naama Bay, Sharm El Sheikh"
+    },
+    "address_full": "Naama Center, King of Bahrain St, Naama Bay, Sharm El Sheikh 1, South Sinai Governorate 8763113, Egypt",
+    "coordinates": {
+      "lat": 27.9083458,
+      "lng": 34.3246811
+    },
+    "phone": "+20 12 27369333",
+    "openHours": {
+      "en": "1:00 PM – 2:00 AM daily",
+      "ar": "1:00 PM – 2:00 AM يوميًا",
+      "ru": "1:00 PM – 2:00 AM ежедневно",
+      "de": "1:00 PM – 2:00 AM täglich",
+      "it": "1:00 PM – 2:00 AM tutti i giorni",
+      "tr": "1:00 PM – 2:00 AM her gün"
+    },
+    "google_place_id": "ChIJuYzmo785UxQR90ca-hTPcsA",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJuYzmo785UxQR90ca-hTPcsA",
+    "menu": []
+  },
+  {
+    "id": "r14",
+    "category": "restaurant",
+    "name": {
+      "en": "Ayosha Restaurant",
+      "ar": "Ayosha Restaurant",
+      "ru": "Ayosha Restaurant",
+      "de": "Ayosha Restaurant",
+      "it": "Ayosha Restaurant",
+      "tr": "Ayosha Restaurant"
+    },
+    "cuisine": {
+      "en": "Egyptian",
+      "ar": "مصري",
+      "ru": "Египетская",
+      "de": "Ägyptisch",
+      "it": "Egiziana",
+      "tr": "Mısır"
+    },
+    "priceLevel": "",
+    "rating": 4.6,
+    "reviews": 602,
+    "image": "",
+    "images": [],
+    "description": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "fullDescription": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "location": {
+      "en": "Naama Bay, Sharm El Sheikh",
+      "ar": "خليج نعمة، شرم الشيخ",
+      "ru": "Наама Бэй, Sharm El Sheikh",
+      "de": "Naama Bay, Sharm El Sheikh",
+      "it": "Naama Bay, Sharm El Sheikh",
+      "tr": "Naama Bay, Sharm El Sheikh"
+    },
+    "address_full": "Al General Farid, Ezzat Street, Naama Bay, Sharm El Sheikh 1, South Sinai Governorate 46911, Egypt",
+    "coordinates": {
+      "lat": 27.9092809,
+      "lng": 34.3238684
+    },
+    "phone": "+20 12 28689666",
+    "openHours": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "google_place_id": "ChIJ2xmUpvQ5UxQRRASztKab7-w",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJ2xmUpvQ5UxQRRASztKab7-w",
+    "menu": []
+  },
+  {
+    "id": "r15",
+    "category": "restaurant",
+    "name": {
+      "en": "Camel Bar & Rooftop",
+      "ar": "Camel Bar & Rooftop",
+      "ru": "Camel Bar & Rooftop",
+      "de": "Camel Bar & Rooftop",
+      "it": "Camel Bar & Rooftop",
+      "tr": "Camel Bar & Rooftop"
+    },
+    "cuisine": {
+      "en": "Bar",
+      "ar": "بار",
+      "ru": "Бар",
+      "de": "Bar",
+      "it": "Bar",
+      "tr": "Bar"
+    },
+    "priceLevel": "",
+    "rating": 4.7,
+    "reviews": 360,
+    "image": "",
+    "images": [],
+    "description": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "fullDescription": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "location": {
+      "en": "Naama Bay, Sharm El Sheikh",
+      "ar": "خليج نعمة، شرم الشيخ",
+      "ru": "Наама Бэй, Sharm El Sheikh",
+      "de": "Naama Bay, Sharm El Sheikh",
+      "it": "Naama Bay, Sharm El Sheikh",
+      "tr": "Naama Bay, Sharm El Sheikh"
+    },
+    "address_full": "St Naama Bay, Malek Al Bahrein, Sharm El Sheikh 1, South Sinai Governorate 46619, Egypt",
+    "coordinates": {
+      "lat": 27.9094075,
+      "lng": 34.324983
+    },
+    "phone": "+20 69 3600700",
+    "openHours": {
+      "en": "6:00 PM – 1:00 AM daily",
+      "ar": "6:00 PM – 1:00 AM يوميًا",
+      "ru": "6:00 PM – 1:00 AM ежедневно",
+      "de": "6:00 PM – 1:00 AM täglich",
+      "it": "6:00 PM – 1:00 AM tutti i giorni",
+      "tr": "6:00 PM – 1:00 AM her gün"
+    },
+    "google_place_id": "ChIJT_idgyw4UxQRcj7kuPqzB0I",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJT_idgyw4UxQRcj7kuPqzB0I",
+    "menu": []
+  },
+  {
+    "id": "r16",
+    "category": "restaurant",
+    "name": {
+      "en": "Ristorante La Terraza (Marina Sharm Hotel)",
+      "ar": "Ristorante La Terraza (Marina Sharm Hotel)",
+      "ru": "Ristorante La Terraza (Marina Sharm Hotel)",
+      "de": "Ristorante La Terraza (Marina Sharm Hotel)",
+      "it": "Ristorante La Terraza (Marina Sharm Hotel)",
+      "tr": "Ristorante La Terraza (Marina Sharm Hotel)"
+    },
+    "cuisine": {
+      "en": "Italian",
+      "ar": "إيطالي",
+      "ru": "Итальянская",
+      "de": "Italienisch",
+      "it": "Italiana",
+      "tr": "İtalyan"
+    },
+    "priceLevel": "",
+    "rating": 5.0,
+    "reviews": 4,
+    "image": "",
+    "images": [],
+    "description": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "fullDescription": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "location": {
+      "en": "Naama Bay, Sharm El Sheikh",
+      "ar": "خليج نعمة، شرم الشيخ",
+      "ru": "Наама Бэй, Sharm El Sheikh",
+      "de": "Naama Bay, Sharm El Sheikh",
+      "it": "Naama Bay, Sharm El Sheikh",
+      "tr": "Naama Bay, Sharm El Sheikh"
+    },
+    "address_full": "Naama Bay, Sharm El Sheikh 1, Red Sea Governorate 8763102, Egypt",
+    "coordinates": {
+      "lat": 27.9077749,
+      "lng": 34.3271559
+    },
+    "phone": "+20 11 31549968",
+    "openHours": {
+      "en": "5:30 – 11:30 PM daily",
+      "ar": "5:30 – 11:30 PM يوميًا",
+      "ru": "5:30 – 11:30 PM ежедневно",
+      "de": "5:30 – 11:30 PM täglich",
+      "it": "5:30 – 11:30 PM tutti i giorni",
+      "tr": "5:30 – 11:30 PM her gün"
+    },
+    "google_place_id": "ChIJ5wBn05Y5UxQRDIlhIv_XDn8",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJ5wBn05Y5UxQRDIlhIv_XDn8",
+    "menu": []
+  },
+  {
+    "id": "r17",
+    "category": "restaurant",
+    "name": {
+      "en": "El Kababgy (Movenpick)",
+      "ar": "El Kababgy (Movenpick)",
+      "ru": "El Kababgy (Movenpick)",
+      "de": "El Kababgy (Movenpick)",
+      "it": "El Kababgy (Movenpick)",
+      "tr": "El Kababgy (Movenpick)"
+    },
+    "cuisine": {
+      "en": "Grill",
+      "ar": "مشاوي",
+      "ru": "Гриль",
+      "de": "Grill",
+      "it": "Griglia",
+      "tr": "Izgara"
+    },
+    "priceLevel": 4,
+    "rating": 4.5,
+    "reviews": 160,
+    "image": "",
+    "images": [],
+    "description": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "fullDescription": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "location": {
+      "en": "Naama Bay, Sharm El Sheikh",
+      "ar": "خليج نعمة، شرم الشيخ",
+      "ru": "Наама Бэй, Sharm El Sheikh",
+      "de": "Naama Bay, Sharm El Sheikh",
+      "it": "Naama Bay, Sharm El Sheikh",
+      "tr": "Naama Bay, Sharm El Sheikh"
+    },
+    "address_full": "Naama Bay, Sharm El Sheikh 1, South Sinai Governorate 46619, Egypt",
+    "coordinates": {
+      "lat": 27.9137381,
+      "lng": 34.3404781
+    },
+    "phone": "+20 10 80099042",
+    "openHours": {
+      "en": "6:30 – 10:30 PM daily",
+      "ar": "6:30 – 10:30 PM يوميًا",
+      "ru": "6:30 – 10:30 PM ежедневно",
+      "de": "6:30 – 10:30 PM täglich",
+      "it": "6:30 – 10:30 PM tutti i giorni",
+      "tr": "6:30 – 10:30 PM her gün"
+    },
+    "google_place_id": "ChIJMSTi2o83UxQRThbvYkoB1cM",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJMSTi2o83UxQRThbvYkoB1cM",
+    "menu": []
+  },
+  {
+    "id": "r18",
+    "category": "restaurant",
+    "name": {
+      "en": "Kalimera Sharm El Sheikh",
+      "ar": "Kalimera Sharm El Sheikh",
+      "ru": "Kalimera Sharm El Sheikh",
+      "de": "Kalimera Sharm El Sheikh",
+      "it": "Kalimera Sharm El Sheikh",
+      "tr": "Kalimera Sharm El Sheikh"
+    },
+    "cuisine": {
+      "en": "Beach Restaurant",
+      "ar": "مطعم على الشاطئ",
+      "ru": "Пляжный ресторан",
+      "de": "Strandrestaurant",
+      "it": "Ristorante sulla spiaggia",
+      "tr": "Sahil Restoranı"
+    },
+    "priceLevel": 2,
+    "rating": 4.3,
+    "reviews": 547,
+    "image": "",
+    "images": [],
+    "description": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "fullDescription": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "location": {
+      "en": "Naama Bay, Sharm El Sheikh",
+      "ar": "خليج نعمة، شرم الشيخ",
+      "ru": "Наама Бэй, Sharm El Sheikh",
+      "de": "Naama Bay, Sharm El Sheikh",
+      "it": "Naama Bay, Sharm El Sheikh",
+      "tr": "Naama Bay, Sharm El Sheikh"
+    },
+    "address_full": "Al Sultan Qabos-Mashaba, Sharm El Sheikh 2, South Sinai Governorate 8763102, Egypt",
+    "coordinates": {
+      "lat": 27.9072828,
+      "lng": 34.3277939
+    },
+    "phone": "+20 12 02168888",
+    "openHours": {
+      "en": "Open 24 hours daily",
+      "ar": "مفتوح ٢٤ ساعة يوميًا",
+      "ru": "Круглосуточно, ежедневно",
+      "de": "Täglich 24 Stunden geöffnet",
+      "it": "Aperto 24 ore su 24, tutti i giorni",
+      "tr": "Her gün 24 saat açık"
+    },
+    "google_place_id": "ChIJFx4CeZQ5UxQRHnF0TMIU5bw",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJFx4CeZQ5UxQRHnF0TMIU5bw",
+    "menu": []
+  },
+  {
+    "id": "r19",
+    "category": "restaurant",
+    "name": {
+      "en": "Fares Seafood Restaurant – Old Market",
+      "ar": "Fares Seafood Restaurant – Old Market",
+      "ru": "Fares Seafood Restaurant – Old Market",
+      "de": "Fares Seafood Restaurant – Old Market",
+      "it": "Fares Seafood Restaurant – Old Market",
+      "tr": "Fares Seafood Restaurant – Old Market"
+    },
+    "cuisine": {
+      "en": "Seafood",
+      "ar": "مأكولات بحرية",
+      "ru": "Морепродукты",
+      "de": "Meeresfrüchte",
+      "it": "Pesce",
+      "tr": "Deniz Ürünleri"
+    },
+    "priceLevel": 4,
+    "rating": 4.2,
+    "reviews": 5429,
+    "image": "",
+    "images": [],
+    "description": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "fullDescription": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "location": {
+      "en": "Old Market, Sharm El Sheikh",
+      "ar": "السوق القديم، شرم الشيخ",
+      "ru": "Старый рынок, Sharm El Sheikh",
+      "de": "Altstadt-Markt, Sharm El Sheikh",
+      "it": "Vecchio Mercato, Sharm El Sheikh",
+      "tr": "Eski Çarşı, Sharm El Sheikh"
+    },
+    "address_full": "Old Market, Sharm El Sheikh 1, South Sinai Governorate 8761131, Egypt",
+    "coordinates": {
+      "lat": 27.8665886,
+      "lng": 34.2940221
+    },
+    "phone": "+20 10 24870004",
+    "openHours": {
+      "en": "11:00 AM – 1:00 AM daily",
+      "ar": "11:00 AM – 1:00 AM يوميًا",
+      "ru": "11:00 AM – 1:00 AM ежедневно",
+      "de": "11:00 AM – 1:00 AM täglich",
+      "it": "11:00 AM – 1:00 AM tutti i giorni",
+      "tr": "11:00 AM – 1:00 AM her gün"
+    },
+    "google_place_id": "ChIJsU9SFCM6UxQR9Qk1gDPwKwU",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJsU9SFCM6UxQR9Qk1gDPwKwU",
+    "menu": []
+  },
+  {
+    "id": "r20",
+    "category": "restaurant",
+    "name": {
+      "en": "Fish Mart Seafood",
+      "ar": "Fish Mart Seafood",
+      "ru": "Fish Mart Seafood",
+      "de": "Fish Mart Seafood",
+      "it": "Fish Mart Seafood",
+      "tr": "Fish Mart Seafood"
+    },
+    "cuisine": {
+      "en": "Seafood",
+      "ar": "مأكولات بحرية",
+      "ru": "Морепродукты",
+      "de": "Meeresfrüchte",
+      "it": "Pesce",
+      "tr": "Deniz Ürünleri"
+    },
+    "priceLevel": 2,
+    "rating": 4.6,
+    "reviews": 2005,
+    "image": "",
+    "images": [],
+    "description": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "fullDescription": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "location": {
+      "en": "Old Market, Sharm El Sheikh",
+      "ar": "السوق القديم، شرم الشيخ",
+      "ru": "Старый рынок, Sharm El Sheikh",
+      "de": "Altstadt-Markt, Sharm El Sheikh",
+      "it": "Vecchio Mercato, Sharm El Sheikh",
+      "tr": "Eski Çarşı, Sharm El Sheikh"
+    },
+    "address_full": "Near Al-Sahaba Mosque, Old Market, South Sinai Governorate 46619, Egypt",
+    "coordinates": {
+      "lat": 27.8662475,
+      "lng": 34.2942158
+    },
+    "phone": "+20 11 01056006",
+    "openHours": {
+      "en": "12:00 PM – 2:00 AM daily (Fri from 2:00 PM)",
+      "ar": "12:00 PM – 2:00 AM يوميًا (Fri from 2:00 PM)",
+      "ru": "12:00 PM – 2:00 AM ежедневно (Fri from 2:00 PM)",
+      "de": "12:00 PM – 2:00 AM täglich (Fri from 2:00 PM)",
+      "it": "12:00 PM – 2:00 AM tutti i giorni (Fri from 2:00 PM)",
+      "tr": "12:00 PM – 2:00 AM her gün (Fri from 2:00 PM)"
+    },
+    "google_place_id": "ChIJq7y6Pis7UxQRDus0NlrzrqM",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJq7y6Pis7UxQRDus0NlrzrqM",
+    "menu": []
+  },
+  {
+    "id": "r21",
+    "category": "restaurant",
+    "name": {
+      "en": "Old Market Restaurant Gaselle",
+      "ar": "Old Market Restaurant Gaselle",
+      "ru": "Old Market Restaurant Gaselle",
+      "de": "Old Market Restaurant Gaselle",
+      "it": "Old Market Restaurant Gaselle",
+      "tr": "Old Market Restaurant Gaselle"
+    },
+    "cuisine": {
+      "en": "Restaurant",
+      "ar": "مطعم",
+      "ru": "Ресторан",
+      "de": "Restaurant",
+      "it": "Ristorante",
+      "tr": "Restoran"
+    },
+    "priceLevel": "",
+    "rating": 4.3,
+    "reviews": 84,
+    "image": "",
+    "images": [],
+    "description": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "fullDescription": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "location": {
+      "en": "Old Market, Sharm El Sheikh",
+      "ar": "السوق القديم، شرم الشيخ",
+      "ru": "Старый рынок, Sharm El Sheikh",
+      "de": "Altstadt-Markt, Sharm El Sheikh",
+      "it": "Vecchio Mercato, Sharm El Sheikh",
+      "tr": "Eski Çarşı, Sharm El Sheikh"
+    },
+    "address_full": "Old Market, Sharm El Sheikh, South Sinai Governorate 8761130, Egypt",
+    "coordinates": {
+      "lat": 27.8660425,
+      "lng": 34.2937844
+    },
+    "phone": "",
+    "openHours": {
+      "en": "10:45 AM – 2:00 AM daily",
+      "ar": "10:45 AM – 2:00 AM يوميًا",
+      "ru": "10:45 AM – 2:00 AM ежедневно",
+      "de": "10:45 AM – 2:00 AM täglich",
+      "it": "10:45 AM – 2:00 AM tutti i giorni",
+      "tr": "10:45 AM – 2:00 AM her gün"
+    },
+    "google_place_id": "ChIJH2OLPy46UxQR5Hau7cr43cw",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJH2OLPy46UxQR5Hau7cr43cw",
+    "menu": []
+  },
+  {
+    "id": "r22",
+    "category": "restaurant",
+    "name": {
+      "en": "SALT (Rixos Seagate)",
+      "ar": "SALT (Rixos Seagate)",
+      "ru": "SALT (Rixos Seagate)",
+      "de": "SALT (Rixos Seagate)",
+      "it": "SALT (Rixos Seagate)",
+      "tr": "SALT (Rixos Seagate)"
+    },
+    "cuisine": {
+      "en": "Seafood",
+      "ar": "مأكولات بحرية",
+      "ru": "Морепродукты",
+      "de": "Meeresfrüchte",
+      "it": "Pesce",
+      "tr": "Deniz Ürünleri"
+    },
+    "priceLevel": "",
+    "rating": 4.8,
+    "reviews": 285,
+    "image": "",
+    "images": [],
+    "description": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "fullDescription": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "location": {
+      "en": "Sharm El Sheikh, Sharm El Sheikh",
+      "ar": "شرم الشيخ، شرم الشيخ",
+      "ru": "Шарм-эль-Шейх, Sharm El Sheikh",
+      "de": "Sharm El Sheikh, Sharm El Sheikh",
+      "it": "Sharm El Sheikh, Sharm El Sheikh",
+      "tr": "Sharm El Sheikh, Sharm El Sheikh"
+    },
+    "address_full": "Rixos Seagate, Sharm El Sheikh 2, South Sinai Governorate 8753701, Egypt",
+    "coordinates": {
+      "lat": 28.0380227,
+      "lng": 34.4312687
+    },
+    "phone": "",
+    "openHours": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "google_place_id": "ChIJDTlSzyNNUxQRWFwyc3H1fT0",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJDTlSzyNNUxQRWFwyc3H1fT0",
+    "menu": []
+  },
+  {
+    "id": "r23",
+    "category": "restaurant",
+    "name": {
+      "en": "Ebn Hamido Seafood Restaurant",
+      "ar": "Ebn Hamido Seafood Restaurant",
+      "ru": "Ebn Hamido Seafood Restaurant",
+      "de": "Ebn Hamido Seafood Restaurant",
+      "it": "Ebn Hamido Seafood Restaurant",
+      "tr": "Ebn Hamido Seafood Restaurant"
+    },
+    "cuisine": {
+      "en": "Seafood",
+      "ar": "مأكولات بحرية",
+      "ru": "Морепродукты",
+      "de": "Meeresfrüchte",
+      "it": "Pesce",
+      "tr": "Deniz Ürünleri"
+    },
+    "priceLevel": "",
+    "rating": 4.8,
+    "reviews": 1353,
+    "image": "",
+    "images": [],
+    "description": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "fullDescription": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "location": {
+      "en": "Sharm El Sheikh, Sharm El Sheikh",
+      "ar": "شرم الشيخ، شرم الشيخ",
+      "ru": "Шарм-эль-Шейх, Sharm El Sheikh",
+      "de": "Sharm El Sheikh, Sharm El Sheikh",
+      "it": "Sharm El Sheikh, Sharm El Sheikh",
+      "tr": "Sharm El Sheikh, Sharm El Sheikh"
+    },
+    "address_full": "Sharm El Sheikh 1, South Sinai Governorate 8762510, Egypt",
+    "coordinates": {
+      "lat": 27.8616176,
+      "lng": 34.3045871
+    },
+    "phone": "+20 10 44505960",
+    "openHours": {
+      "en": "11:00 AM – 3:00 AM daily",
+      "ar": "11:00 AM – 3:00 AM يوميًا",
+      "ru": "11:00 AM – 3:00 AM ежедневно",
+      "de": "11:00 AM – 3:00 AM täglich",
+      "it": "11:00 AM – 3:00 AM tutti i giorni",
+      "tr": "11:00 AM – 3:00 AM her gün"
+    },
+    "google_place_id": "ChIJsYg8PwA7UxQRiYPPwi0ZRR8",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJsYg8PwA7UxQRiYPPwi0ZRR8",
+    "menu": []
+  },
+  {
+    "id": "r24",
+    "category": "restaurant",
+    "name": {
+      "en": "Fares Seafood Restaurant – il Mercato",
+      "ar": "Fares Seafood Restaurant – il Mercato",
+      "ru": "Fares Seafood Restaurant – il Mercato",
+      "de": "Fares Seafood Restaurant – il Mercato",
+      "it": "Fares Seafood Restaurant – il Mercato",
+      "tr": "Fares Seafood Restaurant – il Mercato"
+    },
+    "cuisine": {
+      "en": "Seafood",
+      "ar": "مأكولات بحرية",
+      "ru": "Морепродукты",
+      "de": "Meeresfrüchte",
+      "it": "Pesce",
+      "tr": "Deniz Ürünleri"
+    },
+    "priceLevel": "",
+    "rating": 4.3,
+    "reviews": 6174,
+    "image": "",
+    "images": [],
+    "description": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "fullDescription": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "location": {
+      "en": "Il Mercato area, Sharm El Sheikh",
+      "ar": "منطقة إيل ميركاتو، شرم الشيخ",
+      "ru": "Район Иль Меркато, Sharm El Sheikh",
+      "de": "Il-Mercato-Gebiet, Sharm El Sheikh",
+      "it": "Zona Il Mercato, Sharm El Sheikh",
+      "tr": "Il Mercato Bölgesi, Sharm El Sheikh"
+    },
+    "address_full": "Sharm El Sheikh 1, South Sinai Governorate 8762511, Egypt",
+    "coordinates": {
+      "lat": 27.8630397,
+      "lng": 34.3037954
+    },
+    "phone": "+20 12 20454631",
+    "openHours": {
+      "en": "12:00 PM – 1:00 AM daily",
+      "ar": "12:00 PM – 1:00 AM يوميًا",
+      "ru": "12:00 PM – 1:00 AM ежедневно",
+      "de": "12:00 PM – 1:00 AM täglich",
+      "it": "12:00 PM – 1:00 AM tutti i giorni",
+      "tr": "12:00 PM – 1:00 AM her gün"
+    },
+    "google_place_id": "ChIJ6Wn0bC46UxQRUp8rzdqVYrw",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJ6Wn0bC46UxQRUp8rzdqVYrw",
+    "menu": []
+  },
+  {
+    "id": "r25",
+    "category": "cafe",
+    "name": {
+      "en": "Grand Astro",
+      "ar": "Grand Astro",
+      "ru": "Grand Astro",
+      "de": "Grand Astro",
+      "it": "Grand Astro",
+      "tr": "Grand Astro"
+    },
+    "cuisine": {
+      "en": "Cafe & Shisha",
+      "ar": "مقهى وشيشة",
+      "ru": "Кафе и кальян",
+      "de": "Café & Shisha",
+      "it": "Caffè e narghilè",
+      "tr": "Kafe ve Nargile"
+    },
+    "priceLevel": 2,
+    "rating": 4.8,
+    "reviews": 1415,
+    "image": "",
+    "images": [],
+    "description": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "fullDescription": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "location": {
+      "en": "Naama Bay, Sharm El Sheikh",
+      "ar": "خليج نعمة، شرم الشيخ",
+      "ru": "Наама Бэй, Sharm El Sheikh",
+      "de": "Naama Bay, Sharm El Sheikh",
+      "it": "Naama Bay, Sharm El Sheikh",
+      "tr": "Naama Bay, Sharm El Sheikh"
+    },
+    "address_full": "Malek Al Bahrein, Naama Bay, South Sinai Governorate 8763113, Egypt",
+    "coordinates": {
+      "lat": 27.909046,
+      "lng": 34.3249809
+    },
+    "phone": "+20 12 25322839",
+    "openHours": {
+      "en": "Open 24 hours daily",
+      "ar": "مفتوح ٢٤ ساعة يوميًا",
+      "ru": "Круглосуточно, ежедневно",
+      "de": "Täglich 24 Stunden geöffnet",
+      "it": "Aperto 24 ore su 24, tutti i giorni",
+      "tr": "Her gün 24 saat açık"
+    },
+    "google_place_id": "ChIJTZam8mg5UxQRTprPYGVXNqM",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJTZam8mg5UxQRTprPYGVXNqM",
+    "menu": []
+  },
+  {
+    "id": "r26",
+    "category": "cafe",
+    "name": {
+      "en": "Basata Beach Cafe",
+      "ar": "بساطة كافيه شرم الشيخ",
+      "ru": "Basata Beach Cafe",
+      "de": "Basata Beach Cafe",
+      "it": "Basata Beach Cafe",
+      "tr": "Basata Beach Cafe"
+    },
+    "cuisine": {
+      "en": "Cafe",
+      "ar": "مقهى",
+      "ru": "Кафе",
+      "de": "Café",
+      "it": "Caffè",
+      "tr": "Kafe"
+    },
+    "priceLevel": 2,
+    "rating": 4.5,
+    "reviews": 547,
+    "image": "",
+    "images": [],
+    "description": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "fullDescription": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "location": {
+      "en": "Sharks Bay, Sharm El Sheikh",
+      "ar": "خليج شارك باي، شرم الشيخ",
+      "ru": "Шаркс Бэй, Sharm El Sheikh",
+      "de": "Sharks Bay, Sharm El Sheikh",
+      "it": "Sharks Bay, Sharm El Sheikh",
+      "tr": "Sharks Bay, Sharm El Sheikh"
+    },
+    "address_full": "Sharks Bay, Sharm El Sheikh 2, South Sinai Governorate 8765101, Egypt",
+    "coordinates": {
+      "lat": 27.9526597,
+      "lng": 34.3863603
+    },
+    "phone": "+20 10 11151888",
+    "openHours": {
+      "en": "10:00 AM – 3:30 AM daily",
+      "ar": "10:00 AM – 3:30 AM يوميًا",
+      "ru": "10:00 AM – 3:30 AM ежедневно",
+      "de": "10:00 AM – 3:30 AM täglich",
+      "it": "10:00 AM – 3:30 AM tutti i giorni",
+      "tr": "10:00 AM – 3:30 AM her gün"
+    },
+    "google_place_id": "ChIJN8ry86ZJUxQRw5qUMgFhBRo",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJN8ry86ZJUxQRw5qUMgFhBRo",
+    "menu": []
+  },
+  {
+    "id": "r27",
+    "category": "cafe",
+    "name": {
+      "en": "Farsha Cafe",
+      "ar": "Farsha Cafe",
+      "ru": "Farsha Cafe",
+      "de": "Farsha Cafe",
+      "it": "Farsha Cafe",
+      "tr": "Farsha Cafe"
+    },
+    "cuisine": {
+      "en": "Cafe & Tea House",
+      "ar": "مقهى وبيت شاي",
+      "ru": "Кафе и чайный дом",
+      "de": "Café & Teehaus",
+      "it": "Caffè e casa del tè",
+      "tr": "Kafe ve Çay Evi"
+    },
+    "priceLevel": 2,
+    "rating": 4.2,
+    "reviews": 23351,
+    "image": "",
+    "images": [],
+    "description": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "fullDescription": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "location": {
+      "en": "Hadaba Um Al Sid, Sharm El Sheikh",
+      "ar": "هضبة أم السيد، شرم الشيخ",
+      "ru": "Хадаба Ум эль-Сид, Sharm El Sheikh",
+      "de": "Hadaba Um Al Sid, Sharm El Sheikh",
+      "it": "Hadaba Um Al Sid, Sharm El Sheikh",
+      "tr": "Hadaba Um Al Sid, Sharm El Sheikh"
+    },
+    "address_full": "Hadaba Um Al Sid, Sharm El Sheikh 1, South Sinai Governorate 46619, Egypt",
+    "coordinates": {
+      "lat": 27.8496792,
+      "lng": 34.3075904
+    },
+    "phone": "+20 12 00300162",
+    "openHours": {
+      "en": "11:00 AM – 1:00 AM daily",
+      "ar": "11:00 AM – 1:00 AM يوميًا",
+      "ru": "11:00 AM – 1:00 AM ежедневно",
+      "de": "11:00 AM – 1:00 AM täglich",
+      "it": "11:00 AM – 1:00 AM tutti i giorni",
+      "tr": "11:00 AM – 1:00 AM her gün"
+    },
+    "google_place_id": "ChIJnSTrOz46UxQRUCvBd_dzKWU",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJnSTrOz46UxQRUCvBd_dzKWU",
+    "menu": []
+  },
+  {
+    "id": "r28",
+    "category": "cafe",
+    "name": {
+      "en": "CAFE & CO (Sharm Airport T2)",
+      "ar": "CAFE & CO (Sharm Airport T2)",
+      "ru": "CAFE & CO (Sharm Airport T2)",
+      "de": "CAFE & CO (Sharm Airport T2)",
+      "it": "CAFE & CO (Sharm Airport T2)",
+      "tr": "CAFE & CO (Sharm Airport T2)"
+    },
+    "cuisine": {
+      "en": "Cafe",
+      "ar": "مقهى",
+      "ru": "Кафе",
+      "de": "Café",
+      "it": "Caffè",
+      "tr": "Kafe"
+    },
+    "priceLevel": 1,
+    "rating": 4.8,
+    "reviews": 75,
+    "image": "",
+    "images": [],
+    "description": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "fullDescription": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "location": {
+      "en": "Sharm El Sheikh Airport, Sharm El Sheikh",
+      "ar": "مطار شرم الشيخ، شرم الشيخ",
+      "ru": "Аэропорт Шарм-эль-Шейха, Sharm El Sheikh",
+      "de": "Flughafen Sharm El Sheikh, Sharm El Sheikh",
+      "it": "Aeroporto di Sharm El Sheikh, Sharm El Sheikh",
+      "tr": "Sharm El Sheikh Havalimanı, Sharm El Sheikh"
+    },
+    "address_full": "Sharm El Sheikh International Airport, Terminal 2, El-Salam, South Sinai Governorate 8752202, Egypt",
+    "coordinates": {
+      "lat": 27.9825403,
+      "lng": 34.3886584
+    },
+    "phone": "+20 10 03675327",
+    "openHours": {
+      "en": "Open 24 hours daily",
+      "ar": "مفتوح ٢٤ ساعة يوميًا",
+      "ru": "Круглосуточно, ежедневно",
+      "de": "Täglich 24 Stunden geöffnet",
+      "it": "Aperto 24 ore su 24, tutti i giorni",
+      "tr": "Her gün 24 saat açık"
+    },
+    "google_place_id": "ChIJp11nHQBJUxQRTjgVZEKzHac",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJp11nHQBJUxQRTjgVZEKzHac",
+    "menu": []
+  },
+  {
+    "id": "r29",
+    "category": "cafe",
+    "name": {
+      "en": "Smoky Garden Cafe",
+      "ar": "Smoky Garden Cafe",
+      "ru": "Smoky Garden Cafe",
+      "de": "Smoky Garden Cafe",
+      "it": "Smoky Garden Cafe",
+      "tr": "Smoky Garden Cafe"
+    },
+    "cuisine": {
+      "en": "Restaurant & Cafe",
+      "ar": "مطعم ومقهى",
+      "ru": "Ресторан и кафе",
+      "de": "Restaurant & Café",
+      "it": "Ristorante e caffè",
+      "tr": "Restoran ve Kafe"
+    },
+    "priceLevel": 2,
+    "rating": 4.9,
+    "reviews": 477,
+    "image": "",
+    "images": [],
+    "description": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "fullDescription": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "location": {
+      "en": "Sharm El Sheikh, Sharm El Sheikh",
+      "ar": "شرم الشيخ، شرم الشيخ",
+      "ru": "Шарм-эль-Шейх, Sharm El Sheikh",
+      "de": "Sharm El Sheikh, Sharm El Sheikh",
+      "it": "Sharm El Sheikh, Sharm El Sheikh",
+      "tr": "Sharm El Sheikh, Sharm El Sheikh"
+    },
+    "address_full": "El-Salam Street, Sharm El Sheikh 2, South Sinai Governorate 8753211, Egypt",
+    "coordinates": {
+      "lat": 28.0280787,
+      "lng": 34.4351602
+    },
+    "phone": "+20 12 10533105",
+    "openHours": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "google_place_id": "ChIJsbvm6N9NUxQRUswoHycnIXw",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJsbvm6N9NUxQRUswoHycnIXw",
+    "menu": []
+  },
+  {
+    "id": "r30",
+    "category": "cafe",
+    "name": {
+      "en": "New Panorama Sharm",
+      "ar": "New Panorama Sharm",
+      "ru": "New Panorama Sharm",
+      "de": "New Panorama Sharm",
+      "it": "New Panorama Sharm",
+      "tr": "New Panorama Sharm"
+    },
+    "cuisine": {
+      "en": "Cafe & Restaurant",
+      "ar": "مقهى ومطعم",
+      "ru": "Кафе и ресторан",
+      "de": "Café & Restaurant",
+      "it": "Caffè e ristorante",
+      "tr": "Kafe ve Restoran"
+    },
+    "priceLevel": "",
+    "rating": 4.3,
+    "reviews": 827,
+    "image": "",
+    "images": [],
+    "description": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "fullDescription": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "location": {
+      "en": "Naama Bay, Sharm El Sheikh",
+      "ar": "خليج نعمة، شرم الشيخ",
+      "ru": "Наама Бэй, Sharm El Sheikh",
+      "de": "Naama Bay, Sharm El Sheikh",
+      "it": "Naama Bay, Sharm El Sheikh",
+      "tr": "Naama Bay, Sharm El Sheikh"
+    },
+    "address_full": "Naama Bay, Sharm El Sheikh 1, South Sinai Governorate 8763021, Egypt",
+    "coordinates": {
+      "lat": 27.908061,
+      "lng": 34.3248514
+    },
+    "phone": "+20 12 27937575",
+    "openHours": {
+      "en": "12:00 PM – 6:00 AM daily",
+      "ar": "12:00 PM – 6:00 AM يوميًا",
+      "ru": "12:00 PM – 6:00 AM ежедневно",
+      "de": "12:00 PM – 6:00 AM täglich",
+      "it": "12:00 PM – 6:00 AM tutti i giorni",
+      "tr": "12:00 PM – 6:00 AM her gün"
+    },
+    "google_place_id": "ChIJn0gpriw4UxQR2UVuMEXsAm4",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJn0gpriw4UxQR2UVuMEXsAm4",
+    "menu": []
+  },
+  {
+    "id": "r31",
+    "category": "restaurant",
+    "name": {
+      "en": "Farsha Beach Lounge",
+      "ar": "Farsha Beach Lounge",
+      "ru": "Farsha Beach Lounge",
+      "de": "Farsha Beach Lounge",
+      "it": "Farsha Beach Lounge",
+      "tr": "Farsha Beach Lounge"
+    },
+    "cuisine": {
+      "en": "Beach Lounge",
+      "ar": "لاونج على الشاطئ",
+      "ru": "Пляжный лаунж",
+      "de": "Strand-Lounge",
+      "it": "Lounge sulla spiaggia",
+      "tr": "Sahil Lounge"
+    },
+    "priceLevel": 2,
+    "rating": 4.1,
+    "reviews": 1559,
+    "image": "",
+    "images": [],
+    "description": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "fullDescription": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "location": {
+      "en": "Hadaba Um Al Sid, Sharm El Sheikh",
+      "ar": "هضبة أم السيد، شرم الشيخ",
+      "ru": "Хадаба Ум эль-Сид, Sharm El Sheikh",
+      "de": "Hadaba Um Al Sid, Sharm El Sheikh",
+      "it": "Hadaba Um Al Sid, Sharm El Sheikh",
+      "tr": "Hadaba Um Al Sid, Sharm El Sheikh"
+    },
+    "address_full": "Hadaba Um Al Sid, Sharm El Sheikh 1, South Sinai Governorate 8762201, Egypt",
+    "coordinates": {
+      "lat": 27.8496595,
+      "lng": 34.3073632
+    },
+    "phone": "+20 12 00300162",
+    "openHours": {
+      "en": "8:30 AM – 1:00 AM daily",
+      "ar": "8:30 AM – 1:00 AM يوميًا",
+      "ru": "8:30 AM – 1:00 AM ежедневно",
+      "de": "8:30 AM – 1:00 AM täglich",
+      "it": "8:30 AM – 1:00 AM tutti i giorni",
+      "tr": "8:30 AM – 1:00 AM her gün"
+    },
+    "google_place_id": "ChIJpX6nw_s7UxQRYl-VeC_DoKM",
+    "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJpX6nw_s7UxQRYl-VeC_DoKM",
+    "menu": []
   }
 ]
