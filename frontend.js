@@ -1,6 +1,6 @@
 // ==================== FRONTEND UI & NAVIGATION ====================
 window.DS_CONFIG = window.DS_CONFIG || {
-  SHOW_HOTELS: false,
+  SHOW_HOTELS: true,
   SHOW_EXCURSIONS: true,
   SHOW_TRANSFERS: true,
   SHOW_RESTAURANTS: true,
@@ -221,6 +221,7 @@ const nav = {
     state.pageHistory.push(page);
     window.scrollTo(0, 0);
     updateStickyHeaderState();
+    document.body.classList.toggle('account-section', ['bookings', 'profile', 'settings', 'notifications'].includes(page));
 
     if (!opts.skipHistory && ROUTES[page]) {
       const url = pathForPage(page);
@@ -1054,7 +1055,7 @@ const restaurantsUi = {
   renderCard(r) {
     const img = getImageUrl(r.image);
     return `
-      <div onclick="showRestaurantPage('${r.id}')" class="restaurant-card w-full bg-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer">
+      <div onclick="showRestaurantPage('${r.id}')" class="restaurant-card cursor-pointer">
         <div class="relative h-36 overflow-hidden">
           <img src="${img}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
           <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
@@ -1062,9 +1063,9 @@ const restaurantsUi = {
           <span class="absolute top-3 right-3 rating-pill px-2 py-1 rounded-full flex items-center gap-1"><i class="fa-solid fa-star text-gold-400 text-[10px]"></i><span class="text-[10px] font-bold text-gold-400">${r.rating}</span></span>
         </div>
         <div class="p-4">
-          <h3 class="font-display font-bold text-lg mb-1 truncate">${r.name}</h3>
-          <p class="text-sm text-gray-500 mb-2">${r.cuisine} · ${'$'.repeat(r.priceLevel || 2)}</p>
-          <p class="text-xs text-gray-400 flex items-center gap-1"><i class="fa-solid fa-location-dot text-violet-500"></i>${r.location}</p>
+          <h3 class="font-display font-bold text-lg mb-1 truncate" style="color:var(--text-primary)">${r.name}</h3>
+          <p class="text-sm mb-2" style="color:var(--text-secondary)">${r.cuisine} · ${'$'.repeat(r.priceLevel || 2)}</p>
+          <p class="text-xs flex items-center gap-1" style="color:var(--text-secondary)"><i class="fa-solid fa-location-dot text-violet-500"></i>${r.location}</p>
         </div>
       </div>`;
   }
