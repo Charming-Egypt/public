@@ -1,9 +1,25 @@
 // ==================== PAYMENT & BOOKING ====================
 // Desktop-only Booking.com/GetYourGuide-style photo mosaic: one big photo
-// plus up to four smaller ones, with a "+N Photos" overlay if there are
-// more. Hidden on mobile, which keeps the original swipeable gallery.
+// plus smaller ones, with a "+N Photos" overlay if there are more than fit.
+// Adapts to how many photos actually exist so there's never an empty cell.
 function renderPhotoGrid(images) {
   const list = (images && images.length ? images : [images]).filter(Boolean);
+  if (list.length <= 1) {
+    return `<div class="photo-grid photo-grid-1">
+      <div class="photo-grid-cell photo-grid-main"><img src="${getImageUrl(list[0])}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" alt=""></div>
+    </div>`;
+  }
+  if (list.length === 2) {
+    return `<div class="photo-grid photo-grid-2">
+      ${list.map(img => `<div class="photo-grid-cell"><img src="${getImageUrl(img)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" alt=""></div>`).join('')}
+    </div>`;
+  }
+  if (list.length === 3) {
+    return `<div class="photo-grid photo-grid-3">
+      <div class="photo-grid-cell photo-grid-main"><img src="${getImageUrl(list[0])}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" alt=""></div>
+      ${list.slice(1).map(img => `<div class="photo-grid-cell"><img src="${getImageUrl(img)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" alt=""></div>`).join('')}
+    </div>`;
+  }
   const shown = list.slice(0, 5);
   const remaining = list.length - shown.length;
   const cells = shown.map((img, i) => `
@@ -11,7 +27,7 @@ function renderPhotoGrid(images) {
       <img src="${getImageUrl(img)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" alt="">
       ${(i === shown.length - 1 && remaining > 0) ? `<div class="photo-grid-more"><i class="fa-solid fa-images"></i> +${remaining} Photos</div>` : ''}
     </div>`).join('');
-  return `<div class="photo-grid">${cells}</div>`;
+  return `<div class="photo-grid photo-grid-5">${cells}</div>`;
 }
 
 function paymentMethodsBlock(currentMethod, onchangeFn) {
