@@ -1,9 +1,9 @@
 // ==================== FRONTEND UI & NAVIGATION ====================
 window.DS_CONFIG = window.DS_CONFIG || {
-  SHOW_HOTELS: false,
+  SHOW_HOTELS: true,
   SHOW_EXCURSIONS: true,
   SHOW_TRANSFERS: true,
-  SHOW_RESTAURANTS: false,
+  SHOW_RESTAURANTS: true,
   SHOW_DESTINATIONS: true
 };
 
@@ -839,6 +839,7 @@ const hotels = {
     let filtered = CATALOG.hotels;
     if (state.currentFilter !== 'all') filtered = filtered.filter(h => h.category === state.currentFilter);
     if (state.searchQuery) filtered = filtered.filter(h => h.name.toLowerCase().includes(state.searchQuery));
+    const countEl = document.getElementById('hotelsCount'); if (countEl) countEl.textContent = filtered.length;
     list.className = 'space-y-3 lg:space-y-0 lg:grid lg:grid-cols-2 xl:grid-cols-3 lg:gap-6 pb-28';
     if (filtered.length === 0) {
       list.innerHTML = `<div class="text-center py-16">No hotels found</div>`;
@@ -905,6 +906,7 @@ const excursionsUi = {
     if (!list) return;
     let filtered = CATALOG.excursions;
     if (state.currentExcursionFilter !== 'all') filtered = filtered.filter(x => x.category === state.currentExcursionFilter);
+    const countEl = document.getElementById('excursionsCount'); if (countEl) countEl.textContent = filtered.length;
     list.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-28';
     if (filtered.length === 0) { list.innerHTML = `<div class="text-center py-16">No excursions found</div>`; return; }
     list.innerHTML = filtered.map(x => this.renderCard(x)).join('');
@@ -1048,6 +1050,7 @@ const restaurantsUi = {
     if (!SHOW_RESTAURANTS) return;
     const list = document.getElementById('restaurantsFullList');
     if (list) {
+      const countEl = document.getElementById('restaurantsCount'); if (countEl) countEl.textContent = CATALOG.restaurants.length;
       list.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-28';
       list.innerHTML = CATALOG.restaurants.map(r => this.renderCard(r)).join('');
     }
@@ -1170,7 +1173,6 @@ function applyCategoryVisibility() {
   document.getElementById('desktopHotelsLink')?.classList.toggle('hidden', !SHOW_HOTELS);
   document.getElementById('footerHotelsLink')?.classList.toggle('hidden', !SHOW_HOTELS);
   document.getElementById('categoryTileHotels')?.classList.toggle('hidden', !SHOW_HOTELS);
-  document.getElementById('categoryTileRestaurants')?.classList.toggle('hidden', !SHOW_RESTAURANTS);
   document.querySelectorAll('.drawer-link').forEach(link => {
     const onclick = link.getAttribute('onclick') || '';
     if (onclick.includes("nav.go('excursions')") && !SHOW_EXCURSIONS) link.style.display = 'none';
