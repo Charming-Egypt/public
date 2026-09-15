@@ -322,10 +322,8 @@
         <button onclick="sidebar.open()" class="icon-btn w-10 h-10 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-bars"></i></button>
         <img src="/data/long-logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="sticky-header-logo" alt="Discover Sharm" />
       </div>
-      <button onclick="nav.go('profile')" data-page="profile" class="nav-item icon-btn w-11 h-11 rounded-xl flex items-center justify-center">
-        <span class="nav-avatar-circle" id="navProfileAvatarDesktop"></span>
-      </button>
-       </div>
+      <button onclick="nav.go('notifications')" class="icon-btn w-10 h-10 rounded-xl flex items-center justify-center relative text-white"><i class="fa-regular fa-bell"></i><span class="notif-badge hidden absolute top-2 right-2 w-2 h-2 bg-gold-400 rounded-full"></span></button>
+    </div>
   </div>
 
   <!-- Desktop Navigation (1024px and up — the bottom tab bar is mobile-only,
@@ -471,7 +469,7 @@
               <div class="category-tile-icon"><i class="fa-solid fa-shuttle-van"></i></div>
               <span data-i18n="navTransfers">Transfers</span>
             </button>
-            <button onclick="nav.go('restaurants')" id="categoryTileRestaurants" class="category-tile">
+            <button onclick="nav.go('restaurants')" class="category-tile">
               <div class="category-tile-icon"><i class="fa-solid fa-utensils"></i></div>
               <span data-i18n="navRestaurants">Restaurants</span>
             </button>
@@ -644,13 +642,21 @@
     <!-- Excursions Page -->
     <div id="excursionsPage" class="page">
       <div class="min-h-screen">
+        <!-- Desktop listing header -->
+        <div class="listing-hero hidden lg:block">
+          <div class="listing-hero-inner">
+            <p class="listing-eyebrow" data-i18n="activitiesEyebrow">— ACTIVITIES</p>
+            <h1 class="listing-title" data-i18n="excursionsTitle">Excursions</h1>
+            <p class="listing-count"><span id="excursionsCount">0</span> experiences in Sharm El-Sheikh</p>
+          </div>
+        </div>
         <div class="px-5 pt-6 pb-4 header-light">
-          <div class="flex items-center justify-between mb-5">
+          <div class="flex items-center justify-between mb-5 lg:hidden">
             <button onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right"></i></button>
             <div class="text-center"><p class="section-subtitle" data-i18n="activitiesEyebrow">— ACTIVITIES</p><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)" data-i18n="excursionsTitle">Excursions</h1></div>
             <div class="w-11"></div>
           </div>
-          <div class="horizontal-scroll !px-0">
+          <div class="horizontal-scroll !px-0 listing-filter-row">
             <button onclick="search.filterExcursionCategory('all')" class="filter-chip excursion-chip active flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-layer-group"></i> <span data-i18n="all">All</span></button>
             <button onclick="search.filterExcursionCategory('Diving')" class="filter-chip excursion-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-person-swimming"></i> <span data-i18n="catDiving">Diving</span></button>
             <button onclick="search.filterExcursionCategory('Desert Safari')" class="filter-chip excursion-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-person-hiking"></i> <span data-i18n="catDesert">Desert Safari</span></button>
@@ -665,7 +671,14 @@
     <!-- Transfers Page -->
     <div id="transfersPage" class="page">
       <div class="min-h-screen">
-        <div class="px-5 pt-6 pb-4 header-light">
+        <div class="listing-hero hidden lg:block">
+          <div class="listing-hero-inner">
+            <p class="listing-eyebrow" data-i18n="rideEyebrow">— GROUND TRANSPORT</p>
+            <h1 class="listing-title" data-i18n="transfersTitle">Airport Transfers</h1>
+            <p class="listing-count" data-i18n="transfersSubtitle">Choose a vehicle for your ride between Sharm El Sheikh International Airport (SSH) and your hotel.</p>
+          </div>
+        </div>
+        <div class="px-5 pt-6 pb-4 header-light lg:hidden">
           <div class="flex items-center gap-3 mb-2">
             <button onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right"></i></button>
             <div><p class="section-subtitle" data-i18n="rideEyebrow">— GROUND TRANSPORT</p><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)" data-i18n="transfersTitle">Airport Transfers</h1></div>
@@ -679,7 +692,14 @@
     <!-- Restaurants Page -->
     <div id="restaurantsPage" class="page">
       <div class="min-h-screen">
-        <div class="px-5 pt-6 pb-4 header-light">
+        <div class="listing-hero hidden lg:block">
+          <div class="listing-hero-inner">
+            <p class="listing-eyebrow" data-i18n="diningEyebrow">— EAT & DRINK</p>
+            <h1 class="listing-title" data-i18n="restaurantsTitle">Restaurants & Cafes</h1>
+            <p class="listing-count"><span id="restaurantsCount">0</span> places to eat and drink</p>
+          </div>
+        </div>
+        <div class="px-5 pt-6 pb-4 header-light lg:hidden">
           <div class="flex items-center gap-3 mb-2">
             <button onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right"></i></button>
             <div><p class="section-subtitle" data-i18n="diningEyebrow">— EAT & DRINK</p><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)" data-i18n="restaurantsTitle">Restaurants & Cafes</h1></div>
@@ -692,7 +712,14 @@
     <!-- Hotels Page -->
     <div id="hotelsPage" class="page">
       <div class="min-h-screen">
-        <div class="px-5 pt-6 pb-4 header-light">
+        <div class="listing-hero hidden lg:block">
+          <div class="listing-hero-inner">
+            <p class="listing-eyebrow" data-i18n="stayEyebrow">— WHERE TO STAY</p>
+            <h1 class="listing-title" data-i18n="hotelsTitle">Hotels</h1>
+            <p class="listing-count"><span id="hotelsCount">0</span> hotels along the Red Sea</p>
+          </div>
+        </div>
+        <div class="px-5 pt-6 pb-4 header-light lg:hidden">
           <div class="flex items-center gap-3 mb-2">
             <button onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right"></i></button>
             <div><p class="section-subtitle" data-i18n="stayEyebrow">— WHERE TO STAY</p><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)" data-i18n="hotelsTitle">Hotels</h1></div>
