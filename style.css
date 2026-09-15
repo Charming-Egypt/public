@@ -1216,6 +1216,57 @@ body:has(#transferDetailPage.active) .bottom-nav {
 }
 
 
+/* ---------- Listing Page Header (Excursions/Transfers/Restaurants/Hotels) ---------- */
+.listing-hero {
+  border-bottom: 1px solid var(--border-card);
+  padding: 48px 40px 32px;
+}
+
+.listing-hero-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.listing-eyebrow {
+  color: #d97706;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  margin-bottom: 8px;
+}
+
+.listing-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700;
+  font-size: 40px;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.listing-count {
+  font-size: 14px;
+  color: var(--text-secondary);
+  max-width: 600px;
+}
+
+.listing-count span {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+@media (min-width: 1024px) {
+  .listing-filter-row {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-top: 16px;
+  }
+  .listing-filter-row .filter-chip {
+    font-size: 13px;
+    padding: 12px 20px;
+  }
+}
+
+
 /* ---------- Destination Cards ---------- */
 .destination-card {
   flex-shrink: 0;
