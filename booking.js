@@ -1,4 +1,19 @@
 // ==================== PAYMENT & BOOKING ====================
+// Desktop-only Booking.com/GetYourGuide-style photo mosaic: one big photo
+// plus up to four smaller ones, with a "+N Photos" overlay if there are
+// more. Hidden on mobile, which keeps the original swipeable gallery.
+function renderPhotoGrid(images) {
+  const list = (images && images.length ? images : [images]).filter(Boolean);
+  const shown = list.slice(0, 5);
+  const remaining = list.length - shown.length;
+  const cells = shown.map((img, i) => `
+    <div class="photo-grid-cell ${i === 0 ? 'photo-grid-main' : ''}">
+      <img src="${getImageUrl(img)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" alt="">
+      ${(i === shown.length - 1 && remaining > 0) ? `<div class="photo-grid-more"><i class="fa-solid fa-images"></i> +${remaining} Photos</div>` : ''}
+    </div>`).join('');
+  return `<div class="photo-grid">${cells}</div>`;
+}
+
 function paymentMethodsBlock(currentMethod, onchangeFn) {
   const methods = [
     { id: 'card', label: 'Credit/Debit Card', icon: 'fa-credit-card' },
@@ -104,6 +119,7 @@ function showHotelPage(hotelId, opts = {}) {
         ${h.bestseller ? '<div class="absolute top-4 left-1/2 -translate-x-1/2 badge-bestseller px-3 py-1 rounded-full text-[10px] font-black">BEST SELLER</div>' : ''}
         <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10" id="galleryDots">${(h.images || [h.image]).map((_, i) => `<div class="gallery-dot ${i === 0 ? 'active' : ''}"></div>`).join('')}</div>
       </div>
+      ${renderPhotoGrid(h.images || [h.image])}
       <div class="detail-layout">
         <div class="detail-main relative -mt-6 rounded-t-[28px] p-5 space-y-6 pb-32" style="background:var(--bg-card)">
         <div>
@@ -357,6 +373,7 @@ function showExcursionPage(excursionId, opts = {}) {
         <div class="absolute top-4 left-4 bg-violet-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-full z-10">${x.category}</div>
         <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10" id="excursionGalleryDots">${(x.images || [x.image]).map((_, i) => `<div class="gallery-dot ${i === 0 ? 'active' : ''}"></div>`).join('')}</div>
       </div>
+      ${renderPhotoGrid(x.images || [x.image])}
       <div class="detail-layout">
         <div class="detail-main relative -mt-6 rounded-t-[28px] p-5 space-y-6 pb-32" style="background:var(--bg-card)">
         <div>
@@ -772,6 +789,7 @@ function showRestaurantPage(id, opts = {}) {
         </div>
         <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10" id="restGalleryDots">${(r.images || [r.image]).map((_, i) => `<div class="gallery-dot ${i === 0 ? 'active' : ''}"></div>`).join('')}</div>
       </div>
+      ${renderPhotoGrid(r.images || [r.image])}
       <div class="detail-layout">
         <div class="detail-main relative -mt-6 rounded-t-[28px] p-6 space-y-2" style="background:var(--bg-card)">
         <div class="flex items-center justify-center gap-5 pb-5 mb-1">
