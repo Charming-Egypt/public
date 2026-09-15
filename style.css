@@ -897,7 +897,7 @@ body:has(#transferDetailPage.active) .bottom-nav {
      layout adapts so there's never an empty cell when a listing has fewer
      than 5 photos. */
   .photo-grid {
-    display: grid;
+    display: grid !important;
     gap: 8px;
     height: 440px;
     max-width: 1280px;
@@ -907,16 +907,16 @@ body:has(#transferDetailPage.active) .bottom-nav {
   }
 
   .photo-grid-1 {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
 
   .photo-grid-2 {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr !important;
   }
 
   .photo-grid-3 {
-    grid-template-columns: 1.6fr 1fr;
-    grid-template-rows: repeat(2, 1fr);
+    grid-template-columns: 1.6fr 1fr !important;
+    grid-template-rows: repeat(2, 1fr) !important;
   }
 
   .photo-grid-3 .photo-grid-main {
@@ -924,8 +924,8 @@ body:has(#transferDetailPage.active) .bottom-nav {
   }
 
   .photo-grid-5 {
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(2, 1fr);
+    grid-template-columns: repeat(4, 1fr) !important;
+    grid-template-rows: repeat(2, 1fr) !important;
   }
 
   .photo-grid-5 .photo-grid-main {
