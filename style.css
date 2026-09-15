@@ -892,18 +892,45 @@ body:has(#transferDetailPage.active) .bottom-nav {
 }
 
 @media (min-width: 1024px) {
-  /* Booking.com / GetYourGuide-style photo mosaic: one large photo, four
-     smaller ones, "+N Photos" on the last if there are more. */
+  /* Booking.com / GetYourGuide-style photo mosaic: one large photo, up to
+     four smaller ones, "+N Photos" on the last if there are more. The
+     layout adapts so there's never an empty cell when a listing has fewer
+     than 5 photos. */
   .photo-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(2, 1fr);
     gap: 8px;
     height: 440px;
     max-width: 1280px;
     margin: 24px auto 0;
     border-radius: 20px;
     overflow: hidden;
+  }
+
+  .photo-grid-1 {
+    grid-template-columns: 1fr;
+  }
+
+  .photo-grid-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .photo-grid-3 {
+    grid-template-columns: 1.6fr 1fr;
+    grid-template-rows: repeat(2, 1fr);
+  }
+
+  .photo-grid-3 .photo-grid-main {
+    grid-row: span 2;
+  }
+
+  .photo-grid-5 {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+  }
+
+  .photo-grid-5 .photo-grid-main {
+    grid-row: span 2;
+    grid-column: span 2;
   }
 
   .photo-grid-cell {
@@ -921,11 +948,6 @@ body:has(#transferDetailPage.active) .bottom-nav {
 
   .photo-grid-cell:hover img {
     transform: scale(1.06);
-  }
-
-  .photo-grid-main {
-    grid-row: span 2;
-    grid-column: span 2;
   }
 
   .photo-grid-more {
@@ -991,7 +1013,7 @@ body:has(#transferDetailPage.active) .bottom-nav {
      gallery is replaced by a Booking.com/GetYourGuide-style photo grid
      (see .photo-grid below), so it's hidden here instead of resized. */
   .detail-gallery {
-    display: none;
+    display: none !important;
   }
 
   .detail-layout {
