@@ -1,11 +1,11 @@
 // ==================== FRONTEND UI & NAVIGATION ====================
 window.DS_CONFIG = window.DS_CONFIG || {
-  SHOW_HOTELS: true,
+  SHOW_HOTELS: false,
   SHOW_EXCURSIONS: true,
   SHOW_TRANSFERS: true,
-  SHOW_RESTAURANTS: true,
+  SHOW_RESTAURANTS: false,
   SHOW_DESTINATIONS: true,
-  KASHIER_MODE: 'live' // 'live' or 'test' — controls the Kashier checkout mode
+  KASHIER_MODE: 'live'
 };
 
 const SHOW_HOTELS = window.DS_CONFIG.SHOW_HOTELS;
