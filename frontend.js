@@ -1,10 +1,11 @@
 // ==================== FRONTEND UI & NAVIGATION ====================
 window.DS_CONFIG = window.DS_CONFIG || {
-  SHOW_HOTELS: false,
+  SHOW_HOTELS: true,
   SHOW_EXCURSIONS: true,
   SHOW_TRANSFERS: true,
-  SHOW_RESTAURANTS: false,
-  SHOW_DESTINATIONS: true
+  SHOW_RESTAURANTS: true,
+  SHOW_DESTINATIONS: true,
+  KASHIER_MODE: 'live' // 'live' or 'test' — controls the Kashier checkout mode
 };
 
 const SHOW_HOTELS = window.DS_CONFIG.SHOW_HOTELS;
@@ -12,6 +13,7 @@ const SHOW_EXCURSIONS = window.DS_CONFIG.SHOW_EXCURSIONS;
 const SHOW_TRANSFERS = window.DS_CONFIG.SHOW_TRANSFERS;
 const SHOW_RESTAURANTS = window.DS_CONFIG.SHOW_RESTAURANTS;
 const SHOW_DESTINATIONS = window.DS_CONFIG.SHOW_DESTINATIONS;
+const KASHIER_MODE = window.DS_CONFIG.KASHIER_MODE || 'live';
 
 // ==================== URL ROUTER ====================
 // Maps in-app "pages" to real, bookmarkable, shareable URLs.
@@ -413,8 +415,17 @@ const datepicker = {
     this.target = fieldId;
     this.minIso = utils.addDays(utils.todayIso(), 1);
     this.unavailable = opts.unavailableIso || [];
-    const field = document.getElementById(fieldId);
-    const cur = field ? field.dataset.value : '';
+    // The home search bar's date triggers ("searchCheckIn"/"searchCheckOut")
+    // aren't real DOM fields with a dataset.value — their current value
+    // lives on the `search` object instead, so read it from there. Every
+    // other caller (the booking-flow date fields) still reads dataset.value.
+    let cur;
+    if (fieldId === 'searchCheckIn') cur = search.selectedCheckIn;
+    else if (fieldId === 'searchCheckOut') cur = search.selectedCheckOut;
+    else {
+      const field = document.getElementById(fieldId);
+      cur = field ? field.dataset.value : '';
+    }
     this.viewDate = new Date((cur || this.minIso) + 'T00:00:00');
     this.render();
     document.getElementById('datepickerModal').classList.remove('hidden');
@@ -434,7 +445,9 @@ const datepicker = {
     const startDay = first.getDay();
     const daysInMonth = new Date(y, m + 1, 0).getDate();
     const field = document.getElementById(this.target);
-    const cur = field ? field.dataset.value : '';
+    const cur = this.target === 'searchCheckIn' ? search.selectedCheckIn
+      : this.target === 'searchCheckOut' ? search.selectedCheckOut
+      : (field ? field.dataset.value : '');
     const today = new Date(); today.setHours(0,0,0,0);
     let html = '';
     for (let i = 0; i < startDay; i++) html += '<div></div>';
