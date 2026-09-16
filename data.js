@@ -648,22 +648,39 @@ function updateDrawerUser(name, email, photoURL) {
 const reviews = {
   currentTarget: null,
   selectedStars: 0,
+  pendingImages: [],
+  addImages(fileList) {
+    const files = Array.from(fileList || []).slice(0, 6 - this.pendingImages.length);
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.pendingImages.push(reader.result);
+        this.renderImagePreview();
+      };
+      reader.readAsDataURL(file);
+    });
+    document.getElementById('reviewImages').value = '';
+  },
+  removeImage(i) {
+    this.pendingImages.splice(i, 1);
+    this.renderImagePreview();
+  },
+  renderImagePreview() {
+    const el = document.getElementById('reviewImagePreview');
+    if (!el) return;
+    el.innerHTML = this.pendingImages.map((src, i) => `
+      <div class="review-photo-thumb">
+        <img src="${src}" alt="">
+        <button type="button" onclick="reviews.removeImage(${i})"><i class="fa-solid fa-xmark"></i></button>
+      </div>`).join('') +
+      (this.pendingImages.length < 6 ? `<button type="button" onclick="document.getElementById('reviewImages').click()" class="review-photo-add"><i class="fa-solid fa-camera"></i><span>Add</span></button>` : '');
+  },
   async submit(e) {
     e.preventDefault();
     const bookingId = document.getElementById('reviewBookingId').value.trim().toUpperCase();
     const name = document.getElementById('reviewName').value.trim();
     const comment = document.getElementById('reviewComment').value.trim();
     const rating = this.selectedStars || 5;
-    const imageFile = document.getElementById('reviewImage')?.files[0];
-    let imageData = null;
-
-    if (imageFile) {
-      imageData = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.readAsDataURL(imageFile);
-      });
-    }
 
     if (!bookingId || !comment) return toast('Booking ID and comment required', 'error');
 
@@ -678,14 +695,15 @@ const reviews = {
           comment,
           rating,
           photoURL: currentUser?.photoURL || null,
-          image: imageData
+          images: this.pendingImages
         }),
       });
       document.getElementById('reviewModal').classList.add('hidden');
       toast('Review submitted!', 'success');
+      const barsId = this.currentTarget.type === 'hotel' ? 'hotelRatingBars' : 'excursionRatingBars';
       loadReviews(this.currentTarget.type, this.currentTarget.id,
         this.currentTarget.type === 'hotel' ? 'hotelReviewsList' : 'excursionReviewsList',
-        null);
+        this.currentTarget.type === 'hotel' ? 'hotelRatingSummary' : 'excursionRatingSummary', barsId);
     } catch (e) {
       toast(e.message, 'error');
     }
@@ -693,10 +711,11 @@ const reviews = {
   openModal(type, id, bookingId = '') {
     this.currentTarget = { type, id, bookingId };
     this.selectedStars = 0;
+    this.pendingImages = [];
     document.getElementById('reviewBookingId').value = bookingId;
     document.getElementById('reviewName').value = (currentUser && currentUser.displayName) || '';
     document.getElementById('reviewComment').value = '';
-    document.getElementById('reviewImage').value = '';
+    this.renderImagePreview();
     this.paintStars(0);
     document.getElementById('reviewModal').classList.remove('hidden');
   },
@@ -726,22 +745,40 @@ async function loadReviews(type, id, containerId, summaryId, barsId) {
     if (reviewsList.length === 0) {
       container.innerHTML = '<p class="text-center text-gray-500 text-sm py-6">No reviews yet</p>';
       if (barsId) { const el = document.getElementById(barsId); if (el) el.innerHTML = ''; }
+      if (summaryId) {
+        const summaryEl = document.getElementById(summaryId); if (summaryEl) summaryEl.textContent = '–';
+        const starsEl = document.getElementById(summaryId.replace('Summary', 'Stars')); if (starsEl) starsEl.innerHTML = '';
+        const countEl = document.getElementById(summaryId.replace('Summary', 'Count')); if (countEl) countEl.textContent = 'No reviews yet';
+      }
       return;
     }
 
-    container.innerHTML = reviewsList.map(rv => `
-      <div class="review-item flex gap-3 border-b border-gray-200 pb-4 mb-4">
-        <img src="${rv.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(rv.name || 'G') + '&background=f97316&color=fff'}"
-             class="w-10 h-10 rounded-full object-cover flex-shrink-0"
-             onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=' + encodeURIComponent(rv.name || 'G') + '&background=f97316&color=fff'">
-        <div class="flex-1 min-w-0">
-          <div class="font-semibold text-sm">${esc(rv.name || 'Guest')}</div>
-          <div class="text-gold-500 text-xs my-1">${utils.renderStars(rv.rating)}</div>
-          <p class="text-sm leading-relaxed">${esc(rv.comment || '')}</p>
-          ${rv.image ? `<img src="${rv.image}" class="mt-3 rounded-lg max-w-full h-auto" alt="Review image" />` : ''}
+    container.innerHTML = reviewsList.map(rv => {
+      const initial = (rv.name || 'G').trim().charAt(0).toUpperCase();
+      const photos = rv.images && rv.images.length ? rv.images : (rv.image ? [rv.image] : []);
+      const dateStr = rv.createdAt ? new Date(rv.createdAt).toLocaleDateString() : '';
+      return `
+      <div class="review-card-v2">
+        <i class="fa-solid fa-quote-right review-card-quote"></i>
+        <div class="review-card-head">
+          <div class="review-card-avatar">${rv.photoURL ? `<img src="${rv.photoURL}" alt="">` : initial}</div>
+          <div class="flex-1 min-w-0">
+            <p class="review-card-name">${esc(rv.name || 'Guest')}</p>
+            <div class="review-card-meta"><span class="review-verified-badge"><i class="fa-solid fa-circle-check"></i> Verified</span>${dateStr ? ` · ${dateStr}` : ''}</div>
+          </div>
         </div>
-      </div>
-    `).join('');
+        <div class="text-gold-500 text-xs my-2">${utils.renderStars(rv.rating)}</div>
+        <p class="review-card-comment">${esc(rv.comment || '')}</p>
+        ${photos.length ? `
+          <div class="review-photo-grid">
+            ${photos.slice(0, 3).map((img, i) => `
+              <div class="review-photo-grid-cell" onclick="window.__lightboxImages=${JSON.stringify(photos)};openLightbox(${i})">
+                <img src="${img}" alt="">
+                ${(i === 2 && photos.length > 3) ? `<div class="review-photo-more">+${photos.length - 3}</div>` : ''}
+              </div>`).join('')}
+          </div>` : ''}
+      </div>`;
+    }).join('');
 
     if (summaryId) {
       const summaryEl = document.getElementById(summaryId);
@@ -749,6 +786,13 @@ async function loadReviews(type, id, containerId, summaryId, barsId) {
         const avg = utils.avgRating(reviewsList);
         summaryEl.textContent = avg ? avg.toFixed(1) : '0.0';
       }
+      // Derived IDs (e.g. excursionRatingSummary -> excursionRatingStars /
+      // excursionRatingCount) so the real average and count show next to it.
+      const starsEl = document.getElementById(summaryId.replace('Summary', 'Stars'));
+      const countEl = document.getElementById(summaryId.replace('Summary', 'Count'));
+      const avg = utils.avgRating(reviewsList);
+      if (starsEl) starsEl.innerHTML = utils.renderStars(avg || 0);
+      if (countEl) countEl.textContent = `${reviewsList.length} verified review${reviewsList.length === 1 ? '' : 's'}`;
     }
 
     if (barsId) {
@@ -758,7 +802,7 @@ async function loadReviews(type, id, containerId, summaryId, barsId) {
         const max = Math.max(...counts, 1);
         barsEl.innerHTML = [5, 4, 3, 2, 1].map((star, i) => `
           <div class="rating-bar-row">
-            <span style="width:14px">${star}</span>
+            <span style="width:28px">${star} <i class="fa-solid fa-star" style="color:#fbbf24;font-size:9px"></i></span>
             <div class="rating-bar-track"><div class="rating-bar-fill" style="width:${(counts[i] / max) * 100}%"></div></div>
             <span style="width:18px; text-align:right">${counts[i]}</span>
           </div>`).join('');
