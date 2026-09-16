@@ -38,6 +38,15 @@ function openLightbox(index) {
   document.getElementById('photoLightbox').classList.remove('hidden');
   document.body.style.overflow = 'hidden';
 }
+// Opens a lightbox for a photo set stored by loadReviews() under a safe key
+// (avoids inlining large base64 image data into an onclick="" attribute,
+// which used to break the HTML — quotes inside the data corrupted the markup).
+function openLightboxSet(key, index) {
+  const set = (window.__reviewPhotoSets || {})[key];
+  if (!set || !set.length) return;
+  window.__lightboxImages = set;
+  openLightbox(index);
+}
 function closeLightbox() {
   document.getElementById('photoLightbox').classList.add('hidden');
   document.body.style.overflow = '';
@@ -160,7 +169,7 @@ function showHotelPage(hotelId, opts = {}) {
     <div class="min-h-screen pb-28" style="background:var(--bg-card)">
       <div class="relative h-80 detail-gallery">
         <div id="hotelGallery" class="gallery-track w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth" style="scrollbar-width:none" onscroll="onGalleryScroll(this)">
-          ${(h.images || [h.image]).map(img => `<img src="${getImageUrl(img)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%">`).join('')}
+          ${(h.images || [h.image]).map((img, i) => `<img src="${getImageUrl(img)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%" onclick="openLightbox(${i})">`).join('')}
         </div>
         <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 pointer-events-none"></div>
         <button onclick="closeHotelPage()" class="absolute top-4 right-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900 z-10"><i class="fa-solid fa-arrow-right"></i></button>
@@ -390,7 +399,7 @@ async function payAndConfirmHotelBooking(roomTotal, taxes, total, nights) {
     kashierUrl.searchParams.append('amount', total);
     kashierUrl.searchParams.append('currency', hashData.currency || 'EGP');
     kashierUrl.searchParams.append('hash', hashData.hash);
-    kashierUrl.searchParams.append('mode', 'test');
+    kashierUrl.searchParams.append('mode', KASHIER_MODE);
     kashierUrl.searchParams.append('paymentMethods', state.bookingDraft.payment === 'instapay' ? 'wallet' : 'card');
     kashierUrl.searchParams.append('merchantRedirect', window.location.href.split('?')[0] + '?kashier_callback=1');
 
@@ -420,7 +429,7 @@ function showExcursionPage(excursionId, opts = {}) {
     <div class="min-h-screen pb-28" style="background:var(--bg-card)">
       <div class="relative h-72 detail-gallery">
         <div id="excursionGallery" class="gallery-track w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth" style="scrollbar-width:none" onscroll="onExcursionGalleryScroll(this)">
-          ${(x.images || [x.image]).map(img => `<img src="${getImageUrl(img)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%">`).join('')}
+          ${(x.images || [x.image]).map((img, i) => `<img src="${getImageUrl(img)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%" onclick="openLightbox(${i})">`).join('')}
         </div>
         <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 pointer-events-none"></div>
         <button onclick="closeExcursionPage()" class="absolute top-4 right-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900 z-10"><i class="fa-solid fa-arrow-right"></i></button>
@@ -668,7 +677,7 @@ async function payAndConfirmExcursionBooking(subtotal, taxes, total) {
     kashierUrl.searchParams.append('amount', total);
     kashierUrl.searchParams.append('currency', hashData.currency || 'EGP');
     kashierUrl.searchParams.append('hash', hashData.hash);
-    kashierUrl.searchParams.append('mode', 'test');
+    kashierUrl.searchParams.append('mode', KASHIER_MODE);
     kashierUrl.searchParams.append('paymentMethods', state.bookingDraft.payment === 'instapay' ? 'wallet' : 'card');
     kashierUrl.searchParams.append('merchantRedirect', window.location.href.split('?')[0] + '?kashier_callback=1');
 
@@ -849,7 +858,7 @@ async function payAndConfirmTransferBooking(subtotal, taxes, total) {
     kashierUrl.searchParams.append('amount', total);
     kashierUrl.searchParams.append('currency', hashData.currency || 'EGP');
     kashierUrl.searchParams.append('hash', hashData.hash);
-    kashierUrl.searchParams.append('mode', 'test');
+    kashierUrl.searchParams.append('mode', KASHIER_MODE);
     kashierUrl.searchParams.append('paymentMethods', state.bookingDraft.payment === 'instapay' ? 'wallet' : 'card');
     kashierUrl.searchParams.append('merchantRedirect', window.location.href.split('?')[0] + '?kashier_callback=1');
 
@@ -879,7 +888,7 @@ function showRestaurantPage(id, opts = {}) {
     <div class="min-h-screen pb-28 restaurant-lux" style="background:var(--bg-card)">
       <div class="relative h-80 detail-gallery">
         <div class="gallery-track w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth" style="scrollbar-width:none" onscroll="onRestGalleryScroll(this)" id="restGallery">
-          ${(r.images || [r.image]).map(img => `<img src="${getImageUrl(img)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%">`).join('')}
+          ${(r.images || [r.image]).map((img, i) => `<img src="${getImageUrl(img)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%" onclick="openLightbox(${i})">`).join('')}
         </div>
         <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-black/25 pointer-events-none"></div>
         <button onclick="closeRestaurantPage()" class="absolute top-4 right-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900 z-10"><i class="fa-solid fa-arrow-right"></i></button>
