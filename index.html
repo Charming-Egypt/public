@@ -59,6 +59,15 @@
 
   <div id="toastContainer" class="fixed top-4 left-1/2 -translate-x-1/2 z-[200] space-y-2 pointer-events-none w-[90%] max-w-md"></div>
 
+  <!-- Photo Lightbox (opened from the desktop photo grid) -->
+  <div id="photoLightbox" class="hidden lightbox-overlay" onclick="if(event.target===this) closeLightbox()">
+    <button onclick="closeLightbox()" class="lightbox-close"><i class="fa-solid fa-xmark"></i></button>
+    <button onclick="lightboxStep(-1)" class="lightbox-arrow lightbox-arrow-prev"><i class="fa-solid fa-chevron-left"></i></button>
+    <img id="lightboxImage" class="lightbox-img" src="" alt="">
+    <button onclick="lightboxStep(1)" class="lightbox-arrow lightbox-arrow-next"><i class="fa-solid fa-chevron-right"></i></button>
+    <div id="lightboxCounter" class="lightbox-counter">1 / 1</div>
+  </div>
+
   <div id="splashPage" class="fixed inset-0 z-[999] dark-scene flex flex-col items-center justify-center">
     <div class="stars-container" id="splashStars"></div>
     <div class="ambient-orb orb-1"></div>
