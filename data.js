@@ -715,7 +715,7 @@ const reviews = {
 };
 
 // ==================== LOAD REVIEWS ====================
-async function loadReviews(type, id, containerId, summaryId) {
+async function loadReviews(type, id, containerId, summaryId, barsId) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
@@ -725,6 +725,7 @@ async function loadReviews(type, id, containerId, summaryId) {
 
     if (reviewsList.length === 0) {
       container.innerHTML = '<p class="text-center text-gray-500 text-sm py-6">No reviews yet</p>';
+      if (barsId) { const el = document.getElementById(barsId); if (el) el.innerHTML = ''; }
       return;
     }
 
@@ -747,6 +748,20 @@ async function loadReviews(type, id, containerId, summaryId) {
       if (summaryEl) {
         const avg = utils.avgRating(reviewsList);
         summaryEl.textContent = avg ? avg.toFixed(1) : '0.0';
+      }
+    }
+
+    if (barsId) {
+      const barsEl = document.getElementById(barsId);
+      if (barsEl) {
+        const counts = [5, 4, 3, 2, 1].map(star => reviewsList.filter(rv => Math.round(rv.rating) === star).length);
+        const max = Math.max(...counts, 1);
+        barsEl.innerHTML = [5, 4, 3, 2, 1].map((star, i) => `
+          <div class="rating-bar-row">
+            <span style="width:14px">${star}</span>
+            <div class="rating-bar-track"><div class="rating-bar-fill" style="width:${(counts[i] / max) * 100}%"></div></div>
+            <span style="width:18px; text-align:right">${counts[i]}</span>
+          </div>`).join('');
       }
     }
   } catch (e) {
