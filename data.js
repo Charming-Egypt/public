@@ -1,3026 +1,993 @@
-/* ============================================================
-   DISCOVER SHARM — CUSTOM STYLES
-   ============================================================ */
-
-/* ---------- CSS Variables (Light/Dark themes) ---------- */
-:root {
-  --bg-body: #f8f7fc;
-  --bg-card: #ffffff;
-  --border-card: #efeaf7;
-  --text-primary: #171029;
-  --text-secondary: #8a8399;
-  --bg-field: #f8f7fc;
-  --border-field: #eee9f8;
-  --header-light-bg: #ffffff;
-  --chrome-bg: #ffffff;
-  --chrome-text: #171029;
-  --chrome-text-muted: rgba(23, 16, 41, .5);
-  --chrome-text-faint: rgba(23, 16, 41, .32);
-  --chrome-shadow: 0 12px 34px rgba(23, 16, 41, .14);
-  --chrome-border: rgba(23, 16, 41, .08);
-  --chrome-field-bg: rgba(23, 16, 41, .05);
-  --hero-fade-mid: rgba(248, 247, 252, .56);
-}
-
-html[data-theme="dark"] {
-  --bg-body: #0c0918;
-  --bg-card: #171029;
-  --border-card: #2b2140;
-  --text-primary: #f1eef9;
-  --text-secondary: #9d94b8;
-  --bg-field: #1f1830;
-  --border-field: #382a54;
-  --header-light-bg: #15101f;
-  --chrome-bg: #171029;
-  --chrome-text: #ffffff;
-  --chrome-text-muted: rgba(255, 255, 255, .62);
-  --chrome-text-faint: rgba(255, 255, 255, .3);
-  --chrome-shadow: 0 12px 40px rgba(20, 10, 45, .4);
-  --chrome-border: rgba(255, 255, 255, .08);
-  --chrome-field-bg: rgba(255, 255, 255, .04);
-  --hero-fade-mid: rgba(12, 9, 24, .56);
-}
-
-/* ---------- Global Reset & Base ---------- */
-* {
-  font-family: 'Inter', sans-serif;
-  -webkit-tap-highlight-color: transparent;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  background: var(--bg-body);
-  color: var(--text-primary);
-  overflow-x: hidden;
-  min-height: 100vh;
-  position: relative;
-  transition: background .3s ease, color .3s ease;
-}
-
-/* ---------- Scrollbars ---------- */
-/* Applies everywhere by default (page, modals, drawers, lists). The
-   horizontal swipe galleries (.horizontal-scroll, .results-scroll-snap,
-   .gallery-track) already hide their scrollbar on purpose and keep doing
-   so — their class-scoped rule is more specific than this one. */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--border-field) transparent;
-}
-
-*::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-*::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-*::-webkit-scrollbar-thumb {
-  background: var(--border-field);
-  border-radius: 8px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
-}
-
-*::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #fbbf24, #d97706);
-  background-clip: padding-box;
-}
-
-.font-display {
-  font-family: 'Playfair Display', serif;
-}
-
-/* ---------- Dark Scene (hero / splash) ---------- */
-.dark-scene {
-  position: relative;
-  background: linear-gradient(160deg, #171029 0%, #100c1c 55%, #0c0918 100%);
-  overflow: hidden;
-}
-
-.dark-scene .stars-container {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  opacity: .6;
-  pointer-events: none;
-}
-
-/* ---------- Stars ---------- */
-.star {
-  position: absolute;
-  width: 2px;
-  height: 2px;
-  background: #fff;
-  border-radius: 50%;
-  animation: twinkle 3s ease-in-out infinite;
-}
-
-@keyframes twinkle {
-  0%, 100% { opacity: .2; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.8); }
-}
-
-/* ---------- Ambient Orbs ---------- */
-.ambient-orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(90px);
-  pointer-events: none;
-  z-index: 1;
-  opacity: .35;
-  mix-blend-mode: screen;
-}
-
-.orb-1 {
-  width: 420px;
-  height: 420px;
-  background: radial-gradient(circle, rgba(124, 58, 237, .8) 0%, transparent 70%);
-  top: -120px;
-  right: -120px;
-}
-
-.orb-2 {
-  width: 380px;
-  height: 380px;
-  background: radial-gradient(circle, rgba(251, 191, 36, .5) 0%, transparent 70%);
-  bottom: -100px;
-  left: -100px;
-}
-
-/* ---------- Page Transitions ---------- */
-.page {
-  display: none;
-  min-height: 100vh;
-  position: relative;
-  z-index: 10;
-}
-
-.page.active {
-  display: block;
-  animation: pageEnter .45s cubic-bezier(.16, 1, .3, 1) forwards;
-}
-
-@keyframes pageEnter {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* ---------- Hero ---------- */
-.hero-section {
-  position: relative;
-  height: 100vh;
-  overflow: hidden;
-}
-
-.hero-bg-img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: opacity .8s ease;
-}
-
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, transparent 0%, transparent 45%, var(--hero-fade-mid) 85%, var(--bg-body) 100%);
-}
-
-.hero-content {
-  position: relative;
-  z-index: 10;
-}
-
-.hero-text-swap {
-  transition: opacity .3s ease;
-}
-
-/* ---------- Header ---------- */
-.header-floating {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.header-floating .icon-btn {
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .55));
-}
-
-.site-logo {
-  height: 34px;
-  width: auto;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .55));
-}
-
-.sticky-header-logo {
-  height: 24px;
-  width: auto;
-}
-
-.header-light {
-  background: var(--header-light-bg);
-  border-bottom: 1px solid var(--border-card);
-}
-
-/* ---------- Cards ---------- */
-.card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-card);
-  border-radius: 20px;
-  box-shadow: 0 10px 30px -12px rgba(45, 23, 90, .10);
-  transition: all .3s ease;
-}
-
-.card:hover {
-  box-shadow: 0 16px 40px -14px rgba(45, 23, 90, .18);
-}
-
-.card-strong {
-  background: var(--bg-card);
-  border-radius: 24px;
-  box-shadow: 0 20px 55px -18px rgba(45, 23, 90, .25);
-}
-
-/* ---------- Search Card ---------- */
-.search-card {
-  background: var(--bg-card);
-  border-radius: 26px;
-  box-shadow: 0 25px 60px -18px rgba(20, 10, 45, .35);
-  border: 1px solid var(--border-card);
-}
-
-.field-box {
-  background: var(--bg-field);
-  border: 1px solid var(--border-field);
-  border-radius: 16px;
-}
-
-/* ---------- Form Inputs ---------- */
-.input-field,
-input[type="text"],
-input[type="email"],
-input[type="tel"],
-input[type="password"],
-input[type="number"],
-input[type="time"],
-textarea,
-select {
-  
-  border-radius: 14px;
-  background: var(--bg-field);
-  color: var(--text-primary);
-  transition: border-color .2s ease;
-}
-
-.input-field:focus,
-input:focus,
-textarea:focus,
-select:focus {
-  outline: none;
-  border-color: #fb923c;
-}
-
-::placeholder {
-  color: var(--text-secondary);
-  opacity: .8;
-}
-
-.date-field {
-  border: 1.5px solid var(--border-field);
-  background: var(--bg-field);
-  border-radius: 14px;
-  cursor: pointer;
-}
-
-/* ---------- Bottom Navigation ---------- */
-.bottom-nav {
-  position: fixed !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  width: 100% !important;
-  height:50px;
-  margin: 0 !important;
-  z-index: 9999;
-  border-radius: 1rem 1rem 0 0 !important;
-  padding: .55rem .7rem;
-  background: var(--chrome-bg);
-  box-shadow: var(--chrome-shadow);
-  transition: background .3s ease, box-shadow .3s ease;
-}
-
-
-
-/* Hide bottom nav on detail pages */
-body:has(#hotelDetailPage.active) .bottom-nav,
-body:has(#excursionDetailPage.active) .bottom-nav,
-body:has(#transferDetailPage.active) .bottom-nav {
-  display: none;
-}
-
-.bottom-nav [class*="text-white"],
-.sticky-home-header [class*="text-white"] {
-  color: var(--chrome-text) !important;
-}
-
-.bottom-nav [class*="text-white/"],
-.sticky-home-header [class*="text-white/"] {
-  color: var(--chrome-text-muted) !important;
-}
-
-.nav-item {
-  transition: all .3s cubic-bezier(.16, 1, .3, 1);
-  position: relative;
-  cursor: pointer;
-  color: var(--chrome-text-muted);
-}
-
-.nav-item.active {
-  color: #f97316;
-}
-
-.nav-item.active::after {
-  content: '';
-  position: absolute;
-  bottom: 3px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #fb923c, #c2410c);
-  box-shadow: 0 0 8px rgba(249, 115, 22, .9);
-}
-
-.nav-item[data-page="profile"].active::after {
-  display: none;
-}
-
-.nav-item-home {
-  width: 58px;
-  height: 58px;
-  margin-top: -30px;
-  border-radius: 50%;
-  cursor: pointer;
-  background: linear-gradient(150deg, #fdba74, #f97316 55%, #c2410c);
-  box-shadow: 0 10px 26px -4px rgba(249, 115, 22, .65), 0 0 0 5px #171029;
-  transition: transform .25s cubic-bezier(.16, 1, .3, 1);
-}
-
-.nav-item-home:active {
-  transform: scale(.93);
-}
-
-.nav-item-home .nav-home-logo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-}
-
-.nav-avatar-circle {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #fdba74, #c2410c);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 800;
-  color: #171029;
-  overflow: hidden;
-}
-
-.nav-avatar-circle img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-}
-
-.nav-item.active .nav-avatar-circle {
-  box-shadow: 0 0 0 2px #f97316;
-}
-
-/* ---------- Sticky Header ---------- */
-.sticky-home-header {
-  position: fixed;
-  top: .7rem;
-  left: 50%;
-  transform: translateX(-50%) translateY(-14px);
-  width: 92%;
-  max-width: 430px;
-  z-index: 55;
-  border-radius: 22px;
-  padding: .6rem .9rem;
-  background: var(--chrome-bg);
-  box-shadow: var(--chrome-shadow);
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity .35s cubic-bezier(.16, 1, .3, 1),
-    transform .35s cubic-bezier(.16, 1, .3, 1),
-    visibility .35s,
-    background .3s ease;
-}
-
-.sticky-home-header.visible {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(-50%) translateY(0);
-  pointer-events: auto;
-}
-
-/* ---------- Buttons ---------- */
-.btn-gold {
-  background: linear-gradient(135deg, #fcd34d 0%, #fbbf24 45%, #f59e0b 100%);
-  box-shadow: 0 10px 30px -8px rgba(245, 158, 11, .5), inset 0 1px 0 rgba(255, 255, 255, .3);
-  border: none;
-  cursor: pointer;
-  transition: all .3s cubic-bezier(.16, 1, .3, 1);
-}
-
-.btn-gold:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 15px 35px -8px rgba(245, 158, 11, .6);
-}
-
-.btn-gold:disabled {
-  opacity: .5;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.btn-violet {
-  background: linear-gradient(135deg, #fb923c 0%, #f97316 55%, #c2410c 100%);
-  box-shadow: 0 10px 30px -8px rgba(249, 115, 22, .45);
-  border: none;
-  cursor: pointer;
-  color: #fff;
-  transition: all .3s cubic-bezier(.16, 1, .3, 1);
-}
-
-.btn-violet:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 15px 35px -8px rgba(249, 115, 22, .6);
-}
-
-.btn-violet:disabled {
-  opacity: .5;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.btn-outline-violet {
-  background: var(--bg-card);
-  border: 1.5px solid #c2410c;
-  color: #a78bfa;
-}
-
-.btn-white {
-  background: #fff;
-  color: #171029;
-  border: 1.5px solid #e8e3f4;
-  cursor: pointer;
-  transition: all .2s;
-}
-
-.btn-white:hover {
-  background: #f8f7fc;
-}
-
-/* ---------- Hotel Cards ---------- */
-/* Mobile: compact horizontal row (image left, details right) — easy to
-   scan a list of hotels without much scrolling. */
-.hotel-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-card);
-  border-radius: 20px;
-  overflow: hidden;
-  transition: all .35s cubic-bezier(.16, 1, .3, 1);
-  box-shadow: 0 8px 24px -14px rgba(45, 23, 90, .15);
-  display: flex;
-  gap: 0;
-}
-
-.hotel-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 18px 40px -16px rgba(45, 23, 90, .25);
-}
-
-.hotel-card-img-wrap {
-  position: relative;
-  flex-shrink: 0;
-  width: 128px;
-  overflow: hidden;
-}
-
-.hotel-card-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.hotel-card-body {
-  flex: 1;
-  min-width: 0;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.hotel-card-amenities {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 8px;
-  overflow: hidden;
-}
-
-@media (min-width: 1024px) {
-  /* Desktop: full-width image on top, larger vertical grid card — matches
-     the same treatment as excursion/restaurant cards on wide screens. */
-  .hotel-card {
-    flex-direction: column;
-  }
-
-  .hotel-card-img-wrap {
-    width: 100%;
-    height: 220px;
-  }
-
-  .hotel-card-body {
-    padding: 20px;
-  }
-}
-
-/* ---------- Shimmer Text ---------- */
-.shimmer-text {
-  background: linear-gradient(90deg, #fbbf24 0%, #fcd34d 50%, #fbbf24 100%);
-  background-size: 200% 100%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: shimmer 3s linear infinite;
-}
-
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-/* ---------- Confetti ---------- */
-.confetti {
-  position: fixed;
-  pointer-events: none;
-  z-index: 9999;
-  animation: confettiFall 3s ease-out forwards;
-}
-
-@keyframes confettiFall {
-  0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
-  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-}
-
-/* ---------- Toast ---------- */
-.toast {
-  animation: toastIn .4s cubic-bezier(.16, 1, .3, 1);
-}
-
-@keyframes toastIn {
-  from { transform: translateY(-100%) scale(.9); opacity: 0; }
-  to { transform: translateY(0) scale(1); opacity: 1; }
-}
-
-/* ---------- Ripple Effect ---------- */
-.ripple {
-  position: relative;
-  overflow: hidden;
-}
-
-.ripple::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at center, rgba(255, 255, 255, .35), transparent 70%);
-  transform: scale(0);
-  opacity: 0;
-  transition: transform .6s, opacity .6s;
-}
-
-.ripple:active::after {
-  transform: scale(2);
-  opacity: 1;
-  transition: 0s;
-}
-
-/* ---------- Promo Banner ---------- */
-.promo-banner {
-  background: linear-gradient(135deg, #9a3412 0%, #f97316 50%, #c2410c 100%);
-  position: relative;
-  overflow: hidden;
-}
-
-.banner-creative {
-  background-size: cover;
-  background-position: center;
-  min-height: 190px;
-  display: flex;
-  align-items: flex-end;
-  box-shadow: 0 14px 34px -10px rgba(0, 0, 0, .35);
-}
-
-@media (min-width: 1024px) {
-  .banner-creative {
-    min-height: 320px;
-    max-width: 1280px;
-    margin: 0 auto;
-  }
-}
-
-.promo-banner::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  right: -20%;
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, rgba(251, 191, 36, .3) 0%, transparent 70%);
-  border-radius: 50%;
-}
-
-/* ---------- Review Slide ---------- */
-.review-slide-card {
-  flex-shrink: 0;
-  width: 260px;
-  border-radius: 22px;
-  padding: 18px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-field);
-  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, .12);
-}
-
-.review-avatar-badge {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #fdba74, #c2410c);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  color: #171029;
-  font-size: 14px;
-  flex-shrink: 0;
-}
-
-/* ---------- Payment Methods ---------- */
-.payment-methods-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-field);
-}
-
-.payment-icon-box {
-  aspect-ratio: 1.3;
-  border-radius: 16px;
-  background: var(--bg-field);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
-  color: var(--text-secondary);
-}
-
-.payment-icon-row {
-  display: grid;
-  grid-template-columns: repeat(4, 64px);
-  gap: 10px;
-  margin-bottom: 14px;
-}
-
-.payment-icon-row.justify-center {
-  justify-content: center;
-}
-
-/* ---------- Footer ---------- */
-#siteFooter {
-  border-top: 1px solid var(--border-card);
-  background: var(--bg-card);
-}
-
-.footer-desktop {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 56px 40px 28px;
-}
-
-.footer-grid {
-  display: grid;
-  grid-template-columns: 1.6fr 1fr 1fr 1fr 1.3fr;
-  gap: 32px;
-  margin-bottom: 40px;
-}
-
-.footer-brand-col .footer-tagline {
-  color: var(--text-secondary);
-  font-size: 13px;
-  line-height: 1.6;
-  margin-bottom: 18px;
-  max-width: 260px;
-}
-
-.footer-social {
-  display: flex;
-  gap: 10px;
-}
-
-.footer-social-btn {
-  width: 38px;
-  height: 38px;
-  border-radius: 11px;
-  background: var(--bg-field);
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 15px;
-  transition: all .25s ease;
-}
-
-.footer-social-btn:hover {
-  background: linear-gradient(135deg, #fbbf24, #d97706);
-  color: #0c0918;
-  transform: translateY(-2px);
-}
-
-.footer-col h4 {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 16px;
-}
-
-.footer-col a,
-.footer-col .footer-contact-line {
-  display: block;
-  color: var(--text-secondary);
-  font-size: 13px;
-  margin-bottom: 12px;
-  cursor: pointer;
-  transition: color .2s ease;
-  text-decoration: none;
-}
-
-.footer-col a:hover {
-  color: #fbbf24;
-}
-
-.footer-payment-col .footer-payment-note {
-  color: var(--text-secondary);
-  font-size: 12px;
-  line-height: 1.6;
-  margin-bottom: 14px;
-}
-
-.footer-contact-line i {
-  width: 16px;
-  color: var(--text-secondary);
-  margin-right: 6px;
-}
-
-.footer-bottom {
-  padding-top: 24px;
-  border-top: 1px solid var(--border-card);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.footer-bottom p {
-  color: var(--text-secondary);
-  font-size: 12px;
-}
-
-.footer-legal-links {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--text-secondary);
-  font-size: 12px;
-}
-
-.footer-legal-links a {
-  color: var(--text-secondary);
-  text-decoration: none;
-}
-
-.footer-legal-links a:hover {
-  color: var(--text-primary);
-}
-
-/* Mobile footer */
-.footer-mobile {
-  text-align: center;
-  padding: 40px 24px 120px;
-}
-
-.footer-mobile .payment-icon-row {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.footer-mobile .footer-payment-note {
-  color: var(--text-secondary);
-  font-size: 12px;
-  line-height: 1.6;
-  max-width: 320px;
-  margin: 0 auto 18px;
-}
-
-.footer-mobile .footer-social {
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
-.footer-mobile-links {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  color: var(--text-secondary);
-  font-size: 12px;
-  margin-bottom: 14px;
-}
-
-.footer-mobile-links a {
-  color: var(--text-secondary);
-  text-decoration: none;
-}
-
-.footer-copyright {
-  color: var(--text-secondary);
-  font-size: 11px;
-}
-
-@media (max-width: 1180px) {
-  .footer-grid {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-  .footer-brand-col {
-    grid-column: 1 / -1;
-  }
-}
-
-/* ---------- Trust Badges ---------- */
-.trust-badge-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.trust-badge {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--bg-field);
-  border: 1px solid var(--border-field);
-  border-radius: 12px;
-  padding: 8px 12px;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.trust-badge i {
-  color: #d97706;
-  font-size: 12px;
-}
-
-/* ---------- Trip Highlights ---------- */
-.highlight-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-}
-
-.highlight-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-card);
-  border-radius: 16px;
-  padding: 14px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.highlight-num {
-  flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #fbbf24, #d97706);
-  color: #0c0918;
-  font-size: 11px;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* ---------- Inclusion Cards ---------- */
-.inclusion-cards {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-}
-
-.inclusion-card {
-  border-radius: 18px;
-  padding: 16px;
-}
-
-.inclusion-card-in {
-  background: rgba(34, 197, 94, .08);
-  border: 1px solid rgba(34, 197, 94, .25);
-}
-
-.inclusion-card-out {
-  background: rgba(248, 113, 113, .08);
-  border: 1px solid rgba(248, 113, 113, .25);
-}
-
-.inclusion-card-title {
-  font-size: 12px;
-  font-weight: 800;
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.inclusion-card-in .inclusion-card-title { color: #16a34a; }
-.inclusion-card-out .inclusion-card-title { color: #ef4444; }
-
-.inclusion-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  color: var(--text-primary);
-  padding: 6px 0;
-}
-
-.inclusion-card-in .inclusion-row i { color: #16a34a; font-size: 11px; }
-.inclusion-card-out .inclusion-row i { color: #ef4444; font-size: 11px; }
-
-/* ---------- Bring Chips ---------- */
-.bring-chip-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.bring-chip {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--bg-field);
-  border-radius: 12px;
-  padding: 10px 14px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.bring-chip i {
-  color: #d97706;
-}
-
-/* ---------- Meeting Point Card ---------- */
-.meeting-card {
-  background: linear-gradient(135deg, #15101f, #1f1830);
-  border-radius: 18px;
-  padding: 18px;
-  color: #fff;
-}
-
-.meeting-card-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.meeting-card-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  background: rgba(251, 191, 36, .15);
-  color: #fbbf24;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.meeting-card-label {
-  font-size: 10px;
-  color: rgba(255, 255, 255, .55);
-  margin-bottom: 2px;
-}
-
-.meeting-card-value {
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.meeting-card-divider {
-  height: 1px;
-  background: rgba(255, 255, 255, .1);
-  margin: 14px 0;
-}
-
-/* ---------- Rating Bar Chart ---------- */
-.rating-bar-chart {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.rating-bar-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 11px;
-  color: var(--text-secondary);
-}
-
-.rating-bar-track {
-  flex: 1;
-  height: 6px;
-  border-radius: 4px;
-  background: var(--bg-field);
-  overflow: hidden;
-}
-
-.rating-bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #fbbf24, #d97706);
-  border-radius: 4px;
-}
-
-@media (min-width: 1024px) {
-  .highlight-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .inclusion-cards {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-
-/* ---------- Reviews v2 ---------- */
-.rating-summary-block {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.rating-summary-score {
-  text-align: center;
-}
-
-.rating-summary-number {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-weight: 700;
-  font-size: 44px;
-  color: var(--text-primary);
-  line-height: 1;
-}
-
-.rating-summary-count {
-  font-size: 12px;
-  color: var(--text-secondary);
-  margin-top: 4px;
-}
-
-.review-card-v2 {
-  position: relative;
-  background: var(--bg-card);
-  border: 1px solid var(--border-card);
-  border-radius: 18px;
-  padding: 16px;
-}
-
-.review-card-quote {
-  position: absolute;
-  top: 14px;
-  right: 16px;
-  font-size: 20px;
-  color: var(--border-field);
-}
-
-.review-card-head {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.review-card-avatar {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #fbbf24, #d97706);
-  color: #0c0918;
-  font-weight: 800;
-  font-size: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.review-card-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.review-card-name {
-  font-weight: 700;
-  font-size: 13px;
-  color: var(--text-primary);
-}
-
-.review-card-meta {
-  font-size: 10px;
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.review-verified-badge {
-  color: #16a34a;
-  font-weight: 700;
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-}
-
-.review-card-comment {
-  font-size: 13px;
-  line-height: 1.6;
-  color: var(--text-primary);
-}
-
-.review-photo-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-  margin-top: 10px;
-}
-
-.review-photo-grid-cell {
-  position: relative;
-  aspect-ratio: 1;
-  border-radius: 10px;
-  overflow: hidden;
-  cursor: pointer;
-}
-
-.review-photo-grid-cell img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.review-photo-more {
-  position: absolute;
-  inset: 0;
-  background: rgba(12, 9, 24, .6);
-  color: #fff;
-  font-weight: 700;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Write-review photo picker */
-.review-photo-picker {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.review-photo-add {
-  width: 60px;
-  height: 60px;
-  border-radius: 12px;
-  border: 1.5px dashed var(--border-field);
-  color: var(--text-secondary);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: 9px;
-  gap: 3px;
-}
-
-.review-photo-add i {
-  font-size: 15px;
-}
-
-.review-photo-thumb {
-  position: relative;
-  width: 60px;
-  height: 60px;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.review-photo-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.review-photo-thumb button {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: rgba(12, 9, 24, .75);
-  color: #fff;
-  font-size: 9px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-@media (min-width: 1024px) {
-  .rating-summary-block {
-    flex-direction: row-reverse;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .rating-summary-block .rating-bar-chart {
-    flex: 1;
-    max-width: 360px;
-  }
-}
-
-
-.lightbox-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 500;
-  background: rgba(8, 6, 16, .95);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.lightbox-img {
-  max-width: 88vw;
-  max-height: 84vh;
-  object-fit: contain;
-  border-radius: 8px;
-}
-
-.lightbox-close {
-  position: absolute;
-  top: 24px;
-  right: 24px;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, .1);
-  color: #fff;
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.lightbox-close:hover {
-  background: rgba(255, 255, 255, .2);
-}
-
-.lightbox-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, .1);
-  color: #fff;
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.lightbox-arrow:hover {
-  background: rgba(255, 255, 255, .2);
-}
-
-.lightbox-arrow-prev {
-  left: 20px;
-}
-
-.lightbox-arrow-next {
-  right: 20px;
-}
-
-.lightbox-counter {
-  position: absolute;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  color: rgba(255, 255, 255, .8);
-  font-size: 13px;
-  font-weight: 600;
-  background: rgba(255, 255, 255, .1);
-  padding: 6px 16px;
-  border-radius: 20px;
-}
-
-
-/* Mobile: unchanged single-column flow with a fixed bottom price bar. */
-.detail-sidebar {
-  display: none;
-}
-
-.photo-grid {
-  display: none;
-}
-
-@media (min-width: 1024px) {
-  /* Booking.com / GetYourGuide-style photo mosaic: one large photo, up to
-     four smaller ones, "+N Photos" on the last if there are more. The
-     layout adapts so there's never an empty cell when a listing has fewer
-     than 5 photos. */
-  .photo-grid {
-    display: grid !important;
-    gap: 8px;
-    height: 440px;
-    max-width: 1280px;
-    margin: 24px auto 0;
-    border-radius: 20px;
-    overflow: hidden;
-  }
-
-  .photo-grid-1 {
-    grid-template-columns: 1fr !important;
-  }
-
-  .photo-grid-2 {
-    grid-template-columns: 1fr 1fr !important;
-  }
-
-  .photo-grid-3 {
-    grid-template-columns: 1.6fr 1fr !important;
-    grid-template-rows: repeat(2, 1fr) !important;
-  }
-
-  .photo-grid-3 .photo-grid-main {
-    grid-row: span 2;
-  }
-
-  .photo-grid-5 {
-    grid-template-columns: repeat(4, 1fr) !important;
-    grid-template-rows: repeat(2, 1fr) !important;
-  }
-
-  .photo-grid-5 .photo-grid-main {
-    grid-row: span 2;
-    grid-column: span 2;
-  }
-
-  .photo-grid-cell {
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-  }
-
-  .photo-grid-cell img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform .5s ease;
-  }
-
-  .photo-grid-cell:hover img {
-    transform: scale(1.06);
-  }
-
-  .photo-grid-more {
-    position: absolute;
-    inset: 0;
-    background: rgba(12, 9, 24, .55);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 15px;
-    gap: 8px;
-  }
-}
-
-.detail-price-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-
-.detail-sidebar-rating {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.detail-sidebar-rating span {
-  font-weight: 400;
-  color: var(--text-secondary);
-}
-
-.detail-sidebar-note {
-  font-size: 11px;
-  color: var(--text-secondary);
-  margin-top: 12px;
-  line-height: 1.6;
-}
-
-.detail-sidebar-title {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-weight: 700;
-  font-size: 18px;
-  color: var(--text-primary);
-  margin-bottom: 8px;
-}
-
-.detail-sidebar-info-row {
-  font-size: 12px;
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 0;
-  border-top: 1px solid var(--border-card);
-}
-
-@media (min-width: 1024px) {
-  /* Desktop: Airbnb-style two columns — scrolling content on the left,
-     a booking card that stays in view on the right. The swipeable mobile
-     gallery is replaced by a Booking.com/GetYourGuide-style photo grid
-     (see .photo-grid below), so it's hidden here instead of resized. */
-  .detail-gallery {
-    display: none !important;
-  }
-
-  .detail-layout {
-    display: grid;
-    grid-template-columns: 1fr 380px;
-    gap: 40px;
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 0 40px;
-    align-items: start;
-  }
-
-  .detail-main {
-    margin-top: 0 !important;
-    border-radius: 20px;
-    border: 1px solid var(--border-card);
-    padding: 32px !important;
-  }
-
-  .detail-sidebar {
-    display: block;
-  }
-
-  .detail-sidebar-card {
-    position: sticky;
-    top: 104px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-card);
-    border-radius: 20px;
-    padding: 24px;
-    box-shadow: 0 20px 50px -20px rgba(20, 10, 45, .25);
-  }
-
-  .detail-mobile-bar {
-    display: none;
-  }
-}
-
-/* ---------- Account Dashboard (Bookings/Profile/Settings/Notifications) ---------- */
-#accountSidebar {
-  display: none;
-}
-
-@media (min-width: 1024px) {
-  body.account-section #accountSidebar {
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    top: 104px;
-    left: max(40px, calc(50% - 640px));
-    width: 260px;
-    bottom: 32px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-card);
-    border-radius: 20px;
-    padding: 24px;
-    overflow-y: auto;
-    z-index: 20;
-  }
-
-  .account-sidebar-user {
-    text-align: center;
-    padding-bottom: 20px;
-    margin-bottom: 16px;
-    border-bottom: 1px solid var(--border-card);
-  }
-
-  .account-sidebar-avatar {
-    width: 68px;
-    height: 68px;
-    border-radius: 50%;
-    margin: 0 auto 12px;
-    background: linear-gradient(135deg, #fbbf24, #d97706);
-    color: #0c0918;
-    font-weight: 700;
-    font-size: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-  }
-
-  .account-sidebar-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .account-sidebar-name {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-weight: 700;
-    font-size: 15px;
-    color: var(--text-primary);
-  }
-
-  .account-sidebar-email {
-    font-size: 12px;
-    color: var(--text-secondary);
-    margin-top: 2px;
-  }
-
-  .account-sidebar-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .account-sidebar-link {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 11px 12px;
-    border-radius: 12px;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-secondary);
-    text-align: left;
-    transition: background .2s ease, color .2s ease;
-  }
-
-  .account-sidebar-link:hover {
-    background: var(--bg-field);
-    color: var(--text-primary);
-  }
-
-  .account-sidebar-link.active {
-    background: linear-gradient(135deg, #fbbf24, #d97706);
-    color: #0c0918;
-  }
-
-  .account-sidebar-logout {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 11px 12px;
-    border-radius: 12px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #ef4444;
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid var(--border-card);
-  }
-
-  .account-sidebar-logout:hover {
-    background: rgba(239, 68, 68, .08);
-  }
-
-  /* Content area shifts right to clear the fixed sidebar, and is capped
-     to a comfortable reading/dashboard width instead of full-bleed. */
-  body.account-section #bookingsPage .min-h-screen,
-  body.account-section #profilePage .min-h-screen,
-  body.account-section #settingsPage .min-h-screen,
-  body.account-section #notificationsPage .min-h-screen {
-    max-width: 700px;
-    margin-left: max(320px, calc(50% - 640px + 300px));
-    margin-right: auto;
-    padding-top: 24px;
-  }
-
-  /* The sidebar nav replaces these in-page back buttons and the profile
-     page's quick-link cards to My Bookings/Settings/Logout — keeping both
-     would be redundant on desktop. */
-  body.account-section #settingsPage .header-light,
-  body.account-section #notificationsPage .header-light,
-  body.account-section #profilePage .px-5.mt-6.space-y-3 {
-    display: none;
-  }
-}
-
-
-/* ---------- Category Tiles ---------- */
-.category-tile-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 12px;
-}
-
-.category-tile {
-  background: var(--bg-card);
-  border: 1px solid var(--border-card);
-  border-radius: 18px;
-  padding: 18px 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text-primary);
-  transition: transform .3s cubic-bezier(.16, 1, .3, 1), box-shadow .3s ease, border-color .3s ease;
-}
-
-.category-tile-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, #fbbf24, #d97706);
-  color: #0c0918;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-}
-
-.category-tile:hover {
-  transform: translateY(-4px);
-  border-color: #fbbf24;
-  box-shadow: 0 16px 32px -16px rgba(217, 119, 6, .35);
-}
-
-@media (min-width: 1024px) {
-  .category-tile-grid {
-    max-width: 1280px;
-    margin: 0 auto;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
-  }
-
-  .category-tile {
-    flex-direction: row;
-    justify-content: flex-start;
-    padding: 24px;
-    font-size: 15px;
-    border-radius: 20px;
-  }
-
-  .category-tile-icon {
-    width: 56px;
-    height: 56px;
-    font-size: 22px;
-    flex-shrink: 0;
-  }
-}
-
-
-/* ---------- Listing Page Header (Excursions/Transfers/Restaurants/Hotels) ---------- */
-.listing-hero {
-  border-bottom: 1px solid var(--border-card);
-  padding: 48px 40px 32px;
-}
-
-.listing-hero-inner {
-  max-width: 1280px;
-  margin: 0 auto;
-}
-
-.listing-eyebrow {
-  color: #d97706;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: .1em;
-  margin-bottom: 8px;
-}
-
-.listing-title {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-weight: 700;
-  font-size: 40px;
-  color: var(--text-primary);
-  margin-bottom: 8px;
-}
-
-.listing-count {
-  font-size: 14px;
-  color: var(--text-secondary);
-  max-width: 600px;
-}
-
-.listing-count span {
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-@media (min-width: 1024px) {
-  .listing-filter-row {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding-top: 16px;
-  }
-  .listing-filter-row .filter-chip {
-    font-size: 13px;
-    padding: 12px 20px;
-  }
-}
-
-
-/* ---------- Destination Cards ---------- */
-.destination-card {
-  flex-shrink: 0;
-  width: 144px;
-  height: 176px;
-  cursor: pointer;
-  border-radius: 18px;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 8px 20px -6px rgba(0, 0, 0, .25);
-}
-
-/* ---------- Restaurant Cards ---------- */
-.restaurant-card {
-  flex-shrink: 0;
-  width: 210px;
-  border-radius: 20px;
-  overflow: hidden;
-  cursor: pointer;
-  background: var(--bg-card);
-  border: 1px solid var(--border-field);
-  box-shadow: 0 6px 18px -8px rgba(0, 0, 0, .15);
-  transition: transform .3s cubic-bezier(.16, 1, .3, 1), box-shadow .3s ease;
-}
-
-.restaurant-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 32px -12px rgba(0, 0, 0, .25);
-}
-
-@media (min-width: 1024px) {
-  .restaurant-card {
-    width: 260px;
-  }
-}
-
-#restaurantsFullList .restaurant-card {
-  width: 100%;
-}
-
-/* ---------- Article Cards ---------- */
-/* Mobile: compact horizontal row (image left, text right). */
-.article-card {
-  border-radius: 20px;
-  overflow: hidden;
-  cursor: pointer;
-  background: var(--bg-card);
-  border: 1px solid var(--border-field);
-  display: flex;
-  gap: 12px;
-  padding: 10px;
-  transition: transform .3s cubic-bezier(.16, 1, .3, 1), box-shadow .3s ease;
-}
-
-.article-card-img {
-  width: 112px;
-  height: 112px;
-  object-fit: cover;
-  border-radius: 14px;
-  flex-shrink: 0;
-}
-
-.article-card-body {
-  flex: 1;
-  min-width: 0;
-}
-
-@media (min-width: 1024px) {
-  /* Desktop: magazine-style card — full-width image on top, larger type. */
-  .article-card {
-    flex-direction: column;
-    padding: 0;
-    gap: 0;
-  }
-
-  .article-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 44px -18px rgba(45, 23, 90, .3);
-  }
-
-  .article-card-img {
-    width: 100%;
-    height: 200px;
-    border-radius: 0;
-  }
-
-  .article-card-body {
-    padding: 18px 20px 20px;
-  }
-
-  .article-card-body p:first-child {
-    font-size: 17px;
-  }
-}
-
-/* ---------- Room Selection ---------- */
-.room-option-card {
-  border: 2px solid transparent;
-  transition: border-color .2s ease, background .2s ease;
-}
-
-.room-option-card.room-selected {
-  border-color: #f97316;
-}
-
-.room-option-card .room-select-check {
-  visibility: hidden;
-  opacity: 0;
-}
-
-.room-option-card.room-selected .room-select-check {
-  visibility: visible;
-  opacity: 1;
-}
-
-/* ---------- Search Tabs ---------- */
-.search-tab {
-  transition: all .3s cubic-bezier(.16, 1, .3, 1);
-  color: var(--text-secondary);
-}
-
-.search-tab:active {
-  transform: scale(.92);
-}
-
-/* ---------- Filter Chips ---------- */
-.filter-chip {
-  transition: all .3s cubic-bezier(.16, 1, .3, 1);
-  border: 1px solid var(--border-field);
-  background: var(--bg-card);
-  color: var(--text-secondary);
-  cursor: pointer;
-}
-
-.filter-chip.active {
-  background: linear-gradient(135deg, #fb923c, #c2410c);
-  border-color: transparent;
-  color: #fff;
-  box-shadow: 0 6px 18px -6px rgba(124, 58, 237, .5);
-}
-
-/* ---------- Stars ---------- */
-.star-filled {
-  color: #f59e0b;
-}
-
-.star-empty {
-  color: #453f5c;
-}
-
-/* ---------- Badges ---------- */
-.badge-bestseller {
-  background: linear-gradient(135deg, #171029, #2b2140);
-  color: #fbbf24;
-}
-
-.rating-pill {
-  background: rgba(12, 9, 24, .65);
-  backdrop-filter: blur(6px);
-}
-
-/* ---------- Horizontal Scroll ---------- */
-.horizontal-scroll {
-  display: flex;
-  gap: .75rem;
-  overflow-x: auto;
-  padding: .5rem .25rem .75rem;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.horizontal-scroll::-webkit-scrollbar {
-  display: none;
-}
-
-/* ---------- Section Titles ---------- */
-.section-title {
-  font-size: 1.35rem;
-  font-weight: 700;
-  font-family: 'Playfair Display', serif;
-  color: var(--text-primary);
-  margin-bottom: .3rem;
-}
-
-.section-subtitle {
-  color: #f97316;
-  font-size: .62rem;
-  font-weight: 700;
-  letter-spacing: .25em;
-  margin-bottom: .3rem;
-}
-
-/* ---------- Step Indicator ---------- */
-.step-indicator {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0;
-}
-
-.step-circle {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: .8rem;
-  font-weight: 700;
-  flex-shrink: 0;
-  transition: all .3s;
-}
-
-.step-line {
-  width: 46px;
-  height: 2px;
-  flex-shrink: 0;
-}
-
-.step-label {
-  font-size: .62rem;
-  margin-top: .4rem;
-  text-align: center;
-  letter-spacing: .02em;
-}
-
-/* ---------- Modals ---------- */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(15, 10, 25, .55);
-  backdrop-filter: blur(6px);
-}
-
-.modal-content {
-  background: var(--bg-card);
-  border-radius: 24px;
-  padding: 1.5rem;
-  width: 90%;
-  max-width: 400px;
-  box-shadow: 0 30px 70px -20px rgba(20, 10, 45, .4);
-  max-height: 85vh;
-  overflow-y: auto;
-}
-
-/* ---------- Counter Buttons ---------- */
-.counter-btn {
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
-  background: var(--bg-field);
-  border: 1px solid var(--border-field);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all .3s;
-  font-size: 1.1rem;
-  color: var(--text-primary);
-}
-
-.counter-btn:hover {
-  background: #e8e0fb;
-  border-color: #c8b6f0;
-}
-
-.counter-btn:active {
-  transform: scale(.9);
-}
-
-/* ---------- Gallery Dots ---------- */
-.gallery-track {
-  direction: ltr;
-}
-
-.gallery-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, .4);
-  transition: all .3s;
-}
-
-.gallery-dot.active {
-  width: 18px;
-  border-radius: 4px;
-  background: #fbbf24;
-}
-
-/* ---------- Side Drawer ---------- */
-#sideDrawer {
-  position: fixed;
-  top: 0;
-  height: 100%;
-  width: 80%;
-  max-width: 300px;
-  background: var(--chrome-bg);
-  z-index: 95;
-  transition: transform .35s cubic-bezier(.16, 1, .3, 1), background .3s ease;
-  color: var(--chrome-text);
-}
-
-html[dir="rtl"] #sideDrawer {
-  right: 0;
-  transform: translateX(100%);
-  box-shadow: -10px 0 40px rgba(0, 0, 0, .25);
-}
-
-html[dir="ltr"] #sideDrawer {
-  left: 0;
-  transform: translateX(-100%);
-  box-shadow: 10px 0 40px rgba(0, 0, 0, .25);
-}
-
-html[dir="rtl"] #sideDrawer.open,
-html[dir="ltr"] #sideDrawer.open {
-  transform: translateX(0);
-}
-
-#sideDrawer [class*="text-white"] {
-  color: var(--chrome-text) !important;
-}
-
-#sideDrawer [class*="text-white/"] {
-  color: var(--chrome-text-muted) !important;
-}
-
-#sideDrawer [class*="bg-white"] {
-  background-color: var(--chrome-field-bg) !important;
-}
-
-#sideDrawer [class*="border-white"] {
-  border-color: var(--chrome-border) !important;
-}
-
-#sideDrawer .drawer-link:hover,
-#sideDrawer .drawer-link.active-link {
-  background: var(--chrome-field-bg);
-}
-
-#sideDrawerOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, .5);
-  z-index: 90;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .3s;
-}
-
-#sideDrawerOverlay.open {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.drawer-link {
-  display: flex;
-  align-items: center;
-  gap: .75rem;
-  padding: .85rem 1rem;
-  border-radius: 14px;
-  color: var(--chrome-text-muted);
-  transition: all .2s;
-  cursor: pointer;
-}
-
-.drawer-link:hover,
-.drawer-link.active {
-  background: rgba(139, 92, 246, .15);
-  color: #fff;
-}
-
-/* ---------- Theme Switch ---------- */
-.theme-switch {
-  width: 52px;
-  height: 28px;
-  border-radius: 99px;
-  background: #2b2140;
-  position: relative;
-  cursor: pointer;
-  border: 1px solid rgba(255, 255, 255, .1);
-}
-
-.theme-switch .knob {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #fcd34d, #f59e0b);
-  transition: all .3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-}
-
-html[data-theme="light"] .theme-switch .knob {
-  right: 26px;
-}
-
-/* ---------- Language Toggle ---------- */
-.lang-toggle button {
-  flex: 1;
-  padding: .5rem;
-  border-radius: 10px;
-  font-size: .72rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, .5);
-}
-
-.lang-toggle button.active {
-  background: linear-gradient(135deg, #fb923c, #c2410c);
-  color: #fff;
-}
-
-.lang-toggle button.lang-btn-neutral {
-  color: var(--text-secondary);
-}
-
-.lang-toggle button.lang-btn-neutral.active {
-  color: #fff;
-}
-
-/* ---------- Datepicker ---------- */
-#datepickerModal .dp-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
-}
-
-/* ---------- Star Rating Input ---------- */
-.star-input i {
-  font-size: 1.6rem;
-  cursor: pointer;
-  color: #453f5c;
-  transition: color .15s, transform .15s;
-}
-
-.star-input i.active {
-  color: #f59e0b;
-}
-
-.star-input i:hover {
-  transform: scale(1.15);
-}
-
-/* ---------- Avatar Upload ---------- */
-.avatar-edit-btn {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #fb923c, #c2410c);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  border: 3px solid var(--bg-body);
-  cursor: pointer;
-  font-size: .75rem;
-}
-
-/* ---------- Kashier Payment Modal ---------- */
-.kashier-modal-content {
-  background: var(--bg-card);
-  border-radius: 24px;
-  overflow: hidden;
-  width: 92%;
-  max-width: 420px;
-  box-shadow: 0 30px 70px -20px rgba(20, 10, 45, .4);
-}
-
-.kashier-header {
-  background: linear-gradient(135deg, #171029, #2b2140);
-  padding: 1.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-/* ---------- Cuisine / Fine Dining ---------- */
-.lux-cuisine-badge {
-  background: rgba(249, 115, 22, .18);
-  border: 1px solid rgba(253, 186, 116, .5);
-  color: #fdba74;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .05em;
-  padding: 3px 10px;
-  border-radius: 99px;
-  text-transform: uppercase;
-}
-
-.lux-divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 18px 0 22px;
-}
-
-.lux-divider::before,
-.lux-divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--border-field) 50%, transparent);
-}
-
-.lux-divider .lux-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #f97316;
-  flex-shrink: 0;
-}
-
-.menu-category-title {
-  font-family: 'Playfair Display', serif;
-  font-style: italic;
-  font-weight: 700;
-  font-size: 16px;
-  letter-spacing: .02em;
-  color: #ea580c;
-  text-align: center;
-  margin-bottom: 16px;
-}
-
-.menu-item-row {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-
-.menu-item-name {
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--text-primary);
-  white-space: nowrap;
-}
-
-.menu-item-leader {
-  flex: 1;
-  border-bottom: 1.5px dotted var(--border-field);
-  margin-bottom: 4px;
-  min-width: 12px;
-}
-
-.menu-item-price {
-  font-weight: 700;
-  font-size: 14px;
-  color: #ea580c;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.menu-item-desc {
-  font-size: 11.5px;
-  font-style: italic;
-  color: var(--text-secondary);
-  line-height: 1.6;
-  margin: 3px 0 16px;
-}
-
-/* ---------- Skeleton Shimmer ---------- */
-.skeleton-shimmer {
-  background: linear-gradient(90deg,
-    var(--bg-field) 25%,
-    rgba(150, 150, 170, .18) 37%,
-    var(--bg-field) 63%
-  );
-  background-size: 400% 100%;
-  animation: skeletonShimmer 1.4s ease infinite;
-}
-
-@keyframes skeletonShimmer {
-  0% { background-position: 100% 50%; }
-  100% { background-position: 0 50%; }
-}
-
-/* ============================================================
-   SEARCH SYSTEM (New Clean Design)
-   ============================================================ */
-.search-tab-new {
-  padding: 12px 16px;
-  border-radius: 12px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-secondary);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  transition: all .3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  flex: 1;
-}
-
-.search-tab-new i {
-  font-size: 15px;
-}
-
-.search-tab-new.active {
-  background: linear-gradient(135deg, #fb923c, #c2410c);
-  color: #fff;
-  box-shadow: 0 8px 20px -6px rgba(249, 115, 22, .5);
-}
-
-.ds-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  z-index: 10000 !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-.ds-modal-content {
-  background: var(--bg-card);
-  border-radius: 20px;
-  padding: 20px;
-  width: 100%;
-  max-width: 400px;
-  border: 1px solid var(--border-card);
-  box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-}
-
-.ds-modal-nav-btn {
-  background: var(--bg-field);
-  border: 1px solid var(--border-field);
-  color: var(--text-secondary);
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  transition: all .2s;
-}
-
-.ds-modal-nav-btn:hover {
-  background: rgba(249, 115, 22, 0.15);
-  color: #f97316;
-}
-
-.ds-modal-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  margin-bottom: 6px;
-  display: block;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.ds-modal-input {
-  width: 100%;
-  padding: 12px 16px;
-  background: var(--bg-field);
-  border: 1px solid var(--border-field);
-  border-radius: 12px;
-  color: var(--text-primary);
-  font-size: 14px;
-}
-
-.ds-modal-apply {
-  width: 100%;
-  padding: 14px;
-  background: linear-gradient(135deg, #fb923c, #c2410c);
-  border: none;
-  border-radius: 12px;
-  color: white;
-  font-weight: 700;
-  font-size: 15px;
-  cursor: pointer;
-  margin-top: 16px;
-}
-
-.ds-guest-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border-field);
-}
-
-.ds-guest-row:last-child {
-  border-bottom: none;
-}
-
-.ds-guest-info-label {
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-.ds-guest-info-sub {
-  font-size: 12px;
-  color: var(--text-secondary);
-  margin-top: 2px;
-}
-
-.ds-guest-counter {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.ds-guest-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 1px solid rgba(249, 115, 22, 0.4);
-  background: transparent;
-  color: #f97316;
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all .2s;
-}
-
-.ds-guest-btn:hover {
-  background: rgba(249, 115, 22, 0.15);
-}
-
-.ds-guest-value {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text-primary);
-  min-width: 24px;
-  text-align: center;
-}
-
-.ds-cal-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 6px;
-  text-align: center;
-  margin-top: 10px;
-}
-
-.ds-cal-hdr {
-  font-size: 12px;
-  color: var(--text-secondary);
-  padding-bottom: 8px;
-}
-
-.ds-cal-day {
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  border-radius: 8px;
-  cursor: pointer;
-  user-select: none;
-  color: var(--text-primary);
-  transition: all .15s;
-}
-
-.ds-cal-day:hover:not(.muted):not(.ds-empty) {
-  background: rgba(249, 115, 22, 0.15);
-  color: #f97316;
-}
-
-.ds-cal-day.muted {
-  color: var(--text-secondary);
-  opacity: 0.4;
-  cursor: default;
-}
-
-.ds-cal-day.today {
-  border: 2px solid #f97316;
-  border-radius: 12px;
-  font-weight: 700;
-}
-
-.ds-cal-day.selected {
-  background: linear-gradient(135deg, #fb923c, #c2410c);
-  color: #fff;
-  border-radius: 12px;
-  font-weight: bold;
-}
-
-.ds-cal-day.in-range {
-  background: rgba(249, 115, 22, 0.1);
-  color: #f97316;
-  border-radius: 4px;
-}
-
-/* أزرار الفئات */
-.ds-category-btn {
-  padding: 12px;
-  border-radius: 12px;
-  background: var(--bg-field);
-  border: 1px solid var(--border-field);
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all .2s;
-}
-
-.ds-category-btn:hover {
-  background: rgba(249, 115, 22, 0.1);
-  border-color: #f97316;
-}
-
-.ds-category-btn.active {
-  background: linear-gradient(135deg, #fb923c, #c2410c);
-  color: #fff;
-  border-color: transparent;
-}
-
-/* Forms visibility */
-.search-form {
-  display: none;
-}
-
-.search-form.active {
-  display: block;
-  animation: fadeInUp .4s ease;
-}
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ============ CREATIVE CARD (New Design) ============ */
-.creative-card {
-  transition: all 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-  border-radius: 2rem;
-  overflow: hidden;
-  width: 100%;
-  flex-shrink: 0;
-  position: relative;
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  padding-top: 1rem;
-  cursor: pointer;
-}
-
-.creative-card:hover {
-  transform: translateY(-6px);
-}
-
-.card-image-container {
-  position: relative;
-  overflow: hidden;
-  height: 420px;
-  border-radius: 2rem;
-  box-shadow: 0 20px 35px rgba(0, 0, 0, 0.5);
-}
-
-.card-image-container img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 2rem;
-}
-
-.creative-card:hover .card-image-container img {
-  transform: scale(1.08);
-}
-
-.image-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.7) 25%, rgba(0, 0, 0, 0.35) 50%, rgba(0, 0, 0, 0.1) 75%, rgba(0, 0, 0, 0.02) 100%);
-  border-radius: 2rem;
-  z-index: 1;
-}
-
-.image-overlay-top {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 35%;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 0%, transparent 100%);
-  z-index: 2;
-  border-radius: 2rem 2rem 0 0;
-}
-
-.share-btn-top {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 2;
-  transition: all 0.3s;
-  font-size: 16px;
-}
-
-.share-btn-top:hover {
-  background: #FF6B35;
-  border-color: #FF6B35;
-  transform: scale(1.1);
-}
-
-.duration-badge {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 30px;
-  padding: 8px 16px;
-  font-size: 11px;
-  font-weight: 600;
-  color: #FFA630;
-  z-index: 2;
-  letter-spacing: 0.5px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.card-content {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 2;
-  padding: 1.5rem;
-}
-
-.card-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: white;
-  line-height: 1.2;
-  margin-bottom: 0.3rem;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-}
-
-.rating-review-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(8px);
-  padding: 0.3rem 0.7rem;
-  border-radius: 50px;
-  margin-bottom: 1rem;
-}
-
-.stars-small {
-  display: flex;
-  gap: 1px;
-  font-size: 0.6rem;
-  color: #FBBF24;
-}
-
-.rating-number {
-  font-weight: 600;
-  color: white;
-  font-size: 0.75rem;
-}
-
-.review-count {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.68rem;
-  padding-left: 0.3rem;
-  border-left: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.card-action-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 1rem;
-}
-
-.price-block {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  flex: 1;
-  min-width: 130px;
-}
-
-.price-from {
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.6);
-  margin-bottom: 1px;
-  font-weight: 400;
-}
-
-.price-value {
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: #FF6B35;
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: visible;
-}
-
-.price-per-person {
-  font-size: 0.65rem;
-  color: rgba(255, 255, 255, 0.5);
-  white-space: nowrap;
-  align-self: flex-end;
-}
-
-.book-btn {
-  background: linear-gradient(135deg, #FF6B35, #FFA630);
-  color: white;
-  font-weight: 700;
-  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.5);
-  padding: 12px 18px;
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  flex: 1;
-  white-space: nowrap;
-  border-radius: 40px;
-  border: none;
-  cursor: pointer;
-  text-decoration: none;
-  transition: all 0.25s;
-}
-
-.book-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 28px rgba(255, 107, 53, 0.7);
-  color: white;
-}
-
-/* تعديل عرض البطاقات في السلايدر */
-.results-scroll-snap {
-  display: flex;
-  overflow-x: auto;
-  overflow-y: visible;
-  gap: 1.2rem;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.results-scroll-snap::-webkit-scrollbar {
-  display: none;
-}
-
-.results-scroll-snap > * {
-  flex: 0 0 100%;
-  scroll-snap-align: start;
-}
-
-@media (min-width: 640px) {
-  .results-scroll-snap > * {
-    flex: 0 0 75%;
-  }
-}
-
-@media (min-width: 1024px) {
-  .results-scroll-snap > * {
-    flex: 0 0 40%;
-  }
-}
-
-@media (min-width: 1280px) {
-  .results-scroll-snap > * {
-    flex: 0 0 32%;
-  }
-}
-
-/* ---------- Responsive ---------- */
-@media (max-width: 480px) {
-  .section-title {
-    font-size: 1.15rem;
-  }
-  .bottom-nav {
-    bottom: .7rem;
-    padding: .5rem .7rem;
-  }
-}
-
-/* ============================================================
-   DESKTOP LAYOUT & ENHANCEMENTS
-   ============================================================ */
-@media (min-width: 1024px) {
-  /* Desktop nav starts transparent, sitting on the hero image exactly like
-     the mobile header-floating does — so hide the mobile one to avoid two
-     overlapping headers. */
-  .header-floating {
-    display: none;
-  }
-
-  #desktopNav {
-    background: transparent;
-    border-bottom: 1px solid transparent;
-    transition: background .3s ease, border-color .3s ease;
-  }
-
-  #desktopNav .icon-btn,
-  #desktopNav .desktop-nav-logo {
-    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .55));
-  }
-
-  #desktopNav.scrolled {
-    background: var(--bg-card);
-    border-bottom-color: var(--border-card);
-    box-shadow: var(--chrome-shadow);
-  }
-
-  #desktopNav.scrolled .icon-btn,
-  #desktopNav.scrolled .desktop-nav-logo {
-    filter: none;
-  }
-
-  #desktopNav.scrolled .icon-btn {
-    background: var(--bg-field);
-  }
-
-  #desktopNav [class*="text-white"] {
-    color: #fff !important;
-  }
-
-  #desktopNav.scrolled [class*="text-white"] {
-    color: var(--text-primary) !important;
-  }
-
-  /* Only pages other than the hero-bearing home page need space reserved
-     under the fixed nav — home's hero runs flush to the top, with the nav
-     overlaid transparently on top of it. */
-  #mainApp .page:not(#homePage) {
-    padding-top: 80px;
-  }
-
-  .main-area {
-    max-width: 1280px;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 0 32px;
-  }
-  .bottom-nav {
-    display: none !important;
-  }
-  .section-title {
-    font-size: 28px;
-    letter-spacing: -0.5px;
-  }
-  .section-subtitle {
-    font-size: 13px;
-    letter-spacing: 2px;
-  }
-  .search-card {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 32px;
-  }
-  #featuredHotels,
-  #hotelsList,
-  #excursionsList,
-  #transfersList,
-  #restaurantsFullList,
-  #favoritesList,
-  #bookingsList {
-    display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 24px !important;
-    max-width: 1280px;
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-  .destination-card {
-    height: 200px;
-  }
-  .modal-overlay {
-    padding: 60px 20px;
-  }
-  .modal-content {
-    max-width: 700px;
-  }
-  /* Detail pages (excursion/hotel/restaurant/transfer/destination) render
-     their content at full viewport width, which produced uncomfortably
-     long lines of text on wide screens. */
-  [class*="rounded-t-[28px]"] {
-    max-width: 900px;
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-}
-
-/* ============ FIX Z-INDEX FOR MODALS ============ */
-.modal-overlay,
-.ds-modal-overlay,
-#datepickerModal,
-#searchGuestDropdown,
-#searchCategoryDropdown {
-  z-index: 99999 !important;
-}
-
-.s-area{ margin-top:-20rem; margin-bottom:5rem;}
-
-
-@media (max-width: 480px) {
-  .s-area{ margin-top:-23rem;
-         margin-bottom:6rem;
-         }
-
-  }
-
+// ==================== CONFIG ====================
+const API_BASE = '';
+let authToken = localStorage.getItem('ds_auth_token') || null;
+let currentUser = null;
+try {
+  const storedUser = localStorage.getItem('ds_current_user');
+  if (storedUser && storedUser !== 'null') {
+    currentUser = JSON.parse(storedUser);
+  }
+} catch (e) {
+  currentUser = null;
+}
+let authMode = 'login';
+
+const PLACEHOLDER_IMG = "data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27300%27%3E%3Crect fill=%27%232b2140%27 width=%27400%27 height=%27300%27/%3E%3Ctext x=%27200%27 y=%27150%27 text-anchor=%27middle%27 dy=%27.3em%27 fill=%27%239d94b8%27 font-size=%2720%27 font-family=%27sans-serif%27%3ENo Image%3C/text%3E%3C/svg%3E";
+// Note: FALLBACK_LOGO is defined inline in <head> in index.html, not here —
+// see the comment there for why it has to load before this file does.
+
+// ==================== STATE ====================
+const state = {
+  bookings: [],
+  favorites: [],
+  currency: localStorage.getItem('ds_display_currency') || 'EGP',
+  currentFilter: 'all',
+  currentExcursionFilter: 'all',
+  searchQuery: '',
+  currentHotel: null,
+  currentRoom: null,
+  currentExcursion: null,
+  currentTransfer: null,
+  currentBookingTab: 'upcoming',
+  activeSearchTab: 'hotels',
+  guests: { adults: 2, children: 0, infants: 0, rooms: 1 },
+  pageHistory: ['home'],
+  bookingDraft: {},
+  transferPax: 2,
+  transferDirection: 'Airport to Hotel',
+  hotelsCache: [],
+  reviewTarget: null,
+  userTier: 0,
+  userStats: { completedBookings: 0, totalSpent: 0 },
+};
+
+const CATALOG = { hotels: [], excursions: [], transfers: [], destinations: [], restaurants: [], reviews: [], articles: [] };
+const CATALOG_RAW = { hotels: [], excursions: [], transfers: [], destinations: [], restaurants: [], reviews: [], articles: [] };
+
+// ==================== MULTILANG FIELDS ====================
+const MULTILANG_FIELDS = [
+  'name', 'title', 'description', 'fullDescription', 'location', 'vehicleType',
+  'duration', 'tagline', 'cuisine', 'text', 'itemName', 'excerpt', 'content',
+  'openHours', 'category', 'type', 'beds', 'size', 'meetingPoint', 'address'
+];
+const MULTILANG_ARRAY_FIELDS = ['amenities', 'includes', 'features', 'excludes', 'whatToBring', 'images', 'menu', 'itinerary'];
+
+// ==================== COUNTRY CODES ====================
+const COUNTRY_CODES = [
+  { code: 'EG', dial: '+20', name: 'Egypt' },
+  { code: 'SA', dial: '+966', name: 'Saudi Arabia' },
+  { code: 'AE', dial: '+971', name: 'UAE' },
+  { code: 'KW', dial: '+965', name: 'Kuwait' },
+  { code: 'QA', dial: '+974', name: 'Qatar' },
+  { code: 'BH', dial: '+973', name: 'Bahrain' },
+  { code: 'OM', dial: '+968', name: 'Oman' },
+  { code: 'JO', dial: '+962', name: 'Jordan' },
+  { code: 'GB', dial: '+44', name: 'United Kingdom' },
+  { code: 'US', dial: '+1', name: 'United States' },
+  { code: 'DE', dial: '+49', name: 'Germany' },
+  { code: 'FR', dial: '+33', name: 'France' },
+  { code: 'IT', dial: '+39', name: 'Italy' },
+  { code: 'ES', dial: '+34', name: 'Spain' },
+  { code: 'RU', dial: '+7', name: 'Russia' },
+  { code: 'TR', dial: '+90', name: 'Turkey' },
+  { code: 'IN', dial: '+91', name: 'India' },
+  { code: 'CN', dial: '+86', name: 'China' },
+  { code: 'JP', dial: '+81', name: 'Japan' },
+  { code: 'BR', dial: '+55', name: 'Brazil' },
+  { code: 'CA', dial: '+1', name: 'Canada' },
+  { code: 'AU', dial: '+61', name: 'Australia' }
+];
+
+function countryFlagEmoji(isoCode) {
+  if (!isoCode || isoCode.length !== 2) return '';
+  return String.fromCodePoint(...[...isoCode.toUpperCase()].map(c => 127397 + c.charCodeAt(0)));
+}
+
+function populateCountryCodeSelect() {
+  const sel = document.getElementById('authCountryCode');
+  if (!sel) return;
+  sel.innerHTML = COUNTRY_CODES.map(c =>
+    `<option value="${c.dial}">${countryFlagEmoji(c.code)} ${c.dial}</option>`
+  ).join('');
+  sel.value = '+20';
+}
+
+function populateNationalitySelect() {
+  const sel = document.getElementById('reviewNationality');
+  if (!sel) return;
+  sel.innerHTML = COUNTRY_CODES.map(c =>
+    `<option value="${c.code}">${countryFlagEmoji(c.code)} ${c.name} (${c.code})</option>`
+  ).join('');
+  sel.value = 'EG';
+}
+
+// ==================== CURRENCY ====================
+const CURRENCY_SYMBOLS = { EGP: 'ج.م', USD: '$', EUR: '€', GBP: '£', SAR: 'ر.س', RUB: '₽' };
+const DISPLAY_CURRENCIES = ['EGP', 'USD', 'EUR', 'GBP', 'SAR', 'RUB'];
+let currencyRates = null;
+let currencyAvailable = false;
+
+async function initCurrency() {
+  try {
+    const cached = JSON.parse(localStorage.getItem('ds_fx_cache') || 'null');
+    if (cached && cached.rates && (Date.now() - cached.ts) < 6 * 60 * 60 * 1000) {
+      currencyRates = cached.rates;
+      currencyAvailable = true;
+      applyCurrencyAvailability();
+      return;
+    }
+    const res = await fetch('https://open.er-api.com/v6/latest/EGP');
+    const data = await res.json();
+    if (data && data.result === 'success' && data.rates) {
+      currencyRates = data.rates;
+      currencyAvailable = true;
+      localStorage.setItem('ds_fx_cache', JSON.stringify({ rates: data.rates, ts: Date.now() }));
+    } else {
+      currencyAvailable = false;
+    }
+  } catch (err) {
+    console.warn('Currency API unavailable — showing EGP only.', err);
+    currencyAvailable = false;
+  }
+  applyCurrencyAvailability();
+}
+
+function applyCurrencyAvailability() {
+  if (!currencyAvailable) state.currency = 'EGP';
+  const sel = document.getElementById('currencySelect');
+  if (sel) {
+    sel.innerHTML = (currencyAvailable ? DISPLAY_CURRENCIES : ['EGP']).map(c => `<option value="${c}">${c} (${CURRENCY_SYMBOLS[c]})</option>`).join('');
+    sel.value = state.currency;
+    sel.disabled = !currencyAvailable;
+  }
+  const note = document.getElementById('currencyAvailabilityNote');
+  if (note) note.classList.toggle('hidden', currencyAvailable);
+}
+
+function formatPrice(egpAmount) {
+  if (!currencyAvailable || state.currency === 'EGP' || !currencyRates || !currencyRates[state.currency]) {
+    return 'ج.م ' + Math.round(egpAmount).toLocaleString();
+  }
+  const converted = egpAmount * currencyRates[state.currency];
+  const symbol = CURRENCY_SYMBOLS[state.currency] || CURRENCY_SYMBOLS.EGP;
+  const decimals = state.currency === 'EGP' ? 0 : 2;
+  return `${symbol}${converted.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`;
+}
+
+// ==================== UTILITIES ====================
+const utils = {
+  todayIso() { return new Date().toISOString().slice(0, 10); },
+  addDays(iso, n) { const d = new Date(iso + 'T00:00:00'); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); },
+  formatDate(iso) { if (!iso) return '—'; return new Date(iso + 'T00:00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); },
+  formatPrice: formatPrice,
+  generateId() { return 'DS-' + Math.random().toString(36).substr(2, 6).toUpperCase(); },
+  renderStars(rating) { let s=''; const r=Math.round(rating||0); for(let i=1;i<=5;i++) s += i<=r ? '<i class="fa-solid fa-star text-gold-400 text-[10px]"></i>' : '<i class="fa-solid fa-star text-[10px]" style="color:#453f5c"></i>'; return s; },
+  avgRating(list) { return list.length ? list.reduce((s, r) => s + Number(r.rating || 0), 0) / list.length : null; },
+  confetti() {
+    const colors = ['#fbbf24', '#fcd34d', '#f97316', '#c2410c', '#fb7185', '#ffffff'];
+    for (let i = 0; i < 60; i++) {
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.left = Math.random() * 100 + '%';
+      c.style.background = colors[Math.floor(Math.random() * colors.length)];
+      c.style.width = (Math.random() * 8 + 4) + 'px';
+      c.style.height = (Math.random() * 8 + 4) + 'px';
+      c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      c.style.animationDelay = Math.random() * 0.5 + 's';
+      c.style.animationDuration = (Math.random() * 2 + 2) + 's';
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 4500);
+    }
+  },
+  stepIndicator(current, labels) {
+    const steps = labels.map((label, i) => ({ n: i + 1, label }));
+    return `<div class="flex items-start justify-center">` + steps.map((s, idx) => {
+      const done = s.n < current, activeStep = s.n === current;
+      const circleClass = done ? 'bg-gold-400 text-ink-900' : activeStep ? 'bg-white text-violet-700 ring-2 ring-white' : 'bg-white/15 text-white/60';
+      const labelClass = activeStep || done ? 'text-white font-semibold' : 'text-white/50';
+      const inner = done ? '<i class="fa-solid fa-check"></i>' : s.n;
+      let html = `<div class="flex flex-col items-center"><div class="step-circle ${circleClass}">${inner}</div><span class="step-label ${labelClass}">${s.label}</span></div>`;
+      if (idx < steps.length - 1) html += `<div class="step-line ${s.n < current ? 'bg-gold-400' : 'bg-white/20'} mt-4"></div>`;
+      return html;
+    }).join('') + `</div>`;
+  },
+  createStars(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+    for (let i = 0; i < 50; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.left = Math.random() * 100 + '%';
+      star.style.top = Math.random() * 100 + '%';
+      star.style.animationDelay = Math.random() * 3 + 's';
+      star.style.animationDuration = (Math.random() * 2 + 2) + 's';
+      container.appendChild(star);
+    }
+  }
+};
+
+function toast(msg, type = 'success') {
+  let container = document.getElementById('toastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.style.cssText = 'position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:8px;';
+    document.body.appendChild(container);
+  }
+  const colors = { success: 'bg-green-600', error: 'bg-red-600', info: 'bg-violet-600' };
+  const icons = { success: 'fa-check', error: 'fa-xmark', info: 'fa-info' };
+  const t = document.createElement('div');
+  t.className = `${colors[type]} text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 toast`;
+  t.innerHTML = `<div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center"><i class="fa-solid ${icons[type]} text-sm"></i></div><span class="text-sm font-medium">${msg}</span>`;
+  container.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(-20px)'; setTimeout(() => t.remove(), 400); }, 3000);
+}
+
+function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+function hideSplash() {
+  const splash = document.getElementById('splashPage');
+  if (splash) {
+    splash.style.transition = 'opacity .5s ease';
+    splash.style.opacity = '0';
+    setTimeout(() => { splash.style.display = 'none'; splash.remove(); }, 500);
+  }
+}
+
+// ==================== THEME ====================
+const THEME = {
+  get() { return localStorage.getItem('ds_theme') || 'dark'; },
+  set(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    localStorage.setItem('ds_theme', t);
+    document.querySelectorAll('.theme-switch .knob i').forEach(i => {
+      i.className = t === 'dark' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+    });
+  },
+  toggle() { this.set(this.get() === 'dark' ? 'light' : 'dark'); },
+  init() { this.set(this.get()); }
+};
+
+// ==================== API HELPER ====================
+async function apiFetch(endpoint, options = {}, skipAuthRedirect = false) {
+  const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+  if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+
+  const res = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
+
+  if (res.status === 401) {
+    if (!skipAuthRedirect) {
+      authToken = null;
+      currentUser = null;
+      localStorage.removeItem('ds_auth_token');
+      localStorage.removeItem('ds_current_user');
+      nav.showAuth();
+    }
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || 'Authentication failed');
+  }
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
+
+// ==================== I18N ====================
+let SUPPORTED_LANGS = ['en'];
+let LANG_LABELS = { en: 'English' };
+let I18N_DICT = {};
+
+async function loadI18nDict() {
+  try {
+    const manifestRes = await fetch('/data/lang/manifest.json');
+    const manifest = await manifestRes.json();
+    SUPPORTED_LANGS = manifest.languages.map(l => l.code);
+    LANG_LABELS = {};
+    manifest.languages.forEach(l => { LANG_LABELS[l.code] = l.label; });
+    const dictResponses = await Promise.all(SUPPORTED_LANGS.map(code => fetch('/data/lang/' + code + '.json')));
+    const dictJsons = await Promise.all(dictResponses.map(r => r.json()));
+    SUPPORTED_LANGS.forEach((code, i) => {
+      const langDict = dictJsons[i];
+      Object.keys(langDict).forEach(key => {
+        if (!I18N_DICT[key]) I18N_DICT[key] = {};
+        I18N_DICT[key][code] = langDict[key];
+      });
+    });
+  } catch (err) {
+    console.warn('Language files missing, using English only.');
+    SUPPORTED_LANGS = ['en'];
+    LANG_LABELS = { en: 'English' };
+  }
+  populateLanguageSelects();
+}
+
+function populateLanguageSelects() {
+  const optionsHtml = SUPPORTED_LANGS.map(code => `<option value="${code}">${LANG_LABELS[code] || code}</option>`).join('');
+  document.querySelectorAll('.lang-select').forEach(sel => { sel.innerHTML = optionsHtml; });
+}
+
+const I18N = {
+  get() { return localStorage.getItem('ds_lang') || 'en'; },
+  set(lang) {
+    if (!SUPPORTED_LANGS.includes(lang)) lang = 'en';
+    localStorage.setItem('ds_lang', lang);
+    document.documentElement.setAttribute('lang', lang);
+    document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      const entry = I18N_DICT[key];
+      const val = entry && (entry[lang] || entry.en);
+      if (val) { if (el.tagName === 'OPTION') el.textContent = val; else el.innerHTML = val; }
+    });
+    document.querySelectorAll('.lang-select').forEach(sel => { sel.value = lang; });
+    localizeCatalog(lang);
+    refreshCatalogUI();
+  },
+  init() { this.set(this.get()); }
+};
+
+// ==================== LOCALIZATION ====================
+function localizeValue(value, lang) {
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    return value[lang] || value.en || '';
+  }
+  return value || '';
+}
+
+function getImageUrl(item) {
+  return localizeValue(item, I18N.get());
+}
+
+function localizeItem(raw, lang) {
+  const out = Object.assign({}, raw);
+  MULTILANG_FIELDS.forEach(f => {
+    if (raw[f] !== undefined) out[f] = localizeValue(raw[f], lang);
+  });
+  MULTILANG_ARRAY_FIELDS.forEach(f => {
+    if (raw[f] !== undefined) {
+      out[f] = Array.isArray(raw[f]) ? raw[f].map(v => localizeValue(v, lang)) : localizeValue(raw[f], lang);
+    }
+  });
+  if (Array.isArray(raw.rooms)) {
+    out.rooms = raw.rooms.map(room => ({
+      ...room,
+      type: localizeValue(room.type, lang),
+      beds: localizeValue(room.beds, lang),
+      description: localizeValue(room.description, lang),
+      amenities: Array.isArray(room.amenities) ? room.amenities.map(a => localizeValue(a, lang)) : [],
+    }));
+  }
+  if (Array.isArray(raw.menu)) {
+    out.menu = raw.menu.map(section => ({
+      category: localizeValue(section.category, lang),
+      items: (section.items || []).map(item => ({
+        ...item,
+        name: localizeValue(item.name, lang),
+        description: localizeValue(item.description, lang),
+      })),
+    }));
+  }
+  if (Array.isArray(raw.itinerary)) {
+    out.itinerary = raw.itinerary.map(step => ({
+      ...step,
+      title: localizeValue(step.title, lang),
+      description: localizeValue(step.description, lang),
+    }));
+  }
+  return out;
+}
+
+function localizeCatalog(lang) {
+  CATALOG.hotels = CATALOG_RAW.hotels.map(item => localizeItem(item, lang));
+  CATALOG.excursions = CATALOG_RAW.excursions.map(item => localizeItem(item, lang));
+  CATALOG.transfers = CATALOG_RAW.transfers.map(item => localizeItem(item, lang));
+  CATALOG.destinations = CATALOG_RAW.destinations.map(item => localizeItem(item, lang));
+  CATALOG.restaurants = CATALOG_RAW.restaurants.map(item => localizeItem(item, lang));
+  CATALOG.reviews = CATALOG_RAW.reviews.map(item => localizeItem(item, lang));
+  CATALOG.articles = CATALOG_RAW.articles.map(item => localizeItem(item, lang));
+}
+
+// ==================== CATALOG LOADING ====================
+async function loadCatalogFromWorker() {
+  const files = ['hotels', 'excursions', 'transfers', 'destinations', 'restaurants', 'reviews', 'articles'];
+  for (const f of files) {
+    try {
+      const data = await apiFetch(`/api/file?file=${f}.json`, {}, true);
+      CATALOG_RAW[f] = JSON.parse(data.content);
+    } catch (e) {
+      console.warn(`Failed to load ${f}:`, e);
+      CATALOG_RAW[f] = [];
+    }
+  }
+  localizeCatalog(I18N.get());
+  refreshCatalogUI();
+}
+
+function refreshCatalogUI() {
+  if (document.getElementById('hotelsList')) hotels.render();
+  if (document.getElementById('excursionsList')) excursionsUi.render();
+  if (document.getElementById('transfersList')) transfersUi.render();
+  if (document.getElementById('restaurantsFullList')) restaurantsUi.renderFull();
+  if (document.getElementById('destinationsRow')) destinationsUi.render();
+  if (document.getElementById('featuredHotels')) ui.renderFeaturedHotels();
+  if (document.getElementById('featuredExcursions')) excursionsUi.renderFeatured();
+  if (document.getElementById('restaurantsRow')) restaurantsUi.renderRow();
+  if (document.getElementById('reviewsRow')) reviewsHomeUi.render();
+  if (document.getElementById('articlesRow')) articlesUi.render();
+}
+
+// ==================== AUTH ====================
+const auth = {
+  async signIn(email, password) {
+    try {
+      const data = await apiFetch('/api/auth/signin', { method: 'POST', body: JSON.stringify({ email, password }) }, true);
+      authToken = data.idToken;
+      currentUser = { ...data.user, uid: data.user.uid, geniusLevel: data.user.geniusLevel || 0 };
+      localStorage.setItem('ds_auth_token', authToken);
+      localStorage.setItem('ds_current_user', JSON.stringify(currentUser));
+      updateDrawerUser(currentUser.displayName || currentUser.email, currentUser.email, currentUser.photoURL);
+      return data.user;
+    } catch (e) { toast(e.message, 'error'); return null; }
+  },
+  async signUp(name, email, password, extra = {}) {
+    try {
+      const data = await apiFetch('/api/auth/signup', {
+        method: 'POST',
+        body: JSON.stringify({ name, email, password, phone: extra.phone || '', countryCode: extra.countryCode || '' }),
+      }, true);
+      authToken = data.idToken;
+      currentUser = { ...data.user, uid: data.user.uid, geniusLevel: data.user.geniusLevel || 0 };
+      localStorage.setItem('ds_auth_token', authToken);
+      localStorage.setItem('ds_current_user', JSON.stringify(currentUser));
+      updateDrawerUser(currentUser.displayName || currentUser.email, currentUser.email, currentUser.photoURL);
+      return data.user;
+    } catch (e) { toast(e.message, 'error'); return null; }
+  },
+  logout() {
+    authToken = null;
+    currentUser = null;
+    localStorage.removeItem('ds_auth_token');
+    localStorage.removeItem('ds_current_user');
+    nav.showAuth();
+  },
+  isLoggedIn() { return !!authToken; },
+  continueAsGuest() {
+    localStorage.removeItem('ds_auth_token');
+    localStorage.removeItem('ds_current_user');
+    authToken = null;
+    currentUser = null;
+    enterApp();
+  }
+};
+
+function switchAuthMode(mode) {
+  authMode = mode;
+  const isLogin = mode === 'login';
+  document.getElementById('authTitle').textContent = isLogin ? 'Welcome Back' : 'Create Account';
+  document.getElementById('authNameWrap').classList.toggle('hidden', isLogin);
+  document.getElementById('authSubmitBtn').textContent = isLogin ? 'Log In' : 'Sign Up';
+  document.getElementById('authSwitchText').textContent = isLogin ? "Don't have an account?" : 'Already have an account?';
+  document.getElementById('authSwitchLink').textContent = isLogin ? 'Sign Up' : 'Log In';
+}
+
+async function handleAuthSubmit(e) {
+  e.preventDefault();
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  const nameField = document.getElementById('authName');
+  const name = nameField && nameField.value.trim() ? nameField.value.trim() : '';
+  const countryCode = document.getElementById('authCountryCode')?.value || '';
+  const phone = document.getElementById('authPhone')?.value.trim() || '';
+
+  if (authMode === 'signup') {
+    if (!name) { toast('Please enter your full name', 'error'); return; }
+    if (!phone) { toast('Please enter your phone number', 'error'); return; }
+    const user = await auth.signUp(name, email, password, { phone, countryCode });
+    if (user) enterApp();
+  } else {
+    const user = await auth.signIn(email, password);
+    if (user) enterApp();
+  }
+}
+
+// ==================== GOOGLE SIGN-IN ====================
+let googleSignInInitialized = false;
+
+async function handleGoogleSignIn() {
+  try {
+    if (!window.google?.accounts?.id) {
+      toast('Google Sign-In library not loaded. Please refresh the page.', 'error');
+      return;
+    }
+
+    if (!window._googleClientId) {
+      try {
+        const config = await apiFetch('/api/google-config', {}, true);
+        window._googleClientId = config.clientId;
+      } catch (e) {
+        toast('Could not load Google Sign-In configuration.', 'error');
+        return;
+      }
+    }
+
+    const clientId = window._googleClientId;
+
+    if (!googleSignInInitialized) {
+      google.accounts.id.initialize({ client_id: clientId, callback: handleGoogleCredentialResponse });
+      googleSignInInitialized = true;
+    }
+
+    google.accounts.id.prompt((notification) => {
+      if (notification.isNotDisplayed()) {
+        console.warn('Google prompt not displayed:', notification.getNotDisplayedReason());
+        toast('Google sign-in prompt was blocked. Please allow popups or try again.', 'error');
+      }
+    });
+  } catch (e) {
+    console.error('handleGoogleSignIn error:', e);
+    toast(e.message || 'Google Sign-In failed.', 'error');
+  }
+}
+
+async function handleGoogleCredentialResponse(response) {
+  if (!response.credential) {
+    toast('Google did not return an ID token.', 'error');
+    return;
+  }
+
+  try {
+    const data = await apiFetch('/api/auth/google', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idToken: response.credential }),
+    }, true);
+
+    authToken = data.idToken;
+    currentUser = { ...data.user, uid: data.user.uid, geniusLevel: data.user.geniusLevel || 0 };
+    localStorage.setItem('ds_auth_token', authToken);
+    localStorage.setItem('ds_current_user', JSON.stringify(currentUser));
+    updateDrawerUser(currentUser.displayName || currentUser.email, currentUser.email, currentUser.photoURL);
+    enterApp();
+  } catch (e) {
+    console.error('Google Sign-In API error:', e);
+    toast(e.message || 'Google Sign-In failed.', 'error');
+  }
+}
+
+// ==================== USER PROFILE & AVATAR ====================
+const profileAvatar = {
+  currentPhoto: null,
+  render(name, photoURL) {
+    this.currentPhoto = photoURL || null;
+    const letter = (name || 'G').charAt(0).toUpperCase();
+    const wrap = document.getElementById('profileAvatarWrap');
+    const drawerAv = document.getElementById('drawerAvatar');
+    const navAv = document.getElementById('navProfileAvatar');
+    const navAvDesktop = document.getElementById('navProfileAvatarDesktop');
+    const sidebarAv = document.getElementById('sidebarProfileAvatar');
+    if (wrap) wrap.innerHTML = photoURL ? `<img src="${photoURL}" class="w-full h-full object-cover">` : `<span class="font-display text-5xl font-bold text-violet-600" id="profileAvatarLetter">${letter}</span>`;
+    if (drawerAv) drawerAv.innerHTML = photoURL ? `<img src="${photoURL}" class="w-full h-full object-cover">` : letter;
+    if (navAv) navAv.innerHTML = photoURL ? `<img src="${photoURL}" alt="">` : letter;
+    if (navAvDesktop) navAvDesktop.innerHTML = photoURL ? `<img src="${photoURL}" alt="">` : letter;
+    if (sidebarAv) sidebarAv.innerHTML = photoURL ? `<img src="${photoURL}" alt="">` : letter;
+  },
+  handleFile(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const img = new Image();
+      img.onload = () => {
+        const size = 240;
+        const canvas = document.createElement('canvas');
+        canvas.width = size; canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        const minSide = Math.min(img.width, img.height);
+        const sx = (img.width - minSide) / 2; const sy = (img.height - minSide) / 2;
+        ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
+        this.save(canvas.toDataURL('image/jpeg', 0.82));
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  },
+  async save(dataUrl) {
+    toast('Updating photo…', 'info');
+    if (authToken) {
+      try {
+        const res = await apiFetch('/api/profile', {
+          method: 'POST',
+          body: JSON.stringify({ uid: currentUser?.uid, profile: { photoURL: dataUrl } }),
+        });
+        if (currentUser) {
+          currentUser.photoURL = dataUrl;
+          localStorage.setItem('ds_current_user', JSON.stringify(currentUser));
+        }
+        this.render(currentUser?.displayName || currentUser?.email || '', dataUrl);
+        toast('Profile photo updated', 'success');
+      } catch (e) {
+        toast('Could not save photo: ' + e.message, 'error');
+      }
+    } else {
+      localStorage.setItem('ds_avatar', dataUrl);
+      this.render(document.getElementById('profileName').textContent, dataUrl);
+      toast('Profile photo updated', 'success');
+    }
+  }
+};
+
+function updateDrawerUser(name, email, photoURL) {
+  const safeName = name || 'Guest';
+  const safeEmail = email || '';
+  const safePhoto = photoURL || null;
+  const n = document.getElementById('drawerName'); if (n) n.textContent = safeName;
+  const e = document.getElementById('drawerEmail'); if (e) e.textContent = safeEmail;
+  const pn = document.getElementById('profileName'); if (pn) pn.textContent = safeName;
+  const pe = document.getElementById('profileEmail'); if (pe) pe.textContent = safeEmail;
+  const sn = document.getElementById('sidebarProfileName'); if (sn) sn.textContent = safeName;
+  const se = document.getElementById('sidebarProfileEmail'); if (se) se.textContent = safeEmail;
+  profileAvatar.render(safeName, safePhoto);
+
+  // بادج Sharmawy في السايد بار
+  const badge = document.getElementById('drawerTierBadge');
+  if (badge) {
+    const level = (currentUser && currentUser.geniusLevel) || 0;
+    if (level > 0) {
+      const badges = {1:'🥉', 2:'🥈', 3:'🥇'};
+      badge.classList.remove('hidden');
+      badge.textContent = badges[level] || '';
+      badge.title = `Sharmawy Level ${level}`;
+    } else {
+      badge.classList.add('hidden');
+    }
+  }
+}
+
+// ==================== REVIEWS ====================
+const reviews = {
+  currentTarget: null,
+  selectedStars: 0,
+  pendingImages: [],
+  addImages(fileList) {
+    const files = Array.from(fileList || []).slice(0, 6 - this.pendingImages.length);
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.pendingImages.push(reader.result);
+        this.renderImagePreview();
+      };
+      reader.readAsDataURL(file);
+    });
+    document.getElementById('reviewImages').value = '';
+  },
+  removeImage(i) {
+    this.pendingImages.splice(i, 1);
+    this.renderImagePreview();
+  },
+  renderImagePreview() {
+    const el = document.getElementById('reviewImagePreview');
+    if (!el) return;
+    el.innerHTML = this.pendingImages.map((src, i) => `
+      <div class="review-photo-thumb">
+        <img src="${src}" alt="">
+        <button type="button" onclick="reviews.removeImage(${i})"><i class="fa-solid fa-xmark"></i></button>
+      </div>`).join('') +
+      (this.pendingImages.length < 6 ? `<button type="button" onclick="document.getElementById('reviewImages').click()" class="review-photo-add"><i class="fa-solid fa-camera"></i><span>Add</span></button>` : '');
+  },
+  async submit(e) {
+    e.preventDefault();
+    const bookingId = document.getElementById('reviewBookingId').value.trim().toUpperCase();
+    const name = document.getElementById('reviewName').value.trim();
+    const comment = document.getElementById('reviewComment').value.trim();
+    const rating = this.selectedStars || 5;
+
+    if (!bookingId || !comment) return toast('Booking ID and comment required', 'error');
+
+    try {
+      await apiFetch('/api/reviews', {
+        method: 'POST',
+        body: JSON.stringify({
+          type: this.currentTarget.type,
+          id: this.currentTarget.id,
+          bookingId,
+          name,
+          comment,
+          rating,
+          photoURL: currentUser?.photoURL || null,
+          images: this.pendingImages
+        }),
+      });
+      document.getElementById('reviewModal').classList.add('hidden');
+      toast('Review submitted!', 'success');
+      const barsId = this.currentTarget.type === 'hotel' ? 'hotelRatingBars' : 'excursionRatingBars';
+      loadReviews(this.currentTarget.type, this.currentTarget.id,
+        this.currentTarget.type === 'hotel' ? 'hotelReviewsList' : 'excursionReviewsList',
+        this.currentTarget.type === 'hotel' ? 'hotelRatingSummary' : 'excursionRatingSummary', barsId);
+    } catch (e) {
+      toast(e.message, 'error');
+    }
+  },
+  openModal(type, id, bookingId = '') {
+    this.currentTarget = { type, id, bookingId };
+    this.selectedStars = 0;
+    this.pendingImages = [];
+    document.getElementById('reviewBookingId').value = bookingId;
+    document.getElementById('reviewName').value = (currentUser && currentUser.displayName) || '';
+    document.getElementById('reviewComment').value = '';
+    this.renderImagePreview();
+    this.paintStars(0);
+    document.getElementById('reviewModal').classList.remove('hidden');
+  },
+  closeModal() {
+    document.getElementById('reviewModal').classList.add('hidden');
+  },
+  setStars(n) {
+    this.selectedStars = n;
+    this.paintStars(n);
+  },
+  paintStars(n) {
+    document.querySelectorAll('#reviewStarInput i').forEach(el => {
+      el.classList.toggle('active', Number(el.dataset.star) <= n);
+    });
+  }
+};
+
+// ==================== LOAD REVIEWS ====================
+async function loadReviews(type, id, containerId, summaryId, barsId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  try {
+    const data = await apiFetch(`/api/reviews?type=${type}&id=${id}`, {}, true);
+    const reviewsList = data.reviews || [];
+
+    if (reviewsList.length === 0) {
+      container.innerHTML = '<p class="text-center text-gray-500 text-sm py-6">No reviews yet</p>';
+      if (barsId) { const el = document.getElementById(barsId); if (el) el.innerHTML = ''; }
+      if (summaryId) {
+        const summaryEl = document.getElementById(summaryId); if (summaryEl) summaryEl.textContent = '–';
+        const starsEl = document.getElementById(summaryId.replace('Summary', 'Stars')); if (starsEl) starsEl.innerHTML = '';
+        const countEl = document.getElementById(summaryId.replace('Summary', 'Count')); if (countEl) countEl.textContent = 'No reviews yet';
+      }
+      return;
+    }
+
+    container.innerHTML = reviewsList.map(rv => {
+      const initial = (rv.name || 'G').trim().charAt(0).toUpperCase();
+      const photos = rv.images && rv.images.length ? rv.images : (rv.image ? [rv.image] : []);
+      const dateStr = rv.createdAt ? new Date(rv.createdAt).toLocaleDateString() : '';
+      return `
+      <div class="review-card-v2">
+        <i class="fa-solid fa-quote-right review-card-quote"></i>
+        <div class="review-card-head">
+          <div class="review-card-avatar">${rv.photoURL ? `<img src="${rv.photoURL}" alt="">` : initial}</div>
+          <div class="flex-1 min-w-0">
+            <p class="review-card-name">${esc(rv.name || 'Guest')}</p>
+            <div class="review-card-meta"><span class="review-verified-badge"><i class="fa-solid fa-circle-check"></i> Verified</span>${dateStr ? ` · ${dateStr}` : ''}</div>
+          </div>
+        </div>
+        <div class="text-gold-500 text-xs my-2">${utils.renderStars(rv.rating)}</div>
+        <p class="review-card-comment">${esc(rv.comment || '')}</p>
+        ${photos.length ? `
+          <div class="review-photo-grid">
+            ${photos.slice(0, 3).map((img, i) => `
+              <div class="review-photo-grid-cell" onclick="window.__lightboxImages=${JSON.stringify(photos)};openLightbox(${i})">
+                <img src="${img}" alt="">
+                ${(i === 2 && photos.length > 3) ? `<div class="review-photo-more">+${photos.length - 3}</div>` : ''}
+              </div>`).join('')}
+          </div>` : ''}
+      </div>`;
+    }).join('');
+
+    if (summaryId) {
+      const summaryEl = document.getElementById(summaryId);
+      if (summaryEl) {
+        const avg = utils.avgRating(reviewsList);
+        summaryEl.textContent = avg ? avg.toFixed(1) : '0.0';
+      }
+      // Derived IDs (e.g. excursionRatingSummary -> excursionRatingStars /
+      // excursionRatingCount) so the real average and count show next to it.
+      const starsEl = document.getElementById(summaryId.replace('Summary', 'Stars'));
+      const countEl = document.getElementById(summaryId.replace('Summary', 'Count'));
+      const avg = utils.avgRating(reviewsList);
+      if (starsEl) starsEl.innerHTML = utils.renderStars(avg || 0);
+      if (countEl) countEl.textContent = `${reviewsList.length} verified review${reviewsList.length === 1 ? '' : 's'}`;
+    }
+
+    if (barsId) {
+      const barsEl = document.getElementById(barsId);
+      if (barsEl) {
+        const counts = [5, 4, 3, 2, 1].map(star => reviewsList.filter(rv => Math.round(rv.rating) === star).length);
+        const max = Math.max(...counts, 1);
+        barsEl.innerHTML = [5, 4, 3, 2, 1].map((star, i) => `
+          <div class="rating-bar-row">
+            <span style="width:28px">${star} <i class="fa-solid fa-star" style="color:#fbbf24;font-size:9px"></i></span>
+            <div class="rating-bar-track"><div class="rating-bar-fill" style="width:${(counts[i] / max) * 100}%"></div></div>
+            <span style="width:18px; text-align:right">${counts[i]}</span>
+          </div>`).join('');
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to load reviews:', e);
+    container.innerHTML = '<p class="text-center text-gray-500 text-sm py-6">Could not load reviews</p>';
+  }
+}
+
+// ==================== FAVORITES / BOOKINGS / NOTIFICATIONS ====================
+const favorites = {
+  async load() {
+    if (!authToken) { this.render(); return; }
+    try { const data = await apiFetch('/api/user/favorites'); state.favorites = data.favorites || []; } catch (e) { state.favorites = []; }
+    this.render();
+  },
+  async toggle(id) {
+    try {
+      await apiFetch('/api/user/favorites', { method: 'POST', body: JSON.stringify({ itemId: id }) });
+      const idx = state.favorites.indexOf(id);
+      if (idx > -1) state.favorites.splice(idx, 1); else state.favorites.push(id);
+      this.render(); refreshCatalogUI();
+    } catch (e) { toast('Could not update favorites', 'error'); }
+  },
+  render() {
+    const list = document.getElementById('favoritesList'); if (!list) return;
+    const favs = CATALOG.hotels.filter(h => state.favorites.includes(h.id));
+    const empty = document.getElementById('emptyFavorites');
+    if (favs.length === 0) { list.innerHTML = ''; if (empty) empty.classList.remove('hidden'); return; }
+    if (empty) empty.classList.add('hidden');
+    list.innerHTML = favs.map(h => ui.renderHotelCard(h)).join('');
+  }
+};
+
+const bookings = {
+  async load() {
+    if (!authToken) { this.render(); return; }
+    try {
+      const data = await apiFetch('/api/user/bookings');
+      state.bookings = data.bookings || [];
+    } catch (e) {
+      state.bookings = [];
+    }
+    this.render();
+  },
+  render() {
+    const list = document.getElementById('bookingsList'); if (!list) return;
+    const upcoming = state.bookings.filter(b => {
+      const d = b.checkin || b.date;
+      if (!d) return false;
+      return new Date(d) >= new Date();
+    });
+    const past = state.bookings.filter(b => {
+      const d = b.checkin || b.date;
+      if (!d) return false;
+      return new Date(d) < new Date();
+    });
+    const filtered = state.currentBookingTab === 'upcoming' ? upcoming : past;
+
+    if (filtered.length === 0) { list.innerHTML = ''; document.getElementById('emptyBookings').classList.remove('hidden'); return; }
+    document.getElementById('emptyBookings').classList.add('hidden');
+    list.innerHTML = filtered.map(b => `
+      <div onclick="showBookingDetails('${b.id}')" class="hotel-card rounded-xl p-3 flex gap-3 cursor-pointer">
+        <img src="${getImageUrl(b.image)}" class="w-20 h-20 rounded-lg object-cover" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
+        <div class="flex-1">
+          <h3 class="font-display font-bold text-sm">${b.type === 'hotel' ? b.hotelName : b.type === 'excursion' ? b.title : b.vehicleType + ' Transfer'}</h3>
+          <p class="text-[10px]">${utils.formatDate(b.checkin || b.date)}</p>
+          <p class="font-bold text-violet-500 text-sm">${b.priceFormatted || utils.formatPrice(b.total)}</p>
+        </div>
+      </div>`).join('');
+  },
+  switchTab(tab) {
+    state.currentBookingTab = tab;
+    const up = document.getElementById('tabUpcoming');
+    const past = document.getElementById('tabHistory');
+    if (up && past) {
+      if (tab === 'upcoming') {
+        up.className = 'flex-1 py-3 rounded-xl bg-gradient-to-r from-violet-500 to-violet-700 text-white text-sm font-bold shadow-lg';
+        past.className = 'flex-1 py-3 rounded-xl text-sm font-medium';
+        past.style.color = 'var(--text-secondary)';
+      } else {
+        past.className = 'flex-1 py-3 rounded-xl bg-gradient-to-r from-violet-500 to-violet-700 text-white text-sm font-bold shadow-lg';
+        up.className = 'flex-1 py-3 rounded-xl text-sm font-medium';
+        up.style.color = 'var(--text-secondary)';
+      }
+    }
+    this.render();
+  }
+};
+
+const notifications = {
+  list: [],
+  async load() {
+    if (!authToken) { this.render(); return; }
+    try { const data = await apiFetch('/api/notifications'); this.list = data.notifications || []; } catch (e) { this.list = []; }
+    this.render();
+  },
+  render() {
+    this.updateBadge();
+    const list = document.getElementById('notificationsList'); if (!list) return;
+    if (!this.list.length) { list.innerHTML = '<p class="text-center py-10">No notifications yet</p>'; return; }
+    list.innerHTML = this.list.map(n => `
+      <div class="card rounded-xl p-3.5 flex items-start gap-3">
+        <div class="w-10 h-10 bg-violet-50 rounded-xl flex items-center justify-center"><i class="fa-solid ${n.icon || 'fa-bell'}"></i></div>
+        <div class="flex-1"><h3 class="font-semibold text-sm">${n.title}</h3><p class="text-xs">${n.msg}</p><p class="text-[9px] text-gray-400">${new Date(n.createdAt).toLocaleString()}</p></div>
+      </div>`).join('');
+  },
+  updateBadge() {
+    const hasUnread = this.list.some(n => !n.read);
+    document.querySelectorAll('.notif-badge').forEach(el => el.classList.toggle('hidden', !hasUnread));
+  },
+  markAllRead() { this.list.forEach(n => n.read = true); this.render(); },
+  markRead(id) { const n = this.list.find(x => x.id === id); if (n && !n.read) { n.read = true; this.render(); } }
+};
+
+// ==================== TRANSFER SEARCH ====================
+const transferSearch = {
+  setDirection(dir) {
+    state.transferDirection = dir;
+    const arrival = document.getElementById('tsDirArrival');
+    const departure = document.getElementById('tsDirDeparture');
+    if (arrival && departure) {
+      if (dir === 'Airport to Hotel') {
+        arrival.style.background = 'linear-gradient(135deg,#fb923c,#c2410c)';
+        arrival.style.color = '#fff';
+        departure.style.background = 'transparent';
+        departure.style.color = 'var(--text-secondary)';
+      } else {
+        departure.style.background = 'linear-gradient(135deg,#fb923c,#c2410c)';
+        departure.style.color = '#fff';
+        arrival.style.background = 'transparent';
+        arrival.style.color = 'var(--text-secondary)';
+      }
+    }
+  },
+  adjustPax(delta) {
+    const newVal = state.transferPax + delta;
+    if (newVal >= 1 && newVal <= 15) {
+      state.transferPax = newVal;
+      const label = document.getElementById('tsPassengersLabel');
+      if (label) label.textContent = `${newVal} People`;
+    }
+  },
+  apply() {
+    const pickup = document.getElementById('tsPickup')?.value || '';
+    const dropoff = document.getElementById('tsDropoff')?.value || '';
+    const date = document.getElementById('tsDate')?.dataset.value || '';
+    if (!pickup || !dropoff || !date) {
+      toast('Please fill all transfer fields', 'error');
+      return;
+    }
+    nav.go('transfers');
+  },
+};
+
+// ==================== FLIGHT SEARCH ====================
+const flightSearch = {
+  closePaxModal() { document.getElementById('flightPaxModal').classList.add('hidden'); },
+  adjust(type, delta) {
+    const limits = { adults: { min: 1, max: 9 }, children: { min: 0, max: 6 }, infants: { min: 0, max: 4 } };
+    const newVal = (state.flightPax?.[type] || 0) + delta;
+    if (newVal >= limits[type].min && newVal <= limits[type].max) {
+      if (!state.flightPax) state.flightPax = { adults: 1, children: 0, infants: 0, cabin: 'Economy' };
+      state.flightPax[type] = newVal;
+      const id = 'fp' + type.charAt(0).toUpperCase() + type.slice(1);
+      const el = document.getElementById(id);
+      if (el) el.textContent = newVal;
+    }
+  },
+  applyPax() {
+    flightSearch.closePaxModal();
+    toast('Passengers updated', 'info');
+  },
+};
+
+// ==================== EVENT DELEGATION FOR DATE FIELDS ====================
+document.addEventListener('click', function(e) {
+  const dateField = e.target.closest('[data-date-field]');
+  if (!dateField) return;
+
+  const fieldId = dateField.dataset.dateField;
+  const unavailable = dateField.dataset.unavailable ? dateField.dataset.unavailable.split(',') : [];
+
+  datepicker.open(fieldId, { unavailableIso: unavailable });
+});
 
