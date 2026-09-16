@@ -2,9 +2,9 @@
 window.DS_CONFIG = window.DS_CONFIG || {
   SHOW_HOTELS: false,
   SHOW_EXCURSIONS: true,
-  SHOW_TRANSFERS: false,
+  SHOW_TRANSFERS: true,
   SHOW_RESTAURANTS: false,
-  SHOW_DESTINATIONS: false
+  SHOW_DESTINATIONS: true
 };
 
 const SHOW_HOTELS = window.DS_CONFIG.SHOW_HOTELS;
