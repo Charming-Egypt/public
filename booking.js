@@ -207,11 +207,16 @@ function showHotelPage(hotelId, opts = {}) {
           </div>
         </div>
         <div class="card rounded-2xl p-4">
-          <div class="flex items-center justify-between mb-3">
-            <div><p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold">— REVIEWS</p><h3 class="font-display text-lg font-bold">Guest Reviews</h3></div>
-            <div class="text-center"><p class="text-3xl font-bold text-violet-500 font-display" id="hotelReviewsSummary">${Number(h.rating).toFixed(1)}</p><p class="text-[10px]"><span id="hotelReviewsSummaryCount">${h.reviews || 0}</span> reviews</p></div>
+          <h3 class="font-display text-lg font-bold mb-4">Real Stories From Our Guests</h3>
+          <div class="rating-summary-block">
+            <div class="rating-summary-score">
+              <p class="rating-summary-number" id="hotelRatingSummary">–</p>
+              <div class="text-gold-500 text-sm" id="hotelRatingStars"></div>
+              <p class="rating-summary-count" id="hotelRatingCount"></p>
+            </div>
+            <div class="rating-bar-chart" id="hotelRatingBars"></div>
           </div>
-          <button onclick="openReviewModal('hotel','${h.id}')" class="w-full py-2.5 rounded-xl text-xs font-bold border border-violet-400/40 text-violet-500 mb-3"><i class="fa-solid fa-pen"></i> Write a Review</button>
+          <button onclick="reviews.openModal('hotel','${h.id}')" class="w-full py-2.5 rounded-xl text-xs font-bold border border-violet-400/40 text-violet-500 mb-3 mt-4"><i class="fa-solid fa-pen"></i> Write a Review</button>
           <div class="space-y-3" id="hotelReviewsList"></div>
         </div>
         </div>
@@ -229,7 +234,7 @@ function showHotelPage(hotelId, opts = {}) {
   page.classList.add('active');
   window.scrollTo(0, 0);
   routeToDetail('hotels', h.id, h.name, opts);
-  loadReviews('hotel', h.id, 'hotelReviewsList', 'hotelReviewsSummary');
+  loadReviews('hotel', h.id, 'hotelReviewsList', 'hotelRatingSummary', 'hotelRatingBars');
 }
 
 function closeHotelPage() { const p = document.getElementById('hotelDetailPage'); if (p) p.remove(); nav.go('hotels'); }
@@ -509,12 +514,16 @@ function showExcursionPage(excursionId, opts = {}) {
             </div>
           </div>` : ''}
         <div class="card rounded-2xl p-4">
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="font-display text-lg font-bold">Reviews</h3>
-            <div class="text-center"><p class="text-3xl font-bold text-violet-500 font-display">${Number(x.rating).toFixed(1)}</p><p class="text-[10px]">${x.reviews || 0} reviews</p></div>
+          <h3 class="font-display text-lg font-bold mb-4">Real Stories From Our Travelers</h3>
+          <div class="rating-summary-block">
+            <div class="rating-summary-score">
+              <p class="rating-summary-number" id="excursionRatingSummary">–</p>
+              <div class="text-gold-500 text-sm" id="excursionRatingStars"></div>
+              <p class="rating-summary-count" id="excursionRatingCount"></p>
+            </div>
+            <div class="rating-bar-chart" id="excursionRatingBars"></div>
           </div>
-          <div class="rating-bar-chart" id="excursionRatingBars"></div>
-          <button onclick="openReviewModal('excursion','${x.id}')" class="w-full py-2.5 rounded-xl text-xs font-bold border border-violet-400/40 text-violet-500 mb-3 mt-3">Write a Review</button>
+          <button onclick="reviews.openModal('excursion','${x.id}')" class="w-full py-2.5 rounded-xl text-xs font-bold border border-violet-400/40 text-violet-500 mb-3 mt-4">Write a Review</button>
           <div class="space-y-3" id="excursionReviewsList"></div>
         </div>
         </div>
@@ -532,7 +541,7 @@ function showExcursionPage(excursionId, opts = {}) {
   page.classList.add('active');
   window.scrollTo(0,0);
   routeToDetail('excursions', x.id, x.title, opts);
-  loadReviews('excursion', x.id, 'excursionReviewsList', null, 'excursionRatingBars');
+  loadReviews('excursion', x.id, 'excursionReviewsList', 'excursionRatingSummary', 'excursionRatingBars');
 }
 
 function closeExcursionPage() { const p = document.getElementById('excursionDetailPage'); if (p) p.remove(); nav.go('excursions'); }
@@ -1018,7 +1027,7 @@ function showBookingDetails(bookingId) {
       </div>
       <div class="relative -mt-4 rounded-t-[28px] p-5" style="background:var(--bg-card)">
         ${bookingDetailBody(b)}
-        ${b.type !== 'transfer' ? (b.reviewed ? `<div class="text-center text-xs py-2 mb-2"><i class="fa-solid fa-circle-check text-green-500"></i> You've reviewed this booking</div>` : (!isUpcoming ? `<button onclick="openReviewModal('${b.type}','${b.hotelId || b.excursionId}', '${b.id}')" class="w-full py-3.5 rounded-2xl font-bold border border-violet-400/40 text-violet-500 mb-2"><i class="fa-solid fa-pen"></i> Write a Review</button>` : '')) : ''}
+        ${b.type !== 'transfer' ? (b.reviewed ? `<div class="text-center text-xs py-2 mb-2"><i class="fa-solid fa-circle-check text-green-500"></i> You've reviewed this booking</div>` : (!isUpcoming ? `<button onclick="reviews.openModal('${b.type}','${b.hotelId || b.excursionId}', '${b.id}')" class="w-full py-3.5 rounded-2xl font-bold border border-violet-400/40 text-violet-500 mb-2"><i class="fa-solid fa-pen"></i> Write a Review</button>` : '')) : ''}
         ${isUpcoming ? `<button onclick="cancelBooking('${b.id}')" class="w-full py-4 rounded-2xl font-bold text-red-500 border border-red-400/30 mt-2">Cancel Booking</button>` : ''}
       </div>
     </div>`;
