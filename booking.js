@@ -2,33 +2,66 @@
 // Desktop-only Booking.com/GetYourGuide-style photo mosaic: one big photo
 // plus smaller ones, with a "+N Photos" overlay if there are more than fit.
 // Adapts to how many photos actually exist so there's never an empty cell.
+// Clicking any cell opens the full lightbox gallery (see openLightbox below).
 function renderPhotoGrid(images) {
   const list = (images && images.length ? images : [images]).filter(Boolean);
-  if (list.length <= 1) {
-    return `<div class="photo-grid photo-grid-1">
-      <div class="photo-grid-cell photo-grid-main"><img src="${getImageUrl(list[0])}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" alt=""></div>
+  window.__lightboxImages = list;
+  const cell = (img, i, extra = '') => `
+    <div class="photo-grid-cell ${extra}" onclick="openLightbox(${i})">
+      <img src="${getImageUrl(img)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" alt="">
     </div>`;
+  if (list.length <= 1) {
+    return `<div class="photo-grid photo-grid-1">${cell(list[0], 0, 'photo-grid-main')}</div>`;
   }
   if (list.length === 2) {
-    return `<div class="photo-grid photo-grid-2">
-      ${list.map(img => `<div class="photo-grid-cell"><img src="${getImageUrl(img)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" alt=""></div>`).join('')}
-    </div>`;
+    return `<div class="photo-grid photo-grid-2">${list.map((img, i) => cell(img, i)).join('')}</div>`;
   }
   if (list.length === 3) {
-    return `<div class="photo-grid photo-grid-3">
-      <div class="photo-grid-cell photo-grid-main"><img src="${getImageUrl(list[0])}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" alt=""></div>
-      ${list.slice(1).map(img => `<div class="photo-grid-cell"><img src="${getImageUrl(img)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" alt=""></div>`).join('')}
-    </div>`;
+    return `<div class="photo-grid photo-grid-3">${cell(list[0], 0, 'photo-grid-main')}${list.slice(1).map((img, i) => cell(img, i + 1)).join('')}</div>`;
   }
   const shown = list.slice(0, 5);
   const remaining = list.length - shown.length;
   const cells = shown.map((img, i) => `
-    <div class="photo-grid-cell ${i === 0 ? 'photo-grid-main' : ''}">
+    <div class="photo-grid-cell ${i === 0 ? 'photo-grid-main' : ''}" onclick="openLightbox(${i})">
       <img src="${getImageUrl(img)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" alt="">
       ${(i === shown.length - 1 && remaining > 0) ? `<div class="photo-grid-more"><i class="fa-solid fa-images"></i> +${remaining} Photos</div>` : ''}
     </div>`).join('');
   return `<div class="photo-grid photo-grid-5">${cells}</div>`;
 }
+
+let __lightboxIndex = 0;
+function openLightbox(index) {
+  const imgs = window.__lightboxImages || [];
+  if (!imgs.length) return;
+  __lightboxIndex = index;
+  renderLightbox();
+  document.getElementById('photoLightbox').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('photoLightbox').classList.add('hidden');
+  document.body.style.overflow = '';
+}
+function lightboxStep(dir) {
+  const imgs = window.__lightboxImages || [];
+  if (!imgs.length) return;
+  __lightboxIndex = (__lightboxIndex + dir + imgs.length) % imgs.length;
+  renderLightbox();
+}
+function renderLightbox() {
+  const imgs = window.__lightboxImages || [];
+  const img = document.getElementById('lightboxImage');
+  if (img) img.src = getImageUrl(imgs[__lightboxIndex]);
+  const counter = document.getElementById('lightboxCounter');
+  if (counter) counter.textContent = `${__lightboxIndex + 1} / ${imgs.length}`;
+}
+document.addEventListener('keydown', (e) => {
+  const box = document.getElementById('photoLightbox');
+  if (!box || box.classList.contains('hidden')) return;
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowLeft') lightboxStep(-1);
+  if (e.key === 'ArrowRight') lightboxStep(1);
+});
 
 function paymentMethodsBlock(currentMethod, onchangeFn) {
   const methods = [
@@ -397,24 +430,66 @@ function showExcursionPage(excursionId, opts = {}) {
           <div class="flex items-center gap-2 text-sm mb-1">${utils.renderStars(x.rating)}<span class="text-xs">${Number(x.rating).toFixed(1)} (${x.reviews} reviews)</span></div>
           <p class="text-xs"><i class="fa-regular fa-clock text-violet-500"></i>${x.duration} · <i class="fa-solid fa-location-dot text-violet-500"></i>${x.meetingPoint || ''}</p>
         </div>
+
+        <!-- Trust badges -->
+        <div class="trust-badge-row">
+          <div class="trust-badge"><i class="fa-solid fa-star"></i><span>${Number(x.rating).toFixed(1)} Rating</span></div>
+          <div class="trust-badge"><i class="fa-solid fa-rotate-left"></i><span>Free Cancellation</span></div>
+          <div class="trust-badge"><i class="fa-solid fa-bolt"></i><span>Instant Confirmation</span></div>
+          <div class="trust-badge"><i class="fa-solid fa-shield-heart"></i><span>Secure Booking</span></div>
+        </div>
+
         <div>
           <h3 class="font-display text-lg font-bold mb-2">Overview</h3>
           <p class="text-sm leading-relaxed">${x.fullDescription || x.description}</p>
         </div>
+
+        ${(x.includes || []).length ? `
         <div>
-          <h3 class="font-display text-lg font-bold mb-3">What's Included</h3>
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-2">${(x.includes || []).map(i => `<div class="flex items-center gap-2 text-sm"><i class="fa-solid fa-circle-check text-green-500"></i>${i}</div>`).join('')}</div>
+          <h3 class="font-display text-lg font-bold mb-3">What This Trip Offers</h3>
+          <div class="highlight-grid">
+            ${x.includes.map((i, n) => `
+              <div class="highlight-item">
+                <span class="highlight-num">${String(n + 1).padStart(2, '0')}</span>
+                <span>${i}</span>
+              </div>`).join('')}
+          </div>
+        </div>` : ''}
+
+        <div>
+          <h3 class="font-display text-lg font-bold mb-3">Prices &amp; Inclusions</h3>
+          <div class="inclusion-cards">
+            <div class="inclusion-card inclusion-card-in">
+              <p class="inclusion-card-title"><i class="fa-solid fa-circle-check"></i> Included</p>
+              ${(x.includes || []).map(i => `<div class="inclusion-row"><i class="fa-solid fa-check"></i>${i}</div>`).join('')}
+            </div>
+            ${(x.excludes || []).length ? `
+            <div class="inclusion-card inclusion-card-out">
+              <p class="inclusion-card-title"><i class="fa-solid fa-circle-xmark"></i> Not Included</p>
+              ${x.excludes.map(i => `<div class="inclusion-row"><i class="fa-solid fa-xmark"></i>${i}</div>`).join('')}
+            </div>` : ''}
+          </div>
         </div>
-        ${(x.excludes || []).length ? `
-          <div>
-            <h3 class="font-display text-lg font-bold mb-3">What's Not Included</h3>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-2">${x.excludes.map(i => `<div class="flex items-center gap-2 text-sm"><i class="fa-solid fa-circle-xmark text-red-400"></i>${i}</div>`).join('')}</div>
-          </div>` : ''}
+
         ${(x.whatToBring || []).length ? `
           <div>
             <h3 class="font-display text-lg font-bold mb-3">What to Bring</h3>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-2">${x.whatToBring.map(i => `<div class="flex items-center gap-2 text-sm"><i class="fa-solid fa-suitcase-rolling text-violet-500"></i>${i}</div>`).join('')}</div>
+            <div class="bring-chip-row">${x.whatToBring.map(i => `<div class="bring-chip"><i class="fa-solid fa-suitcase-rolling"></i>${i}</div>`).join('')}</div>
           </div>` : ''}
+
+        <!-- Meeting point & schedule -->
+        <div class="meeting-card">
+          <div class="meeting-card-row">
+            <div class="meeting-card-icon"><i class="fa-solid fa-location-dot"></i></div>
+            <div><p class="meeting-card-label">Meeting Point</p><p class="meeting-card-value">${x.meetingPoint || 'Hotel lobby pickup'}</p></div>
+          </div>
+          <div class="meeting-card-divider"></div>
+          <div class="meeting-card-row">
+            <div class="meeting-card-icon"><i class="fa-regular fa-clock"></i></div>
+            <div><p class="meeting-card-label">Schedule</p><p class="meeting-card-value">${x.duration || ''} · Daily</p></div>
+          </div>
+        </div>
+
         ${(x.itinerary || []).length ? `
           <div>
             <h3 class="font-display text-lg font-bold mb-3">Trip Itinerary</h3>
@@ -434,8 +509,12 @@ function showExcursionPage(excursionId, opts = {}) {
             </div>
           </div>` : ''}
         <div class="card rounded-2xl p-4">
-          <h3 class="font-display text-lg font-bold mb-3">Reviews</h3>
-          <button onclick="openReviewModal('excursion','${x.id}')" class="w-full py-2.5 rounded-xl text-xs font-bold border border-violet-400/40 text-violet-500 mb-3">Write a Review</button>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-display text-lg font-bold">Reviews</h3>
+            <div class="text-center"><p class="text-3xl font-bold text-violet-500 font-display">${Number(x.rating).toFixed(1)}</p><p class="text-[10px]">${x.reviews || 0} reviews</p></div>
+          </div>
+          <div class="rating-bar-chart" id="excursionRatingBars"></div>
+          <button onclick="openReviewModal('excursion','${x.id}')" class="w-full py-2.5 rounded-xl text-xs font-bold border border-violet-400/40 text-violet-500 mb-3 mt-3">Write a Review</button>
           <div class="space-y-3" id="excursionReviewsList"></div>
         </div>
         </div>
@@ -453,7 +532,7 @@ function showExcursionPage(excursionId, opts = {}) {
   page.classList.add('active');
   window.scrollTo(0,0);
   routeToDetail('excursions', x.id, x.title, opts);
-  loadReviews('excursion', x.id, 'excursionReviewsList', null);
+  loadReviews('excursion', x.id, 'excursionReviewsList', null, 'excursionRatingBars');
 }
 
 function closeExcursionPage() { const p = document.getElementById('excursionDetailPage'); if (p) p.remove(); nav.go('excursions'); }
