@@ -677,12 +677,17 @@ const reviews = {
   },
   async submit(e) {
     e.preventDefault();
+    if (this.submitting) return; // guards against a double form-submit (e.g. a fast double-click)
     const bookingId = document.getElementById('reviewBookingId').value.trim().toUpperCase();
     const name = document.getElementById('reviewName').value.trim();
     const comment = document.getElementById('reviewComment').value.trim();
     const rating = this.selectedStars || 5;
 
     if (!bookingId || !comment) return toast('Booking ID and comment required', 'error');
+
+    this.submitting = true;
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.style.opacity = '.6'; }
 
     try {
       await apiFetch('/api/reviews', {
@@ -706,6 +711,9 @@ const reviews = {
         this.currentTarget.type === 'hotel' ? 'hotelRatingSummary' : 'excursionRatingSummary', barsId);
     } catch (e) {
       toast(e.message, 'error');
+    } finally {
+      this.submitting = false;
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = ''; }
     }
   },
   openModal(type, id, bookingId = '') {
@@ -753,10 +761,13 @@ async function loadReviews(type, id, containerId, summaryId, barsId) {
       return;
     }
 
-    container.innerHTML = reviewsList.map(rv => {
+    window.__reviewPhotoSets = window.__reviewPhotoSets || {};
+    container.innerHTML = reviewsList.map((rv, ri) => {
       const initial = (rv.name || 'G').trim().charAt(0).toUpperCase();
       const photos = rv.images && rv.images.length ? rv.images : (rv.image ? [rv.image] : []);
       const dateStr = rv.createdAt ? new Date(rv.createdAt).toLocaleDateString() : '';
+      const setKey = `${containerId}_${ri}`;
+      window.__reviewPhotoSets[setKey] = photos;
       return `
       <div class="review-card-v2">
         <i class="fa-solid fa-quote-right review-card-quote"></i>
@@ -772,7 +783,7 @@ async function loadReviews(type, id, containerId, summaryId, barsId) {
         ${photos.length ? `
           <div class="review-photo-grid">
             ${photos.slice(0, 3).map((img, i) => `
-              <div class="review-photo-grid-cell" onclick="window.__lightboxImages=${JSON.stringify(photos)};openLightbox(${i})">
+              <div class="review-photo-grid-cell" onclick="openLightboxSet('${setKey}', ${i})">
                 <img src="${img}" alt="">
                 ${(i === 2 && photos.length > 3) ? `<div class="review-photo-more">+${photos.length - 3}</div>` : ''}
               </div>`).join('')}
