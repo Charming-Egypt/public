@@ -1,11 +1,11 @@
 // ==================== FRONTEND UI & NAVIGATION ====================
 window.DS_CONFIG = window.DS_CONFIG || {
-  SHOW_HOTELS: false,
+  SHOW_HOTELS: true,
   SHOW_EXCURSIONS: true,
   SHOW_TRANSFERS: true,
-  SHOW_RESTAURANTS: false,
+  SHOW_RESTAURANTS: true,
   SHOW_DESTINATIONS: true,
-  KASHIER_MODE: 'live'
+  KASHIER_MODE: 'live' // 'live' or 'test' — controls the Kashier checkout mode
 };
 
 const SHOW_HOTELS = window.DS_CONFIG.SHOW_HOTELS;
@@ -636,8 +636,8 @@ const search = {
     const dayAfter = new Date(tomorrow);
     dayAfter.setDate(dayAfter.getDate() + 1);
 
-    this.selectedCheckIn = tomorrow.toISOString().slice(0,10);
-    this.selectedCheckOut = dayAfter.toISOString().slice(0,10);
+    this.selectedCheckIn = utils.isoLocal(tomorrow);
+    this.selectedCheckOut = utils.isoLocal(dayAfter);
     this.selectedCategory = 'all';
     this.updateDateDisplays();
     this.updateGuestDisplay();
