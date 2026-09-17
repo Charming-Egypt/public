@@ -172,7 +172,7 @@ body {
 /* ---------- Hero ---------- */
 .hero-section {
   position: relative;
-  height: 115vh;
+  height: 100vh;
   overflow: hidden;
 }
 
@@ -181,7 +181,7 @@ body {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: fill;
+  object-fit: cover;
   transition: opacity .8s ease;
 }
 
@@ -1363,6 +1363,87 @@ body:has(#transferDetailPage.active) .bottom-nav {
   border-radius: 20px;
 }
 
+
+/* ---------- Booking Flow (hotel/excursion/transfer steps) ---------- */
+.booking-guest-card {
+  background: var(--bg-field);
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 20px;
+}
+
+.booking-guest-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  color: #d97706;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.booking-guest-name {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.booking-guest-line {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.booking-summary-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 18px;
+  padding: 18px;
+}
+
+.booking-summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-secondary);
+  padding: 6px 0;
+}
+
+.booking-summary-total {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--text-primary);
+  padding-top: 12px;
+  margin-top: 6px;
+  border-top: 1px solid var(--border-card);
+}
+
+.booking-summary-total span:last-child {
+  color: #d97706;
+}
+
+@media (min-width: 1024px) {
+  .booking-header-inner,
+  .booking-step-layout {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  .booking-step-layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 32px;
+    align-items: start;
+    padding: 0 20px;
+  }
+  .booking-step-side {
+    position: sticky;
+    top: 104px;
+  }
+}
 
 /* Mobile: unchanged single-column flow with a fixed bottom price bar. */
 .detail-sidebar {
