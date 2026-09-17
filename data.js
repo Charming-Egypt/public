@@ -156,8 +156,17 @@ function formatPrice(egpAmount) {
 
 // ==================== UTILITIES ====================
 const utils = {
-  todayIso() { return new Date().toISOString().slice(0, 10); },
-  addDays(iso, n) { const d = new Date(iso + 'T00:00:00'); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); },
+  // Local-date formatter used everywhere below, instead of
+  // date.toISOString().slice(0,10) — toISOString() converts to UTC, which
+  // silently shifts the date by a day for part of every day in Egypt.
+  isoLocal(d) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  },
+  todayIso() { return this.isoLocal(new Date()); },
+  addDays(iso, n) { const d = new Date(iso + 'T00:00:00'); d.setDate(d.getDate() + n); return this.isoLocal(d); },
   formatDate(iso) { if (!iso) return '—'; return new Date(iso + 'T00:00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); },
   formatPrice: formatPrice,
   generateId() { return 'DS-' + Math.random().toString(36).substr(2, 6).toUpperCase(); },
