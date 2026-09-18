@@ -72,6 +72,48 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowRight') lightboxStep(1);
 });
 
+function submitContactForm(e) {
+  e.preventDefault();
+  const name = document.getElementById('contactName').value;
+  const email = document.getElementById('contactEmail').value;
+  const message = document.getElementById('contactMessage').value;
+  const subject = encodeURIComponent(`Website inquiry from ${name}`);
+  const body = encodeURIComponent(`${message}\n\n— ${name} (${email})`);
+  window.location.href = `mailto:hello@discover-sharm.com?subject=${subject}&body=${body}`;
+  toast('Opening your email app…', 'success');
+}
+
+function submitPartnerForm(e) {
+  e.preventDefault();
+  const type = document.querySelector('input[name="partnerType"]:checked').value;
+  const business = document.getElementById('partnerBusinessName').value;
+  const contact = document.getElementById('partnerContactName').value;
+  const phone = document.getElementById('partnerPhone').value;
+  const email = document.getElementById('partnerEmail').value;
+  const message = document.getElementById('partnerMessage').value;
+  const subject = encodeURIComponent(`Partner application: ${business} (${type})`);
+  const body = encodeURIComponent(`Partner type: ${type}\nBusiness: ${business}\nContact: ${contact}\nPhone: ${phone}\nEmail: ${email}\n\n${message}`);
+  window.location.href = `mailto:hello@discover-sharm.com?subject=${subject}&body=${body}`;
+  toast('Opening your email app…', 'success');
+}
+
+function renderJournalPage() {
+  const grid = document.getElementById('journalGrid');
+  if (!grid) return;
+  grid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-28';
+  const countEl = document.getElementById('journalCount'); if (countEl) countEl.textContent = (CATALOG.articles || []).length;
+  if (!CATALOG.articles || !CATALOG.articles.length) { grid.innerHTML = '<p class="text-center py-16" style="color:var(--text-secondary)">No stories yet — check back soon</p>'; return; }
+  grid.innerHTML = CATALOG.articles.map(a => `
+    <div onclick="showArticlePage('${a.id}')" class="article-card cursor-pointer">
+      <img src="${getImageUrl(a.image)}" class="article-card-img" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
+      <div class="article-card-body">
+        <p class="font-display font-bold text-base mb-1 leading-snug line-clamp-2" style="color:var(--text-primary)">${a.title}</p>
+        <p class="text-xs mb-2 line-clamp-2" style="color:var(--text-secondary)">${a.excerpt}</p>
+        <p class="text-[10px]" style="color:var(--text-secondary)"><i class="fa-regular fa-clock"></i> ${a.readTimeMinutes} min read</p>
+      </div>
+    </div>`).join('');
+}
+
 function paymentMethodsBlock(currentMethod, onchangeFn) {
   const methods = [
     { id: 'card', label: 'Credit/Debit Card', icon: 'fa-credit-card' },
@@ -86,26 +128,60 @@ function paymentMethodsBlock(currentMethod, onchangeFn) {
     </label>`).join('');
 }
 
-function showKashierModal(kashierUrl, orderId, bookingData) {
-  const modal = document.createElement('div');
-  modal.id = 'kashierModal';
-  modal.className = 'modal-overlay';
-  modal.innerHTML = `<div class="modal-content" style="max-width:600px; padding:0; overflow:hidden;">
-    <iframe src="${kashierUrl}" style="width:100%; height:600px; border:0;"></iframe>
-  </div>`;
-  document.body.appendChild(modal);
-  window.addEventListener('message', async (ev) => {
-    if (ev.origin !== 'https://checkout.kashier.io') return;
-    if (ev.data?.event === 'kashier.paymentSuccess') {
-      modal.remove();
-      toast('Payment successful! Your booking is confirmed.', 'success');
-      renderBookingConfirmation(bookingData);
-    }
-    if (ev.data?.event === 'kashier.paymentFailure') {
-      modal.remove();
-      toast('Payment failed', 'error');
-    }
-  });
+function redirectToKashier(kashierUrl, orderId, bookingType) {
+  // Full-page redirect instead of an embedded iframe modal — payment
+  // gateways routinely block being framed, and a real page is also just a
+  // more trustworthy checkout experience. Kashier sends the browser back to
+  // merchantRedirect afterward; we stash enough here to pick up where we
+  // left off and show the right confirmation once that happens.
+  localStorage.setItem('ds_pending_payment', JSON.stringify({ orderId, bookingType, startedAt: Date.now() }));
+  window.location.href = kashierUrl;
+}
+
+// Called once on startup (see the DOMContentLoaded handler in frontend.js).
+// If we're returning from Kashier's hosted checkout, look up what actually
+// happened to that order server-side (the webhook is the source of truth,
+// not anything in the redirect URL) and show the right screen.
+async function handleKashierReturn() {
+  const params = new URLSearchParams(window.location.search);
+  if (!params.has('kashier_callback')) return;
+  history.replaceState({}, '', window.location.pathname);
+
+  const pendingRaw = localStorage.getItem('ds_pending_payment');
+  localStorage.removeItem('ds_pending_payment');
+  if (!pendingRaw) return;
+  const pending = JSON.parse(pendingRaw);
+
+  const overlay = document.createElement('div');
+  overlay.id = 'paymentReturnOverlay';
+  overlay.className = 'fixed inset-0 z-[999] flex items-center justify-center dark-scene';
+  overlay.innerHTML = `<div class="text-center text-white"><i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3"></i><p class="text-sm">Confirming your payment…</p></div>`;
+  document.body.appendChild(overlay);
+
+  // The webhook can land a beat after the browser redirect does, so poll
+  // briefly rather than trusting the very first check.
+  for (let attempt = 0; attempt < 6; attempt++) {
+    try {
+      const res = await apiFetch('/api/user/bookings');
+      const booking = (res.bookings || []).find(b => b.id === pending.orderId);
+      if (booking && booking.status === 'completed') {
+        overlay.remove();
+        state.bookings.unshift(booking);
+        renderBookingConfirmation(booking);
+        return;
+      }
+      if (booking && booking.status === 'failed') {
+        overlay.remove();
+        toast('Payment was not completed', 'error');
+        nav.go('bookings');
+        return;
+      }
+    } catch (e) { /* try again */ }
+    await new Promise(r => setTimeout(r, 1500));
+  }
+  overlay.remove();
+  toast('Still confirming your payment — check My Bookings shortly', 'info');
+  nav.go('bookings');
 }
 
 function renderBookingConfirmation(b) {
@@ -410,7 +486,7 @@ async function payAndConfirmHotelBooking(roomTotal, taxes, total, nights) {
     kashierUrl.searchParams.append('paymentMethods', state.bookingDraft.payment === 'instapay' ? 'wallet' : 'card');
     kashierUrl.searchParams.append('merchantRedirect', window.location.href.split('?')[0] + '?kashier_callback=1');
 
-    showKashierModal(kashierUrl.toString(), orderId, bookingData);
+    redirectToKashier(kashierUrl.toString(), orderId, 'hotel');
     btn.disabled = false; btn.innerHTML = 'Pay Now';
   } catch (e) {
     toast('Payment error: ' + e.message, 'error');
@@ -694,7 +770,7 @@ async function payAndConfirmExcursionBooking(subtotal, taxes, total) {
     kashierUrl.searchParams.append('paymentMethods', state.bookingDraft.payment === 'instapay' ? 'wallet' : 'card');
     kashierUrl.searchParams.append('merchantRedirect', window.location.href.split('?')[0] + '?kashier_callback=1');
 
-    showKashierModal(kashierUrl.toString(), orderId, bookingData);
+    redirectToKashier(kashierUrl.toString(), orderId, 'excursion');
     btn.disabled = false; btn.innerHTML = 'Pay Now';
   } catch (e) {
     toast('Payment error: ' + e.message, 'error');
@@ -882,7 +958,7 @@ async function payAndConfirmTransferBooking(subtotal, taxes, total) {
     kashierUrl.searchParams.append('paymentMethods', state.bookingDraft.payment === 'instapay' ? 'wallet' : 'card');
     kashierUrl.searchParams.append('merchantRedirect', window.location.href.split('?')[0] + '?kashier_callback=1');
 
-    showKashierModal(kashierUrl.toString(), orderId, bookingData);
+    redirectToKashier(kashierUrl.toString(), orderId, 'transfer');
     btn.disabled = false; btn.innerHTML = 'Pay Now';
   } catch (e) {
     toast('Payment error: ' + e.message, 'error');
