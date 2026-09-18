@@ -1,6 +1,7 @@
 [
   {
     "id": "e1",
+    "owner":"GuaSyGgxrgZABfQo765oFlFCXJx1",
     "category": "Boat trip",
     "title": {
       "en": "Ras Mohammed Snorkeling Trip",
@@ -295,6 +296,7 @@
   },
   {
     "id": "e2",
+    "owner":"GuaSyGgxrgZABfQo765oFlFCXJx2",
     "category": "Desert Safari",
     "title": {
       "en": "White Desert Safari & BBQ Dinner",
