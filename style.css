@@ -2026,6 +2026,73 @@ body:has(#transferDetailPage.active) .bottom-nav {
   background: rgba(217, 119, 6, .08);
 }
 
+.partner-doc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 4px 0 6px;
+}
+
+.partner-doc-slot {
+  background: var(--bg-field);
+  border-radius: 14px;
+  padding: 10px;
+}
+
+.partner-doc-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.partner-doc-empty {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1.5px dashed var(--border-field);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.partner-doc-filled {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(217, 119, 6, .1);
+  border: 1px solid rgba(217, 119, 6, .3);
+  cursor: pointer;
+}
+
+.partner-doc-filled i:first-child {
+  color: #d97706;
+  flex-shrink: 0;
+}
+
+.partner-doc-filled span {
+  flex: 1;
+  min-width: 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.partner-doc-filled button {
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
 @media (min-width: 1024px) {
   .about-values-grid {
     grid-template-columns: repeat(4, 1fr);
