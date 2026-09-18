@@ -1846,6 +1846,202 @@ body:has(#transferDetailPage.active) .bottom-nav {
   max-width: 600px;
 }
 
+/* ---------- Static Content Pages (About/Terms/Privacy/Policies/Partner) ---------- */
+.static-page-body {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.static-page-lead {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-primary);
+  margin-bottom: 24px;
+}
+
+.static-page-updated {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+.static-page-body h3 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--text-primary);
+  margin: 28px 0 10px;
+}
+
+.static-page-body p {
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.static-page-body ul {
+  margin: 10px 0 10px 20px;
+}
+
+.static-page-body li {
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--text-secondary);
+  list-style: disc;
+  margin-bottom: 6px;
+}
+
+.static-page-link {
+  color: #d97706;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* About page */
+.about-values-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin: 20px 0 8px;
+}
+
+.about-value-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.about-value-card i {
+  font-size: 20px;
+  color: #d97706;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.about-value-card h4 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.about-value-card p {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Contact page */
+.contact-layout {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.contact-info-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.contact-info-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.contact-info-card i {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--bg-field);
+  color: #d97706;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.contact-info-label {
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+.contact-info-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.contact-form-col,
+.partner-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Partner page */
+.partner-type-row {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0 4px;
+}
+
+.partner-type-chip {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 8px;
+  border-radius: 14px;
+  border: 1.5px solid var(--border-field);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.partner-type-chip i {
+  font-size: 18px;
+}
+
+.partner-type-chip input {
+  display: none;
+}
+
+.partner-type-chip:has(input:checked) {
+  border-color: #d97706;
+  color: #d97706;
+  background: rgba(217, 119, 6, .08);
+}
+
+@media (min-width: 1024px) {
+  .about-values-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .contact-layout {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  .contact-info-col {
+    flex: 1;
+  }
+  .contact-form-col {
+    flex: 1.4;
+  }
+}
+
 .listing-count span {
   font-weight: 700;
   color: var(--text-primary);
