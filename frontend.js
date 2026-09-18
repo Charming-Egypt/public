@@ -275,6 +275,7 @@ const nav = {
     document.getElementById('authPage').classList.remove('hidden');
     document.getElementById('mainApp').classList.add('hidden');
     switchAuthMode('login');
+    initGoogleSignInButton();
   }
 };
 

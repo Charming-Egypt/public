@@ -473,11 +473,15 @@ const auth = {
 function switchAuthMode(mode) {
   authMode = mode;
   const isLogin = mode === 'login';
-  document.getElementById('authTitle').textContent = isLogin ? 'Welcome Back' : 'Create Account';
+  const title = isLogin ? t('welcomeBack', 'Welcome Back') : t('createAccount', 'Create Account');
+  const authTitle = document.getElementById('authTitle');
+  const authTitleDesktop = document.getElementById('authTitleDesktop');
+  if (authTitle) authTitle.textContent = title;
+  if (authTitleDesktop) authTitleDesktop.textContent = title;
   document.getElementById('authNameWrap').classList.toggle('hidden', isLogin);
-  document.getElementById('authSubmitBtn').textContent = isLogin ? 'Log In' : 'Sign Up';
-  document.getElementById('authSwitchText').textContent = isLogin ? "Don't have an account?" : 'Already have an account?';
-  document.getElementById('authSwitchLink').textContent = isLogin ? 'Sign Up' : 'Log In';
+  document.getElementById('authSubmitBtn').textContent = isLogin ? t('loginBtn', 'Log In') : t('signupBtn', 'Sign Up');
+  document.getElementById('authSwitchText').textContent = isLogin ? t('noAccount', "Don't have an account?") : t('haveAccount', 'Already have an account?');
+  document.getElementById('authSwitchLink').textContent = isLogin ? t('signupBtn', 'Sign Up') : t('loginBtn', 'Log In');
 }
 
 async function handleAuthSubmit(e) {
@@ -501,43 +505,111 @@ async function handleAuthSubmit(e) {
 }
 
 // ==================== GOOGLE SIGN-IN ====================
+// Renders Google's own "Sign in with Google" button (FedCM-based) instead of
+// driving the legacy One Tap prompt() flow. prompt() is silently suppressed
+// for all sorts of ordinary reasons (cooldown, no Google session, Safari/ITP,
+// disabled third-party cookies) and used to surface a generic "blocked"
+// error every time that happened. The rendered button is what Google itself
+// recommends now and works reliably across browsers without that noise.
 let googleSignInInitialized = false;
+let googleClientIdPromise = null;
 
-async function handleGoogleSignIn() {
+// Small i18n lookup for the strings this module needs outside the normal
+// data-i18n DOM pass (toasts, injected HTML).
+function t(key, fallback) {
+  const entry = I18N_DICT[key];
+  const lang = (typeof I18N !== 'undefined' && I18N.get) ? I18N.get() : 'en';
+  return (entry && (entry[lang] || entry.en)) || fallback;
+}
+
+// Google's Sign-In JS refuses to run inside in-app browsers (Instagram,
+// Facebook, TikTok, WhatsApp, etc. — it responds with a hard
+// "disallowed_useragent" error). There's no way to make it work there, so we
+// detect it and show a clear instruction instead of a button that will just
+// fail.
+function isInAppBrowser() {
+  const ua = navigator.userAgent || '';
+  return /FBAN|FBAV|FB_IAB|Instagram|Line\/|MicroMessenger|TikTok|GSA\/|KAKAOTALK|Snapchat|\bWhatsApp\b/i.test(ua);
+}
+
+function waitForGoogleLibrary(timeoutMs = 8000) {
+  return new Promise((resolve, reject) => {
+    if (window.google?.accounts?.id) return resolve();
+    const start = Date.now();
+    const iv = setInterval(() => {
+      if (window.google?.accounts?.id) { clearInterval(iv); resolve(); }
+      else if (Date.now() - start > timeoutMs) { clearInterval(iv); reject(new Error(t('googleLoadError', 'Google Sign-In library not loaded. Please refresh the page.'))); }
+    }, 100);
+  });
+}
+
+async function getGoogleClientId() {
+  if (window._googleClientId) return window._googleClientId;
+  if (!googleClientIdPromise) {
+    googleClientIdPromise = apiFetch('/api/google-config', {}, true)
+      .then(cfg => { window._googleClientId = cfg.clientId; return cfg.clientId; })
+      .catch(e => { googleClientIdPromise = null; throw e; });
+  }
+  return googleClientIdPromise;
+}
+
+// Called whenever the auth screen is shown (and on window resize while it's
+// visible) to (re)mount the official Google button at the right width for
+// the current layout — mobile full-width card vs. the narrower desktop panel.
+async function initGoogleSignInButton() {
+  const container = document.getElementById('googleSignInBtn');
+  if (!container) return;
+
+  if (isInAppBrowser()) {
+    container.innerHTML = `<div class="w-full py-3.5 px-4 rounded-2xl text-xs text-center text-white/60 border leading-relaxed" style="border-color:#2b2140;">
+      <i class="fa-solid fa-arrow-up-right-from-square mr-1.5"></i>
+      <span data-i18n="openInBrowserForGoogle">${t('openInBrowserForGoogle', "Open this page in your phone's browser (not this app) to sign in with Google.")}</span>
+    </div>`;
+    return;
+  }
+
   try {
-    if (!window.google?.accounts?.id) {
-      toast('Google Sign-In library not loaded. Please refresh the page.', 'error');
-      return;
-    }
-
-    if (!window._googleClientId) {
-      try {
-        const config = await apiFetch('/api/google-config', {}, true);
-        window._googleClientId = config.clientId;
-      } catch (e) {
-        toast('Could not load Google Sign-In configuration.', 'error');
-        return;
-      }
-    }
-
-    const clientId = window._googleClientId;
+    await waitForGoogleLibrary();
+    const clientId = await getGoogleClientId();
 
     if (!googleSignInInitialized) {
-      google.accounts.id.initialize({ client_id: clientId, callback: handleGoogleCredentialResponse });
+      google.accounts.id.initialize({
+        client_id: clientId,
+        callback: handleGoogleCredentialResponse,
+        auto_select: false,
+        itp_support: true,
+      });
       googleSignInInitialized = true;
     }
 
-    google.accounts.id.prompt((notification) => {
-      if (notification.isNotDisplayed()) {
-        console.warn('Google prompt not displayed:', notification.getNotDisplayedReason());
-        toast('Google sign-in prompt was blocked. Please allow popups or try again.', 'error');
-      }
+    container.innerHTML = '';
+    google.accounts.id.renderButton(container, {
+      type: 'standard',
+      theme: 'filled_black',
+      size: 'large',
+      shape: 'pill',
+      text: 'continue_with',
+      logo_alignment: 'left',
+      width: Math.max(240, Math.min(Math.round(container.offsetWidth) || 320, 400)),
     });
   } catch (e) {
-    console.error('handleGoogleSignIn error:', e);
-    toast(e.message || 'Google Sign-In failed.', 'error');
+    console.error('initGoogleSignInButton error:', e);
+    container.innerHTML = `<button type="button" onclick="initGoogleSignInButton()" class="w-full py-3.5 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 btn-white" style="border:1.5px solid #e8e3f4;">
+      <i class="fa-solid fa-arrow-rotate-right"></i> <span>${t('retryGoogle', 'Retry Google Sign-In')}</span>
+    </button>`;
   }
 }
+
+// Debounced re-render on resize so the button width stays correct when the
+// viewport crosses the mobile/desktop layout breakpoint, but only while the
+// auth screen is actually on screen.
+let _googleBtnResizeTimer = null;
+window.addEventListener('resize', () => {
+  const authPage = document.getElementById('authPage');
+  if (!authPage || authPage.classList.contains('hidden')) return;
+  clearTimeout(_googleBtnResizeTimer);
+  _googleBtnResizeTimer = setTimeout(initGoogleSignInButton, 200);
+});
 
 async function handleGoogleCredentialResponse(response) {
   if (!response.credential) {

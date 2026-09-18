@@ -183,7 +183,6 @@ function paymentMethodsBlock(currentMethod, onchangeFn) {
   const methods = [
     { id: 'card', label: 'Credit/Debit Card', icon: 'fa-credit-card' },
     { id: 'instapay', label: 'InstaPay / Wallet', icon: 'fa-wallet' },
-    { id: 'cash', label: 'Cash on Arrival', icon: 'fa-money-bill-wave' },
   ];
   return methods.map(m => `
     <label class="card rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer ${currentMethod === m.id ? 'ring-1 ring-violet-400' : ''}">
@@ -265,7 +264,7 @@ function renderBookingConfirmation(b) {
             <div class="relative w-full h-full rounded-full bg-gradient-to-br from-violet-400 to-violet-700 flex items-center justify-center shadow-2xl"><i class="fa-solid fa-check text-4xl text-white"></i></div>
           </div>
           <h2 class="font-display text-2xl font-bold text-white mb-1">Booking Confirmed!</h2>
-          <p class="text-white/60 text-sm">${b.paymentStatus === 'pending_cash' ? 'Pay cash on arrival.' : 'Payment received.'}</p>
+          <p class="text-white/60 text-sm">Payment received.</p>
         </div>
       </div>
       <div class="relative z-10 rounded-t-[28px] mt-4 p-5" style="background:var(--bg-card)">
@@ -527,17 +526,6 @@ async function payAndConfirmHotelBooking(roomTotal, taxes, total, nights) {
       reviewed: false,
       createdAt: new Date().toISOString(),
     };
-
-    if (state.bookingDraft.payment === 'cash') {
-      bookingData.paymentStatus = 'pending_cash';
-      bookingData.status = 'pending_cash';
-      const res = await apiFetch('/api/user/bookings', { method: 'POST', body: JSON.stringify({ booking: bookingData }) });
-      state.bookings.unshift(res.booking);
-      bookings.render();
-      renderBookingConfirmation(res.booking);
-      btn.disabled = false; btn.innerHTML = 'Pay Now';
-      return;
-    }
 
     const saveRes = await apiFetch('/api/user/bookings', { method: 'POST', body: JSON.stringify({ booking: bookingData }) });
     const hashData = await apiFetch('/api/kashier/hash', { method: 'POST', body: JSON.stringify({ orderId, amount: total, currency: 'EGP' }) });
@@ -812,17 +800,6 @@ async function payAndConfirmExcursionBooking(subtotal, taxes, total) {
       createdAt: new Date().toISOString(),
     };
 
-    if (state.bookingDraft.payment === 'cash') {
-      bookingData.paymentStatus = 'pending_cash';
-      bookingData.status = 'pending_cash';
-      const res = await apiFetch('/api/user/bookings', { method: 'POST', body: JSON.stringify({ booking: bookingData }) });
-      state.bookings.unshift(res.booking);
-      bookings.render();
-      renderBookingConfirmation(res.booking);
-      btn.disabled = false; btn.innerHTML = 'Pay Now';
-      return;
-    }
-
     const saveRes = await apiFetch('/api/user/bookings', { method: 'POST', body: JSON.stringify({ booking: bookingData }) });
     const hashData = await apiFetch('/api/kashier/hash', { method: 'POST', body: JSON.stringify({ orderId, amount: total, currency: 'EGP' }) });
     const kashierUrl = new URL('https://checkout.kashier.io/');
@@ -999,17 +976,6 @@ async function payAndConfirmTransferBooking(subtotal, taxes, total) {
       reviewed: false,
       createdAt: new Date().toISOString(),
     };
-
-    if (state.bookingDraft.payment === 'cash') {
-      bookingData.paymentStatus = 'pending_cash';
-      bookingData.status = 'pending_cash';
-      const res = await apiFetch('/api/user/bookings', { method: 'POST', body: JSON.stringify({ booking: bookingData }) });
-      state.bookings.unshift(res.booking);
-      bookings.render();
-      renderBookingConfirmation(res.booking);
-      btn.disabled = false; btn.innerHTML = 'Pay Now';
-      return;
-    }
 
     const saveRes = await apiFetch('/api/user/bookings', { method: 'POST', body: JSON.stringify({ booking: bookingData }) });
     const hashData = await apiFetch('/api/kashier/hash', { method: 'POST', body: JSON.stringify({ orderId, amount: total, currency: 'EGP' }) });
@@ -1208,7 +1174,7 @@ function showBookingDetails(bookingId) {
 }
 
 function bookingDetailBody(b) {
-  const paymentLabel = b.payment === 'cash' ? 'Cash on Arrival' : b.payment === 'instapay' ? 'InstaPay / Wallet' : 'Credit/Debit Card';
+  const paymentLabel = b.payment === 'instapay' ? 'InstaPay / Wallet' : 'Credit/Debit Card';
   const paymentRow = `<div class="flex justify-between"><span>Payment</span><span>${paymentLabel}</span></div>`;
   if (b.type === 'excursion') return `<div class="card rounded-2xl p-3 flex gap-3 mb-4"><img src="${b.image}" class="w-16 h-16 rounded-xl object-cover" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'"><div><h3 class="font-display font-bold text-sm">${b.title}</h3><p class="text-[11px]">${b.category}</p></div></div><div class="space-y-3 text-sm mb-4"><div class="flex justify-between"><span>Date</span><span>${utils.formatDate(b.date)}</span></div><div class="flex justify-between"><span>Participants</span><span>${b.participants}</span></div>${paymentRow}</div><div class="border-t pt-3 flex justify-between mb-4"><span class="font-bold">Total</span><span class="font-bold text-violet-500">${b.priceFormatted}</span></div><div class="field-box rounded-xl p-3 flex items-center justify-between mb-2"><span>Booking ID</span><span class="font-bold">${b.id}</span></div>`;
   if (b.type === 'transfer') return `<div class="card rounded-2xl p-3 flex gap-3 mb-4"><div class="w-16 h-16 rounded-xl bg-violet-50 flex items-center justify-center"><i class="fa-solid fa-shuttle-van text-violet-600 text-xl"></i></div><div><h3 class="font-display font-bold text-sm">${b.vehicleType} Transfer</h3><p class="text-[11px]">${b.direction}</p></div></div><div class="space-y-3 text-sm mb-4"><div class="flex justify-between"><span>Date</span><span>${utils.formatDate(b.date)}</span></div><div class="flex justify-between"><span>Time</span><span>${b.time}</span></div><div class="flex justify-between"><span>Flight No.</span><span>${b.flightNo || '—'}</span></div><div class="flex justify-between"><span>Pickup/Drop-off</span><span class="text-right max-w-[60%]">${b.address}</span></div><div class="flex justify-between"><span>Passengers</span><span>${b.passengers}</span></div>${paymentRow}</div><div class="border-t pt-3 flex justify-between mb-4"><span class="font-bold">Total</span><span class="font-bold text-violet-500">${b.priceFormatted}</span></div><div class="field-box rounded-xl p-3 flex items-center justify-between mb-2"><span>Booking ID</span><span class="font-bold">${b.id}</span></div>`;
