@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discover Sharm — إدارة الرحلات</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy-900:#0a1330;
+  --navy-800:#0f1b44;
+  --navy-700:#15234f;
+  --gold:#e8a33d;
+  --gold-light:#f2c27a;
+  --ink:#16213e;
+  --muted:#6b7290;
+  --line:#eceef5;
+  --card:#ffffff;
+  --bg:#f4f5fa;
+  --green:#1fa871;
+  --green-bg:#e6f7ef;
+  --red:#e2574c;
+  --red-bg:#fdeceb;
+  --amber:#e8a33d;
+  --amber-bg:#fbf1de;
+  --blue:#3b6fe0;
+  --blue-bg:#e9f0fe;
+  --purple:#8b5cf6;
+  --purple-bg:#f1eafe;
+  --radius:16px;
+  --shadow:0 8px 24px rgba(15,27,68,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Cairo','Inter',sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+}
+::-webkit-scrollbar{width:8px;height:8px;}
+::-webkit-scrollbar-thumb{background:#d7dae8;border-radius:8px;}
+
+/* ---------- Login ---------- */
+#loginScreen{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:
+    radial-gradient(1200px 600px at 15% -10%, #1a2a63 0%, transparent 60%),
+    radial-gradient(900px 500px at 110% 10%, #17255a 0%, transparent 55%),
+    linear-gradient(160deg, var(--navy-900), var(--navy-800));
+  padding:24px;
+}
+.login-card{
+  width:100%;max-width:400px;
+  background:var(--card);
+  border-radius:20px;
+  padding:36px 32px;
+  box-shadow:0 30px 60px rgba(0,0,0,.35);
+}
+.login-logo{
+  display:flex;align-items:center;gap:10px;margin-bottom:6px;
+}
+.login-logo svg{width:34px;height:34px;flex-shrink:0;}
+.login-logo .name{font-size:20px;font-weight:800;color:var(--navy-800);}
+.login-logo .name span{color:var(--gold);}
+.login-sub{color:var(--muted);font-size:13.5px;margin-bottom:28px;}
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:6px;}
+.field input{
+  width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:11px;
+  font-size:14px;font-family:inherit;background:#fbfbfd;transition:.15s;
+}
+.field input:focus{outline:none;border-color:var(--gold);background:#fff;box-shadow:0 0 0 3px rgba(232,163,61,.15);}
+.field small{display:block;margin-top:6px;color:var(--muted);font-size:11.5px;}
+.btn-primary{
+  width:100%;padding:13px;border:none;border-radius:11px;
+  background:linear-gradient(135deg,var(--gold),#d68e28);
+  color:#fff;font-weight:700;font-size:14.5px;font-family:inherit;cursor:pointer;
+  transition:.15s;box-shadow:0 8px 18px rgba(232,163,61,.35);
+}
+.btn-primary:hover{filter:brightness(1.05);}
+.btn-primary:disabled{opacity:.6;cursor:default;}
+.btn-ghost-link{
+  background:none;border:none;color:var(--muted);font-size:12.5px;text-decoration:underline;
+  cursor:pointer;font-family:inherit;margin-top:14px;display:block;text-align:center;width:100%;
+}
+.login-err{
+  background:var(--red-bg);color:var(--red);font-size:12.5px;padding:10px 12px;border-radius:9px;
+  margin-bottom:16px;display:none;
+}
+.config-box{
+  border:1.5px dashed var(--line);border-radius:12px;padding:14px;margin-bottom:20px;background:#fafbfe;
+}
+.config-box .field{margin-bottom:0;}
+.config-box .toggle-row{display:flex;justify-content:space-between;align-items:center;cursor:pointer;}
+.config-box .toggle-row span{font-size:12.5px;font-weight:700;color:var(--navy-800);}
+
+/* ---------- App shell ---------- */
+#app{display:none;min-height:100vh;}
+.shell{display:flex;min-height:100vh;}
+.sidebar{
+  width:250px;flex-shrink:0;
+  background:linear-gradient(180deg,var(--navy-900),var(--navy-800) 60%,var(--navy-900));
+  color:#fff;display:flex;flex-direction:column;padding:22px 16px;
+  position:sticky;top:0;height:100vh;
+}
+.brand{display:flex;align-items:center;gap:10px;padding:6px 10px 26px;}
+.brand svg{width:30px;height:30px;flex-shrink:0;}
+.brand-text{font-size:16px;font-weight:800;line-height:1.15;}
+.brand-text span{color:var(--gold);}
+.brand-text small{display:block;font-weight:500;font-size:10.5px;color:#8b93b8;letter-spacing:.2px;}
+.nav{display:flex;flex-direction:column;gap:3px;flex:1;}
+.nav-item{
+  display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:11px;
+  color:#aab1d1;font-size:13.5px;font-weight:600;cursor:pointer;transition:.15s;
+  border-right:3px solid transparent;
+}
+.nav-item svg{width:18px;height:18px;flex-shrink:0;opacity:.85;}
+.nav-item:hover{background:rgba(255,255,255,.05);color:#fff;}
+.nav-item.active{background:rgba(232,163,61,.14);color:#fff;border-right-color:var(--gold);}
+.nav-item.active svg{opacity:1;color:var(--gold);}
+.sidebar-foot{
+  border-top:1px solid rgba(255,255,255,.08);padding-top:14px;margin-top:10px;
+}
+.sidebar-user{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:11px;}
+.avatar-mini{
+  width:34px;height:34px;border-radius:50%;background:var(--gold);color:#3a2604;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;
+}
+.sidebar-user .u-email{font-size:12px;color:#c9cee4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px;}
+.logout-btn{
+  width:100%;margin-top:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  color:#e7eaf5;padding:9px;border-radius:10px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;
+}
+.logout-btn:hover{background:rgba(255,255,255,.1);}
+
+.main{flex:1;min-width:0;padding:26px 30px 60px;}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px;flex-wrap:wrap;}
+.topbar h1{font-size:21px;font-weight:800;color:var(--navy-800);}
+.topbar .desc{font-size:12.5px;color:var(--muted);margin-top:3px;font-weight:500;}
+.top-actions{display:flex;gap:10px;align-items:center;}
+.search-box{
+  display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid var(--line);
+  border-radius:11px;padding:9px 13px;min-width:220px;
+}
+.search-box svg{width:15px;height:15px;color:var(--muted);flex-shrink:0;}
+.search-box input{border:none;outline:none;font-size:13px;font-family:inherit;width:100%;background:transparent;}
+.btn-gold{
+  display:flex;align-items:center;gap:7px;background:linear-gradient(135deg,var(--gold),#d68e28);
+  color:#fff;border:none;padding:10px 17px;border-radius:11px;font-weight:700;font-size:13px;
+  cursor:pointer;font-family:inherit;box-shadow:0 6px 14px rgba(232,163,61,.3);white-space:nowrap;
+}
+.btn-gold:hover{filter:brightness(1.05);}
+.btn-outline{
+  background:#fff;border:1.5px solid var(--line);color:var(--navy-800);padding:9px 15px;
+  border-radius:11px;font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;
+}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold);}
+
+/* stat cards */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px;}
+.stat-card{
+  background:var(--card);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;gap:10px;
+}
+.stat-top{display:flex;align-items:center;justify-content:space-between;}
+.stat-icon{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;}
+.stat-icon svg{width:19px;height:19px;}
+.stat-num{font-size:25px;font-weight:800;color:var(--navy-800);}
+.stat-label{font-size:12px;color:var(--muted);font-weight:600;}
+
+.panel{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;margin-bottom:20px;}
+.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.panel-head h3{font-size:15.5px;font-weight:800;color:var(--navy-800);}
+
+.filter-chips{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.chip{
+  padding:7px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;
+  border:1.5px solid var(--line);color:var(--muted);background:#fff;transition:.15s;
+}
+.chip.active{background:var(--navy-800);color:#fff;border-color:var(--navy-800);}
+
+/* excursion row */
+.exc-list{display:flex;flex-direction:column;gap:10px;}
+.exc-row{
+  display:flex;align-items:center;gap:14px;padding:12px;border:1.5px solid var(--line);
+  border-radius:14px;transition:.15s;cursor:default;
+}
+.exc-row:hover{border-color:var(--gold-light);background:#fffdf8;}
+.exc-thumb{
+  width:56px;height:56px;border-radius:12px;background:var(--amber-bg);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+.exc-thumb img{width:100%;height:100%;object-fit:cover;}
+.exc-thumb svg{width:22px;height:22px;color:var(--gold);}
+.exc-info{flex:1;min-width:0;}
+.exc-title{font-size:14px;font-weight:700;color:var(--navy-800);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.exc-meta{font-size:12px;color:var(--muted);margin-top:3px;display:flex;gap:10px;flex-wrap:wrap;}
+.exc-meta span{display:flex;align-items:center;gap:4px;}
+.pill{padding:4px 11px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;}
+.pill.green{background:var(--green-bg);color:var(--green);}
+.pill.red{background:var(--red-bg);color:var(--red);}
+.exc-price{font-size:14.5px;font-weight:800;color:var(--navy-800);white-space:nowrap;min-width:80px;text-align:left;}
+.exc-price small{display:block;font-size:10.5px;color:var(--muted);font-weight:600;}
+.row-actions{display:flex;gap:6px;}
+.icon-btn{
+  width:34px;height:34px;border-radius:9px;border:1.5px solid var(--line);background:#fff;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);flex-shrink:0;
+}
+.icon-btn svg{width:15px;height:15px;}
+.icon-btn:hover{border-color:var(--gold);color:var(--gold);}
+.icon-btn.danger:hover{border-color:var(--red);color:var(--red);}
+
+.empty-state{padding:50px 20px;text-align:center;color:var(--muted);}
+.empty-state svg{width:44px;height:44px;color:#d7dae8;margin-bottom:12px;}
+.empty-state h4{font-size:14px;color:var(--navy-800);margin-bottom:5px;}
+.empty-state p{font-size:12.5px;}
+
+/* banners */
+.banner{
+  border-radius:13px;padding:13px 16px;font-size:12.5px;font-weight:600;margin-bottom:18px;
+  display:flex;align-items:flex-start;gap:10px;line-height:1.7;
+}
+.banner svg{width:17px;height:17px;flex-shrink:0;margin-top:1px;}
+.banner.warn{background:var(--amber-bg);color:#8a5b12;}
+.banner.err{background:var(--red-bg);color:#a8352c;}
+.banner code{background:rgba(0,0,0,.06);padding:1px 6px;border-radius:5px;font-size:11px;}
+
+.skeleton{background:linear-gradient(90deg,#eef0f6 25%,#f7f8fb 37%,#eef0f6 63%);background-size:400% 100%;
+  animation:sk 1.4s ease infinite;border-radius:14px;height:78px;}
+@keyframes sk{0%{background-position:100% 50%}100%{background-position:0 50%}}
+
+/* modal */
+.overlay{
+  position:fixed;inset:0;background:rgba(10,15,40,.55);display:none;align-items:center;justify-content:center;
+  z-index:100;padding:20px;backdrop-filter:blur(2px);
+}
+.modal{
+  background:#fff;border-radius:20px;width:100%;max-width:560px;max-height:88vh;overflow-y:auto;
+  box-shadow:0 30px 70px rgba(0,0,0,.35);
+}
+.modal-head{
+  display:flex;align-items:center;justify-content:space-between;padding:20px 24px;
+  border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;z-index:2;border-radius:20px 20px 0 0;
+}
+.modal-head h3{font-size:16px;font-weight:800;color:var(--navy-800);}
+.modal-close{background:#f4f5fa;border:none;width:32px;height:32px;border-radius:9px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;color:var(--muted);}
+.modal-body{padding:22px 24px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.field textarea{
+  width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:11px;font-size:13.5px;
+  font-family:inherit;resize:vertical;min-height:80px;background:#fbfbfd;
+}
+.field textarea:focus,.field select:focus{outline:none;border-color:var(--gold);background:#fff;}
+.field select{
+  width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:11px;font-size:13.5px;
+  font-family:inherit;background:#fbfbfd;
+}
+.switch-row{display:flex;align-items:center;justify-content:space-between;background:#fafbfe;
+  border:1.5px solid var(--line);border-radius:11px;padding:12px 14px;margin-bottom:16px;}
+.switch-row span{font-size:13px;font-weight:700;color:var(--navy-800);}
+.switch{position:relative;width:42px;height:24px;flex-shrink:0;}
+.switch input{opacity:0;width:0;height:0;}
+.switch label{position:absolute;inset:0;background:#d7dae8;border-radius:24px;cursor:pointer;transition:.2s;}
+.switch label:before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;
+  border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.switch input:checked+label{background:var(--green);}
+.switch input:checked+label:before{transform:translateX(-18px);}
+.adv-toggle{
+  display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--muted);
+  cursor:pointer;margin:6px 0 14px;user-select:none;
+}
+.adv-toggle svg{width:13px;height:13px;transition:.2s;}
+.adv-box{display:none;}
+.modal-foot{
+  display:flex;gap:10px;padding:18px 24px;border-top:1px solid var(--line);position:sticky;bottom:0;
+  background:#fff;border-radius:0 0 20px 20px;
+}
+.modal-foot .btn-gold{flex:1;justify-content:center;}
+.modal-foot .btn-outline{flex:1;text-align:center;}
+.field-err{color:var(--red);font-size:11.5px;margin-top:5px;display:none;}
+
+/* lookup */
+.lookup-result{margin-top:16px;padding:16px;border:1.5px solid var(--line);border-radius:13px;display:none;}
+.lookup-result .lr-row{display:flex;justify-content:space-between;padding:7px 0;font-size:13px;border-bottom:1px dashed var(--line);}
+.lookup-result .lr-row:last-child{border-bottom:none;}
+.lookup-result .lr-row b{color:var(--navy-800);}
+
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--navy-800);color:#fff;padding:13px 22px;border-radius:12px;font-size:13px;font-weight:600;
+  box-shadow:0 15px 35px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:.25s;z-index:200;display:flex;align-items:center;gap:8px;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast svg{width:16px;height:16px;flex-shrink:0;}
+.toast.err{background:var(--red);}
+
+@media (max-width:900px){
+  .sidebar{position:fixed;right:0;transform:translateX(100%);transition:.25s;z-index:90;box-shadow:-10px 0 30px rgba(0,0,0,.2);}
+  .sidebar.open{transform:translateX(0);}
+  .main{padding:18px 16px 60px;}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .grid2{grid-template-columns:1fr;}
+  .menu-btn{display:flex!important;}
+}
+.menu-btn{display:none;background:#fff;border:1.5px solid var(--line);width:38px;height:38px;border-radius:10px;
+  align-items:center;justify-content:center;cursor:pointer;color:var(--navy-800);}
+.menu-btn svg{width:18px;height:18px;}
+@media (max-width:640px){
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .exc-row{flex-wrap:wrap;}
+  .exc-price{margin-right:auto;}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= LOGIN ================= -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <svg viewBox="0 0 48 48" fill="none"><path d="M24 4C13 4 6 13 6 24c0 13 18 20 18 20s18-7 18-20C42 13 35 4 24 4Z" fill="#0f1b44"/><path d="M24 4C13 4 6 13 6 24c0 13 18 20 18 20s18-7 18-20C42 13 35 4 24 4Z" stroke="#e8a33d" stroke-width="2"/><circle cx="24" cy="22" r="7" fill="#e8a33d"/></svg>
+      <div class="name">Discover<span>Sharm</span></div>
+    </div>
+    <div class="login-sub">لوحة تحكم إدارة الرحلات — تسجيل دخول الأدمن</div>
+
+    <div id="loginErr" class="login-err"></div>
+
+    <div class="config-box" id="configBox">
+      <div class="toggle-row" id="configToggle">
+        <span>⚙ إعدادات الاتصال بالوركر</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" id="configChevron"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div id="configFields" style="margin-top:12px;">
+        <div class="field">
+          <label>رابط الـ Worker (API Base URL)</label>
+          <input id="workerBase" type="text" placeholder="https://api.discover-sharm.com">
+          <small>لازم يتحفظ عندك في نفس الدومين المسموح به في CORS جوّه الوركر (ALLOWED_ORIGINS)، أو تضيف دومين اللوحة دي لنفس القايمة.</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>البريد الإلكتروني</label>
+      <input id="loginEmail" type="email" placeholder="admin@discover-sharm.com" autocomplete="username">
+    </div>
+    <div class="field">
+      <label>كلمة المرور</label>
+      <input id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn-primary" id="loginBtn">تسجيل الدخول</button>
+    <button class="btn-ghost-link" id="skipLogin">تصفح بدون تسجيل دخول (قراءة فقط)</button>
+  </div>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="app">
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <svg viewBox="0 0 48 48" fill="none"><path d="M24 4C13 4 6 13 6 24c0 13 18 20 18 20s18-7 18-20C42 13 35 4 24 4Z" fill="#132353"/><path d="M24 4C13 4 6 13 6 24c0 13 18 20 18 20s18-7 18-20C42 13 35 4 24 4Z" stroke="#e8a33d" stroke-width="2"/><circle cx="24" cy="22" r="7" fill="#e8a33d"/></svg>
+      <div class="brand-text">Discover<span>Sharm</span><small>إدارة الرحلات</small></div>
+    </div>
+    <nav class="nav">
+      <div class="nav-item active" data-view="dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>
+        <span>الرئيسية</span>
+      </div>
+      <div class="nav-item" data-view="excursions">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>
+        <span>الرحلات</span>
+      </div>
+      <div class="nav-item" data-view="bookings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>
+        <span>البحث عن حجز</span>
+      </div>
+      <div class="nav-item" data-view="reviews">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>
+        <span>التقييمات</span>
+      </div>
+      <div class="nav-item" data-view="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1-1.6 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>
+        <span>الإعدادات</span>
+      </div>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="sidebar-user">
+        <div class="avatar-mini" id="avatarMini">؟</div>
+        <div>
+          <div style="font-size:12.5px;font-weight:700;">الأدمن</div>
+          <div class="u-email" id="userEmail">غير مسجل دخول</div>
+        </div>
+      </div>
+      <button class="logout-btn" id="logoutBtn">تسجيل الخروج</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="menu-btn" id="menuBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+        <div>
+          <h1 id="pageTitle">الرئيسية</h1>
+          <div class="desc" id="pageDesc">نظرة عامة على رحلات ديسكفر شرم</div>
+        </div>
+      </div>
+      <div class="top-actions" id="topActions">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+          <input id="searchInput" placeholder="ابحث عن رحلة...">
+        </div>
+        <button class="btn-gold" id="addExcBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          إضافة رحلة
+        </button>
+      </div>
+    </div>
+
+    <div id="bannerZone"></div>
+
+    <!-- DASHBOARD VIEW -->
+    <div id="view-dashboard" class="view">
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-top"><div class="stat-icon" style="background:var(--amber-bg);"><svg viewBox="0 0 24 24" fill="none" stroke="#e8a33d" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg></div></div>
+          <div class="stat-num" id="statTotal">—</div>
+          <div class="stat-label">إجمالي الرحلات</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-top"><div class="stat-icon" style="background:var(--green-bg);"><svg viewBox="0 0 24 24" fill="none" stroke="#1fa871" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></div></div>
+          <div class="stat-num" id="statActive">—</div>
+          <div class="stat-label">رحلات فعّالة</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-top"><div class="stat-icon" style="background:var(--blue-bg);"><svg viewBox="0 0 24 24" fill="none" stroke="#3b6fe0" stroke-width="2"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg></div></div>
+          <div class="stat-num" id="statCats">—</div>
+          <div class="stat-label">الفئات المختلفة</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-top"><div class="stat-icon" style="background:var(--purple-bg);"><svg viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div></div>
+          <div class="stat-num" id="statAvgPrice">—</div>
+          <div class="stat-label">متوسط السعر</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h3>أحدث الرحلات</h3>
+          <button class="btn-outline" id="viewAllBtn">عرض الكل</button>
+        </div>
+        <div class="exc-list" id="recentList"></div>
+      </div>
+    </div>
+
+    <!-- EXCURSIONS VIEW -->
+    <div id="view-excursions" class="view" style="display:none;">
+      <div class="panel">
+        <div class="filter-chips" id="categoryChips"></div>
+        <div class="exc-list" id="fullList"></div>
+      </div>
+    </div>
+
+    <!-- BOOKINGS LOOKUP VIEW -->
+    <div id="view-bookings" class="view" style="display:none;">
+      <div class="panel">
+        <div class="panel-head"><h3>البحث عن حجز برقم الحجز</h3></div>
+        <div class="field">
+          <label>رقم الحجز (Booking Reference)</label>
+          <input id="bookingRefInput" placeholder="مثال: exc_1a2b3c">
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn-gold" id="lookupBtn" style="flex:1;justify-content:center;">بحث</button>
+          <button class="btn-outline" id="cancelBookingBtn" style="flex:1;">إلغاء الحجز</button>
+        </div>
+        <div class="lookup-result" id="lookupResult"></div>
+      </div>
+    </div>
+
+    <!-- REVIEWS VIEW -->
+    <div id="view-reviews" class="view" style="display:none;">
+      <div class="panel">
+        <div class="panel-head"><h3>تقييمات رحلة معيّنة</h3></div>
+        <div class="field">
+          <label>اختر الرحلة</label>
+          <select id="reviewExcSelect"><option value="">اختر رحلة...</option></select>
+        </div>
+        <div id="reviewsList" style="margin-top:16px;"></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS VIEW -->
+    <div id="view-settings" class="view" style="display:none;">
+      <div class="panel">
+        <div class="panel-head"><h3>إعدادات الاتصال</h3></div>
+        <div class="field">
+          <label>رابط الـ Worker (API Base URL)</label>
+          <input id="settingsWorkerBase" type="text" placeholder="https://api.discover-sharm.com">
+        </div>
+        <button class="btn-gold" id="saveSettingsBtn">حفظ</button>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>حالة الجلسة</h3></div>
+        <div style="font-size:13px;color:var(--muted);line-height:2;">
+          البريد: <b id="settingsEmail" style="color:var(--navy-800);">—</b><br>
+          حالة تسجيل الدخول: <b id="settingsAuthState" style="color:var(--navy-800);">—</b>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+</div>
+
+<!-- ================= MODAL: ADD/EDIT EXCURSION ================= -->
+<div class="overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modalTitle">إضافة رحلة جديدة</h3>
+      <button class="modal-close" id="modalCloseBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="switch-row">
+        <span>الرحلة فعّالة ومتاحة للحجز</span>
+        <div class="switch"><input type="checkbox" id="f_active" checked><label for="f_active"></label></div>
+      </div>
+
+      <div class="field"><label>اسم الرحلة *</label><input id="f_title"><div class="field-err" id="err_title">اسم الرحلة مطلوب</div></div>
+      <div class="grid2">
+        <div class="field"><label>الفئة</label><input id="f_category" placeholder="غوص، سفاري، رحلة بحرية..."></div>
+        <div class="field"><label>مدة الرحلة</label><input id="f_duration" placeholder="مثال: 6 ساعات"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>السعر *</label><input id="f_price" type="number" min="0" step="0.01"><div class="field-err" id="err_price">السعر مطلوب</div></div>
+        <div class="field"><label>العملة</label><input id="f_currency" placeholder="EGP / USD"></div>
+      </div>
+      <div class="field"><label>رابط الصورة</label><input id="f_image" placeholder="https://..."></div>
+      <div class="field"><label>مكان الانطلاق</label><input id="f_location" placeholder="شرم الشيخ..."></div>
+      <div class="field"><label>الوصف</label><textarea id="f_description" rows="3"></textarea></div>
+
+      <div class="adv-toggle" id="advToggle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+        <span>تعديل متقدم (كل الحقول الأخرى كـ JSON)</span>
+      </div>
+      <div class="adv-box" id="advBox">
+        <div class="field">
+          <label>باقي بيانات الرحلة (JSON)</label>
+          <textarea id="f_rawJson" rows="6" style="font-family:monospace;font-size:12px;"></textarea>
+          <small>أي حقول موجودة في ملف excursions.json الأصلي ومش موجودة فوق (زي highlights أو included) هتتحفظ هنا وترجع زي ما هي.</small>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-outline" id="modalCancelBtn">إلغاء</button>
+      <button class="btn-gold" id="modalSaveBtn">حفظ الرحلة</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ---------------- State ----------------
+let WORKER_BASE = '';
+let ID_TOKEN = '';
+let USER_EMAIL = '';
+let EXCURSIONS = [];       // normalized array of raw items (kept as-is, we mutate in place)
+let LIST_KEY = null;       // if source JSON is {excursions:[...]}, remember the wrapper key
+let SHA = null;
+let CURRENT_EDIT_INDEX = null;
+let ACTIVE_CATEGORY = 'الكل';
+
+function loadLocal(){
+  try{
+    WORKER_BASE = localStorage.getItem('ds_admin_worker_base') || '';
+    const sess = JSON.parse(localStorage.getItem('ds_admin_session') || 'null');
+    if(sess){ ID_TOKEN = sess.idToken; USER_EMAIL = sess.email; }
+  }catch(e){}
+}
+function saveSession(idToken, email){
+  try{ localStorage.setItem('ds_admin_session', JSON.stringify({idToken, email})); }catch(e){}
+}
+function saveWorkerBase(v){
+  try{ localStorage.setItem('ds_admin_worker_base', v); }catch(e){}
+}
+function clearSession(){
+  try{ localStorage.removeItem('ds_admin_session'); }catch(e){}
+  ID_TOKEN=''; USER_EMAIL='';
+}
+
+function toast(msg, isErr){
+  const t = document.getElementById('toast');
+  t.innerHTML = (isErr
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>') + '<span>'+msg+'</span>';
+  t.className = 'toast show' + (isErr ? ' err' : '');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=> t.className='toast', 3200);
+}
+
+function banner(html, type){
+  document.getElementById('bannerZone').innerHTML = html ? `
+    <div class="banner ${type||'warn'}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg>
+      <div>${html}</div>
+    </div>` : '';
+}
+
+// ---------------- API helpers ----------------
+async function apiFetch(pathAndQuery, options={}){
+  if(!WORKER_BASE) throw new Error('لازم تحدد رابط الـ Worker الأول من الإعدادات');
+  const url = WORKER_BASE.replace(/\/$/,'') + pathAndQuery;
+  let res;
+  try{
+    res = await fetch(url, options);
+  }catch(e){
+    throw new Error('تعذر الاتصال بالوركر — على الأغلب مشكلة CORS. لازم تضيف دومين اللوحة دي لقايمة ALLOWED_ORIGINS في الوركر بتاعك.');
+  }
+  let data;
+  try{ data = await res.json(); }catch(e){ data = {}; }
+  if(!res.ok){
+    throw new Error(data.error || ('فشل الطلب: ' + res.status));
+  }
+  return data;
+}
+
+async function fetchExcursions(){
+  const data = await apiFetch('/api/file?file=excursions.json', {method:'GET'});
+  SHA = data.sha;
+  let parsed;
+  try{ parsed = JSON.parse(data.content); }catch(e){ throw new Error('ملف excursions.json مش JSON صحيح'); }
+  if(Array.isArray(parsed)){
+    EXCURSIONS = parsed; LIST_KEY = null;
+  } else if(parsed && typeof parsed === 'object'){
+    const arrKey = Object.keys(parsed).find(k => Array.isArray(parsed[k]));
+    if(arrKey){ EXCURSIONS = parsed[arrKey]; LIST_KEY = arrKey; }
+    else { EXCURSIONS = []; LIST_KEY = '__raw__'; window.__rawExcObj = parsed; }
+  } else {
+    EXCURSIONS = [];
+  }
+}
+
+async function saveExcursions(message){
+  if(!ID_TOKEN) throw new Error('لازم تسجل دخول كأدمن عشان تحفظ تعديلات');
+  let contentObj;
+  if(LIST_KEY && LIST_KEY !== '__raw__'){
+    contentObj = { ...(window.__rawExcObj||{}) };
+    contentObj[LIST_KEY] = EXCURSIONS;
+  } else {
+    contentObj = EXCURSIONS;
+  }
+  const body = {
+    file: 'excursions.json',
+    content: JSON.stringify(contentObj, null, 2),
+    sha: SHA,
+    message: message || 'Update excursions.json',
+    idToken: ID_TOKEN
+  };
+  const data = await apiFetch('/api/file', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(body)
+  });
+  if(data.sha) SHA = data.sha;
+  return data;
+}
+
+// ---------------- Field helpers (schema-flexible) ----------------
+function pick(item, keys, fallback){
+  for(const k of keys){ if(item && item[k] !== undefined && item[k] !== null && item[k] !== '') return item[k]; }
+  return fallback;
+}
+function getId(item){ return pick(item, ['id','_id','slug','excursionId']); }
+function getTitle(item){ return pick(item, ['title','name','excursionName'], 'بدون اسم'); }
+function getPrice(item){ return pick(item, ['price','priceFrom','basePrice','cost'], null); }
+function getCurrency(item){ return pick(item, ['currency','currencyCode'], 'EGP'); }
+function getCategory(item){ return pick(item, ['category','type','tag'], 'عام'); }
+function getDuration(item){ return pick(item, ['duration','durationText','length'], ''); }
+function getImage(item){
+  let img = pick(item, ['image','imageUrl','photo','thumbnail','cover'], null);
+  if(!img && Array.isArray(item.images) && item.images.length) img = item.images[0];
+  return img;
+}
+function getLocation(item){ return pick(item, ['location','meetingPoint','from'], ''); }
+function getDescription(item){ return pick(item, ['description','desc','about'], ''); }
+function getActive(item){
+  const v = pick(item, ['active','isActive','available','status'], true);
+  if(typeof v === 'string') return !['inactive','unavailable','false','off','disabled'].includes(v.toLowerCase());
+  return !!v;
+}
+const KNOWN_KEYS = ['id','_id','slug','excursionId','title','name','excursionName','price','priceFrom','basePrice','cost',
+  'currency','currencyCode','category','type','tag','duration','durationText','length','image','imageUrl','photo',
+  'thumbnail','cover','images','location','meetingPoint','from','description','desc','about','active','isActive','available','status'];
+
+// ---------------- Rendering ----------------
+function excRowHTML(item, idx){
+  const img = getImage(item);
+  const active = getActive(item);
+  const price = getPrice(item);
+  const cur = getCurrency(item);
+  return `
+  <div class="exc-row" data-idx="${idx}">
+    <div class="exc-thumb">
+      ${img ? `<img src="${escapeHtml(img)}" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;#e8a33d&quot; stroke-width=&quot;2&quot;><path d=&quot;M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z&quot;/></svg>'">` :
+      `<svg viewBox="0 0 24 24" fill="none" stroke="#e8a33d" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>`}
+    </div>
+    <div class="exc-info">
+      <div class="exc-title">${escapeHtml(getTitle(item))}</div>
+      <div class="exc-meta">
+        <span>${escapeHtml(getCategory(item))}</span>
+        ${getDuration(item) ? `<span>· ${escapeHtml(getDuration(item))}</span>` : ''}
+        <span class="pill ${active?'green':'red'}">${active?'فعّالة':'غير فعّالة'}</span>
+      </div>
+    </div>
+    <div class="exc-price">${price!==null? Number(price).toLocaleString('en-US') + ' ' + escapeHtml(cur) : '—'}<small>للفرد</small></div>
+    <div class="row-actions">
+      <button class="icon-btn edit-btn" data-idx="${idx}" title="تعديل">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>
+      </button>
+      <button class="icon-btn danger del-btn" data-idx="${idx}" title="حذف">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6"/></svg>
+      </button>
+    </div>
+  </div>`;
+}
+function escapeHtml(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function emptyStateHTML(msg){
+  return `<div class="empty-state">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>
+    <h4>مفيش رحلات لسه</h4><p>${msg}</p>
+  </div>`;
+}
+
+function currentFiltered(){
+  const q = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+  return EXCURSIONS
+    .map((item,idx)=>({item, idx}))
+    .filter(({item}) => ACTIVE_CATEGORY==='الكل' || getCategory(item)===ACTIVE_CATEGORY)
+    .filter(({item}) => !q || getTitle(item).toLowerCase().includes(q) || getCategory(item).toLowerCase().includes(q));
+}
+
+function renderDashboard(){
+  document.getElementById('statTotal').textContent = EXCURSIONS.length;
+  const activeCount = EXCURSIONS.filter(getActive).length;
+  document.getElementById('statActive').textContent = activeCount;
+  const cats = new Set(EXCURSIONS.map(getCategory));
+  document.getElementById('statCats').textContent = cats.size;
+  const prices = EXCURSIONS.map(getPrice).filter(p=>p!==null && !isNaN(p));
+  const avg = prices.length ? Math.round(prices.reduce((a,b)=>a+Number(b),0)/prices.length) : null;
+  document.getElementById('statAvgPrice').textContent = avg!==null ? avg.toLocaleString('en-US') : '—';
+
+  const recent = EXCURSIONS.map((item,idx)=>({item,idx})).slice(-5).reverse();
+  document.getElementById('recentList').innerHTML = recent.length
+    ? recent.map(({item,idx})=>excRowHTML(item,idx)).join('')
+    : emptyStateHTML('اضغط "إضافة رحلة" لبداية إضافة رحلاتك.');
+}
+
+function renderCategoryChips(){
+  const cats = ['الكل', ...new Set(EXCURSIONS.map(getCategory))];
+  document.getElementById('categoryChips').innerHTML = cats.map(c =>
+    `<div class="chip ${c===ACTIVE_CATEGORY?'active':''}" data-cat="${escapeHtml(c)}">${escapeHtml(c)}</div>`
+  ).join('');
+}
+
+function renderFullList(){
+  renderCategoryChips();
+  const filtered = currentFiltered();
+  document.getElementById('fullList').innerHTML = filtered.length
+    ? filtered.map(({item,idx})=>excRowHTML(item,idx)).join('')
+    : emptyStateHTML('جرّب كلمة بحث تانية أو فئة تانية.');
+}
+
+function renderReviewSelect(){
+  const sel = document.getElementById('reviewExcSelect');
+  sel.innerHTML = '<option value="">اختر رحلة...</option>' + EXCURSIONS.map(item =>
+    `<option value="${escapeHtml(getId(item)||'')}">${escapeHtml(getTitle(item))}</option>`
+  ).join('');
+}
+
+function renderAll(){
+  renderDashboard();
+  renderFullList();
+  renderReviewSelect();
+  attachRowHandlers();
+}
+
+function attachRowHandlers(){
+  document.querySelectorAll('.edit-btn').forEach(b=>b.onclick = ()=>openEditModal(+b.dataset.idx));
+  document.querySelectorAll('.del-btn').forEach(b=>b.onclick = ()=>deleteExcursion(+b.dataset.idx));
+}
+
+// ---------------- Modal ----------------
+function openAddModal(){
+  CURRENT_EDIT_INDEX = null;
+  document.getElementById('modalTitle').textContent = 'إضافة رحلة جديدة';
+  ['f_title','f_category','f_duration','f_price','f_currency','f_image','f_location','f_description','f_rawJson'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f_active').checked = true;
+  document.getElementById('err_title').style.display='none';
+  document.getElementById('err_price').style.display='none';
+  document.getElementById('modalOverlay').style.display='flex';
+}
+function openEditModal(idx){
+  CURRENT_EDIT_INDEX = idx;
+  const item = EXCURSIONS[idx];
+  document.getElementById('modalTitle').textContent = 'تعديل: ' + getTitle(item);
+  document.getElementById('f_title').value = getTitle(item)==='بدون اسم' ? '' : getTitle(item);
+  document.getElementById('f_category').value = getCategory(item)==='عام' ? '' : getCategory(item);
+  document.getElementById('f_duration').value = getDuration(item);
+  document.getElementById('f_price').value = getPrice(item) ?? '';
+  document.getElementById('f_currency').value = getCurrency(item);
+  document.getElementById('f_image').value = getImage(item) || '';
+  document.getElementById('f_location').value = getLocation(item);
+  document.getElementById('f_description').value = getDescription(item);
+  document.getElementById('f_active').checked = getActive(item);
+  const rest = {};
+  Object.keys(item||{}).forEach(k=>{ if(!KNOWN_KEYS.includes(k)) rest[k] = item[k]; });
+  document.getElementById('f_rawJson').value = Object.keys(rest).length ? JSON.stringify(rest, null, 2) : '';
+  document.getElementById('err_title').style.display='none';
+  document.getElementById('err_price').style.display='none';
+  document.getElementById('modalOverlay').style.display='flex';
+}
+function closeModal(){ document.getElementById('modalOverlay').style.display='none'; }
+
+async function saveModal(){
+  const title = document.getElementById('f_title').value.trim();
+  const priceRaw = document.getElementById('f_price').value;
+  let ok = true;
+  if(!title){ document.getElementById('err_title').style.display='block'; ok=false; } else document.getElementById('err_title').style.display='none';
+  if(priceRaw===''){ document.getElementById('err_price').style.display='block'; ok=false; } else document.getElementById('err_price').style.display='none';
+  if(!ok) return;
+
+  let extra = {};
+  const rawTxt = document.getElementById('f_rawJson').value.trim();
+  if(rawTxt){
+    try{ extra = JSON.parse(rawTxt); }
+    catch(e){ toast('صيغة الـ JSON في "تعديل متقدم" غلط', true); return; }
+  }
+
+  const base = CURRENT_EDIT_INDEX!==null ? {...EXCURSIONS[CURRENT_EDIT_INDEX]} : {};
+  const item = {
+    ...base, ...extra,
+    id: base.id || base._id || ('exc_' + Date.now().toString(36) + Math.random().toString(36).slice(2,7)),
+    title: title,
+    category: document.getElementById('f_category').value.trim() || 'عام',
+    duration: document.getElementById('f_duration').value.trim(),
+    price: Number(priceRaw),
+    currency: document.getElementById('f_currency').value.trim() || 'EGP',
+    image: document.getElementById('f_image').value.trim(),
+    location: document.getElementById('f_location').value.trim(),
+    description: document.getElementById('f_description').value.trim(),
+    active: document.getElementById('f_active').checked
+  };
+  // drop stray alias keys inherited from base to avoid duplicate meaning
+  ['name','excursionName','priceFrom','basePrice','cost','currencyCode','type','tag','durationText','length',
+   'imageUrl','photo','thumbnail','cover','meetingPoint','from','desc','about','isActive','available','status'
+  ].forEach(k=>{ if(k in item) delete item[k]; });
+
+  if(CURRENT_EDIT_INDEX!==null){ EXCURSIONS[CURRENT_EDIT_INDEX] = item; }
+  else { EXCURSIONS.push(item); }
+
+  const saveBtn = document.getElementById('modalSaveBtn');
+  saveBtn.disabled = true; saveBtn.textContent = 'جارِ الحفظ...';
+  try{
+    await saveExcursions(`${CURRENT_EDIT_INDEX!==null?'Update':'Add'} excursion: ${title}`);
+    toast('تم حفظ الرحلة بنجاح ✓');
+    closeModal();
+    renderAll();
+  }catch(e){
+    toast(e.message, true);
+  }finally{
+    saveBtn.disabled=false; saveBtn.textContent='حفظ الرحلة';
+  }
+}
+
+async function deleteExcursion(idx){
+  const item = EXCURSIONS[idx];
+  if(!confirm(`متأكد إنك عايز تحذف "${getTitle(item)}"؟`)) return;
+  const backup = EXCURSIONS.slice();
+  EXCURSIONS.splice(idx,1);
+  try{
+    await saveExcursions(`Delete excursion: ${getTitle(item)}`);
+    toast('تم الحذف');
+    renderAll();
+  }catch(e){
+    EXCURSIONS = backup;
+    toast(e.message, true);
+  }
+}
+
+// ---------------- Bookings lookup ----------------
+async function lookupBooking(){
+  const ref = document.getElementById('bookingRefInput').value.trim();
+  const box = document.getElementById('lookupResult');
+  if(!ref){ toast('اكتب رقم الحجز الأول', true); return; }
+  box.style.display='block';
+  box.innerHTML = '<div class="skeleton" style="height:120px;"></div>';
+  try{
+    const data = await apiFetch('/api/hotels/booking/' + encodeURIComponent(ref), {method:'GET'});
+    const b = data.booking;
+    box.innerHTML = Object.entries(b).map(([k,v])=>
+      `<div class="lr-row"><span>${escapeHtml(k)}</span><b>${escapeHtml(typeof v==='object'?JSON.stringify(v):v)}</b></div>`
+    ).join('');
+  }catch(e){
+    box.innerHTML = `<div style="color:var(--red);font-size:13px;">${escapeHtml(e.message)}</div>`;
+  }
+}
+async function cancelBooking(){
+  const ref = document.getElementById('bookingRefInput').value.trim();
+  if(!ref){ toast('اكتب رقم الحجز الأول', true); return; }
+  if(!confirm('متأكد إنك عايز تلغي الحجز ده؟')) return;
+  try{
+    await apiFetch('/api/hotels/booking/' + encodeURIComponent(ref), {method:'DELETE'});
+    toast('تم إلغاء الحجز');
+    lookupBooking();
+  }catch(e){ toast(e.message, true); }
+}
+
+// ---------------- Reviews ----------------
+async function loadReviews(excId){
+  const box = document.getElementById('reviewsList');
+  if(!excId){ box.innerHTML=''; return; }
+  box.innerHTML = '<div class="skeleton"></div>';
+  try{
+    const data = await apiFetch(`/api/reviews?type=excursion&id=${encodeURIComponent(excId)}`, {method:'GET'});
+    const reviews = data.reviews || [];
+    box.innerHTML = reviews.length ? reviews.map(r=>`
+      <div style="padding:14px;border:1.5px solid var(--line);border-radius:12px;margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;">
+          <b style="font-size:13px;">${escapeHtml(r.name)}</b>
+          <span style="color:var(--gold);font-weight:700;font-size:12.5px;">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span>
+        </div>
+        <div style="font-size:12.5px;color:var(--muted);margin-top:6px;">${escapeHtml(r.comment)}</div>
+      </div>
+    `).join('') : emptyStateHTML('مفيش تقييمات لسه على الرحلة دي.');
+  }catch(e){
+    box.innerHTML = `<div style="color:var(--red);font-size:13px;">${escapeHtml(e.message)}</div>`;
+  }
+}
+
+// ---------------- Views / nav ----------------
+const VIEW_META = {
+  dashboard:{title:'الرئيسية', desc:'نظرة عامة على رحلات ديسكفر شرم', actions:true},
+  excursions:{title:'الرحلات', desc:'كل الرحلات — إضافة وتعديل وحذف', actions:true},
+  bookings:{title:'البحث عن حجز', desc:'دوّر على حجز برقمه أو ألغيه', actions:false},
+  reviews:{title:'التقييمات', desc:'شوف تقييمات العملاء لكل رحلة', actions:false},
+  settings:{title:'الإعدادات', desc:'إعدادات الاتصال بالوركر والجلسة', actions:false},
+};
+function showView(name){
+  document.querySelectorAll('.view').forEach(v=>v.style.display='none');
+  document.getElementById('view-'+name).style.display='block';
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active', n.dataset.view===name));
+  const meta = VIEW_META[name];
+  document.getElementById('pageTitle').textContent = meta.title;
+  document.getElementById('pageDesc').textContent = meta.desc;
+  document.getElementById('topActions').style.display = meta.actions ? 'flex' : 'none';
+  document.getElementById('sidebar').classList.remove('open');
+  if(name==='settings'){
+    document.getElementById('settingsWorkerBase').value = WORKER_BASE;
+    document.getElementById('settingsEmail').textContent = USER_EMAIL || '—';
+    document.getElementById('settingsAuthState').textContent = ID_TOKEN ? 'مسجّل دخول كأدمن' : 'قراءة فقط (مش مسجل دخول)';
+  }
+}
+
+// ---------------- Boot ----------------
+async function bootApp(){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('userEmail').textContent = USER_EMAIL || 'قراءة فقط';
+  document.getElementById('avatarMini').textContent = USER_EMAIL ? USER_EMAIL[0].toUpperCase() : '؟';
+  if(!ID_TOKEN){
+    banner('انت داخل في وضع "قراءة فقط". تقدر تشوف الرحلات بس مش هتقدر تحفظ أي تعديل غير لو سجلت دخول كأدمن.', 'warn');
+  }
+  document.getElementById('recentList').innerHTML = '<div class="skeleton"></div><div class="skeleton"></div>';
+  try{
+    await fetchExcursions();
+    renderAll();
+  }catch(e){
+    banner('تعذر تحميل بيانات الرحلات: ' + escapeHtml(e.message) + (WORKER_BASE ? '' : ' — حدد رابط الوركر من الإعدادات.'), 'err');
+    document.getElementById('recentList').innerHTML = emptyStateHTML('اتأكد إن رابط الوركر واتصال الإنترنت تمام.');
+    document.getElementById('fullList').innerHTML = '';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  loadLocal();
+  document.getElementById('workerBase').value = WORKER_BASE;
+
+  document.getElementById('configToggle').onclick = ()=>{
+    const f = document.getElementById('configFields');
+    const open = f.style.display !== 'none';
+    f.style.display = open ? 'none' : 'block';
+    document.getElementById('configChevron').style.transform = open ? '' : 'rotate(180deg)';
+  };
+
+  if(ID_TOKEN){ bootApp(); }
+
+  document.getElementById('loginBtn').onclick = async ()=>{
+    const base = document.getElementById('workerBase').value.trim();
+    const email = document.getElementById('loginEmail').value.trim();
+    const pass = document.getElementById('loginPass').value;
+    const errBox = document.getElementById('loginErr');
+    errBox.style.display='none';
+    if(!base){ errBox.textContent='حدد رابط الـ Worker الأول.'; errBox.style.display='block'; return; }
+    if(!email || !pass){ errBox.textContent='اكتب البريد وكلمة المرور.'; errBox.style.display='block'; return; }
+    WORKER_BASE = base; saveWorkerBase(base);
+    const btn = document.getElementById('loginBtn');
+    btn.disabled = true; btn.textContent='جارِ الدخول...';
+    try{
+      const data = await apiFetch('/api/auth/signin', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({email, password: pass})
+      });
+      ID_TOKEN = data.idToken; USER_EMAIL = data.user?.email || email;
+      saveSession(ID_TOKEN, USER_EMAIL);
+      bootApp();
+    }catch(e){
+      errBox.textContent = e.message; errBox.style.display='block';
+    }finally{
+      btn.disabled=false; btn.textContent='تسجيل الدخول';
+    }
+  };
+
+  document.getElementById('skipLogin').onclick = ()=>{
+    const base = document.getElementById('workerBase').value.trim();
+    if(!base){ document.getElementById('loginErr').textContent='حدد رابط الـ Worker الأول.'; document.getElementById('loginErr').style.display='block'; return; }
+    WORKER_BASE = base; saveWorkerBase(base);
+    bootApp();
+  };
+
+  document.getElementById('logoutBtn').onclick = ()=>{
+    clearSession();
+    location.reload();
+  };
+
+  document.getElementById('menuBtn').onclick = ()=> document.getElementById('sidebar').classList.toggle('open');
+
+  document.querySelectorAll('.nav-item').forEach(n=> n.onclick = ()=> showView(n.dataset.view));
+
+  document.getElementById('addExcBtn').onclick = openAddModal;
+  document.getElementById('modalCloseBtn').onclick = closeModal;
+  document.getElementById('modalCancelBtn').onclick = closeModal;
+  document.getElementById('modalSaveBtn').onclick = saveModal;
+  document.getElementById('modalOverlay').onclick = (e)=>{ if(e.target.id==='modalOverlay') closeModal(); };
+
+  document.getElementById('advToggle').onclick = ()=>{
+    const box = document.getElementById('advBox');
+    const open = box.style.display==='block';
+    box.style.display = open ? 'none' : 'block';
+    document.getElementById('advToggle').querySelector('svg').style.transform = open ? '' : 'rotate(180deg)';
+  };
+
+  document.getElementById('viewAllBtn').onclick = ()=> showView('excursions');
+  document.getElementById('searchInput').oninput = ()=>{ renderFullList(); attachRowHandlers(); };
+  document.getElementById('categoryChips').onclick = (e)=>{
+    const chip = e.target.closest('.chip'); if(!chip) return;
+    ACTIVE_CATEGORY = chip.dataset.cat; renderFullList(); attachRowHandlers();
+  };
+
+  document.getElementById('lookupBtn').onclick = lookupBooking;
+  document.getElementById('cancelBookingBtn').onclick = cancelBooking;
+  document.getElementById('reviewExcSelect').onchange = (e)=> loadReviews(e.target.value);
+
+  document.getElementById('saveSettingsBtn').onclick = ()=>{
+    const v = document.getElementById('settingsWorkerBase').value.trim();
+    WORKER_BASE = v; saveWorkerBase(v);
+    toast('تم حفظ رابط الوركر');
+  };
+});
+</script>
+</body>
+</html>
