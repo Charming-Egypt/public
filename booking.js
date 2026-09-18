@@ -72,29 +72,94 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowRight') lightboxStep(1);
 });
 
-function submitContactForm(e) {
+async function submitContactForm(e) {
   e.preventDefault();
+  const btn = e.target.querySelector('button[type="submit"]');
   const name = document.getElementById('contactName').value;
   const email = document.getElementById('contactEmail').value;
   const message = document.getElementById('contactMessage').value;
-  const subject = encodeURIComponent(`Website inquiry from ${name}`);
-  const body = encodeURIComponent(`${message}\n\n— ${name} (${email})`);
-  window.location.href = `mailto:hello@discover-sharm.com?subject=${subject}&body=${body}`;
-  toast('Opening your email app…', 'success');
+  if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+  try {
+    await apiFetch('/api/contact', { method: 'POST', body: JSON.stringify({ name, email, message }) }, true);
+    toast('Message sent — we\'ll get back to you soon!', 'success');
+    e.target.reset();
+  } catch (err) {
+    toast(err.message || 'Could not send your message', 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Send Message'; }
+  }
 }
 
-function submitPartnerForm(e) {
+const partnerDocSlots = [
+  { key: 'commercialRegistration', label: 'Commercial Registration' },
+  { key: 'taxCard', label: 'Tax Card' },
+  { key: 'ownerId', label: 'Owner / Manager ID' },
+  { key: 'license', label: 'Tourism License (if applicable)' }
+];
+const partnerDocs = {};
+
+function renderPartnerDocSlots() {
+  const el = document.getElementById('partnerDocSlots');
+  if (!el) return;
+  el.innerHTML = partnerDocSlots.map(slot => {
+    const doc = partnerDocs[slot.key];
+    return `
+      <div class="partner-doc-slot">
+        <input type="file" id="partnerDoc_${slot.key}" accept="image/*,.pdf" class="hidden" onchange="handlePartnerDocSelect('${slot.key}', this.files[0])">
+        <label class="partner-doc-label">${slot.label}</label>
+        ${doc
+          ? `<div class="partner-doc-filled" onclick="document.getElementById('partnerDoc_${slot.key}').click()">
+               <i class="fa-solid ${doc.isImage ? 'fa-image' : 'fa-file-pdf'}"></i>
+               <span>${esc(doc.name)}</span>
+               <button type="button" onclick="event.stopPropagation(); removePartnerDoc('${slot.key}')"><i class="fa-solid fa-xmark"></i></button>
+             </div>`
+          : `<button type="button" class="partner-doc-empty" onclick="document.getElementById('partnerDoc_${slot.key}').click()"><i class="fa-solid fa-cloud-arrow-up"></i> Upload</button>`}
+      </div>`;
+  }).join('');
+}
+
+function handlePartnerDocSelect(key, file) {
+  if (!file) return;
+  if (file.size > 4 * 1024 * 1024) { toast('Please keep each file under 4MB', 'error'); return; }
+  const reader = new FileReader();
+  reader.onload = () => {
+    partnerDocs[key] = { name: file.name, data: reader.result, isImage: file.type.startsWith('image/') };
+    renderPartnerDocSlots();
+  };
+  reader.readAsDataURL(file);
+}
+
+function removePartnerDoc(key) {
+  delete partnerDocs[key];
+  renderPartnerDocSlots();
+}
+
+async function submitPartnerForm(e) {
   e.preventDefault();
-  const type = document.querySelector('input[name="partnerType"]:checked').value;
-  const business = document.getElementById('partnerBusinessName').value;
-  const contact = document.getElementById('partnerContactName').value;
+  const btn = e.target.querySelector('button[type="submit"]');
+  const partnerType = document.querySelector('input[name="partnerType"]:checked').value;
+  const businessName = document.getElementById('partnerBusinessName').value;
+  const contactName = document.getElementById('partnerContactName').value;
   const phone = document.getElementById('partnerPhone').value;
   const email = document.getElementById('partnerEmail').value;
   const message = document.getElementById('partnerMessage').value;
-  const subject = encodeURIComponent(`Partner application: ${business} (${type})`);
-  const body = encodeURIComponent(`Partner type: ${type}\nBusiness: ${business}\nContact: ${contact}\nPhone: ${phone}\nEmail: ${email}\n\n${message}`);
-  window.location.href = `mailto:hello@discover-sharm.com?subject=${subject}&body=${body}`;
-  toast('Opening your email app…', 'success');
+  const documents = Object.entries(partnerDocs).map(([key, d]) => ({ name: `${key}_${d.name}`, data: d.data }));
+
+  if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
+  try {
+    await apiFetch('/api/partner-application', {
+      method: 'POST',
+      body: JSON.stringify({ partnerType, businessName, contactName, phone, email, message, documents })
+    }, true);
+    toast('Application submitted — our partnerships team will be in touch!', 'success');
+    e.target.reset();
+    Object.keys(partnerDocs).forEach(k => delete partnerDocs[k]);
+    renderPartnerDocSlots();
+  } catch (err) {
+    toast(err.message || 'Could not submit your application', 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Submit Application'; }
+  }
 }
 
 function renderJournalPage() {
