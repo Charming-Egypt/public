@@ -31,7 +31,7 @@
     window.FALLBACK_LOGO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23fcd34d'/%3E%3Cstop offset='50%25' stop-color='%23fbbf24'/%3E%3Cstop offset='100%25' stop-color='%23d97706'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='120' height='120' rx='28' fill='url(%23g)'/%3E%3Ctext x='60' y='68' text-anchor='middle' font-family='Georgia,serif' font-weight='700' font-size='42' fill='%230c0918'%3EDS%3C/text%3E%3C/svg%3E";
   </script>
 
-  <link rel="stylesheet" href="/style.css?v=9" />
+  <link rel="stylesheet" href="/style.css?v=8" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
@@ -581,17 +581,19 @@
 
               <div class="footer-col">
                 <h4 data-i18n="footerCompany">Company</h4>
-                <a href="#" data-i18n="footerAbout">About Us</a>
-                <a href="#" data-i18n="footerJournal">Travel Journal</a>
-                <a href="#" data-i18n="footerContact">Contact</a>
+                <a onclick="nav.go('about')" data-i18n="footerAbout">About Us</a>
+                <a onclick="nav.go('journal')" data-i18n="footerJournal">Travel Journal</a>
+                <a onclick="nav.go('contact')" data-i18n="footerContact">Contact</a>
+                <a onclick="nav.go('partner')" data-i18n="footerPartner">Become a Partner</a>
               </div>
 
               <div class="footer-col">
                 <h4 data-i18n="footerSupport">Support</h4>
                 <a onclick="nav.go('bookings')" data-i18n="myBookings">My Bookings</a>
-                <a href="#" data-i18n="footerCancellation">Cancellation Policy</a>
-                <a href="#" data-i18n="footerTerms">Terms of Service</a>
-                <a href="#" data-i18n="footerPrivacy">Privacy Policy</a>
+                <a onclick="nav.go('cancellationPolicy')" data-i18n="footerCancellation">Cancellation Policy</a>
+                <a onclick="nav.go('refundPolicy')" data-i18n="footerRefund">Refund Policy</a>
+                <a onclick="nav.go('terms')" data-i18n="footerTerms">Terms of Service</a>
+                <a onclick="nav.go('privacy')" data-i18n="footerPrivacy">Privacy Policy</a>
               </div>
 
               <div class="footer-col footer-payment-col">
@@ -611,11 +613,11 @@
             <div class="footer-bottom">
               <p data-i18n="footerCopyright">© 2026 Discover Sharm. All rights reserved.</p>
               <div class="footer-legal-links">
-                <a href="#" data-i18n="footerTerms">Terms</a>
+                <a onclick="nav.go('terms')" data-i18n="footerTerms">Terms</a>
                 <span>·</span>
-                <a href="#" data-i18n="footerPrivacy">Privacy</a>
+                <a onclick="nav.go('privacy')" data-i18n="footerPrivacy">Privacy</a>
                 <span>·</span>
-                <a href="#" data-i18n="footerCookies">Cookies</a>
+                <a onclick="nav.go('privacy')" data-i18n="footerCookies">Cookies</a>
               </div>
             </div>
           </div>
@@ -637,13 +639,15 @@
               <a href="#" class="footer-social-btn" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
             </div>
             <div class="footer-mobile-links">
-              <a href="#" data-i18n="footerAbout">About</a>
+              <a onclick="nav.go('about')" data-i18n="footerAbout">About</a>
               <span>·</span>
-              <a href="#" data-i18n="footerContact">Contact</a>
+              <a onclick="nav.go('contact')" data-i18n="footerContact">Contact</a>
               <span>·</span>
-              <a href="#" data-i18n="footerTerms">Terms</a>
+              <a onclick="nav.go('partner')" data-i18n="footerPartner">Partner</a>
               <span>·</span>
-              <a href="#" data-i18n="footerPrivacy">Privacy</a>
+              <a onclick="nav.go('terms')" data-i18n="footerTerms">Terms</a>
+              <span>·</span>
+              <a onclick="nav.go('privacy')" data-i18n="footerPrivacy">Privacy</a>
             </div>
             <p class="footer-copyright" data-i18n="footerCopyright">© 2026 Discover Sharm. All rights reserved.</p>
           </div>
@@ -759,6 +763,221 @@
       </nav>
       <button onclick="auth.logout()" class="account-sidebar-logout"><i class="fa-solid fa-right-from-bracket w-5 text-center"></i><span data-i18n="logout">Logout</span></button>
     </aside>
+
+    <!-- About Us -->
+    <div id="aboutPage" class="page">
+      <div class="min-h-screen">
+        <div class="listing-hero hidden lg:block">
+          <div class="listing-hero-inner">
+            <p class="listing-eyebrow">— OUR STORY</p>
+            <h1 class="listing-title">About Discover Sharm</h1>
+            <p class="listing-count">Your trusted local guide to hotels, excursions, transfers and dining in Sharm El-Sheikh</p>
+          </div>
+        </div>
+        <div class="px-5 pt-6 pb-4 header-light lg:hidden">
+          <div class="flex items-center gap-3">
+            <button onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right"></i></button>
+            <div><p class="section-subtitle">— OUR STORY</p><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)">About Us</h1></div>
+          </div>
+        </div>
+        <div class="static-page-body px-5 py-6 pb-28">
+          <p class="static-page-lead">Discover Sharm was built for one simple reason: booking a trip to the Red Sea should feel as easy and trustworthy as the destination itself deserves. We're a Sharm El-Sheikh–based team that lives and works in this city, and we put together the hotels, excursions, transfers and restaurants we'd actually recommend to a friend.</p>
+          <h3>What We Do</h3>
+          <p>We handpick and vet every excursion operator, hotel partner, transfer provider and restaurant listed on our platform. Every booking made through Discover Sharm is backed by real local support — before, during and after your trip.</p>
+          <div class="about-values-grid">
+            <div class="about-value-card"><i class="fa-solid fa-shield-heart"></i><h4>Trusted Partners</h4><p>Every listing is vetted by our local team before it goes live.</p></div>
+            <div class="about-value-card"><i class="fa-solid fa-headset"></i><h4>Real Support</h4><p>A local team you can actually reach, before and during your trip.</p></div>
+            <div class="about-value-card"><i class="fa-solid fa-tags"></i><h4>Fair Pricing</h4><p>Transparent pricing with no hidden fees at checkout.</p></div>
+            <div class="about-value-card"><i class="fa-solid fa-map-location-dot"></i><h4>Local Knowledge</h4><p>We live here — our recommendations come from firsthand experience.</p></div>
+          </div>
+          <h3>Get in Touch</h3>
+          <p>Have a question, a partnership idea, or feedback on your trip? <a onclick="nav.go('contact')" class="static-page-link">Reach out to our team</a> — we'd love to hear from you.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Travel Journal -->
+    <div id="journalPage" class="page">
+      <div class="min-h-screen">
+        <div class="listing-hero hidden lg:block">
+          <div class="listing-hero-inner">
+            <p class="listing-eyebrow">— STORIES &amp; GUIDES</p>
+            <h1 class="listing-title">Travel Journal</h1>
+            <p class="listing-count"><span id="journalCount">0</span> guides and stories from Sharm El-Sheikh</p>
+          </div>
+        </div>
+        <div class="px-5 pt-6 pb-4 header-light lg:hidden">
+          <div class="flex items-center gap-3">
+            <button onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right"></i></button>
+            <div><p class="section-subtitle">— STORIES &amp; GUIDES</p><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)">Travel Journal</h1></div>
+          </div>
+        </div>
+        <div class="px-5 pt-4 pb-28" id="journalGrid"></div>
+      </div>
+    </div>
+
+    <!-- Contact -->
+    <div id="contactPage" class="page">
+      <div class="min-h-screen">
+        <div class="listing-hero hidden lg:block">
+          <div class="listing-hero-inner">
+            <p class="listing-eyebrow">— GET IN TOUCH</p>
+            <h1 class="listing-title">Contact Us</h1>
+            <p class="listing-count">Questions about a booking, or just want to say hi?</p>
+          </div>
+        </div>
+        <div class="px-5 pt-6 pb-4 header-light lg:hidden">
+          <div class="flex items-center gap-3">
+            <button onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right"></i></button>
+            <div><p class="section-subtitle">— GET IN TOUCH</p><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)">Contact Us</h1></div>
+          </div>
+        </div>
+        <div class="px-5 py-6 pb-28 contact-layout">
+          <div class="contact-info-col">
+            <a href="mailto:hello@discover-sharm.com" class="contact-info-card"><i class="fa-regular fa-envelope"></i><div><p class="contact-info-label">Email</p><p class="contact-info-value">hello@discover-sharm.com</p></div></a>
+            <a href="#" class="contact-info-card"><i class="fa-brands fa-whatsapp"></i><div><p class="contact-info-label">WhatsApp</p><p class="contact-info-value">Chat with our team</p></div></a>
+            <div class="contact-info-card"><i class="fa-solid fa-location-dot"></i><div><p class="contact-info-label">Location</p><p class="contact-info-value">Sharm El-Sheikh, South Sinai, Egypt</p></div></div>
+          </div>
+          <form class="contact-form-col" onsubmit="submitContactForm(event)">
+            <input type="text" id="contactName" required placeholder="Your name" class="input-field w-full px-3 py-2.5 text-sm">
+            <input type="email" id="contactEmail" required placeholder="Your email" class="input-field w-full px-3 py-2.5 text-sm">
+            <textarea id="contactMessage" required rows="5" placeholder="How can we help?" class="input-field w-full px-3 py-2.5 text-sm"></textarea>
+            <button type="submit" class="btn-gold w-full py-3.5 rounded-2xl font-bold text-ink-900">Send Message</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Become a Partner -->
+    <div id="partnerPage" class="page">
+      <div class="min-h-screen">
+        <div class="listing-hero hidden lg:block">
+          <div class="listing-hero-inner">
+            <p class="listing-eyebrow">— GROW WITH US</p>
+            <h1 class="listing-title">Become a Partner</h1>
+            <p class="listing-count">List your hotel, excursion, or transfer service on Discover Sharm</p>
+          </div>
+        </div>
+        <div class="px-5 pt-6 pb-4 header-light lg:hidden">
+          <div class="flex items-center gap-3">
+            <button onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right"></i></button>
+            <div><p class="section-subtitle">— GROW WITH US</p><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)">Become a Partner</h1></div>
+          </div>
+        </div>
+        <div class="static-page-body px-5 py-6 pb-28">
+          <p class="static-page-lead">Whether you run a hotel, a trip or excursion company, or a transfer service in Sharm El-Sheikh, we'd love to feature you. Tell us about your business below and our partnerships team will follow up.</p>
+          <form class="partner-form" onsubmit="submitPartnerForm(event)">
+            <label class="text-[10px] tracking-widest text-violet-500 font-semibold">PARTNER TYPE</label>
+            <div class="partner-type-row">
+              <label class="partner-type-chip"><input type="radio" name="partnerType" value="Hotel" checked><i class="fa-solid fa-hotel"></i> Hotel</label>
+              <label class="partner-type-chip"><input type="radio" name="partnerType" value="Trip Supplier"><i class="fa-solid fa-umbrella-beach"></i> Trip Supplier</label>
+              <label class="partner-type-chip"><input type="radio" name="partnerType" value="Transfer"><i class="fa-solid fa-shuttle-van"></i> Transfer</label>
+            </div>
+            <input type="text" id="partnerBusinessName" required placeholder="Business name" class="input-field w-full px-3 py-2.5 text-sm">
+            <input type="text" id="partnerContactName" required placeholder="Contact person" class="input-field w-full px-3 py-2.5 text-sm">
+            <input type="tel" id="partnerPhone" required placeholder="Phone number" class="input-field w-full px-3 py-2.5 text-sm">
+            <input type="email" id="partnerEmail" required placeholder="Email" class="input-field w-full px-3 py-2.5 text-sm">
+            <textarea id="partnerMessage" rows="4" placeholder="Tell us about your business (optional)" class="input-field w-full px-3 py-2.5 text-sm"></textarea>
+            <button type="submit" class="btn-gold w-full py-3.5 rounded-2xl font-bold text-ink-900">Submit Application</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cancellation Policy -->
+    <div id="cancellationPolicyPage" class="page">
+      <div class="min-h-screen">
+        <div class="listing-hero hidden lg:block"><div class="listing-hero-inner"><p class="listing-eyebrow">— POLICIES</p><h1 class="listing-title">Cancellation Policy</h1></div></div>
+        <div class="px-5 pt-6 pb-4 header-light lg:hidden">
+          <div class="flex items-center gap-3"><button onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right"></i></button><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)">Cancellation Policy</h1></div>
+        </div>
+        <div class="static-page-body px-5 py-6 pb-28">
+          <p class="static-page-updated">Last updated: September 2026</p>
+          <h3>Standard Cancellation Terms</h3>
+          <p>Cancellation terms can vary slightly by individual hotel, excursion or transfer listing — always check the specific policy shown on the booking page before you pay. Unless a listing states otherwise, the following standard terms apply:</p>
+          <ul>
+            <li>Cancellations made more than 48 hours before the scheduled check-in, departure, or pickup time are eligible for a full refund.</li>
+            <li>Cancellations made between 24–48 hours before are eligible for a 50% refund.</li>
+            <li>Cancellations made less than 24 hours before, or no-shows, are non-refundable.</li>
+          </ul>
+          <h3>How to Cancel</h3>
+          <p>You can request a cancellation from the "My Bookings" section of your account, or by contacting our support team directly with your booking reference.</p>
+          <h3>Force Majeure</h3>
+          <p>In cases of severe weather, safety closures, or other circumstances outside our control, we'll work with you on rebooking or a full refund regardless of the standard window above.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Refund Policy -->
+    <div id="refundPolicyPage" class="page">
+      <div class="min-h-screen">
+        <div class="listing-hero hidden lg:block"><div class="listing-hero-inner"><p class="listing-eyebrow">— POLICIES</p><h1 class="listing-title">Refund Policy</h1></div></div>
+        <div class="px-5 pt-6 pb-4 header-light lg:hidden">
+          <div class="flex items-center gap-3"><button onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right"></i></button><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)">Refund Policy</h1></div>
+        </div>
+        <div class="static-page-body px-5 py-6 pb-28">
+          <p class="static-page-updated">Last updated: September 2026</p>
+          <h3>Eligible Refunds</h3>
+          <p>Refunds are issued according to the cancellation terms of your specific booking (see our <a onclick="nav.go('cancellationPolicy')" class="static-page-link">Cancellation Policy</a>), or in the event a listing is unable to fulfil a confirmed booking.</p>
+          <h3>Processing Time</h3>
+          <p>Approved refunds are processed back to your original payment method within 5–10 business days, depending on your bank or card issuer. Cash-on-arrival bookings that are cancelled before the trip carry no charge to refund.</p>
+          <h3>Non-Refundable Items</h3>
+          <p>Certain promotional or discounted rates may be marked as non-refundable at the time of booking — this will always be clearly stated before you complete payment.</p>
+          <h3>Questions About a Refund</h3>
+          <p>Contact our support team with your booking reference and we'll look into it personally.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Terms of Service -->
+    <div id="termsPage" class="page">
+      <div class="min-h-screen">
+        <div class="listing-hero hidden lg:block"><div class="listing-hero-inner"><p class="listing-eyebrow">— LEGAL</p><h1 class="listing-title">Terms of Service</h1></div></div>
+        <div class="px-5 pt-6 pb-4 header-light lg:hidden">
+          <div class="flex items-center gap-3"><button onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right"></i></button><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)">Terms of Service</h1></div>
+        </div>
+        <div class="static-page-body px-5 py-6 pb-28">
+          <p class="static-page-updated">Last updated: September 2026</p>
+          <h3>1. Acceptance of Terms</h3>
+          <p>By using Discover Sharm to browse, book or manage hotels, excursions, transfers or restaurant reservations, you agree to these Terms of Service.</p>
+          <h3>2. Bookings</h3>
+          <p>Discover Sharm acts as a booking platform connecting you with independent hotels, excursion operators, transfer companies and restaurants. Each listing is responsible for delivering the service you book; we're here to make finding and booking it easy, and to support you if something goes wrong.</p>
+          <h3>3. Pricing &amp; Payment</h3>
+          <p>Prices are shown in Egyptian Pounds (EGP) and include applicable taxes and fees unless stated otherwise. Payment is processed securely at checkout via our payment partner.</p>
+          <h3>4. User Accounts</h3>
+          <p>You're responsible for keeping your account credentials secure and for the accuracy of the information you provide when booking.</p>
+          <h3>5. Cancellations &amp; Refunds</h3>
+          <p>See our <a onclick="nav.go('cancellationPolicy')" class="static-page-link">Cancellation Policy</a> and <a onclick="nav.go('refundPolicy')" class="static-page-link">Refund Policy</a> for details.</p>
+          <h3>6. Limitation of Liability</h3>
+          <p>Discover Sharm is not liable for the acts or omissions of independent hotels, excursion operators, transfer companies or restaurants listed on the platform, beyond facilitating the booking and supporting resolution of issues in good faith.</p>
+          <h3>7. Changes to These Terms</h3>
+          <p>We may update these terms from time to time; continued use of the platform after changes means you accept the updated terms.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Privacy Policy -->
+    <div id="privacyPage" class="page">
+      <div class="min-h-screen">
+        <div class="listing-hero hidden lg:block"><div class="listing-hero-inner"><p class="listing-eyebrow">— LEGAL</p><h1 class="listing-title">Privacy Policy</h1></div></div>
+        <div class="px-5 pt-6 pb-4 header-light lg:hidden">
+          <div class="flex items-center gap-3"><button onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right"></i></button><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)">Privacy Policy</h1></div>
+        </div>
+        <div class="static-page-body px-5 py-6 pb-28">
+          <p class="static-page-updated">Last updated: September 2026</p>
+          <h3>Information We Collect</h3>
+          <p>When you create an account or make a booking, we collect your name, email, phone number, and booking details. We use secure third-party providers to process payments and never store full card numbers ourselves.</p>
+          <h3>How We Use Your Information</h3>
+          <p>We use your information to process bookings, communicate with you about your trip, provide support, and — with your consent — send you occasional offers relevant to Sharm El-Sheikh travel.</p>
+          <h3>Sharing With Partners</h3>
+          <p>We share only the booking details necessary (name, contact info, dates) with the specific hotel, excursion operator, transfer company or restaurant you book with, so they can fulfil your reservation.</p>
+          <h3>Data Security</h3>
+          <p>We use industry-standard security practices to protect your data, including encrypted connections and secure authentication.</p>
+          <h3>Your Rights</h3>
+          <p>You can review, update or request deletion of your personal data at any time from your account settings, or by contacting our support team.</p>
+        </div>
+      </div>
+    </div>
 
     <!-- Bookings Page -->
     <div id="bookingsPage" class="page">
@@ -886,8 +1105,8 @@
 
   </div>
 
-  <script src="/data.js?v=9"></script>
-  <script src="/booking.js?v=9"></script>
-  <script src="/frontend.js?v=9"></script>
+  <script src="/data.js?v=8"></script>
+  <script src="/booking.js?v=8"></script>
+  <script src="/frontend.js?v=8"></script>
 </body>
 </html>
