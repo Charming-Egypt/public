@@ -501,7 +501,7 @@ async function handleAuthSubmit(e) {
 }
 
 // ==================== GOOGLE SIGN-IN ====================
-let googleSignInInitialized = true;
+let googleSignInInitialized = false;
 
 async function handleGoogleSignIn() {
   try {
