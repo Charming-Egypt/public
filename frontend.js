@@ -258,6 +258,7 @@ const nav = {
 
     if (page === 'hotels' && SHOW_HOTELS) hotels.render();
     if (page === 'journal') renderJournalPage();
+    if (page === 'partner') renderPartnerDocSlots();
     if (page === 'excursions' && SHOW_EXCURSIONS) excursionsUi.render();
     if (page === 'transfers' && SHOW_TRANSFERS) transfersUi.render();
     if (page === 'restaurants' && SHOW_RESTAURANTS) restaurantsUi.renderFull();
