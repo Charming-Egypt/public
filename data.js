@@ -289,7 +289,7 @@ let I18N_DICT = {};
 
 async function loadI18nDict() {
   try {
-    const manifestRes = await fetch('api/file?file=lang/manifest.json');
+    const manifestRes = await fetch('file?file=lang/manifest.json');
     const manifest = await manifestRes.json();
     SUPPORTED_LANGS = manifest.languages.map(l => l.code);
     LANG_LABELS = {};
