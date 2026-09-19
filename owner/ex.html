@@ -918,9 +918,10 @@ async function lookupBooking(){
   const ref = document.getElementById('bookingRefInput').value.trim();
   const panel = document.getElementById('bookingCardPanel');
   if(!ref){ toast('اكتب رقم الحجز الأول', true); return; }
+  if(!ID_TOKEN){ toast('لازم تسجل دخول كأدمن عشان تدور على الحجوزات', true); return; }
   panel.style.display='block'; panel.innerHTML = '<div class="skeleton" style="height:220px;"></div>';
   try{
-    const data = await apiFetch('/api/hotels/booking/' + encodeURIComponent(ref), {method:'GET'});
+    const data = await apiFetch('/api/hotels/booking/' + encodeURIComponent(ref), {method:'GET', headers: ID_TOKEN ? {Authorization: 'Bearer ' + ID_TOKEN} : {}});
     const b = data.booking || {};
     const name = pickBooking(b,['name','guestName','customerName','fullName']) || 'ضيف';
     const status = pickBooking(b,['status','bookingStatus']) || '—';
@@ -955,8 +956,9 @@ async function lookupBooking(){
 async function cancelBooking(){
   const ref = document.getElementById('bookingRefInput').value.trim();
   if(!ref){ toast('اكتب رقم الحجز الأول', true); return; }
+  if(!ID_TOKEN){ toast('لازم تسجل دخول كأدمن عشان تلغي حجز', true); return; }
   if(!confirm('متأكد إنك عايز تلغي الحجز ده؟')) return;
-  try{ await apiFetch('/api/hotels/booking/' + encodeURIComponent(ref), {method:'DELETE'}); toast('تم إلغاء الحجز'); lookupBooking(); }
+  try{ await apiFetch('/api/hotels/booking/' + encodeURIComponent(ref), {method:'DELETE', headers: ID_TOKEN ? {Authorization: 'Bearer ' + ID_TOKEN} : {}}); toast('تم إلغاء الحجز'); lookupBooking(); }
   catch(e){ toast(e.message, true); }
 }
 
