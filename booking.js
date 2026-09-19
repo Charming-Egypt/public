@@ -184,68 +184,169 @@ function paymentMethodsBlock(currentMethod, onchangeFn) {
     { id: 'card', label: 'Credit/Debit Card', icon: 'fa-credit-card' },
     { id: 'instapay', label: 'InstaPay / Wallet', icon: 'fa-wallet' },
   ];
-  return methods.map(m => `
+  const radios = methods.map(m => `
     <label class="card rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer ${currentMethod === m.id ? 'ring-1 ring-violet-400' : ''}">
       <input type="radio" name="paymethod" value="${m.id}" ${currentMethod === m.id ? 'checked' : ''} onchange="${onchangeFn}('${m.id}')" class="w-4 h-4 accent-violet-600">
       <i class="fa-solid ${m.icon} text-violet-500 text-lg w-6 text-center"></i>
       <span class="flex-1 text-sm font-semibold">${m.label}</span>
     </label>`).join('');
-}
 
-function redirectToKashier(kashierUrl, orderId, bookingType) {
-  // Full-page redirect instead of an embedded iframe modal — payment
-  // gateways routinely block being framed, and a real page is also just a
-  // more trustworthy checkout experience. Kashier sends the browser back to
-  // merchantRedirect afterward; we stash enough here to pick up where we
-  // left off and show the right confirmation once that happens.
-  localStorage.setItem('ds_pending_payment', JSON.stringify({ orderId, bookingType, startedAt: Date.now() }));
-  window.location.href = kashierUrl;
-}
-
-// Called once on startup (see the DOMContentLoaded handler in frontend.js).
-// If we're returning from Kashier's hosted checkout, look up what actually
-// happened to that order server-side (the webhook is the source of truth,
-// not anything in the redirect URL) and show the right screen.
-async function handleKashierReturn() {
-  const params = new URLSearchParams(window.location.search);
-  if (!params.has('kashier_callback')) return;
-  history.replaceState({}, '', window.location.pathname);
-
-  const pendingRaw = localStorage.getItem('ds_pending_payment');
-  localStorage.removeItem('ds_pending_payment');
-  if (!pendingRaw) return;
-  const pending = JSON.parse(pendingRaw);
-
-  const overlay = document.createElement('div');
-  overlay.id = 'paymentReturnOverlay';
-  overlay.className = 'fixed inset-0 z-[999] flex items-center justify-center dark-scene';
-  overlay.innerHTML = `<div class="text-center text-white"><i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3"></i><p class="text-sm">Confirming your payment…</p></div>`;
-  document.body.appendChild(overlay);
-
-  // The webhook can land a beat after the browser redirect does, so poll
-  // briefly rather than trusting the very first check.
-  for (let attempt = 0; attempt < 6; attempt++) {
-    try {
-      const res = await apiFetch('/api/user/bookings');
-      const booking = (res.bookings || []).find(b => b.id === pending.orderId);
-      if (booking && booking.status === 'completed') {
-        overlay.remove();
-        state.bookings.unshift(booking);
-        renderBookingConfirmation(booking);
-        return;
-      }
-      if (booking && booking.status === 'failed') {
-        overlay.remove();
-        toast('Payment was not completed', 'error');
-        nav.go('bookings');
-        return;
-      }
-    } catch (e) { /* try again */ }
-    await new Promise(r => setTimeout(r, 1500));
+  let detailFields = '';
+  if (currentMethod === 'card') {
+    detailFields = `
+      <div class="card rounded-2xl p-4 space-y-3 mt-3">
+        <div>
+          <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5">CARD NUMBER</label>
+          <input type="text" id="payCardNumber" inputmode="numeric" autocomplete="cc-number" maxlength="23" placeholder="1234 5678 9012 3456" class="input-field w-full px-3 py-2.5 text-sm" oninput="formatCardNumberInput(this)">
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5">MM</label>
+            <input type="text" id="payCardMonth" inputmode="numeric" maxlength="2" placeholder="MM" autocomplete="cc-exp-month" class="input-field w-full px-3 py-2.5 text-sm text-center">
+          </div>
+          <div>
+            <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5">YY</label>
+            <input type="text" id="payCardYear" inputmode="numeric" maxlength="2" placeholder="YY" autocomplete="cc-exp-year" class="input-field w-full px-3 py-2.5 text-sm text-center">
+          </div>
+          <div>
+            <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5">CVV</label>
+            <input type="password" id="payCardCvv" inputmode="numeric" maxlength="4" placeholder="CVV" autocomplete="cc-csc" class="input-field w-full px-3 py-2.5 text-sm text-center">
+          </div>
+        </div>
+        <div>
+          <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5">NAME ON CARD</label>
+          <input type="text" id="payCardName" autocomplete="cc-name" placeholder="Name as shown on card" class="input-field w-full px-3 py-2.5 text-sm">
+        </div>
+        <label class="flex items-center gap-2 text-xs text-white/60 pt-1 cursor-pointer">
+          <input type="checkbox" id="payCardSave" class="w-4 h-4 accent-violet-600"> Save this card for faster checkout next time
+        </label>
+        <p class="text-[10px] text-white/30 flex items-center gap-1.5"><i class="fa-solid fa-lock"></i> Payments are encrypted and processed securely by Kashier.</p>
+      </div>`;
+  } else if (currentMethod === 'instapay') {
+    detailFields = `
+      <div class="card rounded-2xl p-4 space-y-2 mt-3">
+        <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5">WALLET MOBILE NUMBER</label>
+        <input type="tel" id="payWalletPhone" inputmode="numeric" maxlength="11" placeholder="01xxxxxxxxx" autocomplete="tel" class="input-field w-full px-3 py-2.5 text-sm">
+        <p class="text-[10px] text-white/30">You'll get an approval request on this number — approve it in your wallet app to complete payment.</p>
+      </div>`;
   }
-  overlay.remove();
-  toast('Still confirming your payment — check My Bookings shortly', 'info');
-  nav.go('bookings');
+  return radios + detailFields;
+}
+
+// ==================== KASHIER DIRECT PAYMENT (in-page, no redirect) ====================
+// Card/wallet fields live inside paymentMethodsBlock() below and are read
+// here at charge time. Only one booking flow is ever on screen at once, so
+// plain getElementById on the shared field ids is safe.
+
+function formatCardNumberInput(el) {
+  el.value = el.value.replace(/[^\d]/g, '').replace(/(.{4})/g, '$1 ').trim().slice(0, 23);
+}
+
+// Dispatches to the card or wallet flow based on the selected payment
+// method. Resolves true on a confirmed payment, false otherwise — callers
+// just re-enable their Pay button on false, no navigation either way.
+async function processKashierPayment(orderId, amount, currency, btn) {
+  if (state.bookingDraft.payment === 'instapay') return processKashierWallet(orderId, amount, currency, btn);
+  return processKashierCard(orderId, amount, currency, btn);
+}
+
+async function processKashierCard(orderId, amount, currency, btn) {
+  const number = (document.getElementById('payCardNumber')?.value || '').replace(/\s+/g, '');
+  const month = (document.getElementById('payCardMonth')?.value || '').trim().padStart(2, '0');
+  const year = (document.getElementById('payCardYear')?.value || '').trim().padStart(2, '0');
+  const cvv = (document.getElementById('payCardCvv')?.value || '').trim();
+  const name = (document.getElementById('payCardName')?.value || '').trim();
+  const save = document.getElementById('payCardSave')?.checked || false;
+
+  if (!/^\d{12,19}$/.test(number)) { toast('Enter a valid card number', 'error'); return false; }
+  if (!/^\d{2}$/.test(month) || !/^\d{2}$/.test(year)) { toast('Enter a valid expiry date', 'error'); return false; }
+  if (!/^\d{3,4}$/.test(cvv)) { toast('Enter a valid CVV', 'error'); return false; }
+  if (!name) { toast('Enter the name on the card', 'error'); return false; }
+
+  const [firstName, ...rest] = (state.bookingDraft.name || '').split(' ');
+  let res;
+  try {
+    res = await apiFetch('/api/kashier/charge', {
+      method: 'POST',
+      body: JSON.stringify({
+        orderId, amount, currency,
+        card: { number, month, year, cvv, name },
+        save,
+        customer: { firstName: firstName || '', lastName: rest.join(' '), email: state.bookingDraft.email },
+      }),
+    });
+  } finally {
+    // Clear sensitive fields from the DOM the instant the request is sent,
+    // whatever the outcome — they've already left the browser by then.
+    ['payCardNumber', 'payCardMonth', 'payCardYear', 'payCardCvv', 'payCardName'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  }
+
+  if (res.status === '3ds_required') return await handleKashier3ds(res.authentication.redirectUrl, orderId);
+  if (res.status === 'captured') return true;
+  toast(res.message || 'Payment was declined — please check your card details', 'error');
+  return false;
+}
+
+async function processKashierWallet(orderId, amount, currency, btn) {
+  const phone = (document.getElementById('payWalletPhone')?.value || '').trim();
+  if (!/^01\d{9}$/.test(phone)) { toast('Enter a valid Egyptian mobile number', 'error'); return false; }
+
+  const initRes = await apiFetch('/api/kashier/wallet/initiate', { method: 'POST', body: JSON.stringify({ orderId, amount, currency, mobilePhone: phone }) });
+  if (initRes.status !== 'pending') { toast(initRes.message || 'Could not start the wallet payment', 'error'); return false; }
+
+  toast('Approval request sent — check your wallet app', 'success');
+  for (let i = 0; i < 40; i++) { // poll every 3s, ~2 minutes total
+    if (btn) btn.innerHTML = `Waiting for approval… <span class="opacity-60">${i + 1}</span>`;
+    await new Promise(r => setTimeout(r, 3000));
+    let poll;
+    try { poll = await apiFetch('/api/kashier/wallet/reconcile', { method: 'POST', body: JSON.stringify({ orderId }) }); }
+    catch { continue; }
+    if (poll.status === 'captured' || poll.status === 'completed') return true;
+    if (poll.status === 'failed') { toast('Wallet payment was declined or timed out', 'error'); return false; }
+  }
+  toast('Approval timed out — please try again', 'error');
+  return false;
+}
+
+// 3D Secure — shown as a small modal on this same page (see #kashier3dsModal
+// in index.html), never a redirect. Resolves once Kashier posts the result
+// back via postMessage, per Kashier's own 3D Secure handling docs.
+let _kashier3dsResolve = null;
+let _kashier3dsOrderId = null;
+
+function handleKashier3ds(redirectUrl, orderId) {
+  return new Promise((resolve) => {
+    _kashier3dsResolve = resolve;
+    _kashier3dsOrderId = orderId;
+    const modal = document.getElementById('kashier3dsModal');
+    const frame = document.getElementById('kashier3dsFrame');
+    if (!modal || !frame) { resolve(false); return; }
+    frame.src = redirectUrl;
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    window.addEventListener('message', kashier3dsMessageListener);
+  });
+}
+
+function closeKashier3ds(result) {
+  const modal = document.getElementById('kashier3dsModal');
+  const frame = document.getElementById('kashier3dsFrame');
+  if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+  if (frame) frame.src = 'about:blank';
+  window.removeEventListener('message', kashier3dsMessageListener);
+  if (_kashier3dsResolve) { _kashier3dsResolve(!!result); _kashier3dsResolve = null; }
+}
+
+async function kashier3dsMessageListener(e) {
+  const msg = e.data;
+  if (!msg || msg.message !== 'merchantStoreRedirect' || !msg.params) return;
+  if (msg.params.status !== 'SUCCESS') { closeKashier3ds(false); return; }
+  // Confirm against our own backend rather than trusting the postMessage
+  // alone — it's the same source the webhook writes to.
+  try {
+    const check = await apiFetch('/api/kashier/charge-status', { method: 'POST', body: JSON.stringify({ orderId: _kashier3dsOrderId }) });
+    closeKashier3ds(check.status === 'completed');
+  } catch { closeKashier3ds(false); }
 }
 
 function renderBookingConfirmation(b) {
@@ -527,19 +628,17 @@ async function payAndConfirmHotelBooking(roomTotal, taxes, total, nights) {
       createdAt: new Date().toISOString(),
     };
 
-    const saveRes = await apiFetch('/api/user/bookings', { method: 'POST', body: JSON.stringify({ booking: bookingData }) });
-    const hashData = await apiFetch('/api/kashier/hash', { method: 'POST', body: JSON.stringify({ orderId, amount: total, currency: 'EGP' }) });
-    const kashierUrl = new URL('https://checkout.kashier.io/');
-    kashierUrl.searchParams.append('merchantId', hashData.merchantId);
-    kashierUrl.searchParams.append('orderId', orderId);
-    kashierUrl.searchParams.append('amount', total);
-    kashierUrl.searchParams.append('currency', hashData.currency || 'EGP');
-    kashierUrl.searchParams.append('hash', hashData.hash);
-    kashierUrl.searchParams.append('mode', KASHIER_MODE);
-    kashierUrl.searchParams.append('paymentMethods', state.bookingDraft.payment === 'instapay' ? 'wallet' : 'card');
-    kashierUrl.searchParams.append('merchantRedirect', window.location.href.split('?')[0] + '?kashier_callback=1');
+    await apiFetch('/api/user/bookings', { method: 'POST', body: JSON.stringify({ booking: bookingData }) });
 
-    redirectToKashier(kashierUrl.toString(), orderId, 'hotel');
+    // Direct API charge — customer never leaves this page. Card fields are
+    // collected by our own form (see paymentMethodsBlock) and 3D Secure, if
+    // triggered, opens as an in-page modal rather than a redirect.
+    const success = await processKashierPayment(orderId, total, 'EGP', btn);
+    if (!success) { btn.disabled = false; btn.innerHTML = 'Pay Now'; return; }
+    bookingData.status = 'completed';
+    state.bookings.unshift(bookingData);
+    bookings.render();
+    renderBookingConfirmation(bookingData);
     btn.disabled = false; btn.innerHTML = 'Pay Now';
   } catch (e) {
     toast('Payment error: ' + e.message, 'error');
@@ -800,19 +899,17 @@ async function payAndConfirmExcursionBooking(subtotal, taxes, total) {
       createdAt: new Date().toISOString(),
     };
 
-    const saveRes = await apiFetch('/api/user/bookings', { method: 'POST', body: JSON.stringify({ booking: bookingData }) });
-    const hashData = await apiFetch('/api/kashier/hash', { method: 'POST', body: JSON.stringify({ orderId, amount: total, currency: 'EGP' }) });
-    const kashierUrl = new URL('https://checkout.kashier.io/');
-    kashierUrl.searchParams.append('merchantId', hashData.merchantId);
-    kashierUrl.searchParams.append('orderId', orderId);
-    kashierUrl.searchParams.append('amount', total);
-    kashierUrl.searchParams.append('currency', hashData.currency || 'EGP');
-    kashierUrl.searchParams.append('hash', hashData.hash);
-    kashierUrl.searchParams.append('mode', KASHIER_MODE);
-    kashierUrl.searchParams.append('paymentMethods', state.bookingDraft.payment === 'instapay' ? 'wallet' : 'card');
-    kashierUrl.searchParams.append('merchantRedirect', window.location.href.split('?')[0] + '?kashier_callback=1');
+    await apiFetch('/api/user/bookings', { method: 'POST', body: JSON.stringify({ booking: bookingData }) });
 
-    redirectToKashier(kashierUrl.toString(), orderId, 'excursion');
+    // Direct API charge — customer never leaves this page. Card fields are
+    // collected by our own form (see paymentMethodsBlock) and 3D Secure, if
+    // triggered, opens as an in-page modal rather than a redirect.
+    const success = await processKashierPayment(orderId, total, 'EGP', btn);
+    if (!success) { btn.disabled = false; btn.innerHTML = 'Pay Now'; return; }
+    bookingData.status = 'completed';
+    state.bookings.unshift(bookingData);
+    bookings.render();
+    renderBookingConfirmation(bookingData);
     btn.disabled = false; btn.innerHTML = 'Pay Now';
   } catch (e) {
     toast('Payment error: ' + e.message, 'error');
@@ -977,19 +1074,17 @@ async function payAndConfirmTransferBooking(subtotal, taxes, total) {
       createdAt: new Date().toISOString(),
     };
 
-    const saveRes = await apiFetch('/api/user/bookings', { method: 'POST', body: JSON.stringify({ booking: bookingData }) });
-    const hashData = await apiFetch('/api/kashier/hash', { method: 'POST', body: JSON.stringify({ orderId, amount: total, currency: 'EGP' }) });
-    const kashierUrl = new URL('https://checkout.kashier.io/');
-    kashierUrl.searchParams.append('merchantId', hashData.merchantId);
-    kashierUrl.searchParams.append('orderId', orderId);
-    kashierUrl.searchParams.append('amount', total);
-    kashierUrl.searchParams.append('currency', hashData.currency || 'EGP');
-    kashierUrl.searchParams.append('hash', hashData.hash);
-    kashierUrl.searchParams.append('mode', KASHIER_MODE);
-    kashierUrl.searchParams.append('paymentMethods', state.bookingDraft.payment === 'instapay' ? 'wallet' : 'card');
-    kashierUrl.searchParams.append('merchantRedirect', window.location.href.split('?')[0] + '?kashier_callback=1');
+    await apiFetch('/api/user/bookings', { method: 'POST', body: JSON.stringify({ booking: bookingData }) });
 
-    redirectToKashier(kashierUrl.toString(), orderId, 'transfer');
+    // Direct API charge — customer never leaves this page. Card fields are
+    // collected by our own form (see paymentMethodsBlock) and 3D Secure, if
+    // triggered, opens as an in-page modal rather than a redirect.
+    const success = await processKashierPayment(orderId, total, 'EGP', btn);
+    if (!success) { btn.disabled = false; btn.innerHTML = 'Pay Now'; return; }
+    bookingData.status = 'completed';
+    state.bookings.unshift(bookingData);
+    bookings.render();
+    renderBookingConfirmation(bookingData);
     btn.disabled = false; btn.innerHTML = 'Pay Now';
   } catch (e) {
     toast('Payment error: ' + e.message, 'error');

@@ -5,7 +5,6 @@ window.DS_CONFIG = window.DS_CONFIG || {
   SHOW_TRANSFERS: true,
   SHOW_RESTAURANTS: false,
   SHOW_DESTINATIONS: true,
-  KASHIER_MODE: 'live' // 'live' or 'test' — controls the Kashier checkout mode
 };
 
 const SHOW_HOTELS = window.DS_CONFIG.SHOW_HOTELS;
@@ -13,7 +12,6 @@ const SHOW_EXCURSIONS = window.DS_CONFIG.SHOW_EXCURSIONS;
 const SHOW_TRANSFERS = window.DS_CONFIG.SHOW_TRANSFERS;
 const SHOW_RESTAURANTS = window.DS_CONFIG.SHOW_RESTAURANTS;
 const SHOW_DESTINATIONS = window.DS_CONFIG.SHOW_DESTINATIONS;
-const KASHIER_MODE = window.DS_CONFIG.KASHIER_MODE || 'live';
 
 // ==================== URL ROUTER ====================
 // Maps in-app "pages" to real, bookmarkable, shareable URLs.
@@ -1251,9 +1249,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.addEventListener('resize', applyDesktopLayout);
 
   if (auth.isLoggedIn()) { enterApp(); } else { nav.showAuth(); }
-  if (auth.isLoggedIn() && new URLSearchParams(window.location.search).has('kashier_callback')) {
-    handleKashierReturn();
-  }
   setTimeout(hideSplash, 3000);
 });
 
