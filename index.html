@@ -6,11 +6,6 @@
   <title>Discover Sharm — Luxury Travel</title>
 
   <script>
-    // Single Page Apps for GitHub Pages — decode step.
-    // https://github.com/rafgraph/spa-github-pages
-    // Reverses what 404.html did: turns "/?/excursions/e1" back into the
-    // real "/excursions/e1" in the address bar (via history.replaceState,
-    // no reload) before the router code further down ever looks at the URL.
     (function (l) {
       if (l.search[1] === '/') {
         var decoded = l.search.slice(1).split('&').map(function (s) {
@@ -22,13 +17,7 @@
   </script>
 
   <script>
-    // Defined inline, first thing in <head>, on purpose: the logo <img> tags
-    // below start loading as soon as the parser reaches them in <body>, which
-    // is long before data.js (loaded at the very end of the page) runs. If
-    // FALLBACK_LOGO were only defined in data.js, a failed logo load before
-    // that point would throw "FALLBACK_LOGO is not defined" instead of
-    // showing the fallback image.
-    window.FALLBACK_LOGO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23fcd34d'/%3E%3Cstop offset='50%25' stop-color='%23fbbf24'/%3E%3Cstop offset='100%25' stop-color='%23d97706'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='120' height='120' rx='28' fill='url(%23g)'/%3E%3Ctext x='60' y='68' text-anchor='middle' font-family='Georgia,serif' font-weight='700' font-size='42' fill='%230c0918'%3EDS%3C/text%3E%3C/svg%3E";
+  window.FALLBACK_LOGO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23fcd34d'/%3E%3Cstop offset='50%25' stop-color='%23fbbf24'/%3E%3Cstop offset='100%25' stop-color='%23d97706'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='120' height='120' rx='28' fill='url(%23g)'/%3E%3Ctext x='60' y='68' text-anchor='middle' font-family='Georgia,serif' font-weight='700' font-size='42' fill='%230c0918'%3EDS%3C/text%3E%3C/svg%3E";
   </script>
 
   <link rel="stylesheet" href="/style.css?v=10" />
@@ -329,8 +318,8 @@
     <div class="p-5 flex flex-col h-full">
       <div class="flex items-center justify-between mb-6">
         <div class="flex items-center gap-2">
-          <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiBkofYpzqUXTRN637RgMWxg-U7AkuhcfCfpxprIjiNpGuhShRRR6grRseydUkVaSWBt-dDlahapOzDkdzqTZyVUysJa1SCa0nQNkMM-dHidghOmQD0Hf5WgKXyqSZWkvmT5adalOL_wb5Ha7VTWIvAQLu17c3xzUashLnmtiott0SO0W7deqFPZ7nEQVU9=s1600" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-8 w-8 rounded-lg" alt="logo" />
-          <span class="font-display font-bold text-white text-sm">Discover Sharm</span>
+          <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgoGnS_PZ_EiWK-H8paPs53FPwc_2BUV5egfP3EamN2irK3hFrzxVpRYQ-z9rgdzzqwc4FijgQCLP66sI9K2O0lzz023tX19DPFnvpDPGYhGtDEAtWUdVVgDxwnlpotNgs5gr8H4XGYDEAAP6Gx9JvYNo9Nf6Mp0CwCa2350bqiQb4RFuhLuOtRWhvyAz-I=s1600" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-8 w-8 rounded-lg" alt="logo" />
+          <span class="font-display font-bold text-white text-sm"></span>
         </div>
         <button onclick="sidebar.close()" class="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-white/70"><i class="fa-solid fa-xmark"></i></button>
       </div>
@@ -376,7 +365,7 @@
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-3">
         <button onclick="sidebar.open()" class="icon-btn w-10 h-10 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-bars"></i></button>
-        <img src="/data/long-logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="sticky-header-logo" alt="Discover Sharm" />
+        <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgoGnS_PZ_EiWK-H8paPs53FPwc_2BUV5egfP3EamN2irK3hFrzxVpRYQ-z9rgdzzqwc4FijgQCLP66sI9K2O0lzz023tX19DPFnvpDPGYhGtDEAtWUdVVgDxwnlpotNgs5gr8H4XGYDEAAP6Gx9JvYNo9Nf6Mp0CwCa2350bqiQb4RFuhLuOtRWhvyAz-I=s1600" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="sticky-header-logo" alt="Discover Sharm" />
       </div>
       <button onclick="nav.go('notifications')" class="icon-btn w-10 h-10 rounded-xl flex items-center justify-center relative text-white"><i class="fa-regular fa-bell"></i><span class="notif-badge hidden absolute top-2 right-2 w-2 h-2 bg-gold-400 rounded-full"></span></button>
     </div>
@@ -392,7 +381,7 @@
     <div class="flex items-center gap-10">
       <button onclick="sidebar.open()" class="icon-btn w-11 h-11 rounded-xl flex items-center justify-center text-white flex-shrink-0"><i class="fa-solid fa-bars"></i></button>
       <button onclick="nav.go('home')" data-page="home" class="flex items-center gap-2 flex-shrink-0">
-        <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh31KDbNVm6w1w5ZlLBWEXTnle_aqOx8fnUM7em5G2XWwxz7t8ZKsJ4IxJn4GPwfwiG6mBsnMcJWWnB4jWqV0D4Yqxvo2RNE8QDSrF-USnvgnNTx144KN4XvcwWLXSu90lAAi4IScBNlyHnqRpf2evEdtOIqGpkbhh6E5XIYJQ20FWKn_3BFsNSfoYA9tbT=s1600" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-9 w-auto desktop-nav-logo" alt="Discover Sharm" />
+        <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgoGnS_PZ_EiWK-H8paPs53FPwc_2BUV5egfP3EamN2irK3hFrzxVpRYQ-z9rgdzzqwc4FijgQCLP66sI9K2O0lzz023tX19DPFnvpDPGYhGtDEAtWUdVVgDxwnlpotNgs5gr8H4XGYDEAAP6Gx9JvYNo9Nf6Mp0CwCa2350bqiQb4RFuhLuOtRWhvyAz-I=s1600" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-9 w-auto desktop-nav-logo" alt="Discover Sharm" />
       </button>
       <div class="flex items-center gap-8 text-sm font-semibold">
         <button onclick="nav.go('excursions')" data-page="excursions" class="nav-item drawer-link text-white" data-i18n="navExcursions">Excursions</button>
@@ -416,7 +405,7 @@
     <!-- Home Page -->
     <div id="homePage" class="page active">
       <div class="hero-section dark-scene" id="heroSection">
-        <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=90" class="hero-bg-img" id="heroBgImage" onerror="this.style.display='none'" alt="" />
+        <img src="https://images.unsplash.com/photo-1682687982141-0143020ed57a?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="hero-bg-img" id="heroBgImage" onerror="this.style.display='none'" alt="" />
         <div class="stars-container"></div>
         <div class="hero-overlay"></div>
         <div class="hero-content relative z-10 pb-24 text-white">
@@ -424,7 +413,7 @@
             <div class="header-floating">
               <div class="flex items-center gap-3">
                 <button onclick="sidebar.open()" class="icon-btn w-11 h-11 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-bars"></i></button>
-                <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh31KDbNVm6w1w5ZlLBWEXTnle_aqOx8fnUM7em5G2XWwxz7t8ZKsJ4IxJn4GPwfwiG6mBsnMcJWWnB4jWqV0D4Yqxvo2RNE8QDSrF-USnvgnNTx144KN4XvcwWLXSu90lAAi4IScBNlyHnqRpf2evEdtOIqGpkbhh6E5XIYJQ20FWKn_3BFsNSfoYA9tbT=s1600" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="site-logo" alt="Discover Sharm" />
+                <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgoGnS_PZ_EiWK-H8paPs53FPwc_2BUV5egfP3EamN2irK3hFrzxVpRYQ-z9rgdzzqwc4FijgQCLP66sI9K2O0lzz023tX19DPFnvpDPGYhGtDEAtWUdVVgDxwnlpotNgs5gr8H4XGYDEAAP6Gx9JvYNo9Nf6Mp0CwCa2350bqiQb4RFuhLuOtRWhvyAz-I=s1600" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="site-logo" alt="Discover Sharm" />
               </div>
               <div>
                 <button onclick="nav.go('profile')" data-page="profile" title="Profile" aria-label="Profile" class="icon-btn w-11 h-11 rounded-xl flex items-center justify-center relative">
@@ -605,7 +594,7 @@
           <div class="hidden lg:block footer-desktop">
             <div class="footer-grid">
               <div class="footer-brand-col">
-                <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh31KDbNVm6w1w5ZlLBWEXTnle_aqOx8fnUM7em5G2XWwxz7t8ZKsJ4IxJn4GPwfwiG6mBsnMcJWWnB4jWqV0D4Yqxvo2RNE8QDSrF-USnvgnNTx144KN4XvcwWLXSu90lAAi4IScBNlyHnqRpf2evEdtOIqGpkbhh6E5XIYJQ20FWKn_3BFsNSfoYA9tbT=s1600" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-8 w-auto mb-4" alt="Discover Sharm" />
+                <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgoGnS_PZ_EiWK-H8paPs53FPwc_2BUV5egfP3EamN2irK3hFrzxVpRYQ-z9rgdzzqwc4FijgQCLP66sI9K2O0lzz023tX19DPFnvpDPGYhGtDEAtWUdVVgDxwnlpotNgs5gr8H4XGYDEAAP6Gx9JvYNo9Nf6Mp0CwCa2350bqiQb4RFuhLuOtRWhvyAz-I=s1600" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-8 w-auto mb-4" alt="Discover Sharm" />
                 <p class="footer-tagline" data-i18n="footerTagline">Your trusted guide to hotels, excursions, transfers and dining across Sharm El-Sheikh.</p>
                 <div class="footer-social">
                   <a href="#" class="footer-social-btn" aria-label="Instagram" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
@@ -668,7 +657,7 @@
 
           <!-- Mobile footer -->
           <div class="lg:hidden footer-mobile">
-            <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh31KDbNVm6w1w5ZlLBWEXTnle_aqOx8fnUM7em5G2XWwxz7t8ZKsJ4IxJn4GPwfwiG6mBsnMcJWWnB4jWqV0D4Yqxvo2RNE8QDSrF-USnvgnNTx144KN4XvcwWLXSu90lAAi4IScBNlyHnqRpf2evEdtOIqGpkbhh6E5XIYJQ20FWKn_3BFsNSfoYA9tbT=s1600" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-7 w-auto mb-4" alt="Discover Sharm" />
+            <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgoGnS_PZ_EiWK-H8paPs53FPwc_2BUV5egfP3EamN2irK3hFrzxVpRYQ-z9rgdzzqwc4FijgQCLP66sI9K2O0lzz023tX19DPFnvpDPGYhGtDEAtWUdVVgDxwnlpotNgs5gr8H4XGYDEAAP6Gx9JvYNo9Nf6Mp0CwCa2350bqiQb4RFuhLuOtRWhvyAz-I=s1600" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-7 w-auto mb-4" alt="Discover Sharm" />
             <div class="payment-icon-row justify-center">
               <div class="payment-icon-box"><i class="fa-brands fa-cc-visa"></i></div>
               <div class="payment-icon-box"><i class="fa-brands fa-cc-mastercard"></i></div>
