@@ -405,7 +405,7 @@ async function loadCatalogFromWorker() {
   await Promise.all(
     files.map(async (f) => {
       try {
-        const data = await Fetch(`/data/${f}.json`, {}, true);
+        const data = await fetch(`/data/${f}.json`, {}, true);
         
         // التحقق مما إذا كان المحتوى نصياً يحتاج لـ parse أم أنه كائن بالفعل
         CATALOG_RAW[f] = typeof data.content === 'string' 
