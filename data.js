@@ -1,4 +1,6 @@
 // ==================== CONFIG ====================
+// إذا كان الـ Worker مرفوعاً على نفس الدومين، اترك API_BASE فارغاً ''
+// أو ضع رابط الـ Worker الكامل (مثلاً: 'https://your-worker.your-subdomain.workers.dev')
 const API_BASE = '';
 let authToken = localStorage.getItem('ds_auth_token') || null;
 let currentUser = null;
@@ -13,8 +15,6 @@ try {
 let authMode = 'login';
 
 const PLACEHOLDER_IMG = "data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27300%27%3E%3Crect fill=%27%232b2140%27 width=%27400%27 height=%27300%27/%3E%3Ctext x=%27200%27 y=%27150%27 text-anchor=%27middle%27 dy=%27.3em%27 fill=%27%239d94b8%27 font-size=%2720%27 font-family=%27sans-serif%27%3ENo Image%3C/text%3E%3C/svg%3E";
-// Note: FALLBACK_LOGO is defined inline in <head> in index.html, not here —
-// see the comment there for why it has to load before this file does.
 
 // ==================== STATE ====================
 const state = {
@@ -156,9 +156,6 @@ function formatPrice(egpAmount) {
 
 // ==================== UTILITIES ====================
 const utils = {
-  // Local-date formatter used everywhere below, instead of
-  // date.toISOString().slice(0,10) — toISOString() converts to UTC, which
-  // silently shifts the date by a day for part of every day in Egypt.
   isoLocal(d) {
     const y = d.getFullYear();
     const m = String(d.getMonth() + 1).padStart(2, '0');
@@ -400,30 +397,20 @@ function localizeCatalog(lang) {
 // ==================== CATALOG LOADING ====================
 async function loadCatalogFromWorker() {
   const files = ['hotels', 'excursions', 'transfers', 'destinations', 'restaurants', 'reviews', 'articles'];
-
-  // تحميل جميع الملفات بالتوازي باستخدام Promise.all
-  await Promise.all(
-    files.map(async (f) => {
-      try {
-        const data = await fetch(`/data/${f}.json`, {}, true);
-        
-        // التحقق مما إذا كان المحتوى نصياً يحتاج لـ parse أم أنه كائن بالفعل
-        CATALOG_RAW[f] = typeof data.content === 'string' 
-          ? JSON.parse(data.content) 
-          : (data.content || data); // دعم احتياطي لو كان الـ data نفسه هو المحتوى
-
-      } catch (e) {
-        console.warn(`Failed to load ${f}:`, e);
-        CATALOG_RAW[f] = []; // في حال حدوث خطأ، تعيين مصفوفة فارغة لتجنب تعطل الواجهة
-      }
-    })
-  );
-
+  for (const f of files) {
+    try {
+      // تعديل مسار جلب الملفات ليتوافق مع نقاط النهاية (Endpoints) الخاصة بالـ Worker
+      const data = await apiFetch(`/api/file?file=${f}.json`, {}, true);
+      // التأكد من معالجة البيانات سواء كانت نصية (JSON.parse) أو جُمِعت مسبقاً ككائن
+      CATALOG_RAW[f] = typeof data.content === 'string' ? JSON.parse(data.content) : (data.content || data);
+    } catch (e) {
+      console.warn(`Failed to load ${f}:`, e);
+      CATALOG_RAW[f] = [];
+    }
+  }
   localizeCatalog(I18N.get());
   refreshCatalogUI();
 }
-
-    
 
 function refreshCatalogUI() {
   if (document.getElementById('hotelsList')) hotels.render();
@@ -517,28 +504,15 @@ async function handleAuthSubmit(e) {
 }
 
 // ==================== GOOGLE SIGN-IN ====================
-// Renders Google's own "Sign in with Google" button (FedCM-based) instead of
-// driving the legacy One Tap prompt() flow. prompt() is silently suppressed
-// for all sorts of ordinary reasons (cooldown, no Google session, Safari/ITP,
-// disabled third-party cookies) and used to surface a generic "blocked"
-// error every time that happened. The rendered button is what Google itself
-// recommends now and works reliably across browsers without that noise.
 let googleSignInInitialized = false;
 let googleClientIdPromise = null;
 
-// Small i18n lookup for the strings this module needs outside the normal
-// data-i18n DOM pass (toasts, injected HTML).
 function t(key, fallback) {
   const entry = I18N_DICT[key];
   const lang = (typeof I18N !== 'undefined' && I18N.get) ? I18N.get() : 'en';
   return (entry && (entry[lang] || entry.en)) || fallback;
 }
 
-// Google's Sign-In JS refuses to run inside in-app browsers (Instagram,
-// Facebook, TikTok, WhatsApp, etc. — it responds with a hard
-// "disallowed_useragent" error). There's no way to make it work there, so we
-// detect it and show a clear instruction instead of a button that will just
-// fail.
 function isInAppBrowser() {
   const ua = navigator.userAgent || '';
   return /FBAN|FBAV|FB_IAB|Instagram|Line\/|MicroMessenger|TikTok|GSA\/|KAKAOTALK|Snapchat|\bWhatsApp\b/i.test(ua);
@@ -565,9 +539,6 @@ async function getGoogleClientId() {
   return googleClientIdPromise;
 }
 
-// Called whenever the auth screen is shown (and on window resize while it's
-// visible) to (re)mount the official Google button at the right width for
-// the current layout — mobile full-width card vs. the narrower desktop panel.
 async function initGoogleSignInButton() {
   const container = document.getElementById('googleSignInBtn');
   if (!container) return;
@@ -612,9 +583,6 @@ async function initGoogleSignInButton() {
   }
 }
 
-// Debounced re-render on resize so the button width stays correct when the
-// viewport crosses the mobile/desktop layout breakpoint, but only while the
-// auth screen is actually on screen.
 let _googleBtnResizeTimer = null;
 window.addEventListener('resize', () => {
   const authPage = document.getElementById('authPage');
@@ -722,7 +690,6 @@ function updateDrawerUser(name, email, photoURL) {
   const se = document.getElementById('sidebarProfileEmail'); if (se) se.textContent = safeEmail;
   profileAvatar.render(safeName, safePhoto);
 
-  // بادج Sharmawy في السايد بار
   const badge = document.getElementById('drawerTierBadge');
   if (badge) {
     const level = (currentUser && currentUser.geniusLevel) || 0;
@@ -770,7 +737,7 @@ const reviews = {
   },
   async submit(e) {
     e.preventDefault();
-    if (this.submitting) return; // guards against a double form-submit (e.g. a fast double-click)
+    if (this.submitting) return;
     const bookingId = document.getElementById('reviewBookingId').value.trim().toUpperCase();
     const name = document.getElementById('reviewName').value.trim();
     const comment = document.getElementById('reviewComment').value.trim();
@@ -890,8 +857,6 @@ async function loadReviews(type, id, containerId, summaryId, barsId) {
         const avg = utils.avgRating(reviewsList);
         summaryEl.textContent = avg ? avg.toFixed(1) : '0.0';
       }
-      // Derived IDs (e.g. excursionRatingSummary -> excursionRatingStars /
-      // excursionRatingCount) so the real average and count show next to it.
       const starsEl = document.getElementById(summaryId.replace('Summary', 'Stars'));
       const countEl = document.getElementById(summaryId.replace('Summary', 'Count'));
       const avg = utils.avgRating(reviewsList);
@@ -1094,4 +1059,3 @@ document.addEventListener('click', function(e) {
 
   datepicker.open(fieldId, { unavailableIso: unavailable });
 });
-
