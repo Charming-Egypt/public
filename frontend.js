@@ -1,9 +1,9 @@
 // ==================== FRONTEND UI & NAVIGATION ====================
 window.DS_CONFIG = window.DS_CONFIG || {
-  SHOW_HOTELS: true,
+  SHOW_HOTELS: false,
   SHOW_EXCURSIONS: true,
   SHOW_TRANSFERS: true,
-  SHOW_RESTAURANTS: true,
+  SHOW_RESTAURANTS: false,
   SHOW_DESTINATIONS: true,
 };
 
@@ -488,7 +488,7 @@ const datepicker = {
   rangeEnd: null,
 
   fieldValue(fieldId) {
-    if (fieldId === 'searchCheckIn') return search.selectedCheckIn;
+    if (fieldId === 'searchCheckIn' || fieldId === 'excursionDate') return search.selectedCheckIn;
     if (fieldId === 'searchCheckOut') return search.selectedCheckOut;
     const field = document.getElementById(fieldId);
     return field ? field.dataset.value : '';
@@ -610,14 +610,20 @@ const datepicker = {
       search.selectedCheckIn = iso;
       search.selectedCheckOut = null;
       search.updateDateDisplays();
-      this.close();
+      this.rangeStart = iso;
+      this.render();                   // show the orange highlight before closing
+      setTimeout(() => this.close(), 300);
       return;
     }
     if (!this.pair) {
-      // any other single-date field (kept for forward compatibility)
+      // Any other single-date field (excursion/transfer booking dates —
+      // ekDate, tkDate). Same as above: highlight first, then close, so
+      // the picked date visibly turns orange like check-in/check-out do.
       setDateFieldValue(this.target, iso);
       if (typeof onDateFieldChange === 'function') onDateFieldChange(this.target, iso);
-      this.close();
+      this.rangeStart = iso;
+      this.render();
+      setTimeout(() => this.close(), 300);
       return;
     }
 
