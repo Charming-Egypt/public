@@ -363,12 +363,52 @@ function getSharmawyBenefitsHtml(level) {
 }
 
 // ==================== GUESTS MODAL ====================
+// Child age tiers shown in the picker. Kept in sync with a room's own
+// childPricingTiers when one is open (showHotelPage sets state.currentRoom),
+// otherwise falls back to this generic 0-17 range for the search-page picker
+// where no specific room/price is known yet.
+const DEFAULT_CHILD_AGE_MAX = 12; // matches the site's existing "Children = age 2-12" convention (Infants under 2 are a separate free counter)
+
+function renderChildAgeInputs() {
+  const containers = ['childAgesList', 'searchChildAgesList'].map(id => document.getElementById(id)).filter(Boolean);
+  if (!containers.length) return;
+  const count = state.guests.children;
+  const ages = state.guests.childAges || (state.guests.childAges = []);
+  // keep the ages array the same length as the children count: preserve
+  // ages already chosen, add empty slots for new children, drop extras
+  // when the count goes down.
+  while (ages.length < count) ages.push(null);
+  while (ages.length > count) ages.pop();
+
+  const html = count === 0 ? '' : ages.map((age, i) => `
+    <div class="flex items-center justify-between" style="padding-inline-start:8px;">
+      <label for="childAge_${i}" class="text-xs" style="color:var(--text-secondary)" data-i18n="childAgeLabel">Child ${i + 1} age</label>
+      <select id="childAge_${i}" class="field-box px-3 py-2 text-sm" style="min-width:110px" onchange="setChildAge(${i}, this.value)">
+        <option value="" ${age === null ? 'selected' : ''} data-i18n="selectAge">Select age</option>
+        ${Array.from({ length: DEFAULT_CHILD_AGE_MAX + 1 }, (_, y) => `<option value="${y}" ${age === y ? 'selected' : ''}>${y}</option>`).join('')}
+      </select>
+    </div>
+  `).join('');
+  containers.forEach(c => c.innerHTML = html);
+}
+function setChildAge(index, value) {
+  state.guests.childAges[index] = value === '' ? null : parseInt(value, 10);
+  search.updateGuestDisplay();
+}
+// True once every child in the party has an age selected — callers block
+// proceeding (Apply / next booking step) until this passes, since pricing
+// can't be computed for a child with no age.
+function allChildAgesSelected() {
+  return (state.guests.childAges || []).length === state.guests.children
+    && (state.guests.childAges || []).every(a => a !== null && a !== undefined && !isNaN(a));
+}
 function openGuestsModal() {
   document.getElementById('guestsModal').classList.remove('hidden');
   document.getElementById('adultsCount').textContent = state.guests.adults;
   document.getElementById('childrenCount').textContent = state.guests.children;
   document.getElementById('infantsCount').textContent = state.guests.infants;
   document.getElementById('roomsCount').textContent = state.guests.rooms;
+  renderChildAgeInputs();
 }
 function closeGuestsModal() { document.getElementById('guestsModal').classList.add('hidden'); }
 function adjustGuestCount(type, delta) {
@@ -392,9 +432,11 @@ function adjustGuestCount(type, delta) {
   document.getElementById('childrenCount').textContent = state.guests.children;
   document.getElementById('infantsCount').textContent = state.guests.infants;
   document.getElementById('roomsCount').textContent = state.guests.rooms;
+  if (type === 'children') renderChildAgeInputs();
   search.updateGuestDisplay();
 }
 function applyGuests() {
+  if (!allChildAgesSelected()) { toast('Please select an age for every child', 'error'); return; }
   closeGuestsModal();
   search.updateGuestDisplay();
   toast('Guests updated', 'info');
@@ -423,32 +465,69 @@ function onDateFieldChange(fieldId, iso) {
   if (fieldId === 'tkDate') state.bookingDraft.date = iso;
 }
 
+// A field id belongs to a check-in/check-out pair here means: tapping
+// EITHER one opens a single connected calendar that stays open across both
+// picks, highlights the whole range, and shows a live night count —
+// instead of the old flow of two separate single-date pickers that closed
+// after every tap.
+const DATE_PAIRS = {
+  searchCheckIn: { checkin: 'searchCheckIn', checkout: 'searchCheckOut' },
+  searchCheckOut: { checkin: 'searchCheckIn', checkout: 'searchCheckOut' },
+  bkCheckin: { checkin: 'bkCheckin', checkout: 'bkCheckout' },
+  bkCheckout: { checkin: 'bkCheckin', checkout: 'bkCheckout' },
+};
+
 const datepicker = {
   target: null,
   viewDate: new Date(),
   minIso: null,
   unavailable: [],
+  pair: null,        // {checkin, checkout} field ids, or null for a single-date field
+  stage: null,        // 'checkin' | 'checkout' — which end of the range we're picking
+  rangeStart: null,
+  rangeEnd: null,
+
+  fieldValue(fieldId) {
+    if (fieldId === 'searchCheckIn') return search.selectedCheckIn;
+    if (fieldId === 'searchCheckOut') return search.selectedCheckOut;
+    const field = document.getElementById(fieldId);
+    return field ? field.dataset.value : '';
+  },
+
   open(fieldId, opts = {}) {
     this.target = fieldId;
     this.minIso = utils.addDays(utils.todayIso(), 1);
     this.unavailable = opts.unavailableIso || [];
-    // The home search bar's date triggers ("searchCheckIn"/"searchCheckOut")
-    // aren't real DOM fields with a dataset.value — their current value
-    // lives on the `search` object instead, so read it from there. Every
-    // other caller (the booking-flow date fields) still reads dataset.value.
-    let cur;
-    if (fieldId === 'searchCheckIn') cur = search.selectedCheckIn;
-    else if (fieldId === 'searchCheckOut') cur = search.selectedCheckOut;
-    else {
-      const field = document.getElementById(fieldId);
-      cur = field ? field.dataset.value : '';
+    this.pair = DATE_PAIRS[fieldId] || null;
+
+    if (this.pair) {
+      this.rangeStart = this.fieldValue(this.pair.checkin) || null;
+      this.rangeEnd = this.fieldValue(this.pair.checkout) || null;
+      // Tapping the check-out field directly still means "I want to change
+      // the check-out date", not restart the whole range.
+      this.stage = (fieldId === this.pair.checkout && this.rangeStart) ? 'checkout' : 'checkin';
+    } else {
+      this.rangeStart = this.fieldValue(fieldId) || null;
+      this.rangeEnd = null;
+      this.stage = 'checkin';
     }
-    this.viewDate = new Date((cur || this.minIso) + 'T00:00:00');
+
+    const anchor = this.stage === 'checkout' && this.rangeStart ? this.rangeStart : (this.rangeStart || this.minIso);
+    this.viewDate = new Date(anchor + 'T00:00:00');
     this.render();
     document.getElementById('datepickerModal').classList.remove('hidden');
   },
   close() { document.getElementById('datepickerModal').classList.add('hidden'); },
   changeMonth(delta) { this.viewDate.setMonth(this.viewDate.getMonth() + delta); this.render(); },
+
+  // Quick presets for the check-in/check-out flow — only shown before a
+  // check-in date is picked. Each jumps straight to a finished range.
+  applyPreset(nights) {
+    const start = this.minIso;
+    const end = utils.addDays(start, nights);
+    this.commitRange(start, end);
+  },
+
   render() {
     const lang = I18N.get();
     const monthNamesEn = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -458,43 +537,75 @@ const datepicker = {
     const y = this.viewDate.getFullYear(), m = this.viewDate.getMonth();
     document.getElementById('dpMonthLabel').textContent = (lang === 'ar' ? monthNamesAr[m] : monthNamesEn[m]) + ' ' + y;
     document.getElementById('dpWeekdays').innerHTML = (lang === 'ar' ? weekdaysAr : weekdaysEn).map(w => `<span class="text-[10px] font-semibold" style="color:var(--text-secondary)">${w}</span>`).join('');
+
+    // Status line: tells the user which end of the range they're picking,
+    // and shows the night count live once both ends are set.
+    const statusEl = document.getElementById('dpStatus');
+    if (statusEl) {
+      if (!this.pair) {
+        statusEl.textContent = '';
+      } else if (this.rangeStart && this.rangeEnd) {
+        const nights = Math.round((new Date(this.rangeEnd) - new Date(this.rangeStart)) / 86400000);
+        statusEl.textContent = (lang === 'ar' ? `${nights} ليلة — ` : `${nights} night${nights !== 1 ? 's' : ''} — `) +
+          utils.formatDate(this.rangeStart) + ' → ' + utils.formatDate(this.rangeEnd);
+      } else if (this.stage === 'checkout') {
+        statusEl.textContent = lang === 'ar' ? 'اختار تاريخ المغادرة' : 'Select your check-out date';
+      } else {
+        statusEl.textContent = lang === 'ar' ? 'اختار تاريخ الوصول' : 'Select your check-in date';
+      }
+    }
+    const presetsEl = document.getElementById('dpPresets');
+    if (presetsEl) presetsEl.style.display = (this.pair && this.stage === 'checkin' && !this.rangeEnd) ? 'flex' : 'none';
+
     const first = new Date(y, m, 1);
     const startDay = first.getDay();
     const daysInMonth = new Date(y, m + 1, 0).getDate();
-    const field = document.getElementById(this.target);
-    const cur = this.target === 'searchCheckIn' ? search.selectedCheckIn
-      : this.target === 'searchCheckOut' ? search.selectedCheckOut
-      : (field ? field.dataset.value : '');
     const today = new Date(); today.setHours(0,0,0,0);
+    const effectiveMin = (this.stage === 'checkout' && this.rangeStart) ? utils.addDays(this.rangeStart, 1) : this.minIso;
+
     let html = '';
     for (let i = 0; i < startDay; i++) html += '<div></div>';
     for (let d = 1; d <= daysInMonth; d++) {
       const iso = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
       const dateObj = new Date(y, m, d);
-      const isBeforeMin = iso < this.minIso;
+      const isBeforeMin = iso < effectiveMin;
       const isToday = dateObj.getTime() === today.getTime();
       const isUnavailable = this.unavailable.includes(iso);
-      const isDisabled = isBeforeMin || isUnavailable || isToday; // ✅ اليوم مقفول
-      const isSelected = cur === iso;
-      html += `<button type="button" ${isDisabled ? 'disabled' : ''} onclick="datepicker.select('${iso}')" class="w-9 h-9 rounded-xl text-xs font-semibold ${isSelected ? 'bg-gradient-to-br from-violet-500 to-violet-700 text-white' : isDisabled ? 'text-gray-400 opacity-40 line-through' : ''}" style="${isSelected ? '' : 'color:var(--text-primary)'}">${d}</button>`;
+      const isDisabled = isBeforeMin || isUnavailable || isToday;
+
+      let cls = 'dp-day';
+      if (this.pair) {
+        const isStart = iso === this.rangeStart;
+        const isEnd = iso === this.rangeEnd;
+        const inRange = this.rangeStart && this.rangeEnd && iso > this.rangeStart && iso < this.rangeEnd;
+        if (isStart || isEnd) cls += ' dp-day-endpoint';
+        else if (inRange) cls += ' dp-day-inrange';
+      } else if (iso === this.rangeStart) {
+        cls += ' dp-day-endpoint';
+      }
+      if (isDisabled) cls += ' dp-day-disabled';
+
+      html += `<button type="button" ${isDisabled ? 'disabled' : ''} onclick="datepicker.select('${iso}')" class="${cls}">${d}</button>`;
     }
     document.getElementById('dpGrid').innerHTML = html;
   },
+
+  commitRange(startIso, endIso) {
+    this.rangeStart = startIso; this.rangeEnd = endIso;
+    if (this.pair.checkin === 'searchCheckIn') {
+      search.selectedCheckIn = startIso; search.selectedCheckOut = endIso;
+      search.updateDateDisplays();
+    } else {
+      setDateFieldValue(this.pair.checkin, startIso);
+      setDateFieldValue(this.pair.checkout, endIso);
+      state.bookingDraft.checkin = startIso;
+      state.bookingDraft.checkout = endIso;
+    }
+    this.render();
+    setTimeout(() => this.close(), 350); // brief pause so the user sees the confirmed range/night count before it closes
+  },
+
   select(iso) {
-    // البحث
-    if (this.target === 'searchCheckIn') {
-      search.selectedCheckIn = iso;
-      search.selectedCheckOut = null;
-      search.updateDateDisplays();
-      this.close();
-      return;
-    }
-    if (this.target === 'searchCheckOut') {
-      search.selectedCheckOut = iso;
-      search.updateDateDisplays();
-      this.close();
-      return;
-    }
     if (this.target === 'excursionDate') {
       search.selectedCheckIn = iso;
       search.selectedCheckOut = null;
@@ -502,10 +613,31 @@ const datepicker = {
       this.close();
       return;
     }
-    // الحجز
-    setDateFieldValue(this.target, iso);
-    if (typeof onDateFieldChange === 'function') onDateFieldChange(this.target, iso);
-    this.close();
+    if (!this.pair) {
+      // any other single-date field (kept for forward compatibility)
+      setDateFieldValue(this.target, iso);
+      if (typeof onDateFieldChange === 'function') onDateFieldChange(this.target, iso);
+      this.close();
+      return;
+    }
+
+    // Range flow: first tap sets check-in and switches straight to picking
+    // check-out in the same open modal; second tap commits the range.
+    if (this.stage === 'checkin' || !this.rangeStart) {
+      this.rangeStart = iso;
+      this.rangeEnd = null;
+      this.stage = 'checkout';
+      this.render();
+      return;
+    }
+    // Tapping a date before (or equal to) the check-in again just restarts.
+    if (iso <= this.rangeStart) {
+      this.rangeStart = iso;
+      this.rangeEnd = null;
+      this.render();
+      return;
+    }
+    this.commitRange(this.rangeStart, iso);
   }
 };
 
@@ -566,6 +698,7 @@ const search = {
     document.getElementById('searchGuestDropdown').style.display = 'flex';
   },
   closeGuestDropdown() {
+    if (!allChildAgesSelected()) { toast('Please select an age for every child', 'error'); return; }
     document.getElementById('searchGuestDropdown').style.display = 'none';
     this.updateGuestDisplay();
   },
@@ -621,10 +754,14 @@ const search = {
     document.getElementById('searchAdultCount').textContent = state.guests.adults;
     document.getElementById('searchChildCount').textContent = state.guests.children;
     document.getElementById('searchRoomCount').textContent = state.guests.rooms;
+    if (type === 'children') renderChildAgeInputs();
     this.updateGuestDisplay();
   },
   updateGuestDisplay() {
-    const text = `${state.guests.adults} Adults, ${state.guests.children} Children, ${state.guests.rooms} Room(s)`;
+    const childPart = state.guests.children > 0
+      ? `${state.guests.children} Children (${(state.guests.childAges || []).map(a => a === null || a === undefined ? '?' : a).join(', ')})`
+      : '0 Children';
+    const text = `${state.guests.adults} Adults, ${childPart}, ${state.guests.rooms} Room(s)`;
     const el = document.getElementById('guestsDisplay');
     if (el) el.textContent = text;
   },
