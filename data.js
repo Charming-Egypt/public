@@ -289,7 +289,7 @@ let I18N_DICT = {};
 
 async function loadI18nDict() {
   try {
-    const manifestRes = await fetch('/api/file?file=lang/manifest.json');
+    const manifestRes = await fetch('/lang/manifest.json');
     const manifest = await manifestRes.json();
     SUPPORTED_LANGS = manifest.languages.map(l => l.code);
     LANG_LABELS = {};
@@ -402,7 +402,7 @@ async function loadCatalogFromWorker() {
   const files = ['hotels', 'excursions', 'transfers', 'destinations', 'restaurants', 'reviews', 'articles'];
   for (const f of files) {
     try {
-      const data = await apiFetch(`/api/file?file=${f}.json`, {}, true);
+      const data = await apiFetch(`/${f}.json`, {}, true);
       CATALOG_RAW[f] = JSON.parse(data.content);
     } catch (e) {
       console.warn(`Failed to load ${f}:`, e);
