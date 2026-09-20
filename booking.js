@@ -1294,7 +1294,7 @@ function showBookingDetails(bookingId) {
   const page = document.createElement('div'); page.id = 'bookingDetailsPage'; page.className = 'page';
   page.innerHTML = `
     <div class="min-h-screen pb-28" style="background:var(--bg-body)">
-      <div class="dark-scene px-5 pt-6 pb-8 relative overflow-hidden">
+      <div class="dark-scene rounded-t-[28px] px-5 pt-6 pb-8 relative overflow-hidden">
         <div class="stars-container"></div>
         <div class="relative z-10">
           <div class="flex items-center justify-between mb-5">
