@@ -340,25 +340,9 @@ body:has(#transferDetailPage.active) .bottom-nav {
   color: var(--chrome-text-muted);
 }
 
+/* Active state = orange color only, no dot indicator underneath (per request). */
 .nav-item.active {
   color: #f97316;
-}
-
-.nav-item.active::after {
-  content: '';
-  position: absolute;
-  bottom: 3px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #fb923c, #c2410c);
-  box-shadow: 0 0 8px rgba(249, 115, 22, .9);
-}
-
-.nav-item[data-page="profile"].active::after {
-  display: none;
 }
 
 .nav-item-home {
@@ -2578,15 +2562,17 @@ html[data-theme="light"] .theme-switch .knob {
 #datepickerModal .dp-day:not(:disabled):active {
   transform: scale(0.93);
 }
-/* Selected check-in/check-out date (or the single date for a one-date field) */
+/* Selected check-in/check-out date (or the single date for a one-date field)
+   — the site's signature orange gradient, same one used on .btn-gold /
+   badges elsewhere, so the picker matches the rest of the UI. */
 #datepickerModal .dp-day-endpoint {
-  background: linear-gradient(135deg, #a855f7, #7c3aed);
+  background: linear-gradient(135deg, #fb923c, #c2410c);
   color: #fff !important;
 }
-/* Nights between check-in and check-out — softly tinted so the whole
+/* Nights between check-in and check-out — softly tinted orange so the whole
    stay reads as one connected block at a glance. */
 #datepickerModal .dp-day-inrange {
-  background: rgba(168, 85, 247, 0.16);
+  background: rgba(251, 146, 60, 0.18);
   border-radius: 0.4rem;
 }
 #datepickerModal .dp-day-disabled {
