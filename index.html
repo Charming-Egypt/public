@@ -31,18 +31,6 @@
     window.FALLBACK_LOGO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23fcd34d'/%3E%3Cstop offset='50%25' stop-color='%23fbbf24'/%3E%3Cstop offset='100%25' stop-color='%23d97706'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='120' height='120' rx='28' fill='url(%23g)'/%3E%3Ctext x='60' y='68' text-anchor='middle' font-family='Georgia,serif' font-weight='700' font-size='42' fill='%230c0918'%3EDS%3C/text%3E%3C/svg%3E";
   </script>
 
-  <script>
-  const originalWarn = console.warn;
-  console.warn = function(...args) {
-    if (args[0] && typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com')) {
-      return;
-    }
-    originalWarn.apply(console, args);
-  };
-</script>
-<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-  
-
   <link rel="stylesheet" href="/style.css?v=10" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap" rel="stylesheet" />
@@ -220,11 +208,15 @@
           <div class="flex items-center gap-3"><button class="counter-btn" onclick="adjustGuestCount('adults', -1)">-</button><span id="adultsCount" class="text-xl font-bold w-8 text-center" style="color:var(--text-primary)">2</span><button class="counter-btn" onclick="adjustGuestCount('adults', 1)">+</button></div>
         </div>
         <div class="flex items-center justify-between">
-          <div><p class="font-semibold text-sm" style="color:var(--text-primary)" data-i18n="children">Children</p><p class="text-xs" style="color:var(--text-secondary)">Age 2-12</p></div>
+          <div><p class="font-semibold text-sm" style="color:var(--text-primary)" data-i18n="children">Children</p><p class="text-xs" style="color:var(--text-secondary)" data-i18n="childrenAgeHint">Tell us each child's age for accurate pricing</p></div>
           <div class="flex items-center gap-3"><button class="counter-btn" onclick="adjustGuestCount('children', -1)">-</button><span id="childrenCount" class="text-xl font-bold w-8 text-center" style="color:var(--text-primary)">0</span><button class="counter-btn" onclick="adjustGuestCount('children', 1)">+</button></div>
         </div>
+        <!-- One age <select> per child, injected/removed live by renderChildAgeInputs() as the
+             counter above changes. Pricing (computeRoomPricing) reads state.guests.childAges,
+             so this list is the actual source of truth for child fees, not just the count. -->
+        <div id="childAgesList" class="space-y-2"></div>
         <div class="flex items-center justify-between">
-          <div><p class="font-semibold text-sm" style="color:var(--text-primary)" data-i18n="infants">Infants</p><p class="text-xs" style="color:var(--text-secondary)">Under 2</p></div>
+          <div><p class="font-semibold text-sm" style="color:var(--text-primary)" data-i18n="infants">Infants</p><p class="text-xs" style="color:var(--text-secondary)">Under 2 · free, no seat/bed</p></div>
           <div class="flex items-center gap-3"><button class="counter-btn" onclick="adjustGuestCount('infants', -1)">-</button><span id="infantsCount" class="text-xl font-bold w-8 text-center" style="color:var(--text-primary)">0</span><button class="counter-btn" onclick="adjustGuestCount('infants', 1)">+</button></div>
         </div>
         <div class="flex items-center justify-between border-t pt-4" style="border-color:var(--border-card)">
@@ -236,13 +228,21 @@
     </div>
   </div>
 
-  <!-- Datepicker Modal (موحد للبحث والحجز) -->
+  <!-- Datepicker Modal (موحد للبحث والحجز) — one connected calendar handles
+       both check-in and check-out without closing in between; see the
+       `datepicker` object in frontend.js. -->
   <div id="datepickerModal" class="modal-overlay hidden" style="z-index: 99999;">
     <div class="modal-content" style="max-width:340px;">
-      <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center justify-between mb-2">
         <button onclick="datepicker.changeMonth(1)" class="w-9 h-9 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-chevron-right text-xs"></i></button>
         <h3 id="dpMonthLabel" class="font-display font-bold text-base" style="color:var(--text-primary)"></h3>
         <button onclick="datepicker.changeMonth(-1)" class="w-9 h-9 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+      </div>
+      <p id="dpStatus" class="text-center text-xs font-semibold mb-3" style="color:var(--gold-500, #f59e0b); min-height:16px;"></p>
+      <div id="dpPresets" class="flex gap-2 mb-3" style="display:none;">
+        <button type="button" onclick="datepicker.applyPreset(1)" class="flex-1 py-2 rounded-xl text-[11px] font-semibold field-box" style="color:var(--text-primary)" data-i18n="dpOneNight">1 Night</button>
+        <button type="button" onclick="datepicker.applyPreset(2)" class="flex-1 py-2 rounded-xl text-[11px] font-semibold field-box" style="color:var(--text-primary)" data-i18n="dpWeekend">Weekend</button>
+        <button type="button" onclick="datepicker.applyPreset(7)" class="flex-1 py-2 rounded-xl text-[11px] font-semibold field-box" style="color:var(--text-primary)" data-i18n="dpWeek">1 Week</button>
       </div>
       <div class="dp-grid mb-1 text-center" id="dpWeekdays"></div>
       <div class="dp-grid" id="dpGrid"></div>
@@ -498,7 +498,8 @@
           <div id="searchGuestDropdown" class="ds-modal-overlay" style="display:none; z-index:10000;">
             <div class="ds-modal-content">
               <div class="ds-guest-row"><div class="ds-guest-info-label">Adults</div><div class="ds-guest-counter"><button onclick="search.adjustGuest('adults', -1)" class="ds-guest-btn">−</button><span id="searchAdultCount" class="ds-guest-value">2</span><button onclick="search.adjustGuest('adults', 1)" class="ds-guest-btn">+</button></div></div>
-              <div class="ds-guest-row"><div><div class="ds-guest-info-label">Children</div><div class="ds-guest-info-sub">Ages 0-11</div></div><div class="ds-guest-counter"><button onclick="search.adjustGuest('children', -1)" class="ds-guest-btn">−</button><span id="searchChildCount" class="ds-guest-value">0</span><button onclick="search.adjustGuest('children', 1)" class="ds-guest-btn">+</button></div></div>
+              <div class="ds-guest-row"><div><div class="ds-guest-info-label">Children</div><div class="ds-guest-info-sub">Tell us each child's age</div></div><div class="ds-guest-counter"><button onclick="search.adjustGuest('children', -1)" class="ds-guest-btn">−</button><span id="searchChildCount" class="ds-guest-value">0</span><button onclick="search.adjustGuest('children', 1)" class="ds-guest-btn">+</button></div></div>
+              <div id="searchChildAgesList" class="space-y-2"></div>
               <div class="ds-guest-row"><div class="ds-guest-info-label">Rooms</div><div class="ds-guest-counter"><button onclick="search.adjustGuest('rooms', -1)" class="ds-guest-btn">−</button><span id="searchRoomCount" class="ds-guest-value">1</span><button onclick="search.adjustGuest('rooms', 1)" class="ds-guest-btn">+</button></div></div>
               <button class="ds-modal-apply" onclick="search.closeGuestDropdown()">Apply</button>
             </div>
