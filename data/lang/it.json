@@ -102,7 +102,6 @@
   "submitReview": "Invia Recensione",
   "creditDebitCard": "Carta di Credito / Debito",
   "instapayWallet": "InstaPay / E-Wallet",
-  "cashOnArrival": "Pagamento all'Arrivo",
   "airportPickup": "Pick-up in Aeroporto",
   "airportDropoff": "Drop-off in Aeroporto",
   "currencyEgpOnly": "Mostrato in EGP — tassi in tempo reale non disponibili",
@@ -114,7 +113,7 @@
   "articlesTitle": "Guide di Viaggio & Consigli",
   "paymentEyebrow": "— PAGAMENTO SICURO",
   "acceptedPayments": "Metodi di Pagamento Accettati",
-  "paymentSecureNote": "Tutti i pagamenti sono elaborati in modo sicuro in Lira Egiziana (EGP). Paga con carta, InstaPay/e-wallet o in contanti all'arrivo.",
+  "paymentSecureNote": "Tutti i pagamenti sono elaborati in modo sicuro in Lira Egiziana (EGP). Paga con carta o InstaPay/e-wallet.",
   "navRestaurants": "Ristoranti & Caffè",
   "readMore": "Leggi di Più",
   "theMenu": "Il Menu",
@@ -135,5 +134,11 @@
   "nationality": "NAZIONALITÀ",
   "heroExcEyebrow": "— ESPERIENZE INOLVIDABILI",
   "heroTitleExcursions": "Trova la Tua<br><span class=\"italic text-gold-400\">Prossima Avventura</span>",
-  "heroSubtitleExcursions": "Snorkeling nella barriera corallina, safari nel deserto e giornate indimenticabili."
+  "heroSubtitleExcursions": "Snorkeling nella barriera corallina, safari nel deserto e giornate indimenticabili.",
+  "childrenAgeHint": "Indica l'età di ogni bambino per un prezzo accurato",
+  "childAgeLabel": "Età del bambino {n}",
+  "selectAge": "Seleziona età",
+  "dpOneNight": "1 notte",
+  "dpWeekend": "Weekend",
+  "dpWeek": "1 settimana"
 }
