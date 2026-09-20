@@ -102,7 +102,6 @@
   "submitReview": "Değerlendirmeyi Gönder",
   "creditDebitCard": "Kredi / Banka Kartı",
   "instapayWallet": "InstaPay / E-Cüzdan",
-  "cashOnArrival": "Varışta Nakit Ödeme",
   "airportPickup": "Havalimanından Karşılama",
   "airportDropoff": "Havalimanına Transfer",
   "currencyEgpOnly": "EGP olarak gösteriliyor — canlı kurlar kullanılamıyor",
@@ -114,7 +113,7 @@
   "articlesTitle": "Seyahat Rehberleri & İpuçları",
   "paymentEyebrow": "— GÜVENLİ ÖDEME",
   "acceptedPayments": "Kabul Edilen Ödeme Yöntemleri",
-  "paymentSecureNote": "Tüm ödemeler Mısır Lirası (EGP) cinsinden güvenle işlenir. Kartla, InstaPay/e-cüzdanla veya varışta nakit ödeyin.",
+  "paymentSecureNote": "Tüm ödemeler Mısır Lirası (EGP) cinsinden güvenle işlenir. Kartla veya InstaPay/e-cüzdanla ödeyin.",
   "navRestaurants": "Restoranlar & Kafeler",
   "readMore": "Devamını Oku",
   "theMenu": "Menü",
@@ -135,5 +134,11 @@
   "nationality": "UYRUK",
   "heroExcEyebrow": "— UNUTULMAZ DENEYİMLER",
   "heroTitleExcursions": "Yeni Maceranızı<br><span class=\"italic text-gold-400\">Keşfedin</span>",
-  "heroSubtitleExcursions": "Şnorkel resifleri, çöl safarileri ve unutulmaz günler."
+  "heroSubtitleExcursions": "Şnorkel resifleri, çöl safarileri ve unutulmaz günler.",
+  "childrenAgeHint": "Doğru fiyatlandırma için her çocuğun yaşını belirtin",
+  "childAgeLabel": "{n}. çocuğun yaşı",
+  "selectAge": "Yaş seçin",
+  "dpOneNight": "1 Gece",
+  "dpWeekend": "Hafta Sonu",
+  "dpWeek": "1 Hafta"
 }
