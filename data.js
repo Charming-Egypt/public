@@ -400,7 +400,7 @@ async function loadCatalogFromWorker() {
   for (const f of files) {
     try {
       // تعديل مسار جلب الملفات ليتوافق مع نقاط النهاية (Endpoints) الخاصة بالـ Worker
-      const data = await fetch(`/data/${f}.json`, {}, true);
+      const data = await apiFetch(`/api/file?file=${f}.json`, {}, true);
       // التأكد من معالجة البيانات سواء كانت نصية (JSON.parse) أو جُمِعت مسبقاً ككائن
       CATALOG_RAW[f] = typeof data.content === 'string' ? JSON.parse(data.content) : (data.content || data);
     } catch (e) {
