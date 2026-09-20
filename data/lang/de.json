@@ -102,7 +102,6 @@
   "submitReview": "Bewertung absenden",
   "creditDebitCard": "Kredit- / Debitkarte",
   "instapayWallet": "InstaPay / E-Wallet",
-  "cashOnArrival": "Barzahlung bei Ankunft",
   "airportPickup": "Abholung vom Flughafen",
   "airportDropoff": "Transfer zum Flughafen",
   "currencyEgpOnly": "Anzeige in EGP — Live-Kurse nicht verfügbar",
@@ -114,7 +113,7 @@
   "articlesTitle": "Reiseführer & Tipps",
   "paymentEyebrow": "— SICHERE BEZAHLUNG",
   "acceptedPayments": "Akzeptierte Zahlungsmethoden",
-  "paymentSecureNote": "Alle Zahlungen werden sicher in Ägyptischen Pfund (EGP) abgewickelt. Zahlen Sie per Karte, InstaPay/E-Wallet oder bar bei Ankunft.",
+  "paymentSecureNote": "Alle Zahlungen werden sicher in Ägyptischen Pfund (EGP) abgewickelt. Zahlen Sie per Karte oder InstaPay/E-Wallet.",
   "navRestaurants": "Restaurants & Cafés",
   "readMore": "Weiterlesen",
   "theMenu": "Die Speisekarte",
@@ -135,5 +134,11 @@
   "nationality": "STAATSANGEHÖRIGKEIT",
   "heroExcEyebrow": "— UNVERGESSLICHE ERLEBNISSE",
   "heroTitleExcursions": "Finden Sie Ihr<br><span class=\"italic text-gold-400\">nächstes Abenteuer</span>",
-  "heroSubtitleExcursions": "Schnorchelriffe, Wüstensafaris und unvergessliche Tage."
+  "heroSubtitleExcursions": "Schnorchelriffe, Wüstensafaris und unvergessliche Tage.",
+  "childrenAgeHint": "Geben Sie das Alter jedes Kindes für eine genaue Preisberechnung an",
+  "childAgeLabel": "Alter von Kind {n}",
+  "selectAge": "Alter wählen",
+  "dpOneNight": "1 Nacht",
+  "dpWeekend": "Wochenende",
+  "dpWeek": "1 Woche"
 }
