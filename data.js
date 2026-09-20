@@ -400,18 +400,30 @@ function localizeCatalog(lang) {
 // ==================== CATALOG LOADING ====================
 async function loadCatalogFromWorker() {
   const files = ['hotels', 'excursions', 'transfers', 'destinations', 'restaurants', 'reviews', 'articles'];
-  for (const f of files) {
-    try {
-      const data = await Fetch(`/data/${f}.json`, {}, true);
-      CATALOG_RAW[f] = JSON.parse(data.content);
-    } catch (e) {
-      console.warn(`Failed to load ${f}:`, e);
-      CATALOG_RAW[f] = [];
-    }
-  }
+
+  // تحميل جميع الملفات بالتوازي باستخدام Promise.all
+  await Promise.all(
+    files.map(async (f) => {
+      try {
+        const data = await Fetch(`/data/${f}.json`, {}, true);
+        
+        // التحقق مما إذا كان المحتوى نصياً يحتاج لـ parse أم أنه كائن بالفعل
+        CATALOG_RAW[f] = typeof data.content === 'string' 
+          ? JSON.parse(data.content) 
+          : (data.content || data); // دعم احتياطي لو كان الـ data نفسه هو المحتوى
+
+      } catch (e) {
+        console.warn(`Failed to load ${f}:`, e);
+        CATALOG_RAW[f] = []; // في حال حدوث خطأ، تعيين مصفوفة فارغة لتجنب تعطل الواجهة
+      }
+    })
+  );
+
   localizeCatalog(I18N.get());
   refreshCatalogUI();
 }
+
+    
 
 function refreshCatalogUI() {
   if (document.getElementById('hotelsList')) hotels.render();
