@@ -2562,6 +2562,38 @@ html[data-theme="light"] .theme-switch .knob {
   grid-template-columns: repeat(7, 1fr);
   gap: 4px;
 }
+#datepickerModal .dp-day {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: transparent;
+  transition: background-color .15s ease, color .15s ease, transform .1s ease;
+}
+#datepickerModal .dp-day:not(:disabled):hover {
+  background: var(--bg-field);
+}
+#datepickerModal .dp-day:not(:disabled):active {
+  transform: scale(0.93);
+}
+/* Selected check-in/check-out date (or the single date for a one-date field) */
+#datepickerModal .dp-day-endpoint {
+  background: linear-gradient(135deg, #a855f7, #7c3aed);
+  color: #fff !important;
+}
+/* Nights between check-in and check-out — softly tinted so the whole
+   stay reads as one connected block at a glance. */
+#datepickerModal .dp-day-inrange {
+  background: rgba(168, 85, 247, 0.16);
+  border-radius: 0.4rem;
+}
+#datepickerModal .dp-day-disabled {
+  color: var(--text-secondary);
+  opacity: .4;
+  text-decoration: line-through;
+}
 
 /* ---------- Star Rating Input ---------- */
 .star-input i {
