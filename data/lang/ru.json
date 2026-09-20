@@ -102,7 +102,6 @@
   "submitReview": "Отправить отзыв",
   "creditDebitCard": "Кредитная / Дебетовая карта",
   "instapayWallet": "InstaPay / Электронный кошелек",
-  "cashOnArrival": "Оплата по прибытии",
   "airportPickup": "Встреча в аэропорту",
   "airportDropoff": "Трансфер в аэропорт",
   "currencyEgpOnly": "Цены в EGP — курсы валют недоступны",
@@ -114,7 +113,7 @@
   "articlesTitle": "Путеводители и советы",
   "paymentEyebrow": "— БЕЗОПАСНАЯ ОПЛАТА",
   "acceptedPayments": "Способы оплаты",
-  "paymentSecureNote": "Все платежи защищены и обрабатываются в египетских фунтах (EGP). Оплата картой, InstaPay или наличными при прибытии.",
+  "paymentSecureNote": "Все платежи защищены и обрабатываются в египетских фунтах (EGP). Оплата картой или InstaPay.",
   "navRestaurants": "Рестораны и кафе",
   "readMore": "Читать далее",
   "theMenu": "Меню",
@@ -135,5 +134,11 @@
   "nationality": "ГРАЖДАНСТВО",
   "heroExcEyebrow": "— НЕЗАБЫВАЕМЫЕ ВПЕЧАТЛЕНИЯ",
   "heroTitleExcursions": "Найдите свое<br><span class=\"italic text-gold-400\">следующее приключение</span>",
-  "heroSubtitleExcursions": "Снорклинг на рифах, сафари в пустыне и незабываемые дни."
+  "heroSubtitleExcursions": "Снорклинг на рифах, сафари в пустыне и незабываемые дни.",
+  "childrenAgeHint": "Укажите возраст каждого ребёнка для точной цены",
+  "childAgeLabel": "Возраст ребёнка {n}",
+  "selectAge": "Выберите возраст",
+  "dpOneNight": "1 ночь",
+  "dpWeekend": "Выходные",
+  "dpWeek": "1 неделя"
 }
