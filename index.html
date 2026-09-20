@@ -6,6 +6,11 @@
   <title>Discover Sharm — Luxury Travel</title>
 
   <script>
+    // Single Page Apps for GitHub Pages — decode step.
+    // https://github.com/rafgraph/spa-github-pages
+    // Reverses what 404.html did: turns "/?/excursions/e1" back into the
+    // real "/excursions/e1" in the address bar (via history.replaceState,
+    // no reload) before the router code further down ever looks at the URL.
     (function (l) {
       if (l.search[1] === '/') {
         var decoded = l.search.slice(1).split('&').map(function (s) {
@@ -17,7 +22,13 @@
   </script>
 
   <script>
-  window.FALLBACK_LOGO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23fcd34d'/%3E%3Cstop offset='50%25' stop-color='%23fbbf24'/%3E%3Cstop offset='100%25' stop-color='%23d97706'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='120' height='120' rx='28' fill='url(%23g)'/%3E%3Ctext x='60' y='68' text-anchor='middle' font-family='Georgia,serif' font-weight='700' font-size='42' fill='%230c0918'%3EDS%3C/text%3E%3C/svg%3E";
+    // Defined inline, first thing in <head>, on purpose: the logo <img> tags
+    // below start loading as soon as the parser reaches them in <body>, which
+    // is long before data.js (loaded at the very end of the page) runs. If
+    // FALLBACK_LOGO were only defined in data.js, a failed logo load before
+    // that point would throw "FALLBACK_LOGO is not defined" instead of
+    // showing the fallback image.
+    window.FALLBACK_LOGO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23fcd34d'/%3E%3Cstop offset='50%25' stop-color='%23fbbf24'/%3E%3Cstop offset='100%25' stop-color='%23d97706'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='120' height='120' rx='28' fill='url(%23g)'/%3E%3Ctext x='60' y='68' text-anchor='middle' font-family='Georgia,serif' font-weight='700' font-size='42' fill='%230c0918'%3EDS%3C/text%3E%3C/svg%3E";
   </script>
 
   <link rel="stylesheet" href="/style.css?v=10" />
@@ -66,7 +77,7 @@
       <div class="w-24 h-24 relative mb-6">
         <div class="absolute inset-0 bg-gold-400 rounded-3xl opacity-25 animate-ping"></div>
         <div class="relative w-full h-full bg-gradient-to-br from-gold-300 via-gold-400 to-gold-600 rounded-3xl flex items-center justify-center shadow-2xl border border-gold-300/50 overflow-hidden">
-          <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg_gtILqGUL5b1zOqR8jTuF6ULL0auXgi0tYfiNkMePQc6cfMA42_JUk7uocGo2FaBkro0typnfpCXkEWVIKnfqWWt5n00pvirOE_YN7B2fRsrT0JpMN4tDSAnxgJNNnI0oM7HxI_Ux5ES3-kz2ahuowwAHTc-uxCotblIlsZTek53ayscS0hBmor340oXD=s150" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="w-full h-full object-cover" alt="Discover Sharm" />
+          <img src="/data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="w-full h-full object-cover" alt="Discover Sharm" />
         </div>
       </div>
       <h1 class="font-display text-2xl font-bold text-white tracking-tight"><span class="shimmer-text">DISCOVER</span> SHARM</h1>
@@ -91,7 +102,7 @@
       <div class="hidden lg:flex lg:w-1/2 xl:w-3/5 flex-col justify-center px-16 xl:px-24 py-14 relative overflow-hidden border-r" style="border-color:#2b2140; background-image:linear-gradient(160deg, rgba(23,16,41,.88) 0%, rgba(16,12,28,.80) 55%, rgba(12,9,24,.92) 100%), url('https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1600&q=85'); background-size:cover; background-position:center;">
         <div class="relative z-10 max-w-lg">
           <div class="w-16 h-16 mb-8 bg-gradient-to-br from-gold-300 via-gold-400 to-gold-600 rounded-2xl flex items-center justify-center shadow-2xl">
-            <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg_gtILqGUL5b1zOqR8jTuF6ULL0auXgi0tYfiNkMePQc6cfMA42_JUk7uocGo2FaBkro0typnfpCXkEWVIKnfqWWt5n00pvirOE_YN7B2fRsrT0JpMN4tDSAnxgJNNnI0oM7HxI_Ux5ES3-kz2ahuowwAHTc-uxCotblIlsZTek53ayscS0hBmor340oXD=s150" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="w-full h-full object-cover" alt="Discover Sharm" />
+            <i class="fa-solid fa-compass text-2xl text-ink-900"></i>
           </div>
           <p class="text-white/40 text-[11px] tracking-[0.3em] mb-3" data-i18n="tagline">LUXURY TRAVEL</p>
           <h2 class="font-display text-4xl xl:text-5xl font-bold text-white leading-tight mb-5" data-i18n="authBrandTitle">Your Sharm El Sheikh journey starts here</h2>
@@ -318,8 +329,8 @@
     <div class="p-5 flex flex-col h-full">
       <div class="flex items-center justify-between mb-6">
         <div class="flex items-center gap-2">
-          <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg_gtILqGUL5b1zOqR8jTuF6ULL0auXgi0tYfiNkMePQc6cfMA42_JUk7uocGo2FaBkro0typnfpCXkEWVIKnfqWWt5n00pvirOE_YN7B2fRsrT0JpMN4tDSAnxgJNNnI0oM7HxI_Ux5ES3-kz2ahuowwAHTc-uxCotblIlsZTek53ayscS0hBmor340oXD=s150" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="w-full h-full object-cover" alt="Discover Sharm" /" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-8 w-8 rounded-lg" alt="logo" />
-          <span class="font-display font-bold text-white text-sm">DISCOVER SHARM</span>
+          <img src="/data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-8 w-8 rounded-lg" alt="logo" />
+          <span class="font-display font-bold text-white text-sm">Discover Sharm</span>
         </div>
         <button onclick="sidebar.close()" class="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-white/70"><i class="fa-solid fa-xmark"></i></button>
       </div>
@@ -365,7 +376,7 @@
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-3">
         <button onclick="sidebar.open()" class="icon-btn w-10 h-10 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-bars"></i></button>
-        <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgoGnS_PZ_EiWK-H8paPs53FPwc_2BUV5egfP3EamN2irK3hFrzxVpRYQ-z9rgdzzqwc4FijgQCLP66sI9K2O0lzz023tX19DPFnvpDPGYhGtDEAtWUdVVgDxwnlpotNgs5gr8H4XGYDEAAP6Gx9JvYNo9Nf6Mp0CwCa2350bqiQb4RFuhLuOtRWhvyAz-I=s1600" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="sticky-header-logo" alt="Discover Sharm" />
+        <img src="/data/long-logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="sticky-header-logo" alt="Discover Sharm" />
       </div>
       <button onclick="nav.go('notifications')" class="icon-btn w-10 h-10 rounded-xl flex items-center justify-center relative text-white"><i class="fa-regular fa-bell"></i><span class="notif-badge hidden absolute top-2 right-2 w-2 h-2 bg-gold-400 rounded-full"></span></button>
     </div>
@@ -381,7 +392,7 @@
     <div class="flex items-center gap-10">
       <button onclick="sidebar.open()" class="icon-btn w-11 h-11 rounded-xl flex items-center justify-center text-white flex-shrink-0"><i class="fa-solid fa-bars"></i></button>
       <button onclick="nav.go('home')" data-page="home" class="flex items-center gap-2 flex-shrink-0">
-        <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgoGnS_PZ_EiWK-H8paPs53FPwc_2BUV5egfP3EamN2irK3hFrzxVpRYQ-z9rgdzzqwc4FijgQCLP66sI9K2O0lzz023tX19DPFnvpDPGYhGtDEAtWUdVVgDxwnlpotNgs5gr8H4XGYDEAAP6Gx9JvYNo9Nf6Mp0CwCa2350bqiQb4RFuhLuOtRWhvyAz-I=s1600" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-9 w-auto desktop-nav-logo" alt="Discover Sharm" />
+        <img src="/data/long-logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-9 w-auto desktop-nav-logo" alt="Discover Sharm" />
       </button>
       <div class="flex items-center gap-8 text-sm font-semibold">
         <button onclick="nav.go('excursions')" data-page="excursions" class="nav-item drawer-link text-white" data-i18n="navExcursions">Excursions</button>
@@ -405,7 +416,7 @@
     <!-- Home Page -->
     <div id="homePage" class="page active">
       <div class="hero-section dark-scene" id="heroSection">
-        <img src="https://images.unsplash.com/photo-1682687982141-0143020ed57a?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="hero-bg-img" id="heroBgImage" onerror="this.style.display='none'" alt="" />
+        <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=90" class="hero-bg-img" id="heroBgImage" onerror="this.style.display='none'" alt="" />
         <div class="stars-container"></div>
         <div class="hero-overlay"></div>
         <div class="hero-content relative z-10 pb-24 text-white">
@@ -413,7 +424,7 @@
             <div class="header-floating">
               <div class="flex items-center gap-3">
                 <button onclick="sidebar.open()" class="icon-btn w-11 h-11 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-bars"></i></button>
-                <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgoGnS_PZ_EiWK-H8paPs53FPwc_2BUV5egfP3EamN2irK3hFrzxVpRYQ-z9rgdzzqwc4FijgQCLP66sI9K2O0lzz023tX19DPFnvpDPGYhGtDEAtWUdVVgDxwnlpotNgs5gr8H4XGYDEAAP6Gx9JvYNo9Nf6Mp0CwCa2350bqiQb4RFuhLuOtRWhvyAz-I=s1600" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="site-logo" alt="Discover Sharm" />
+                <img src="/data/long-logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="site-logo" alt="Discover Sharm" />
               </div>
               <div>
                 <button onclick="nav.go('profile')" data-page="profile" title="Profile" aria-label="Profile" class="icon-btn w-11 h-11 rounded-xl flex items-center justify-center relative">
@@ -594,7 +605,7 @@
           <div class="hidden lg:block footer-desktop">
             <div class="footer-grid">
               <div class="footer-brand-col">
-                <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgoGnS_PZ_EiWK-H8paPs53FPwc_2BUV5egfP3EamN2irK3hFrzxVpRYQ-z9rgdzzqwc4FijgQCLP66sI9K2O0lzz023tX19DPFnvpDPGYhGtDEAtWUdVVgDxwnlpotNgs5gr8H4XGYDEAAP6Gx9JvYNo9Nf6Mp0CwCa2350bqiQb4RFuhLuOtRWhvyAz-I=s1600" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-8 w-auto mb-4" alt="Discover Sharm" />
+                <img src="/data/long-logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-8 w-auto mb-4" alt="Discover Sharm" />
                 <p class="footer-tagline" data-i18n="footerTagline">Your trusted guide to hotels, excursions, transfers and dining across Sharm El-Sheikh.</p>
                 <div class="footer-social">
                   <a href="#" class="footer-social-btn" aria-label="Instagram" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
@@ -657,7 +668,7 @@
 
           <!-- Mobile footer -->
           <div class="lg:hidden footer-mobile">
-            <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgoGnS_PZ_EiWK-H8paPs53FPwc_2BUV5egfP3EamN2irK3hFrzxVpRYQ-z9rgdzzqwc4FijgQCLP66sI9K2O0lzz023tX19DPFnvpDPGYhGtDEAtWUdVVgDxwnlpotNgs5gr8H4XGYDEAAP6Gx9JvYNo9Nf6Mp0CwCa2350bqiQb4RFuhLuOtRWhvyAz-I=s1600" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-7 w-auto mb-4" alt="Discover Sharm" />
+            <img src="/data/long-logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-7 w-auto mb-4" alt="Discover Sharm" />
             <div class="payment-icon-row justify-center">
               <div class="payment-icon-box"><i class="fa-brands fa-cc-visa"></i></div>
               <div class="payment-icon-box"><i class="fa-brands fa-cc-mastercard"></i></div>
@@ -1131,7 +1142,7 @@
         <button onclick="nav.go('excursions')" data-page="excursions" title="Excursions" aria-label="Excursions" class="nav-item flex items-center justify-center relative text-white"><i class="fa-solid fa-umbrella-beach text-[22px]"></i></button>
         <button onclick="nav.go('bookings')" data-page="bookings" title="My Bookings" aria-label="My Bookings" class="nav-item flex items-center justify-center relative text-white"><i class="fa-regular fa-calendar-check text-[22px]"></i></button>
         <button onclick="nav.go('home')" data-page="home" class="nav-item-home flex flex-col items-center justify-center flex-shrink-0">
-          <span class="nav-home-logo"><img src="https://blogger.googleusercontent.com/img/a/AVvXsEg_gtILqGUL5b1zOqR8jTuF6ULL0auXgi0tYfiNkMePQc6cfMA42_JUk7uocGo2FaBkro0typnfpCXkEWVIKnfqWWt5n00pvirOE_YN7B2fRsrT0JpMN4tDSAnxgJNNnI0oM7HxI_Ux5ES3-kz2ahuowwAHTc-uxCotblIlsZTek53ayscS0hBmor340oXD=s150" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" alt="" class=" rounded-full object-cover" /></span>
+          <span class="nav-home-logo"><img src="/data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" alt="" class=" rounded-full object-cover" /></span>
         </button>
         <button onclick="nav.go('transfers')" data-page="transfers" title="Transfers" aria-label="Transfers" class="nav-item flex items-center justify-center relative text-white"><i class="fa-solid fa-shuttle-van text-[22px]"></i></button>
         <button onclick="nav.go('notifications')" class="nav-item flex items-center justify-center relative text-white"><i class="fa-regular fa-bell"></i><span class="notif-badge hidden absolute top-2.5 right-2.5 w-2 h-2 bg-gold-400 rounded-full"></span></button>
