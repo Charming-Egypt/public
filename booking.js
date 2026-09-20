@@ -501,6 +501,7 @@ function selectRoomOnDetail(hotelId, roomIndex) {
 
 function startBooking(hotelId, roomIndex) {
   if (!authToken) { toast('Please login to book', 'error'); return; }
+  if (!allChildAgesSelected()) { toast('Please select an age for every child before booking', 'error'); openGuestsModal(); return; }
   const h = CATALOG.hotels.find(x => x.id === hotelId);
   const r = h?.rooms?.[roomIndex];
   if (!h || !r) return;
@@ -535,6 +536,11 @@ function renderBookingStep(step) {
       <div class="booking-summary-row"><span>Check-in</span><span>${utils.formatDate(state.bookingDraft.checkin)}</span></div>
       <div class="booking-summary-row"><span>Check-out</span><span>${utils.formatDate(state.bookingDraft.checkout)}</span></div>
       <div class="booking-summary-row"><span>${r.type} × ${state.guests.rooms} room(s)</span><span>${utils.formatPrice(pricing.baseRoomTotal)}</span></div>
+      ${pricing.childrenBreakdown.length ? `
+      <div class="booking-summary-row" style="flex-direction:column; align-items:flex-start; gap:4px;">
+        <span style="color:var(--text-secondary); font-size:11px;">Children (${pricing.freeChildrenCount} free)</span>
+        ${pricing.childrenBreakdown.map(c => `<div class="flex justify-between w-full text-[11px]" style="color:var(--text-secondary)"><span>Age ${c.age}</span><span>${c.fee > 0 ? utils.formatPrice(c.fee) + ' / night' : 'Free'}</span></div>`).join('')}
+      </div>` : ''}
       <div class="booking-summary-row"><span>Taxes & Fees</span><span>${utils.formatPrice(Math.round(pricing.roomTotal * 0.1))}</span></div>
       <div class="booking-summary-total"><span>Total</span><span>${utils.formatPrice(total)}</span></div>
     </div>`;
@@ -550,11 +556,11 @@ function renderBookingStep(step) {
         <h3 class="font-display text-lg font-bold mb-3">Stay Dates</h3>
         <form onsubmit="submitGuestDetails(event)" class="space-y-4">
           <div class="grid grid-cols-2 gap-3">
-            <div id="bkCheckin" class="date-field p-3" data-date-field="bkCheckin" data-value="${state.bookingDraft.checkin}">
+            <div id="bkCheckin" class="date-field p-3" data-date-field="bkCheckin" data-value="${state.bookingDraft.checkin}" onclick="datepicker.open('bkCheckin')">
               <label class="text-[10px]">Check-in</label>
               <span class="date-field-value text-sm">${utils.formatDate(state.bookingDraft.checkin)}</span>
             </div>
-            <div id="bkCheckout" class="date-field p-3" data-date-field="bkCheckout" data-value="${state.bookingDraft.checkout}">
+            <div id="bkCheckout" class="date-field p-3" data-date-field="bkCheckout" data-value="${state.bookingDraft.checkout}" onclick="datepicker.open('bkCheckout')">
               <label class="text-[10px]">Check-out</label>
               <span class="date-field-value text-sm">${utils.formatDate(state.bookingDraft.checkout)}</span>
             </div>
@@ -594,7 +600,48 @@ function renderBookingStep(step) {
 function setHotelPaymentMethod(m) { state.bookingDraft.payment = m; renderBookingStep(3); }
 function closeBookingFlow() { const p = document.getElementById('bookingFlowPage'); if (p) p.remove(); showHotelPage(state.currentHotel.id); }
 function submitGuestDetails(e) { e.preventDefault(); state.bookingDraft.checkin = document.getElementById('bkCheckin').dataset.value; state.bookingDraft.checkout = document.getElementById('bkCheckout').dataset.value; state.bookingDraft.requests = document.getElementById('bkRequests').value; renderBookingStep(3); }
-function computeRoomPricing(room, guests, roomsCount, nights) { const baseOcc = room.baseOccupancy || 2; const freeChildren = room.freeChildrenPerRoom ?? 2; const extraAdultFee = room.extraAdultFee || 0; const extraChildFee = room.extraChildFee || 0; const adultsPerRoom = Math.ceil(guests.adults / roomsCount); const childrenPerRoom = Math.ceil(guests.children / roomsCount); const extraAdults = Math.max(0, adultsPerRoom - baseOcc); const extraChildren = Math.max(0, childrenPerRoom - freeChildren); const perRoomPerNight = room.price + (extraAdults * extraAdultFee) + (extraChildren * extraChildFee); return { roomTotal: perRoomPerNight * roomsCount * nights, extraFeesTotal: (extraAdults * extraAdultFee + extraChildren * extraChildFee) * roomsCount * nights, baseRoomTotal: room.price * roomsCount * nights }; }
+// Looks up the per-night fee for one child's age against the room's own
+// childPricingTiers (e.g. [{minAge:0,maxAge:2,fee:0}, {minAge:3,maxAge:6,fee:150}, ...]).
+// Rooms that don't define tiers yet fall back to the old flat extraChildFee,
+// so existing hotels.json entries keep working without migration.
+function computeChildFee(room, age) {
+  const tiers = room.childPricingTiers;
+  if (Array.isArray(tiers) && tiers.length) {
+    const tier = tiers.find(t => age >= t.minAge && age <= t.maxAge);
+    if (tier) return tier.fee || 0;
+  }
+  return room.extraChildFee || 0;
+}
+
+function computeRoomPricing(room, guests, roomsCount, nights) {
+  const baseOcc = room.baseOccupancy || 2;
+  const extraAdultFee = room.extraAdultFee || 0;
+  const adultsPerRoom = Math.ceil(guests.adults / roomsCount);
+  const extraAdults = Math.max(0, adultsPerRoom - baseOcc);
+
+  // Children are priced individually by age rather than as a flat
+  // "extra child" count. "freeChildrenPerRoom" slots are given to the
+  // children with the lowest fee first (most favorable to the guest —
+  // e.g. an infant tier at 0 EGP is always free before an older child's
+  // fee is ever charged).
+  const ages = (guests.childAges || []).filter(a => a !== null && a !== undefined && !isNaN(a));
+  const perChildFees = ages.map(age => computeChildFee(room, age)).sort((a, b) => a - b);
+  const freeSlots = Math.max(0, (room.freeChildrenPerRoom ?? 2) * roomsCount);
+  const payableChildFees = perChildFees.slice(freeSlots);
+  const childFeeTotalPerNight = payableChildFees.reduce((sum, f) => sum + f, 0);
+
+  const roomAndAdultsPerNight = (room.price + (extraAdults * extraAdultFee)) * roomsCount;
+  const roomAndAdultsTotal = roomAndAdultsPerNight * nights;
+  const childrenTotal = childFeeTotalPerNight * nights;
+
+  return {
+    roomTotal: roomAndAdultsTotal + childrenTotal,
+    extraFeesTotal: (extraAdults * extraAdultFee * roomsCount * nights) + childrenTotal,
+    baseRoomTotal: room.price * roomsCount * nights,
+    childrenBreakdown: ages.map(age => ({ age, fee: computeChildFee(room, age) })),
+    freeChildrenCount: Math.min(ages.length, freeSlots),
+  };
+}
 
 async function payAndConfirmHotelBooking(roomTotal, taxes, total, nights) {
   if (!authToken) { toast('Please login to book', 'error'); return; }
@@ -616,6 +663,10 @@ async function payAndConfirmHotelBooking(roomTotal, taxes, total, nights) {
       checkin: state.bookingDraft.checkin,
       checkout: state.bookingDraft.checkout,
       guests: state.guests.adults + state.guests.children,
+      adults: state.guests.adults,
+      children: state.guests.children,
+      childAges: state.guests.childAges || [],
+      infants: state.guests.infants || 0,
       rooms: state.guests.rooms,
       roomType: state.currentRoom.type,
       nights,
@@ -826,7 +877,7 @@ function renderExcursionBookingStep(step) {
         </div>
         <h3 class="font-display text-lg font-bold mb-3">Trip Details</h3>
         <form onsubmit="submitExcursionDetails(event)" class="space-y-4">
-          <div id="ekDate" class="date-field p-3" data-date-field="ekDate" data-value="${state.bookingDraft.date}">
+          <div id="ekDate" class="date-field p-3" data-date-field="ekDate" data-value="${state.bookingDraft.date}" onclick="datepicker.open('ekDate')">
             <label class="text-[10px]">Date</label>
             <span class="date-field-value text-sm">${utils.formatDate(state.bookingDraft.date)}</span>
           </div>
@@ -981,7 +1032,7 @@ function renderTransferBookingStep(step) {
             <input type="text" id="tkAddress" required value="${state.bookingDraft.address}" placeholder="Hotel name & address" class="input-field w-full px-3 py-2.5 text-sm">
           </div>
           <div class="grid grid-cols-2 gap-3">
-            <div id="tkDate" class="date-field p-3" data-date-field="tkDate" data-value="${state.bookingDraft.date}">
+            <div id="tkDate" class="date-field p-3" data-date-field="tkDate" data-value="${state.bookingDraft.date}" onclick="datepicker.open('tkDate')">
               <label class="text-[10px]">Date</label>
               <span class="date-field-value text-sm">${utils.formatDate(state.bookingDraft.date)}</span>
             </div>
