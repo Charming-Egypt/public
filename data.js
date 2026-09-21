@@ -30,7 +30,7 @@ const state = {
   currentTransfer: null,
   currentBookingTab: 'upcoming',
   activeSearchTab: 'hotels',
-  guests: { adults: 2, children: 0, infants: 0, rooms: 1 },
+  guests: { adults: 2, children: 0, infants: 0, rooms: 1, childAges: [] },
   pageHistory: ['home'],
   bookingDraft: {},
   transferPax: 2,
@@ -313,6 +313,17 @@ function populateLanguageSelects() {
   document.querySelectorAll('.lang-select').forEach(sel => { sel.innerHTML = optionsHtml; });
 }
 
+// Looks up one UI string for the CURRENT language, for use inside JS
+// template literals when building cards/toasts/dynamic pages (as opposed
+// to data-i18n, which only updates existing static DOM elements). Falls
+// back to English, then to the key itself so a missing translation never
+// breaks the render — it just shows in English.
+function t(key) {
+  const entry = I18N_DICT[key];
+  const lang = I18N.get();
+  return (entry && (entry[lang] || entry.en)) || key;
+}
+
 const I18N = {
   get() { return localStorage.getItem('ds_lang') || 'en'; },
   set(lang) {
@@ -325,6 +336,14 @@ const I18N = {
       const entry = I18N_DICT[key];
       const val = entry && (entry[lang] || entry.en);
       if (val) { if (el.tagName === 'OPTION') el.textContent = val; else el.innerHTML = val; }
+    });
+    // Same lookup, but for the placeholder attribute of form fields
+    // (translating innerHTML would do nothing for an <input>/<textarea>).
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const key = el.getAttribute('data-i18n-placeholder');
+      const entry = I18N_DICT[key];
+      const val = entry && (entry[lang] || entry.en);
+      if (val) el.setAttribute('placeholder', val);
     });
     document.querySelectorAll('.lang-select').forEach(sel => { sel.value = lang; });
     localizeCatalog(lang);

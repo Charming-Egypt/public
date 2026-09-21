@@ -135,7 +135,7 @@ async function openDetailFromRoute(section, id, opts = {}) {
     def.open(id, opts);
   } catch (e) {
     console.error('openDetailFromRoute failed:', e);
-    toast('Could not load that page', 'error');
+    toast(t('errCouldNotLoadPage'), 'error');
   }
 }
 
@@ -305,7 +305,7 @@ async function loadUserProfile() {
       updateDrawerUser(currentUser.displayName || currentUser.email, currentUser.email, currentUser.photoURL);
     }
   } catch (e) {
-    console.warn('Failed to load user profile', e);
+    console.warn(t('errFailedLoadProfile'), e);
     if (currentUser) {
       updateDrawerUser(currentUser.displayName || currentUser.email, currentUser.email, currentUser.photoURL);
     }
@@ -347,8 +347,8 @@ function updateProfileStats() {
 function getSharmawyBenefitsHtml(level) {
   const benefits = {
     1: ['10% discount on selected excursions', 'Free late check-out (subject to availability)'],
-    2: ['15% discount on selected excursions', 'Free room upgrade (subject to availability)'],
-    3: ['20% discount on selected excursions', 'Free room upgrade', 'Priority support', 'Welcome drink']
+    2: [t('perkDiscount15'), t('perkFreeUpgrade')],
+    3: [t('perkDiscount20'), t('perkFreeUpgradeShort'), t('perkPrioritySupport'), t('perkWelcomeDrink')]
   };
   const list = benefits[level] || [];
   return `
@@ -384,7 +384,7 @@ function renderChildAgeInputs() {
     <div class="flex items-center justify-between" style="padding-inline-start:8px;">
       <label for="childAge_${i}" class="text-xs" style="color:var(--text-secondary)" data-i18n="childAgeLabel">Child ${i + 1} age</label>
       <select id="childAge_${i}" class="field-box px-3 py-2 text-sm" style="min-width:110px" onchange="setChildAge(${i}, this.value)">
-        <option value="" ${age === null ? 'selected' : ''} data-i18n="selectAge">Select age</option>
+        <option value="" ${age === null ? 'selected' : ''}>${t('selectAge')}</option>
         ${Array.from({ length: DEFAULT_CHILD_AGE_MAX + 1 }, (_, y) => `<option value="${y}" ${age === y ? 'selected' : ''}>${y}</option>`).join('')}
       </select>
     </div>
@@ -417,7 +417,7 @@ function adjustGuestCount(type, delta) {
   if (type === 'rooms' && delta < 0) {
     const maxOcc = (state.currentRoom && state.currentRoom.guests) || 2;
     const required = Math.ceil((state.guests.adults + state.guests.children) / maxOcc);
-    if (newValue < required) { toast('Reduce guests first', 'error'); return; }
+    if (newValue < required) { toast(t('errReduceGuestsFirst'), 'error'); return; }
   }
   if (newValue >= limits[type].min && newValue <= limits[type].max) state.guests[type] = newValue;
   if (type === 'adults' || type === 'children') {
@@ -425,7 +425,7 @@ function adjustGuestCount(type, delta) {
     const required = Math.ceil((state.guests.adults + state.guests.children) / maxOcc);
     if (required > state.guests.rooms && required <= limits.rooms.max) {
       state.guests.rooms = required;
-      toast('Room count increased to fit your party', 'info');
+      toast(t('roomCountIncreasedMsg'), 'info');
     }
   }
   document.getElementById('adultsCount').textContent = state.guests.adults;
@@ -436,10 +436,10 @@ function adjustGuestCount(type, delta) {
   search.updateGuestDisplay();
 }
 function applyGuests() {
-  if (!allChildAgesSelected()) { toast('Please select an age for every child', 'error'); return; }
+  if (!allChildAgesSelected()) { toast(t('errSelectChildAges'), 'error'); return; }
   closeGuestsModal();
   search.updateGuestDisplay();
-  toast('Guests updated', 'info');
+  toast(t('guestsUpdatedMsg'), 'info');
 }
 
 // ==================== DATEPICKER (موحد) ====================
@@ -549,9 +549,9 @@ const datepicker = {
         statusEl.textContent = (lang === 'ar' ? `${nights} ليلة — ` : `${nights} night${nights !== 1 ? 's' : ''} — `) +
           utils.formatDate(this.rangeStart) + ' → ' + utils.formatDate(this.rangeEnd);
       } else if (this.stage === 'checkout') {
-        statusEl.textContent = lang === 'ar' ? 'اختار تاريخ المغادرة' : 'Select your check-out date';
+        statusEl.textContent = t('selectCheckoutDate');
       } else {
-        statusEl.textContent = lang === 'ar' ? 'اختار تاريخ الوصول' : 'Select your check-in date';
+        statusEl.textContent = t('selectCheckinDate');
       }
     }
     const presetsEl = document.getElementById('dpPresets');
@@ -704,7 +704,7 @@ const search = {
     document.getElementById('searchGuestDropdown').style.display = 'flex';
   },
   closeGuestDropdown() {
-    if (!allChildAgesSelected()) { toast('Please select an age for every child', 'error'); return; }
+    if (!allChildAgesSelected()) { toast(t('errSelectChildAges'), 'error'); return; }
     document.getElementById('searchGuestDropdown').style.display = 'none';
     this.updateGuestDisplay();
   },
@@ -719,10 +719,10 @@ const search = {
     const displayEl = document.getElementById('excursionCategoryDisplay');
     if (displayEl) {
       const labels = {
-        'all': 'All Categories',
-        'Diving': 'Diving & Snorkeling',
-        'Desert Safari': 'Desert Safari',
-        'City Tour': 'City Tour'
+        'all': t('allCategories'),
+        'Diving': t('divingSnorkeling'),
+        'Desert Safari': t('desertSafari'),
+        'City Tour': t('cityTour')
       };
       displayEl.textContent = labels[category] || category;
     }
@@ -747,9 +747,9 @@ const search = {
     const checkinDisplay = document.getElementById('checkinDisplay');
     const checkoutDisplay = document.getElementById('checkoutDisplay');
     const excursionDateDisplay = document.getElementById('excursionDateDisplay');
-    if (checkinDisplay) checkinDisplay.textContent = ci ? fmt(ci) : 'Select date';
-    if (checkoutDisplay) checkoutDisplay.textContent = co ? fmt(co) : 'Select date';
-    if (excursionDateDisplay) excursionDateDisplay.textContent = ci ? fmt(ci) : 'Select date';
+    if (checkinDisplay) checkinDisplay.textContent = ci ? fmt(ci) : t('selectDatePlaceholder');
+    if (checkoutDisplay) checkoutDisplay.textContent = co ? fmt(co) : t('selectDatePlaceholder');
+    if (excursionDateDisplay) excursionDateDisplay.textContent = ci ? fmt(ci) : t('selectDatePlaceholder');
   },
   adjustGuest(type, delta) {
     const limits = { adults: { min:1, max:10 }, children: { min:0, max:6 }, rooms: { min:1, max:5 } };
@@ -774,7 +774,7 @@ const search = {
   performSearch() {
     if (this.activeTab === 'hotels') {
       if (!this.selectedCheckIn || !this.selectedCheckOut) {
-        toast('Please select dates first', 'error');
+        toast(t('errSelectDatesFirst'), 'error');
         return;
       }
       nav.go('hotels');
@@ -917,7 +917,7 @@ function changeCurrency(c) {
   refreshCatalogUI();
   bookings.render();
   if (SHOW_HOTELS) favorites.render();
-  toast('Currency updated', 'info');
+  toast(t('currencyUpdatedMsg'), 'info');
 }
 
 // ==================== ROOM PREVIEW ====================
@@ -940,7 +940,7 @@ function showRoomPreview(hotelId, roomIndex) {
         <span><i class="fa-solid fa-bed text-violet-500"></i> ${r.beds || '1 Queen Bed'}</span>
       </div>
       <p class="text-sm leading-relaxed mb-4" style="color:var(--text-secondary)">${r.description || ''}</p>
-      <button onclick="selectRoomOnDetail('${hotelId}', ${roomIndex}, { closeModal: true })" class="btn-gold w-full py-3 rounded-2xl font-bold text-ink-900">Select This Room</button>
+      <button onclick="selectRoomOnDetail('${hotelId}', ${roomIndex}, { closeModal: true })" class="btn-gold w-full py-3 rounded-2xl font-bold text-ink-900">${t('selectThisRoomBtn')}</button>
     </div>`;
   document.getElementById('roomPreviewModal').classList.remove('hidden');
 }
@@ -956,7 +956,7 @@ const ui = {
       <div onclick="showHotelPage('${h.id}')" class="hotel-card cursor-pointer">
         <div class="hotel-card-img-wrap">
           <img src="${img}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="hotel-card-img hover:scale-105 transition-transform duration-500">
-          ${h.bestseller ? '<div class="absolute top-2 right-2 badge-bestseller text-[8px] font-black px-2 py-0.5 rounded-md">BEST SELLER</div>' : ''}
+          ${h.bestseller ? `<div class="absolute top-2 right-2 badge-bestseller text-[8px] font-black px-2 py-0.5 rounded-md">${t('bestSellerBadge')}</div>` : ''}
           <div class="absolute bottom-2 right-2 rating-pill px-1.5 py-0.5 rounded-md flex items-center gap-1"><i class="fa-solid fa-star text-gold-400 text-[8px]"></i><span class="text-[9px] font-bold text-gold-400">${h.rating}</span></div>
         </div>
         <div class="hotel-card-body">
@@ -1015,7 +1015,7 @@ const hotels = {
     const countEl = document.getElementById('hotelsCount'); if (countEl) countEl.textContent = filtered.length;
     list.className = 'space-y-3 lg:space-y-0 lg:grid lg:grid-cols-2 xl:grid-cols-3 lg:gap-6 pb-28';
     if (filtered.length === 0) {
-      list.innerHTML = `<div class="text-center py-16">No hotels found</div>`;
+      list.innerHTML = `<div class="text-center py-16">${t('noHotelsFoundMsg')}</div>`;
       return;
     }
     list.innerHTML = filtered.map(h => ui.renderHotelCard(h)).join('');
@@ -1040,7 +1040,7 @@ const excursionsUi = {
     const rating = Number(x.rating || 0).toFixed(1);
     const stars = utils.renderStars(x.rating || 0);
     const price = utils.formatPrice(x.price);
-    const duration = x.duration || 'Full day';
+    const duration = x.duration || t('fullDayLabel');
     const category = x.category || 'Activity';
     const reviewCount = x.reviews || 0;
 
@@ -1061,7 +1061,7 @@ const excursionsUi = {
             </div>
             <div class="card-action-row">
               <div class="price-block">
-                <span class="price-from">From</span>
+                <span class="price-from">${t('fromLabel')}</span>
                 <div class="price-value" data-price-egp="${x.price}">${price}</div>
                 <span class="price-per-person">/ person</span>
               </div>
@@ -1081,7 +1081,7 @@ const excursionsUi = {
     if (state.currentExcursionFilter !== 'all') filtered = filtered.filter(x => x.category === state.currentExcursionFilter);
     const countEl = document.getElementById('excursionsCount'); if (countEl) countEl.textContent = filtered.length;
     list.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-28';
-    if (filtered.length === 0) { list.innerHTML = `<div class="text-center py-16">No excursions found</div>`; return; }
+    if (filtered.length === 0) { list.innerHTML = `<div class="text-center py-16">${t('noExcursionsFoundMsg')}</div>`; return; }
     list.innerHTML = filtered.map(x => this.renderCard(x)).join('');
   },
   renderCard(x) {
@@ -1104,10 +1104,10 @@ const excursionsUi = {
           </div>
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-[10px] text-gray-500">From</p>
+              <p class="text-[10px] text-gray-500">${t('fromLabel')}</p>
               <p class="font-display font-bold text-violet-500 text-xl">${utils.formatPrice(x.price)}<span class="text-xs font-normal"> /person</span></p>
             </div>
-            <button class="btn-gold px-5 py-2.5 rounded-xl text-sm font-bold text-ink-900">Book Now</button>
+            <button class="btn-gold px-5 py-2.5 rounded-xl text-sm font-bold text-ink-900">${t('bookNowBtn')}</button>
           </div>
         </div>
       </div>`;
@@ -1144,10 +1144,10 @@ const transfersUi = {
           </div>
           <div class="flex items-center justify-between border-t pt-3" style="border-color:var(--border-card)">
             <div>
-              <p class="text-[10px] text-gray-500">One-way trip</p>
+              <p class="text-[10px] text-gray-500">${t('oneWayTripLabel')}</p>
               <p class="font-display font-bold text-violet-500 text-xl">${utils.formatPrice(v.price)}</p>
             </div>
-            <button class="btn-gold px-6 py-2.5 rounded-xl font-bold text-ink-900 text-sm">View Details</button>
+            <button class="btn-gold px-6 py-2.5 rounded-xl font-bold text-ink-900 text-sm">${t('viewDetailsBtn')}</button>
           </div>
         </div>
       </div>`;
@@ -1157,7 +1157,7 @@ const transfersUi = {
 // ==================== SHOW TRANSFER PAGE ====================
 function showTransferPage(id, opts = {}) {
   const v = CATALOG.transfers.find(t => t.id === id);
-  if (!v) return toast('Transfer not found', 'error');
+  if (!v) return toast(t('errTransferNotFound'), 'error');
 
   const page = document.createElement('div');
   page.id = 'transferDetailPage';
@@ -1191,10 +1191,10 @@ function showTransferPage(id, opts = {}) {
         <div class="card rounded-2xl p-4">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-xs text-gray-500">One-way trip</p>
+              <p class="text-xs text-gray-500">${t('oneWayTripLabel')}</p>
               <p class="font-display font-bold text-violet-500 text-2xl">${utils.formatPrice(v.price)}</p>
             </div>
-            <button onclick="startTransferBooking('${v.id}')" class="btn-gold px-8 py-3 rounded-xl font-bold text-ink-900">Book Now</button>
+            <button onclick="startTransferBooking('${v.id}')" class="btn-gold px-8 py-3 rounded-xl font-bold text-ink-900">${t('bookNowBtn')}</button>
           </div>
         </div>
       </div>

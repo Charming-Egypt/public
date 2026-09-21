@@ -81,18 +81,18 @@ async function submitContactForm(e) {
   if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
   try {
     await apiFetch('/api/contact', { method: 'POST', body: JSON.stringify({ name, email, message }) }, true);
-    toast('Message sent — we\'ll get back to you soon!', 'success');
+    toast(t('messageSentSuccess'), 'success');
     e.target.reset();
   } catch (err) {
-    toast(err.message || 'Could not send your message', 'error');
+    toast(err.message || t('errCouldNotSendMessage'), 'error');
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = 'Send Message'; }
   }
 }
 
 const partnerDocSlots = [
-  { key: 'commercialRegistration', label: 'Commercial Registration' },
-  { key: 'taxCard', label: 'Tax Card' },
+  { key: 'commercialRegistration', label: t('docCommercialRegistration') },
+  { key: 'taxCard', label: t('docTaxCard') },
   { key: 'ownerId', label: 'Owner / Manager ID' },
   { key: 'license', label: 'Tourism License (if applicable)' }
 ];
@@ -156,7 +156,7 @@ async function submitPartnerForm(e) {
     Object.keys(partnerDocs).forEach(k => delete partnerDocs[k]);
     renderPartnerDocSlots();
   } catch (err) {
-    toast(err.message || 'Could not submit your application', 'error');
+    toast(err.message || t('errCouldNotSubmitApplication'), 'error');
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = 'Submit Application'; }
   }
@@ -196,7 +196,7 @@ function paymentMethodsBlock(currentMethod, onchangeFn) {
     detailFields = `
       <div class="card rounded-2xl p-4 space-y-3 mt-3">
         <div>
-          <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5">CARD NUMBER</label>
+          <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5">${t('cardNumberLabel')}</label>
           <input type="text" id="payCardNumber" inputmode="numeric" autocomplete="cc-number" maxlength="23" placeholder="1234 5678 9012 3456" class="input-field w-full px-3 py-2.5 text-sm" oninput="formatCardNumberInput(this)">
         </div>
         <div class="grid grid-cols-3 gap-2">
@@ -209,13 +209,13 @@ function paymentMethodsBlock(currentMethod, onchangeFn) {
             <input type="text" id="payCardYear" inputmode="numeric" maxlength="2" placeholder="YY" autocomplete="cc-exp-year" class="input-field w-full px-3 py-2.5 text-sm text-center">
           </div>
           <div>
-            <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5">CVV</label>
-            <input type="password" id="payCardCvv" inputmode="numeric" maxlength="4" placeholder="CVV" autocomplete="cc-csc" class="input-field w-full px-3 py-2.5 text-sm text-center">
+            <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5">${t('cvvLabel')}</label>
+            <input type="password" id="payCardCvv" inputmode="numeric" maxlength="4" placeholder="${t('cvvLabel')}" autocomplete="cc-csc" class="input-field w-full px-3 py-2.5 text-sm text-center">
           </div>
         </div>
         <div>
-          <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5">NAME ON CARD</label>
-          <input type="text" id="payCardName" autocomplete="cc-name" placeholder="Name as shown on card" class="input-field w-full px-3 py-2.5 text-sm">
+          <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5">${t('nameOnCardLabel')}</label>
+          <input type="text" id="payCardName" autocomplete="cc-name" placeholder="${t('phNameOnCard')}" class="input-field w-full px-3 py-2.5 text-sm">
         </div>
         <label class="flex items-center gap-2 text-xs text-white/60 pt-1 cursor-pointer">
           <input type="checkbox" id="payCardSave" class="w-4 h-4 accent-violet-600"> Save this card for faster checkout next time
@@ -225,7 +225,7 @@ function paymentMethodsBlock(currentMethod, onchangeFn) {
   } else if (currentMethod === 'instapay') {
     detailFields = `
       <div class="card rounded-2xl p-4 space-y-2 mt-3">
-        <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5">WALLET MOBILE NUMBER</label>
+        <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5">${t('walletMobileLabel')}</label>
         <input type="tel" id="payWalletPhone" inputmode="numeric" maxlength="11" placeholder="01xxxxxxxxx" autocomplete="tel" class="input-field w-full px-3 py-2.5 text-sm">
         <p class="text-[10px] text-white/30">You'll get an approval request on this number — approve it in your wallet app to complete payment.</p>
       </div>`;
@@ -258,10 +258,10 @@ async function processKashierCard(orderId, amount, currency, btn) {
   const name = (document.getElementById('payCardName')?.value || '').trim();
   const save = document.getElementById('payCardSave')?.checked || false;
 
-  if (!/^\d{12,19}$/.test(number)) { toast('Enter a valid card number', 'error'); return false; }
-  if (!/^\d{2}$/.test(month) || !/^\d{2}$/.test(year)) { toast('Enter a valid expiry date', 'error'); return false; }
-  if (!/^\d{3,4}$/.test(cvv)) { toast('Enter a valid CVV', 'error'); return false; }
-  if (!name) { toast('Enter the name on the card', 'error'); return false; }
+  if (!/^\d{12,19}$/.test(number)) { toast(t('errCardNumber'), 'error'); return false; }
+  if (!/^\d{2}$/.test(month) || !/^\d{2}$/.test(year)) { toast(t('errExpiryDate'), 'error'); return false; }
+  if (!/^\d{3,4}$/.test(cvv)) { toast(t('errCvv'), 'error'); return false; }
+  if (!name) { toast(t('errCardName'), 'error'); return false; }
 
   const [firstName, ...rest] = (state.bookingDraft.name || '').split(' ');
   let res;
@@ -289,7 +289,7 @@ async function processKashierCard(orderId, amount, currency, btn) {
 
 async function processKashierWallet(orderId, amount, currency, btn) {
   const phone = (document.getElementById('payWalletPhone')?.value || '').trim();
-  if (!/^01\d{9}$/.test(phone)) { toast('Enter a valid Egyptian mobile number', 'error'); return false; }
+  if (!/^01\d{9}$/.test(phone)) { toast(t('errEgyptPhone'), 'error'); return false; }
 
   const initRes = await apiFetch('/api/kashier/wallet/initiate', { method: 'POST', body: JSON.stringify({ orderId, amount, currency, mobilePhone: phone }) });
   if (initRes.status !== 'pending') { toast(initRes.message || 'Could not start the wallet payment', 'error'); return false; }
@@ -302,7 +302,7 @@ async function processKashierWallet(orderId, amount, currency, btn) {
     try { poll = await apiFetch('/api/kashier/wallet/reconcile', { method: 'POST', body: JSON.stringify({ orderId }) }); }
     catch { continue; }
     if (poll.status === 'captured' || poll.status === 'completed') return true;
-    if (poll.status === 'failed') { toast('Wallet payment was declined or timed out', 'error'); return false; }
+    if (poll.status === 'failed') { toast(t('errWalletDeclined'), 'error'); return false; }
   }
   toast('Approval timed out — please try again', 'error');
   return false;
@@ -365,7 +365,7 @@ function renderBookingConfirmation(b) {
             <div class="relative w-full h-full rounded-full bg-gradient-to-br from-violet-400 to-violet-700 flex items-center justify-center shadow-2xl"><i class="fa-solid fa-check text-4xl text-white"></i></div>
           </div>
           <h2 class="font-display text-2xl font-bold text-white mb-1">Booking Confirmed!</h2>
-          <p class="text-white/60 text-sm">Payment received.</p>
+          <p class="text-white/60 text-sm">${t('paymentReceivedMsg')}</p>
         </div>
       </div>
       <div class="relative z-10 rounded-t-[28px] mt-4 p-5" style="background:var(--bg-card)">
@@ -373,11 +373,11 @@ function renderBookingConfirmation(b) {
           <img src="${b.image}" class="w-16 h-16 rounded-xl object-cover" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
           <div><h3 class="font-display font-bold">${b.hotelName || b.title || b.vehicleType}</h3><p class="text-[10px]">${b.roomType || b.category || ''}</p></div>
         </div>
-        <div class="flex justify-between mb-2"><span>Booking ID</span><span class="font-bold">${b.id}</span></div>
-        <div class="flex justify-between mb-2"><span>Check-in</span><span>${utils.formatDate(b.checkin || b.date)}</span></div>
-        <div class="flex justify-between mb-4"><span>Total</span><span class="font-bold text-violet-500">${b.priceFormatted}</span></div>
-        <button onclick="finishBooking('bookings')" class="btn-violet w-full py-4 rounded-2xl font-bold mb-3">View My Bookings</button>
-        <button onclick="finishBooking('home')" class="btn-outline-violet w-full py-4 rounded-2xl font-bold">Back to Home</button>
+        <div class="flex justify-between mb-2"><span>${t('bookingIdLabel2')}</span><span class="font-bold">${b.id}</span></div>
+        <div class="flex justify-between mb-2"><span>${t('checkinLabel')}</span><span>${utils.formatDate(b.checkin || b.date)}</span></div>
+        <div class="flex justify-between mb-4"><span>${t('totalLabel')}</span><span class="font-bold text-violet-500">${b.priceFormatted}</span></div>
+        <button onclick="finishBooking('bookings')" class="btn-violet w-full py-4 rounded-2xl font-bold mb-3">${t('viewMyBookingsBtn')}</button>
+        <button onclick="finishBooking('home')" class="btn-outline-violet w-full py-4 rounded-2xl font-bold">${t('backToHomeBtn')}</button>
       </div>
     </div>`;
   document.getElementById('mainApp').appendChild(page);
@@ -392,7 +392,7 @@ function finishBooking(target) { const p = document.getElementById('bookingConfi
 // ==================== HOTEL DETAILS & BOOKING ====================
 function showHotelPage(hotelId, opts = {}) {
   const h = CATALOG.hotels.find(x => x.id === hotelId);
-  if (!h) return toast('Hotel not found', 'error');
+  if (!h) return toast(t('errHotelNotFound'), 'error');
   state.currentHotel = h;
   const old = document.getElementById('hotelDetailPage'); if (old) old.remove();
   const page = document.createElement('div');
@@ -401,10 +401,10 @@ function showHotelPage(hotelId, opts = {}) {
   const startPrice = (h.rooms && h.rooms[0] ? h.rooms[0].price : h.price);
   const bookingCard = `
     <div class="detail-price-row">
-      <div><p class="text-[9px] tracking-wider mb-0.5 font-semibold">SELECTED ROOM</p><p class="text-xl font-bold text-violet-500 font-display detail-sidebar-price">${utils.formatPrice(startPrice)}<span class="text-xs"> / Night</span></p></div>
+      <div><p class="text-[9px] tracking-wider mb-0.5 font-semibold">${t('selectedRoomLabel')}</p><p class="text-xl font-bold text-violet-500 font-display detail-sidebar-price">${utils.formatPrice(startPrice)}<span class="text-xs"> / ${t('nightLabel')}</span></p></div>
       <div class="detail-sidebar-rating"><i class="fa-solid fa-star text-gold-400"></i> ${Number(h.rating).toFixed(1)} <span>(${h.reviews})</span></div>
     </div>
-    <button onclick="startBooking('${h.id}', 0)" class="btn-gold w-full py-3.5 rounded-2xl font-bold text-ink-900 detail-book-btn">Book Now</button>
+    <button onclick="startBooking('${h.id}', 0)" class="btn-gold w-full py-3.5 rounded-2xl font-bold text-ink-900 detail-book-btn">${t('bookNowBtn')}</button>
     <p class="detail-sidebar-note"><i class="fa-solid fa-location-dot"></i> ${h.location}</p>`;
   page.innerHTML = `
     <div class="min-h-screen pb-28" style="background:var(--bg-card)">
@@ -415,7 +415,7 @@ function showHotelPage(hotelId, opts = {}) {
         <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 pointer-events-none"></div>
         <button onclick="closeHotelPage()" class="absolute top-4 right-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900 z-10"><i class="fa-solid fa-arrow-right"></i></button>
         <button onclick="favorites.toggle('${h.id}')" class="absolute top-4 left-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg z-10"><i class="fa-${state.favorites.includes(h.id) ? 'solid text-red-500' : 'regular text-ink-900'} fa-heart"></i></button>
-        ${h.bestseller ? '<div class="absolute top-4 left-1/2 -translate-x-1/2 badge-bestseller px-3 py-1 rounded-full text-[10px] font-black">BEST SELLER</div>' : ''}
+        ${h.bestseller ? `<div class="absolute top-4 left-1/2 -translate-x-1/2 badge-bestseller px-3 py-1 rounded-full text-[10px] font-black">${t('bestSellerBadge')}</div>` : ''}
         <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10" id="galleryDots">${(h.images || [h.image]).map((_, i) => `<div class="gallery-dot ${i === 0 ? 'active' : ''}"></div>`).join('')}</div>
       </div>
       ${renderPhotoGrid(h.images || [h.image])}
@@ -432,12 +432,12 @@ function showHotelPage(hotelId, opts = {}) {
         </div>
         <div>
           <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold">— ABOUT</p>
-          <h3 class="font-display text-lg font-bold mb-2">About this hotel</h3>
+          <h3 class="font-display text-lg font-bold mb-2">${t('aboutThisHotelHeader')}</h3>
           <p class="text-sm leading-relaxed">${h.fullDescription || h.description || ''}</p>
         </div>
         <div>
           <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold">— ROOMS</p>
-          <h3 class="font-display text-lg font-bold mb-3">Room Options</h3>
+          <h3 class="font-display text-lg font-bold mb-3">${t('roomOptionsHeader')}</h3>
           <div class="space-y-3 lg:grid lg:grid-cols-2 lg:gap-3 lg:space-y-0" id="hotelRoomsList">
             ${(h.rooms || []).map((r, i) => `
               <div class="card room-option-card rounded-2xl p-3 flex gap-3 cursor-pointer ${i === 0 ? 'room-selected' : ''}" onclick="selectRoomOnDetail('${h.id}', ${i})">
@@ -457,7 +457,7 @@ function showHotelPage(hotelId, opts = {}) {
           </div>
         </div>
         <div class="card rounded-2xl p-4">
-          <h3 class="font-display text-lg font-bold mb-4">Real Stories From Our Guests</h3>
+          <h3 class="font-display text-lg font-bold mb-4">${t('realStoriesGuestsHeader')}</h3>
           <div class="rating-summary-block">
             <div class="rating-summary-score">
               <p class="rating-summary-number" id="hotelRatingSummary">–</p>
@@ -475,8 +475,8 @@ function showHotelPage(hotelId, opts = {}) {
         </aside>
       </div>
       <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto backdrop-blur-xl border-t p-4 flex items-center justify-between z-10 detail-mobile-bar" style="background:var(--bg-card); border-color:var(--border-card)">
-        <div><p class="text-[9px] tracking-wider mb-0.5 font-semibold">SELECTED ROOM</p><p class="text-xl font-bold text-violet-500 font-display detail-sidebar-price" id="hotelBottomPriceAmount">${utils.formatPrice(startPrice)}<span class="text-xs"> / Night</span></p></div>
-        <button onclick="startBooking('${h.id}', 0)" class="btn-gold px-7 py-3 rounded-2xl font-bold text-ink-900 detail-book-btn">Book Now</button>
+        <div><p class="text-[9px] tracking-wider mb-0.5 font-semibold">${t('selectedRoomLabel')}</p><p class="text-xl font-bold text-violet-500 font-display detail-sidebar-price" id="hotelBottomPriceAmount">${utils.formatPrice(startPrice)}<span class="text-xs"> / ${t('nightLabel')}</span></p></div>
+        <button onclick="startBooking('${h.id}', 0)" class="btn-gold px-7 py-3 rounded-2xl font-bold text-ink-900 detail-book-btn">${t('bookNowBtn')}</button>
       </div>
     </div>`;
   document.getElementById('mainApp').appendChild(page);
@@ -500,8 +500,8 @@ function selectRoomOnDetail(hotelId, roomIndex) {
 }
 
 function startBooking(hotelId, roomIndex) {
-  if (!authToken) { toast('Please login to book', 'error'); return; }
-  if (!allChildAgesSelected()) { toast('Please select an age for every child before booking', 'error'); openGuestsModal(); return; }
+  if (!authToken) { toast(t('errLoginToBook'), 'error'); return; }
+  if (!allChildAgesSelected()) { toast(t('errSelectChildAgesBooking'), 'error'); openGuestsModal(); return; }
   const h = CATALOG.hotels.find(x => x.id === hotelId);
   const r = h?.rooms?.[roomIndex];
   if (!h || !r) return;
@@ -533,16 +533,16 @@ function renderBookingStep(step) {
         <img src="${getImageUrl(h.image)}" class="w-16 h-16 rounded-xl object-cover flex-shrink-0" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
         <div><h3 class="font-display font-bold text-sm">${h.name}</h3><p class="text-[11px]" style="color:var(--text-secondary)">${r.type}</p></div>
       </div>
-      <div class="booking-summary-row"><span>Check-in</span><span>${utils.formatDate(state.bookingDraft.checkin)}</span></div>
-      <div class="booking-summary-row"><span>Check-out</span><span>${utils.formatDate(state.bookingDraft.checkout)}</span></div>
-      <div class="booking-summary-row"><span>${r.type} × ${state.guests.rooms} room(s)</span><span>${utils.formatPrice(pricing.baseRoomTotal)}</span></div>
+      <div class="booking-summary-row"><span>${t('checkinLabel')}</span><span>${utils.formatDate(state.bookingDraft.checkin)}</span></div>
+      <div class="booking-summary-row"><span>${t('checkoutLabel')}</span><span>${utils.formatDate(state.bookingDraft.checkout)}</span></div>
+      <div class="booking-summary-row"><span>${r.type} × ${state.guests.rooms} ${t('roomsCountSuffix')}</span><span>${utils.formatPrice(pricing.baseRoomTotal)}</span></div>
       ${pricing.childrenBreakdown.length ? `
       <div class="booking-summary-row" style="flex-direction:column; align-items:flex-start; gap:4px;">
-        <span style="color:var(--text-secondary); font-size:11px;">Children (${pricing.freeChildrenCount} free)</span>
-        ${pricing.childrenBreakdown.map(c => `<div class="flex justify-between w-full text-[11px]" style="color:var(--text-secondary)"><span>Age ${c.age}</span><span>${c.fee > 0 ? utils.formatPrice(c.fee) + ' / night' : 'Free'}</span></div>`).join('')}
+        <span style="color:var(--text-secondary); font-size:11px;">${t('children')} (${pricing.freeChildrenCount} ${t('freeLabel')})</span>
+        ${pricing.childrenBreakdown.map(c => `<div class="flex justify-between w-full text-[11px]" style="color:var(--text-secondary)"><span>${t('ageLabel')} ${c.age}</span><span>${c.fee > 0 ? utils.formatPrice(c.fee) + ' / ' + t('nightLabel') : t('freeLabel')}</span></div>`).join('')}
       </div>` : ''}
-      <div class="booking-summary-row"><span>Taxes & Fees</span><span>${utils.formatPrice(Math.round(pricing.roomTotal * 0.1))}</span></div>
-      <div class="booking-summary-total"><span>Total</span><span>${utils.formatPrice(total)}</span></div>
+      <div class="booking-summary-row"><span>${t('taxesFeesLabel')}</span><span>${utils.formatPrice(Math.round(pricing.roomTotal * 0.1))}</span></div>
+      <div class="booking-summary-total"><span>${t('totalLabel')}</span><span>${utils.formatPrice(total)}</span></div>
     </div>`;
   let bodyHtml = '';
   if (step === 2) {
@@ -553,29 +553,29 @@ function renderBookingStep(step) {
           <p class="booking-guest-name">${esc(state.bookingDraft.name || 'Guest')}</p>
           <p class="booking-guest-line">${esc(state.bookingDraft.email || '')}${state.bookingDraft.phone ? ' · ' + esc(state.bookingDraft.phone) : ''}</p>
         </div>
-        <h3 class="font-display text-lg font-bold mb-3">Stay Dates</h3>
+        <h3 class="font-display text-lg font-bold mb-3">${t('stayDatesHeader')}</h3>
         <form onsubmit="submitGuestDetails(event)" class="space-y-4">
           <div class="grid grid-cols-2 gap-3">
             <div id="bkCheckin" class="date-field p-3" data-date-field="bkCheckin" data-value="${state.bookingDraft.checkin}" onclick="datepicker.open('bkCheckin')">
-              <label class="text-[10px]">Check-in</label>
+              <label class="text-[10px]">${t('checkinLabel')}</label>
               <span class="date-field-value text-sm">${utils.formatDate(state.bookingDraft.checkin)}</span>
             </div>
             <div id="bkCheckout" class="date-field p-3" data-date-field="bkCheckout" data-value="${state.bookingDraft.checkout}" onclick="datepicker.open('bkCheckout')">
-              <label class="text-[10px]">Check-out</label>
+              <label class="text-[10px]">${t('checkoutLabel')}</label>
               <span class="date-field-value text-sm">${utils.formatDate(state.bookingDraft.checkout)}</span>
             </div>
           </div>
-          <textarea id="bkRequests" rows="2" placeholder="Special requests (optional)" class="input-field w-full px-3 py-2.5 text-sm">${state.bookingDraft.requests || ''}</textarea>
-          <button type="submit" class="btn-violet w-full py-4 rounded-2xl font-bold">Continue</button>
+          <textarea id="bkRequests" rows="2" placeholder="${t('phSpecialRequests')}" class="input-field w-full px-3 py-2.5 text-sm">${state.bookingDraft.requests || ''}</textarea>
+          <button type="submit" class="btn-violet w-full py-4 rounded-2xl font-bold">${t('continueBtn')}</button>
         </form>
       </div>
       <div class="booking-step-side">${orderSummaryCard}</div>`;
   } else if (step === 3) {
     bodyHtml = `
       <div class="p-5 booking-step-main">
-        <h3 class="font-display text-lg font-bold mb-3">Payment Method</h3>
+        <h3 class="font-display text-lg font-bold mb-3">${t('paymentMethodHeader')}</h3>
         <div class="space-y-3 mb-5">${paymentMethodsBlock(state.bookingDraft.payment, 'setHotelPaymentMethod')}</div>
-        <button onclick="payAndConfirmHotelBooking(${pricing.roomTotal}, ${Math.round(pricing.roomTotal * 0.1)}, ${total}, ${nights})" id="hotelPayBtn" class="btn-violet w-full py-4 rounded-2xl font-bold">Pay Now</button>
+        <button onclick="payAndConfirmHotelBooking(${pricing.roomTotal}, ${Math.round(pricing.roomTotal * 0.1)}, ${total}, ${nights})" id="hotelPayBtn" class="btn-violet w-full py-4 rounded-2xl font-bold">${t('payNowBtn')}</button>
       </div>
       <div class="booking-step-side">${orderSummaryCard}</div>`;
   }
@@ -586,9 +586,9 @@ function renderBookingStep(step) {
         <div class="relative z-10 booking-header-inner">
           <div class="flex items-center gap-3 mb-5">
             <button onclick="${step === 2 ? 'closeBookingFlow()' : 'renderBookingStep(2)'}" class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-arrow-right"></i></button>
-            <h1 class="text-lg font-bold font-display text-white">${step === 2 ? 'Booking Details' : 'Payment'}</h1>
+            <h1 class="text-lg font-bold font-display text-white">${step === 2 ? t('bookingDetailsHeader') : t('paymentStepLabel')}</h1>
           </div>
-          ${utils.stepIndicator(step, ['Select Room', 'Guest Details', 'Payment'])}
+          ${utils.stepIndicator(step, [t('stepSelectRoom'), t('stepGuestDetails'), t('paymentStepLabel')])}
         </div>
       </div>
       <div class="booking-step-layout">${bodyHtml}</div>
@@ -644,7 +644,7 @@ function computeRoomPricing(room, guests, roomsCount, nights) {
 }
 
 async function payAndConfirmHotelBooking(roomTotal, taxes, total, nights) {
-  if (!authToken) { toast('Please login to book', 'error'); return; }
+  if (!authToken) { toast(t('errLoginToBook'), 'error'); return; }
   const btn = document.getElementById('hotelPayBtn'); btn.disabled = true; btn.innerHTML = 'Processing…';
   const orderId = utils.generateId();
   try {
@@ -685,31 +685,31 @@ async function payAndConfirmHotelBooking(roomTotal, taxes, total, nights) {
     // collected by our own form (see paymentMethodsBlock) and 3D Secure, if
     // triggered, opens as an in-page modal rather than a redirect.
     const success = await processKashierPayment(orderId, total, 'EGP', btn);
-    if (!success) { btn.disabled = false; btn.innerHTML = 'Pay Now'; return; }
+    if (!success) { btn.disabled = false; btn.innerHTML = t('payNowBtn'); return; }
     bookingData.status = 'completed';
     state.bookings.unshift(bookingData);
     bookings.render();
     renderBookingConfirmation(bookingData);
-    btn.disabled = false; btn.innerHTML = 'Pay Now';
+    btn.disabled = false; btn.innerHTML = t('payNowBtn');
   } catch (e) {
     toast('Payment error: ' + e.message, 'error');
-    btn.disabled = false; btn.innerHTML = 'Pay Now';
+    btn.disabled = false; btn.innerHTML = t('payNowBtn');
   }
 }
 
 // ==================== EXCURSION DETAILS & BOOKING ====================
 function showExcursionPage(excursionId, opts = {}) {
   const x = CATALOG.excursions.find(i => i.id === excursionId);
-  if (!x) return toast('Excursion not found', 'error');
+  if (!x) return toast(t('errExcursionNotFound'), 'error');
   state.currentExcursion = x;
   const old = document.getElementById('excursionDetailPage'); if (old) old.remove();
   const page = document.createElement('div'); page.id = 'excursionDetailPage'; page.className = 'page';
   const bookingCard = `
     <div class="detail-price-row">
-      <div><p class="text-[9px]">FROM</p><p class="text-xl font-bold text-violet-500 font-display">${utils.formatPrice(x.price)}<span class="text-xs">/person</span></p></div>
+      <div><p class="text-[9px]">${t('fromLabel')}</p><p class="text-xl font-bold text-violet-500 font-display">${utils.formatPrice(x.price)}<span class="text-xs">/${t('perPersonLabel')}</span></p></div>
       <div class="detail-sidebar-rating"><i class="fa-solid fa-star text-gold-400"></i> ${Number(x.rating).toFixed(1)} <span>(${x.reviews})</span></div>
     </div>
-    <button onclick="startExcursionBooking('${x.id}')" class="btn-gold w-full py-3.5 rounded-2xl font-bold text-ink-900">Book Now</button>
+    <button onclick="startExcursionBooking('${x.id}')" class="btn-gold w-full py-3.5 rounded-2xl font-bold text-ink-900">${t('bookNowBtn')}</button>
     <p class="detail-sidebar-note"><i class="fa-regular fa-clock"></i> ${x.duration} · <i class="fa-solid fa-location-dot"></i> ${x.meetingPoint || ''}</p>`;
   page.innerHTML = `
     <div class="min-h-screen pb-28" style="background:var(--bg-card)">
@@ -733,20 +733,20 @@ function showExcursionPage(excursionId, opts = {}) {
 
         <!-- Trust badges -->
         <div class="trust-badge-row">
-          <div class="trust-badge"><i class="fa-solid fa-star"></i><span>${Number(x.rating).toFixed(1)} Rating</span></div>
-          <div class="trust-badge"><i class="fa-solid fa-rotate-left"></i><span>Free Cancellation</span></div>
-          <div class="trust-badge"><i class="fa-solid fa-bolt"></i><span>Instant Confirmation</span></div>
-          <div class="trust-badge"><i class="fa-solid fa-shield-heart"></i><span>Secure Booking</span></div>
+          <div class="trust-badge"><i class="fa-solid fa-star"></i><span>${Number(x.rating).toFixed(1)} ${t('ratingLabel')}</span></div>
+          <div class="trust-badge"><i class="fa-solid fa-rotate-left"></i><span>${t('freeCancellationBadge')}</span></div>
+          <div class="trust-badge"><i class="fa-solid fa-bolt"></i><span>${t('instantConfirmationBadge')}</span></div>
+          <div class="trust-badge"><i class="fa-solid fa-shield-heart"></i><span>${t('secureBookingBadge')}</span></div>
         </div>
 
         <div>
-          <h3 class="font-display text-lg font-bold mb-2">Overview</h3>
+          <h3 class="font-display text-lg font-bold mb-2">${t('overviewHeader')}</h3>
           <p class="text-sm leading-relaxed">${x.fullDescription || x.description}</p>
         </div>
 
         ${(x.includes || []).length ? `
         <div>
-          <h3 class="font-display text-lg font-bold mb-3">What This Trip Offers</h3>
+          <h3 class="font-display text-lg font-bold mb-3">${t('whatTripOffersHeader')}</h3>
           <div class="highlight-grid">
             ${x.includes.map((i, n) => `
               <div class="highlight-item">
@@ -773,7 +773,7 @@ function showExcursionPage(excursionId, opts = {}) {
 
         ${(x.whatToBring || []).length ? `
           <div>
-            <h3 class="font-display text-lg font-bold mb-3">What to Bring</h3>
+            <h3 class="font-display text-lg font-bold mb-3">${t('whatToBringHeader')}</h3>
             <div class="bring-chip-row">${x.whatToBring.map(i => `<div class="bring-chip"><i class="fa-solid fa-suitcase-rolling"></i>${i}</div>`).join('')}</div>
           </div>` : ''}
 
@@ -781,18 +781,18 @@ function showExcursionPage(excursionId, opts = {}) {
         <div class="meeting-card">
           <div class="meeting-card-row">
             <div class="meeting-card-icon"><i class="fa-solid fa-location-dot"></i></div>
-            <div><p class="meeting-card-label">Meeting Point</p><p class="meeting-card-value">${x.meetingPoint || 'Hotel lobby pickup'}</p></div>
+            <div><p class="meeting-card-label">${t('meetingPointLabel')}</p><p class="meeting-card-value">${x.meetingPoint || t('defaultMeetingPoint')}</p></div>
           </div>
           <div class="meeting-card-divider"></div>
           <div class="meeting-card-row">
             <div class="meeting-card-icon"><i class="fa-regular fa-clock"></i></div>
-            <div><p class="meeting-card-label">Schedule</p><p class="meeting-card-value">${x.duration || ''} · Daily</p></div>
+            <div><p class="meeting-card-label">${t('scheduleLabel')}</p><p class="meeting-card-value">${x.duration || ''} · ${t('dailyLabel')}</p></div>
           </div>
         </div>
 
         ${(x.itinerary || []).length ? `
           <div>
-            <h3 class="font-display text-lg font-bold mb-3">Trip Itinerary</h3>
+            <h3 class="font-display text-lg font-bold mb-3">${t('tripItineraryHeader')}</h3>
             <div class="space-y-0">
               ${x.itinerary.map((step, i) => `
                 <div class="flex gap-3">
@@ -809,7 +809,7 @@ function showExcursionPage(excursionId, opts = {}) {
             </div>
           </div>` : ''}
         <div class="card rounded-2xl p-4">
-          <h3 class="font-display text-lg font-bold mb-4">Real Stories From Our Travelers</h3>
+          <h3 class="font-display text-lg font-bold mb-4">${t('realStoriesTravelersHeader')}</h3>
           <div class="rating-summary-block">
             <div class="rating-summary-score">
               <p class="rating-summary-number" id="excursionRatingSummary">–</p>
@@ -818,7 +818,7 @@ function showExcursionPage(excursionId, opts = {}) {
             </div>
             <div class="rating-bar-chart" id="excursionRatingBars"></div>
           </div>
-          <button onclick="reviews.openModal('excursion','${x.id}')" class="w-full py-2.5 rounded-xl text-xs font-bold border border-violet-400/40 text-violet-500 mb-3 mt-4">Write a Review</button>
+          <button onclick="reviews.openModal('excursion','${x.id}')" class="w-full py-2.5 rounded-xl text-xs font-bold border border-violet-400/40 text-violet-500 mb-3 mt-4">${t('writeReviewBtn')}</button>
           <div class="space-y-3" id="excursionReviewsList"></div>
         </div>
         </div>
@@ -827,7 +827,7 @@ function showExcursionPage(excursionId, opts = {}) {
         </aside>
       </div>
       <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto backdrop-blur-xl border-t p-4 flex items-center justify-between z-10 detail-mobile-bar" style="background:var(--bg-card); border-color:var(--border-card)">
-        <div><p class="text-[9px]">FROM</p><p class="text-xl font-bold text-violet-500 font-display">${utils.formatPrice(x.price)}<span class="text-xs">/person</span></p></div>
+        <div><p class="text-[9px]">${t('fromLabel')}</p><p class="text-xl font-bold text-violet-500 font-display">${utils.formatPrice(x.price)}<span class="text-xs">/${t('perPersonLabel')}</span></p></div>
         <button onclick="startExcursionBooking('${x.id}')" class="btn-gold px-7 py-3 rounded-2xl font-bold text-ink-900">Book Now</button>
       </div>
     </div>`;
@@ -842,7 +842,7 @@ function showExcursionPage(excursionId, opts = {}) {
 function closeExcursionPage() { const p = document.getElementById('excursionDetailPage'); if (p) p.remove(); nav.go('excursions'); }
 function onExcursionGalleryScroll(el) { const idx = Math.round(el.scrollLeft / el.clientWidth); document.querySelectorAll('#excursionGalleryDots .gallery-dot').forEach((d, i) => d.classList.toggle('active', i === idx)); }
 function startExcursionBooking(id) {
-  if (!authToken) { toast('Please login to book', 'error'); return; }
+  if (!authToken) { toast(t('errLoginToBook'), 'error'); return; }
   const x = CATALOG.excursions.find(i => i.id === id);
   if (!x) return;
   state.currentExcursion = x;
@@ -861,10 +861,10 @@ function renderExcursionBookingStep(step) {
         <img src="${getImageUrl(x.image)}" class="w-16 h-16 rounded-xl object-cover flex-shrink-0" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
         <div><h3 class="font-display font-bold text-sm">${x.title}</h3><p class="text-[11px]" style="color:var(--text-secondary)">${x.category} · ${x.duration}</p></div>
       </div>
-      <div class="booking-summary-row"><span>Date</span><span>${utils.formatDate(state.bookingDraft.date)}</span></div>
+      <div class="booking-summary-row"><span>${t('dateLabel')}</span><span>${utils.formatDate(state.bookingDraft.date)}</span></div>
       <div class="booking-summary-row"><span>${x.title} × ${state.bookingDraft.participants}</span><span>${utils.formatPrice(subtotal)}</span></div>
-      <div class="booking-summary-row"><span>Taxes & Fees</span><span>${utils.formatPrice(taxes)}</span></div>
-      <div class="booking-summary-total"><span>Total</span><span>${utils.formatPrice(total)}</span></div>
+      <div class="booking-summary-row"><span>${t('taxesFeesLabel')}</span><span>${utils.formatPrice(taxes)}</span></div>
+      <div class="booking-summary-total"><span>${t('totalLabel')}</span><span>${utils.formatPrice(total)}</span></div>
     </div>`;
   let bodyHtml = '';
   if (step === 2) {
@@ -875,10 +875,10 @@ function renderExcursionBookingStep(step) {
           <p class="booking-guest-name">${esc(state.bookingDraft.name || 'Guest')}</p>
           <p class="booking-guest-line">${esc(state.bookingDraft.email || '')}${state.bookingDraft.phone ? ' · ' + esc(state.bookingDraft.phone) : ''}</p>
         </div>
-        <h3 class="font-display text-lg font-bold mb-3">Trip Details</h3>
+        <h3 class="font-display text-lg font-bold mb-3">${t('tripDetailsHeader')}</h3>
         <form onsubmit="submitExcursionDetails(event)" class="space-y-4">
           <div id="ekDate" class="date-field p-3" data-date-field="ekDate" data-value="${state.bookingDraft.date}" onclick="datepicker.open('ekDate')">
-            <label class="text-[10px]">Date</label>
+            <label class="text-[10px]">${t('dateLabel')}</label>
             <span class="date-field-value text-sm">${utils.formatDate(state.bookingDraft.date)}</span>
           </div>
           <div class="field-box rounded-2xl p-3 flex items-center justify-between">
@@ -888,17 +888,17 @@ function renderExcursionBookingStep(step) {
               <button type="button" class="counter-btn" onclick="adjustParticipants(1)">+</button>
             </div>
           </div>
-          <button type="submit" class="btn-violet w-full py-4 rounded-2xl font-bold">Continue</button>
+          <button type="submit" class="btn-violet w-full py-4 rounded-2xl font-bold">${t('continueBtn')}</button>
         </form>
       </div>
       <div class="booking-step-side">${orderSummaryCard}</div>`;
   } else if (step === 3) {
     bodyHtml = `
       <div class="p-5 booking-step-main">
-        <h3 class="font-display text-lg font-bold mb-3">Payment Method</h3>
+        <h3 class="font-display text-lg font-bold mb-3">${t('paymentMethodHeader')}</h3>
         <div class="space-y-3 mb-5">${paymentMethodsBlock(state.bookingDraft.payment, 'setExcursionPaymentMethod')}</div>
-        <button onclick="payAndConfirmExcursionBooking(${subtotal}, ${taxes}, ${total})" id="excursionPayBtn" class="btn-violet w-full py-4 rounded-2xl font-bold">Pay Now</button>
-        <button onclick="renderExcursionBookingStep(2)" class="w-full text-center text-violet-500 text-sm font-semibold mt-4">Back</button>
+        <button onclick="payAndConfirmExcursionBooking(${subtotal}, ${taxes}, ${total})" id="excursionPayBtn" class="btn-violet w-full py-4 rounded-2xl font-bold">${t('payNowBtn')}</button>
+        <button onclick="renderExcursionBookingStep(2)" class="w-full text-center text-violet-500 text-sm font-semibold mt-4">${t('backBtn')}</button>
       </div>
       <div class="booking-step-side">${orderSummaryCard}</div>`;
   }
@@ -909,7 +909,7 @@ function renderExcursionBookingStep(step) {
         <div class="relative z-10 booking-header-inner">
           <div class="flex items-center gap-3 mb-5">
             <button onclick="${step === 2 ? 'closeExcursionBookingFlow()' : 'renderExcursionBookingStep(2)'}" class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-arrow-right"></i></button>
-            <h1 class="text-lg font-bold font-display text-white">${step === 2 ? 'Booking Details' : 'Payment'}</h1>
+            <h1 class="text-lg font-bold font-display text-white">${step === 2 ? t('bookingDetailsHeader') : t('paymentStepLabel')}</h1>
           </div>
           ${utils.stepIndicator(step, ['Select', 'Details', 'Payment'])}
         </div>
@@ -925,7 +925,7 @@ function adjustParticipants(delta) { const newVal = state.bookingDraft.participa
 function submitExcursionDetails(e) { e.preventDefault(); state.bookingDraft.date = document.getElementById('ekDate').dataset.value; renderExcursionBookingStep(3); }
 
 async function payAndConfirmExcursionBooking(subtotal, taxes, total) {
-  if (!authToken) { toast('Please login to book', 'error'); return; }
+  if (!authToken) { toast(t('errLoginToBook'), 'error'); return; }
   const btn = document.getElementById('excursionPayBtn'); btn.disabled = true; btn.innerHTML = 'Processing…';
   const orderId = utils.generateId();
   try {
@@ -956,23 +956,23 @@ async function payAndConfirmExcursionBooking(subtotal, taxes, total) {
     // collected by our own form (see paymentMethodsBlock) and 3D Secure, if
     // triggered, opens as an in-page modal rather than a redirect.
     const success = await processKashierPayment(orderId, total, 'EGP', btn);
-    if (!success) { btn.disabled = false; btn.innerHTML = 'Pay Now'; return; }
+    if (!success) { btn.disabled = false; btn.innerHTML = t('payNowBtn'); return; }
     bookingData.status = 'completed';
     state.bookings.unshift(bookingData);
     bookings.render();
     renderBookingConfirmation(bookingData);
-    btn.disabled = false; btn.innerHTML = 'Pay Now';
+    btn.disabled = false; btn.innerHTML = t('payNowBtn');
   } catch (e) {
     toast('Payment error: ' + e.message, 'error');
-    btn.disabled = false; btn.innerHTML = 'Pay Now';
+    btn.disabled = false; btn.innerHTML = t('payNowBtn');
   }
 }
 
 // ==================== TRANSFER BOOKING ====================
 function startTransferBooking(id) {
-  if (!authToken) { toast('Please login to book', 'error'); return; }
+  if (!authToken) { toast(t('errLoginToBook'), 'error'); return; }
   const v = CATALOG.transfers.find(i => i.id === id);
-  if (!v) return toast('Transfer not found', 'error');
+  if (!v) return toast(t('errTransferNotFound'), 'error');
   state.currentTransfer = v;
   state.bookingDraft = {
     name: currentUser?.displayName || currentUser?.name || '',
@@ -1003,13 +1003,13 @@ function renderTransferBookingStep(step) {
     <div class="booking-summary-card">
       <div class="flex gap-3 pb-4 mb-4" style="border-bottom:1px solid var(--border-card)">
         <img src="${getImageUrl(v.image)}" class="w-16 h-16 rounded-xl object-cover flex-shrink-0" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
-        <div><h3 class="font-display font-bold text-sm">${v.vehicleType} Transfer</h3><p class="text-[11px]" style="color:var(--text-secondary)">Up to ${v.capacity} passengers</p></div>
+        <div><h3 class="font-display font-bold text-sm">${v.vehicleType} ${t('transferSuffix')}</h3><p class="text-[11px]" style="color:var(--text-secondary)">${t('upToPassengersPrefix')} ${v.capacity} ${t('passengersLower')}</p></div>
       </div>
-      <div class="booking-summary-row"><span>Date</span><span>${utils.formatDate(state.bookingDraft.date)}</span></div>
-      <div class="booking-summary-row"><span>Time</span><span>${state.bookingDraft.time}</span></div>
-      <div class="booking-summary-row"><span>${v.vehicleType} Transfer</span><span>${utils.formatPrice(subtotal)}</span></div>
-      <div class="booking-summary-row"><span>Taxes & Fees</span><span>${utils.formatPrice(taxes)}</span></div>
-      <div class="booking-summary-total"><span>Total</span><span>${utils.formatPrice(total)}</span></div>
+      <div class="booking-summary-row"><span>${t('dateLabel')}</span><span>${utils.formatDate(state.bookingDraft.date)}</span></div>
+      <div class="booking-summary-row"><span>${t('timeLabel')}</span><span>${state.bookingDraft.time}</span></div>
+      <div class="booking-summary-row"><span>${v.vehicleType} ${t('transferSuffix')}</span><span>${utils.formatPrice(subtotal)}</span></div>
+      <div class="booking-summary-row"><span>${t('taxesFeesLabel')}</span><span>${utils.formatPrice(taxes)}</span></div>
+      <div class="booking-summary-total"><span>${t('totalLabel')}</span><span>${utils.formatPrice(total)}</span></div>
     </div>`;
   let bodyHtml = '';
   if (step === 2) {
@@ -1020,45 +1020,45 @@ function renderTransferBookingStep(step) {
           <p class="booking-guest-name">${esc(state.bookingDraft.name || 'Guest')}</p>
           <p class="booking-guest-line">${esc(state.bookingDraft.email || '')}${state.bookingDraft.phone ? ' · ' + esc(state.bookingDraft.phone) : ''}</p>
         </div>
-        <h3 class="font-display text-lg font-bold mb-3">Transfer Details</h3>
+        <h3 class="font-display text-lg font-bold mb-3">${t('transferDetailsHeader')}</h3>
         <form onsubmit="submitTransferDetails(event)" class="space-y-4">
           <div class="field-box p-1 rounded-2xl flex gap-1">
-            <button type="button" onclick="setTransferDirection('Airport to Hotel')" id="dirBtnArrival" class="flex-1 py-2.5 rounded-xl text-xs font-bold">Airport Pickup</button>
-            <button type="button" onclick="setTransferDirection('Hotel to Airport')" id="dirBtnDeparture" class="flex-1 py-2.5 rounded-xl text-xs font-bold">Airport Drop-off</button>
+            <button type="button" onclick="setTransferDirection('Airport to Hotel')" id="dirBtnArrival" class="flex-1 py-2.5 rounded-xl text-xs font-bold">${t('airportPickupBtn')}</button>
+            <button type="button" onclick="setTransferDirection('Hotel to Airport')" id="dirBtnDeparture" class="flex-1 py-2.5 rounded-xl text-xs font-bold">${t('airportDropoffBtn')}</button>
           </div>
-          <input type="text" id="tkFlightNo" value="${state.bookingDraft.flightNo}" placeholder="Flight number (optional)" class="input-field w-full px-3 py-2.5 text-sm">
+          <input type="text" id="tkFlightNo" value="${state.bookingDraft.flightNo}" placeholder="${t('phFlightNumber')}" class="input-field w-full px-3 py-2.5 text-sm">
           <div id="hotelField" class="field-box p-3">
             <label class="text-[10px]">Hotel Name &amp; Address</label>
             <input type="text" id="tkAddress" required value="${state.bookingDraft.address}" placeholder="Hotel name & address" class="input-field w-full px-3 py-2.5 text-sm">
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div id="tkDate" class="date-field p-3" data-date-field="tkDate" data-value="${state.bookingDraft.date}" onclick="datepicker.open('tkDate')">
-              <label class="text-[10px]">Date</label>
+              <label class="text-[10px]">${t('dateLabel')}</label>
               <span class="date-field-value text-sm">${utils.formatDate(state.bookingDraft.date)}</span>
             </div>
             <div class="date-field p-3">
-              <label class="text-[10px]">Time</label>
+              <label class="text-[10px]">${t('timeLabel')}</label>
               <input type="time" id="tkTime" value="${state.bookingDraft.time}" class="w-full bg-transparent text-sm font-semibold outline-none border-0 p-0">
             </div>
           </div>
           <div class="field-box rounded-2xl p-3 flex items-center justify-between">
-            <div><p class="text-[10px]">Passengers</p><p class="text-sm font-semibold" id="tkPassengersLabel">${state.bookingDraft.passengers} People</p></div>
+            <div><p class="text-[10px]">${t('passengersLabel')}</p><p class="text-sm font-semibold" id="tkPassengersLabel">${state.bookingDraft.passengers} ${t('peopleLabel')}</p></div>
             <div class="flex items-center gap-3">
               <button type="button" class="counter-btn" onclick="adjustTransferPassengers(-1)">-</button>
               <button type="button" class="counter-btn" onclick="adjustTransferPassengers(1)">+</button>
             </div>
           </div>
-          <button type="submit" class="btn-violet w-full py-4 rounded-2xl font-bold">Continue</button>
+          <button type="submit" class="btn-violet w-full py-4 rounded-2xl font-bold">${t('continueBtn')}</button>
         </form>
       </div>
       <div class="booking-step-side">${orderSummaryCard}</div>`;
   } else if (step === 3) {
     bodyHtml = `
       <div class="p-5 booking-step-main">
-        <h3 class="font-display text-lg font-bold mb-3">Payment Method</h3>
+        <h3 class="font-display text-lg font-bold mb-3">${t('paymentMethodHeader')}</h3>
         <div class="space-y-3 mb-5">${paymentMethodsBlock(state.bookingDraft.payment, 'setTransferPaymentMethod')}</div>
-        <button onclick="payAndConfirmTransferBooking(${subtotal}, ${taxes}, ${total})" id="transferPayBtn" class="btn-violet w-full py-4 rounded-2xl font-bold">Pay Now</button>
-        <button onclick="renderTransferBookingStep(2)" class="w-full text-center text-violet-500 text-sm font-semibold mt-4">Back</button>
+        <button onclick="payAndConfirmTransferBooking(${subtotal}, ${taxes}, ${total})" id="transferPayBtn" class="btn-violet w-full py-4 rounded-2xl font-bold">${t('payNowBtn')}</button>
+        <button onclick="renderTransferBookingStep(2)" class="w-full text-center text-violet-500 text-sm font-semibold mt-4">${t('backBtn')}</button>
       </div>
       <div class="booking-step-side">${orderSummaryCard}</div>`;
   }
@@ -1069,7 +1069,7 @@ function renderTransferBookingStep(step) {
         <div class="relative z-10 booking-header-inner">
           <div class="flex items-center gap-3 mb-5">
             <button onclick="${step === 2 ? 'closeTransferBookingFlow()' : 'renderTransferBookingStep(2)'}" class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-arrow-right"></i></button>
-            <h1 class="text-lg font-bold font-display text-white">${step === 2 ? 'Transfer Details' : 'Payment'}</h1>
+            <h1 class="text-lg font-bold font-display text-white">${step === 2 ? t('transferDetailsHeader') : t('paymentStepLabel')}</h1>
           </div>
           ${utils.stepIndicator(step, ['Select', 'Details', 'Payment'])}
         </div>
@@ -1097,7 +1097,7 @@ function adjustTransferPassengers(delta) { const v = state.currentTransfer; cons
 function submitTransferDetails(e) { e.preventDefault(); state.bookingDraft.flightNo = document.getElementById('tkFlightNo').value; state.bookingDraft.address = document.getElementById('tkAddress').value; state.bookingDraft.date = document.getElementById('tkDate').dataset.value; state.bookingDraft.time = document.getElementById('tkTime').value; renderTransferBookingStep(3); }
 
 async function payAndConfirmTransferBooking(subtotal, taxes, total) {
-  if (!authToken) { toast('Please login to book', 'error'); return; }
+  if (!authToken) { toast(t('errLoginToBook'), 'error'); return; }
   const btn = document.getElementById('transferPayBtn'); btn.disabled = true; btn.innerHTML = 'Processing…';
   const orderId = utils.generateId();
   try {
@@ -1131,15 +1131,15 @@ async function payAndConfirmTransferBooking(subtotal, taxes, total) {
     // collected by our own form (see paymentMethodsBlock) and 3D Secure, if
     // triggered, opens as an in-page modal rather than a redirect.
     const success = await processKashierPayment(orderId, total, 'EGP', btn);
-    if (!success) { btn.disabled = false; btn.innerHTML = 'Pay Now'; return; }
+    if (!success) { btn.disabled = false; btn.innerHTML = t('payNowBtn'); return; }
     bookingData.status = 'completed';
     state.bookings.unshift(bookingData);
     bookings.render();
     renderBookingConfirmation(bookingData);
-    btn.disabled = false; btn.innerHTML = 'Pay Now';
+    btn.disabled = false; btn.innerHTML = t('payNowBtn');
   } catch (e) {
     toast('Payment error: ' + e.message, 'error');
-    btn.disabled = false; btn.innerHTML = 'Pay Now';
+    btn.disabled = false; btn.innerHTML = t('payNowBtn');
   }
 }
 
@@ -1186,7 +1186,7 @@ function showRestaurantPage(id, opts = {}) {
         <p class="text-center text-sm leading-relaxed italic font-display" style="color:var(--text-secondary)">"${r.fullDescription || r.description}"</p>
         <div class="lux-divider"><span class="lux-dot"></span></div>
         <div>
-          <p class="text-center font-display italic text-2xl mb-6" style="color:var(--text-primary)">The Menu</p>
+          <p class="text-center font-display italic text-2xl mb-6" style="color:var(--text-primary)">${t('theMenuHeader')}</p>
           ${(r.menu || []).map(section => `
             <div class="mb-8">
               <h4 class="menu-category-title">${section.category}</h4>
@@ -1289,17 +1289,17 @@ function closeArticlePage() { const p = document.getElementById('articleDetailPa
 // ==================== BOOKING DETAILS & CANCEL ====================
 function showBookingDetails(bookingId) {
   const b = state.bookings.find(x => x.id === bookingId);
-  if (!b) return toast('Booking not found', 'error');
+  if (!b) return toast(t('errBookingNotFound'), 'error');
   const isUpcoming = new Date(b.checkin || b.date) >= new Date();
   const page = document.createElement('div'); page.id = 'bookingDetailsPage'; page.className = 'page';
   page.innerHTML = `
     <div class="min-h-screen pb-28" style="background:var(--bg-body)">
-      <div class="dark-scene rounded-t-[28px] px-5 pt-6 pb-8 relative overflow-hidden">
+      <div class="dark-scene px-5 pt-6 pb-8 relative overflow-hidden">
         <div class="stars-container"></div>
         <div class="relative z-10">
           <div class="flex items-center justify-between mb-5">
             <button onclick="closeBookingDetails()" class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-arrow-right"></i></button>
-            <h1 class="text-lg font-bold font-display text-white">Booking Details</h1>
+            <h1 class="text-lg font-bold font-display text-white">${t('bookingDetailsHeader')}</h1>
             <div class="w-10"></div>
           </div>
           <div class="text-center">
@@ -1309,8 +1309,8 @@ function showBookingDetails(bookingId) {
       </div>
       <div class="relative -mt-4 rounded-t-[28px] p-5" style="background:var(--bg-card)">
         ${bookingDetailBody(b)}
-        ${b.type !== 'transfer' ? (b.reviewed ? `<div class="text-center text-xs py-2 mb-2"><i class="fa-solid fa-circle-check text-green-500"></i> You've reviewed this booking</div>` : (!isUpcoming ? `<button onclick="reviews.openModal('${b.type}','${b.hotelId || b.excursionId}', '${b.id}')" class="w-full py-3.5 rounded-2xl font-bold border border-violet-400/40 text-violet-500 mb-2"><i class="fa-solid fa-pen"></i> Write a Review</button>` : '')) : ''}
-        ${isUpcoming ? `<button onclick="cancelBooking('${b.id}')" class="w-full py-4 rounded-2xl font-bold text-red-500 border border-red-400/30 mt-2">Cancel Booking</button>` : ''}
+        ${b.type !== 'transfer' ? (b.reviewed ? `<div class="text-center text-xs py-2 mb-2"><i class="fa-solid fa-circle-check text-green-500"></i> ${t('alreadyReviewedMsg')}</div>` : (!isUpcoming ? `<button onclick="reviews.openModal('${b.type}','${b.hotelId || b.excursionId}', '${b.id}')" class="w-full py-3.5 rounded-2xl font-bold border border-violet-400/40 text-violet-500 mb-2"><i class="fa-solid fa-pen"></i> ${t('writeReviewBtn')}</button>` : '')) : ''}
+        ${isUpcoming ? `<button onclick="cancelBooking('${b.id}')" class="w-full py-4 rounded-2xl font-bold text-red-500 border border-red-400/30 mt-2">${t('cancelBookingBtn')}</button>` : ''}
       </div>
     </div>`;
   document.getElementById('mainApp').appendChild(page);
@@ -1319,15 +1319,20 @@ function showBookingDetails(bookingId) {
   window.scrollTo(0,0);
 }
 
+// Raw direction/type values are stored in English in the booking record
+// (backend/admin consistency); this maps them to a display string only,
+// at render time, so the stored value itself never changes.
+function directionLabel(dir) { return dir === 'Airport to Hotel' ? t('directionAirportToHotel') : t('directionHotelToAirport'); }
+
 function bookingDetailBody(b) {
-  const paymentLabel = b.payment === 'instapay' ? 'InstaPay / Wallet' : 'Credit/Debit Card';
-  const paymentRow = `<div class="flex justify-between"><span>Payment</span><span>${paymentLabel}</span></div>`;
-  if (b.type === 'excursion') return `<div class="card rounded-2xl p-3 flex gap-3 mb-4"><img src="${b.image}" class="w-16 h-16 rounded-xl object-cover" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'"><div><h3 class="font-display font-bold text-sm">${b.title}</h3><p class="text-[11px]">${b.category}</p></div></div><div class="space-y-3 text-sm mb-4"><div class="flex justify-between"><span>Date</span><span>${utils.formatDate(b.date)}</span></div><div class="flex justify-between"><span>Participants</span><span>${b.participants}</span></div>${paymentRow}</div><div class="border-t pt-3 flex justify-between mb-4"><span class="font-bold">Total</span><span class="font-bold text-violet-500">${b.priceFormatted}</span></div><div class="field-box rounded-xl p-3 flex items-center justify-between mb-2"><span>Booking ID</span><span class="font-bold">${b.id}</span></div>`;
-  if (b.type === 'transfer') return `<div class="card rounded-2xl p-3 flex gap-3 mb-4"><div class="w-16 h-16 rounded-xl bg-violet-50 flex items-center justify-center"><i class="fa-solid fa-shuttle-van text-violet-600 text-xl"></i></div><div><h3 class="font-display font-bold text-sm">${b.vehicleType} Transfer</h3><p class="text-[11px]">${b.direction}</p></div></div><div class="space-y-3 text-sm mb-4"><div class="flex justify-between"><span>Date</span><span>${utils.formatDate(b.date)}</span></div><div class="flex justify-between"><span>Time</span><span>${b.time}</span></div><div class="flex justify-between"><span>Flight No.</span><span>${b.flightNo || '—'}</span></div><div class="flex justify-between"><span>Pickup/Drop-off</span><span class="text-right max-w-[60%]">${b.address}</span></div><div class="flex justify-between"><span>Passengers</span><span>${b.passengers}</span></div>${paymentRow}</div><div class="border-t pt-3 flex justify-between mb-4"><span class="font-bold">Total</span><span class="font-bold text-violet-500">${b.priceFormatted}</span></div><div class="field-box rounded-xl p-3 flex items-center justify-between mb-2"><span>Booking ID</span><span class="font-bold">${b.id}</span></div>`;
-  return `<div class="card rounded-2xl p-3 flex gap-3 mb-4"><img src="${b.image}" class="w-16 h-16 rounded-xl object-cover" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'"><div><h3 class="font-display font-bold text-sm">${b.hotelName}</h3><div class="flex items-center gap-1 mb-1">${utils.renderStars(b.rating)}</div><p class="text-[10px]">${b.location}</p></div></div><div class="space-y-3 text-sm mb-4"><div class="flex justify-between"><span>Check-in</span><span>${utils.formatDate(b.checkin)}</span></div><div class="flex justify-between"><span>Check-out</span><span>${utils.formatDate(b.checkout)}</span></div><div class="flex justify-between"><span>Guests</span><span>${b.guests} Guests, ${b.rooms} Room(s)</span></div><div class="flex justify-between"><span>Room Type</span><span>${b.roomType}</span></div>${b.requests ? `<div class="flex justify-between"><span>Requests</span><span class="text-right max-w-[60%]">${b.requests}</span></div>` : ''}${paymentRow}</div><div class="border-t pt-3 flex justify-between mb-4"><span class="font-bold">Total</span><span class="font-bold text-violet-500">${b.priceFormatted}</span></div><div class="field-box rounded-xl p-3 flex items-center justify-between mb-2"><span>Booking ID</span><span class="font-bold">${b.id}</span></div>`;
+  const paymentLabel = b.payment === 'instapay' ? t('paymentInstapayWallet') : t('paymentCreditDebitCard');
+  const paymentRow = `<div class="flex justify-between"><span>${t('paymentLabel')}</span><span>${paymentLabel}</span></div>`;
+  if (b.type === 'excursion') return `<div class="card rounded-2xl p-3 flex gap-3 mb-4"><img src="${b.image}" class="w-16 h-16 rounded-xl object-cover" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'"><div><h3 class="font-display font-bold text-sm">${b.title}</h3><p class="text-[11px]">${b.category}</p></div></div><div class="space-y-3 text-sm mb-4"><div class="flex justify-between"><span>${t('dateLabel')}</span><span>${utils.formatDate(b.date)}</span></div><div class="flex justify-between"><span>${t('participantsLabel')}</span><span>${b.participants}</span></div>${paymentRow}</div><div class="border-t pt-3 flex justify-between mb-4"><span class="font-bold">${t('totalLabel')}</span><span class="font-bold text-violet-500">${b.priceFormatted}</span></div><div class="field-box rounded-xl p-3 flex items-center justify-between mb-2"><span>${t('bookingIdLabel2')}</span><span class="font-bold">${b.id}</span></div>`;
+  if (b.type === 'transfer') return `<div class="card rounded-2xl p-3 flex gap-3 mb-4"><div class="w-16 h-16 rounded-xl bg-violet-50 flex items-center justify-center"><i class="fa-solid fa-shuttle-van text-violet-600 text-xl"></i></div><div><h3 class="font-display font-bold text-sm">${b.vehicleType} ${t('transferSuffix')}</h3><p class="text-[11px]">${directionLabel(b.direction)}</p></div></div><div class="space-y-3 text-sm mb-4"><div class="flex justify-between"><span>${t('dateLabel')}</span><span>${utils.formatDate(b.date)}</span></div><div class="flex justify-between"><span>${t('timeLabel')}</span><span>${b.time}</span></div><div class="flex justify-between"><span>${t('flightNoLabel')}</span><span>${b.flightNo || '—'}</span></div><div class="flex justify-between"><span>${t('pickupDropoffLabel')}</span><span class="text-right max-w-[60%]">${b.address}</span></div><div class="flex justify-between"><span>${t('passengersLabel')}</span><span>${b.passengers}</span></div>${paymentRow}</div><div class="border-t pt-3 flex justify-between mb-4"><span class="font-bold">${t('totalLabel')}</span><span class="font-bold text-violet-500">${b.priceFormatted}</span></div><div class="field-box rounded-xl p-3 flex items-center justify-between mb-2"><span>${t('bookingIdLabel2')}</span><span class="font-bold">${b.id}</span></div>`;
+  return `<div class="card rounded-2xl p-3 flex gap-3 mb-4"><img src="${b.image}" class="w-16 h-16 rounded-xl object-cover" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'"><div><h3 class="font-display font-bold text-sm">${b.hotelName}</h3><div class="flex items-center gap-1 mb-1">${utils.renderStars(b.rating)}</div><p class="text-[10px]">${b.location}</p></div></div><div class="space-y-3 text-sm mb-4"><div class="flex justify-between"><span>${t('checkinLabel')}</span><span>${utils.formatDate(b.checkin)}</span></div><div class="flex justify-between"><span>${t('checkoutLabel')}</span><span>${utils.formatDate(b.checkout)}</span></div><div class="flex justify-between"><span>${t('guests')}</span><span>${b.guests} ${t('guestsCountSuffix')}, ${b.rooms} ${t('roomsCountSuffix')}</span></div><div class="flex justify-between"><span>${t('roomTypeLabel')}</span><span>${b.roomType}</span></div>${b.requests ? `<div class="flex justify-between"><span>${t('requestsLabel')}</span><span class="text-right max-w-[60%]">${b.requests}</span></div>` : ''}${paymentRow}</div><div class="border-t pt-3 flex justify-between mb-4"><span class="font-bold">${t('totalLabel')}</span><span class="font-bold text-violet-500">${b.priceFormatted}</span></div><div class="field-box rounded-xl p-3 flex items-center justify-between mb-2"><span>${t('bookingIdLabel2')}</span><span class="font-bold">${b.id}</span></div>`;
 }
 function closeBookingDetails() { const p = document.getElementById('bookingDetailsPage'); if (p) p.remove(); nav.go('bookings'); }
-async function cancelBooking(bookingId) { if (!confirm('Cancel this booking?')) return; try { await apiFetch(`/api/hotels/booking/${bookingId}`, { method: 'DELETE' }); toast('Booking cancelled', 'info'); bookings.load(); closeBookingDetails(); } catch (e) { toast('Cancellation failed: ' + e.message, 'error'); } }
+async function cancelBooking(bookingId) { if (!confirm(t('confirmCancelBooking'))) return; try { await apiFetch(`/api/hotels/booking/${bookingId}`, { method: 'DELETE' }); toast(t('bookingCancelledMsg'), 'info'); bookings.load(); closeBookingDetails(); } catch (e) { toast(t('cancellationFailedPrefix') + e.message, 'error'); } }
 
 // ==================== EXPOSE GLOBALLY ====================
 window.showDestinationPage = showDestinationPage;

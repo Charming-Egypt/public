@@ -1714,9 +1714,8 @@ body:has(#transferDetailPage.active) .bottom-nav {
   body.account-section #bookingsPage .min-h-screen,
   body.account-section #profilePage .min-h-screen,
   body.account-section #settingsPage .min-h-screen,
-  body.account-section #notificationsPage .min-h-screen,
-  body.account-section #bookingDetailsPage .min-h-screen{
-    
+  body.account-section #notificationsPage .min-h-screen {
+    max-width: 700px;
     margin-left: max(320px, calc(50% - 640px + 300px));
     margin-right: auto;
     padding-top: 24px;
