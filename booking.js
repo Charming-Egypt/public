@@ -831,7 +831,7 @@ function showExcursionPage(excursionId, opts = {}) {
       </div>
       <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto backdrop-blur-xl border-t p-4 flex items-center justify-between z-10 detail-mobile-bar" style="background:var(--bg-card); border-color:var(--border-card)">
         <div><p class="text-[9px]">${t('fromLabel')}</p><p class="text-xl font-bold text-violet-500 font-display">${utils.formatPrice(x.price)}<span class="text-xs">/${t('perPersonLabel')}</span></p></div>
-        <button onclick="startExcursionBooking('${x.id}')" class="btn-gold px-7 py-3 rounded-2xl font-bold text-ink-900">Book Now</button>
+        <button onclick="startExcursionBooking('${x.id}')" class="btn-gold px-7 py-3 rounded-2xl font-bold text-ink-900">${t('bookNowBtn')}</button>
       </div>
     </div>`;
   document.getElementById('mainApp').appendChild(page);
