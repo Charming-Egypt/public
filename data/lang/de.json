@@ -391,5 +391,15 @@
   "walletMobileLabel": "WALLET-MOBILNUMMER",
   "whatToBringHeader": "Was Sie mitbringen sollten",
   "whatTripOffersHeader": "Was dieser Ausflug bietet",
-  "writeReviewBtn": "Bewertung schreiben"
+  "writeReviewBtn": "Bewertung schreiben",
+  "categoryLabelCaps": "KATEGORIE",
+  "checkAvailabilityBtn": "Verfügbarkeit prüfen",
+  "checkinLabelCaps": "CHECK-IN",
+  "checkoutLabelCaps": "CHECK-OUT",
+  "childrenAgeHintShort": "Geben Sie das Alter jedes Kindes an",
+  "defaultGuestsDisplay": "2 Erwachsene, 1 Zimmer",
+  "estimatedPerNight": "geschätzt / Nacht",
+  "excursionDateLabelCaps": "AUSFLUGSDATUM",
+  "guestsLabelCaps": "GÄSTE",
+  "selectCategoryLabelCaps": "KATEGORIE WÄHLEN"
 }

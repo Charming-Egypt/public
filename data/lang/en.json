@@ -424,5 +424,15 @@
   "walletMobileLabel": "WALLET MOBILE NUMBER",
   "whatToBringHeader": "What to Bring",
   "whatTripOffersHeader": "What This Trip Offers",
-  "writeReviewBtn": "Write a Review"
+  "writeReviewBtn": "Write a Review",
+  "categoryLabelCaps": "CATEGORY",
+  "checkAvailabilityBtn": "Check Availability",
+  "checkinLabelCaps": "CHECK-IN",
+  "checkoutLabelCaps": "CHECK-OUT",
+  "childrenAgeHintShort": "Tell us each child's age",
+  "defaultGuestsDisplay": "2 Adults, 1 Room",
+  "estimatedPerNight": "estimated / night",
+  "excursionDateLabelCaps": "EXCURSION DATE",
+  "guestsLabelCaps": "GUESTS",
+  "selectCategoryLabelCaps": "SELECT CATEGORY"
 }

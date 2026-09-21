@@ -391,5 +391,15 @@
   "walletMobileLabel": "CÜZDAN TELEFON NUMARASI",
   "whatToBringHeader": "Ne Getirmelisiniz",
   "whatTripOffersHeader": "Bu Tur Neler Sunuyor",
-  "writeReviewBtn": "Yorum Yaz"
+  "writeReviewBtn": "Yorum Yaz",
+  "categoryLabelCaps": "KATEGORİ",
+  "checkAvailabilityBtn": "Müsaitliği Kontrol Et",
+  "checkinLabelCaps": "GİRİŞ",
+  "checkoutLabelCaps": "ÇIKIŞ",
+  "childrenAgeHintShort": "Her çocuğun yaşını belirtin",
+  "defaultGuestsDisplay": "2 Yetişkin, 1 Oda",
+  "estimatedPerNight": "tahmini / gece",
+  "excursionDateLabelCaps": "TUR TARİHİ",
+  "guestsLabelCaps": "MİSAFİRLER",
+  "selectCategoryLabelCaps": "KATEGORİ SEÇİN"
 }

@@ -391,5 +391,15 @@
   "walletMobileLabel": "NUMERO WALLET",
   "whatToBringHeader": "Cosa portare",
   "whatTripOffersHeader": "Cosa offre questo viaggio",
-  "writeReviewBtn": "Scrivi una recensione"
+  "writeReviewBtn": "Scrivi una recensione",
+  "categoryLabelCaps": "CATEGORIA",
+  "checkAvailabilityBtn": "Verifica disponibilità",
+  "checkinLabelCaps": "CHECK-IN",
+  "checkoutLabelCaps": "CHECK-OUT",
+  "childrenAgeHintShort": "Indica l'età di ogni bambino",
+  "defaultGuestsDisplay": "2 Adulti, 1 Camera",
+  "estimatedPerNight": "stimato / notte",
+  "excursionDateLabelCaps": "DATA ESCURSIONE",
+  "guestsLabelCaps": "OSPITI",
+  "selectCategoryLabelCaps": "SELEZIONA CATEGORIA"
 }

@@ -391,5 +391,15 @@
   "walletMobileLabel": "НОМЕР ТЕЛЕФОНА КОШЕЛЬКА",
   "whatToBringHeader": "Что взять с собой",
   "whatTripOffersHeader": "Что предлагает эта поездка",
-  "writeReviewBtn": "Написать отзыв"
+  "writeReviewBtn": "Написать отзыв",
+  "categoryLabelCaps": "КАТЕГОРИЯ",
+  "checkAvailabilityBtn": "Проверить наличие",
+  "checkinLabelCaps": "ЗАЕЗД",
+  "checkoutLabelCaps": "ВЫЕЗД",
+  "childrenAgeHintShort": "Укажите возраст каждого ребёнка",
+  "defaultGuestsDisplay": "2 взрослых, 1 номер",
+  "estimatedPerNight": "ориентировочно / ночь",
+  "excursionDateLabelCaps": "ДАТА ЭКСКУРСИИ",
+  "guestsLabelCaps": "ГОСТИ",
+  "selectCategoryLabelCaps": "ВЫБЕРИТЕ КАТЕГОРИЮ"
 }

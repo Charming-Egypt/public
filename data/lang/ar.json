@@ -424,5 +424,15 @@
   "walletMobileLabel": "رقم موبايل المحفظة",
   "whatToBringHeader": "إيه اللي تاخده معاك",
   "whatTripOffersHeader": "إيه اللي هتلاقيه في الرحلة دي",
-  "writeReviewBtn": "اكتب تقييم"
+  "writeReviewBtn": "اكتب تقييم",
+  "categoryLabelCaps": "الفئة",
+  "checkAvailabilityBtn": "تحقق من التوفر",
+  "checkinLabelCaps": "تاريخ الوصول",
+  "checkoutLabelCaps": "تاريخ المغادرة",
+  "childrenAgeHintShort": "قوللنا سن كل طفل",
+  "defaultGuestsDisplay": "بالغان، غرفة واحدة",
+  "estimatedPerNight": "تقديري / لليلة",
+  "excursionDateLabelCaps": "تاريخ الرحلة",
+  "guestsLabelCaps": "الضيوف",
+  "selectCategoryLabelCaps": "اختار الفئة"
 }
