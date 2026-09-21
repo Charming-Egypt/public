@@ -1,9 +1,9 @@
 // ==================== FRONTEND UI & NAVIGATION ====================
 window.DS_CONFIG = window.DS_CONFIG || {
-  SHOW_HOTELS: false,
+  SHOW_HOTELS: true,
   SHOW_EXCURSIONS: true,
   SHOW_TRANSFERS: true,
-  SHOW_RESTAURANTS: false,
+  SHOW_RESTAURANTS: true,
   SHOW_DESTINATIONS: true,
 };
 
@@ -680,25 +680,7 @@ const search = {
     this.updateDateDisplays();
   },
 
-  updateHeroContent(tab) {
-    const heroData = {
-      hotels: {
-        eyebrow: '',
-        title: '',
-        subtitle: ''
-      },
-      excursions: {
-        eyebrow: '',
-        title: '',
-        subtitle: ''
-      }
-    };
-    const data = heroData[tab] || heroData.hotels;
-    document.getElementById('heroEyebrowText').innerHTML = data.eyebrow;
-    document.getElementById('heroTitleText').innerHTML = data.title;
-    document.getElementById('heroSubtitleText').textContent = data.subtitle;
-    startHeroBackgroundRotation(tab);
-  },
+  
 
   openGuestDropdown() {
     document.getElementById('searchGuestDropdown').style.display = 'flex';
@@ -830,8 +812,9 @@ const HERO_BACKGROUNDS = {
     ],
     mobile: [
     'https://images.unsplash.com/photo-1682687982141-0143020ed57a?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    '/m/images/home/trips/33.jpg',
-    '/m/images/home/trips/Cpho.jpeg'
+    'https://images.unsplash.com/photo-1682687982049-b3d433368cd1?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    'https://res.klook.com/image/upload/fl_lossy.progressive,q_65/activities/qfewhof69v7wd1y8gas4.webp',
+    'https://res.klook.com/image/upload/fl_lossy.progressive,q_65/activities/bz6bnv9riohbxx9u0rag.webp'
     ]
   }
 };
@@ -1128,7 +1111,7 @@ const excursionsUi = {
           <div class="flex items-center justify-between">
             <div>
               <p class="text-[10px] text-gray-500">${t('fromLabel')}</p>
-              <p class="font-display font-bold text-violet-500 text-xl">${utils.formatPrice(x.price)}<span class="text-xs font-normal"> /person</span></p>
+              <p class="font-display font-bold text-violet-500 text-xl">${utils.formatPrice(x.price)}<span class="text-xs font-normal"> /${t('person')}</span></p>
             </div>
             <button class="btn-gold px-5 py-2.5 rounded-xl text-sm font-bold text-ink-900">${t('bookNowBtn')}</button>
           </div>
