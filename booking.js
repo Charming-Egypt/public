@@ -398,10 +398,13 @@ function showHotelPage(hotelId, opts = {}) {
   const page = document.createElement('div');
   page.id = 'hotelDetailPage';
   page.className = 'page';
-  const startPrice = (h.rooms && h.rooms[0] ? h.rooms[0].price : h.price);
+  // Reflects whatever was chosen in the search bar (guests, child ages,
+  // rooms, and nights if dates were set) rather than always the hotel's
+  // flat listed rate — same helper the hotel list cards use.
+  const { perNight: startPrice, isEstimate: startPriceIsEstimate } = estimatedHotelPricePerNight(h);
   const bookingCard = `
     <div class="detail-price-row">
-      <div><p class="text-[9px] tracking-wider mb-0.5 font-semibold">${t('selectedRoomLabel')}</p><p class="text-xl font-bold text-violet-500 font-display detail-sidebar-price">${utils.formatPrice(startPrice)}<span class="text-xs"> / ${t('nightLabel')}</span></p></div>
+      <div><p class="text-[9px] tracking-wider mb-0.5 font-semibold">${t('selectedRoomLabel')}</p><p class="text-xl font-bold text-violet-500 font-display detail-sidebar-price">${utils.formatPrice(startPrice)}<span class="text-xs"> / ${t('nightLabel')}</span></p>${startPriceIsEstimate ? `<p class="text-[9px]" style="color:var(--text-secondary)">${t('estimatedPerNight')}</p>` : ''}</div>
       <div class="detail-sidebar-rating"><i class="fa-solid fa-star text-gold-400"></i> ${Number(h.rating).toFixed(1)} <span>(${h.reviews})</span></div>
     </div>
     <button onclick="startBooking('${h.id}', 0)" class="btn-gold w-full py-3.5 rounded-2xl font-bold text-ink-900 detail-book-btn">${t('bookNowBtn')}</button>
@@ -475,7 +478,7 @@ function showHotelPage(hotelId, opts = {}) {
         </aside>
       </div>
       <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto backdrop-blur-xl border-t p-4 flex items-center justify-between z-10 detail-mobile-bar" style="background:var(--bg-card); border-color:var(--border-card)">
-        <div><p class="text-[9px] tracking-wider mb-0.5 font-semibold">${t('selectedRoomLabel')}</p><p class="text-xl font-bold text-violet-500 font-display detail-sidebar-price" id="hotelBottomPriceAmount">${utils.formatPrice(startPrice)}<span class="text-xs"> / ${t('nightLabel')}</span></p></div>
+        <div><p class="text-[9px] tracking-wider mb-0.5 font-semibold">${t('selectedRoomLabel')}</p><p class="text-xl font-bold text-violet-500 font-display detail-sidebar-price" id="hotelBottomPriceAmount">${utils.formatPrice(startPrice)}<span class="text-xs"> / ${t('nightLabel')}</span></p>${startPriceIsEstimate ? `<p class="text-[9px]" style="color:var(--text-secondary)">${t('estimatedPerNight')}</p>` : ''}</div>
         <button onclick="startBooking('${h.id}', 0)" class="btn-gold px-7 py-3 rounded-2xl font-bold text-ink-900 detail-book-btn">${t('bookNowBtn')}</button>
       </div>
     </div>`;

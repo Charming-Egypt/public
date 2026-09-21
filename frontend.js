@@ -765,9 +765,9 @@ const search = {
   },
   updateGuestDisplay() {
     const childPart = state.guests.children > 0
-      ? `${state.guests.children} Children (${(state.guests.childAges || []).map(a => a === null || a === undefined ? '?' : a).join(', ')})`
-      : '0 Children';
-    const text = `${state.guests.adults} Adults, ${childPart}, ${state.guests.rooms} Room(s)`;
+      ? `${state.guests.children} ${t('children')} (${(state.guests.childAges || []).map(a => a === null || a === undefined ? '?' : a).join(', ')})`
+      : `0 ${t('children')}`;
+    const text = `${state.guests.adults} ${t('adults')}, ${childPart}, ${state.guests.rooms} ${t('roomsCountSuffix')}`;
     const el = document.getElementById('guestsDisplay');
     if (el) el.textContent = text;
   },
@@ -947,11 +947,34 @@ function showRoomPreview(hotelId, roomIndex) {
 function closeRoomPreview() { if (!SHOW_HOTELS) return; document.getElementById('roomPreviewModal').classList.add('hidden'); }
 
 // ==================== UI RENDERERS ====================
+// Picks the hotel's cheapest room and prices it for whatever the person
+// has actually chosen in the search bar (adults/children ages/rooms, and
+// check-in/check-out if both are set) using the same computeRoomPricing()
+// the real booking flow uses — instead of always showing the hotel's raw
+// base rate no matter what was searched.
+function estimatedHotelPricePerNight(h) {
+  const cheapestRoom = (h.rooms && h.rooms.length)
+    ? h.rooms.reduce((min, r) => (r.price < min.price ? r : min), h.rooms[0])
+    : { price: h.price };
+  const roomsCount = state.guests.rooms || 1;
+  const hasDates = !!(search.selectedCheckIn && search.selectedCheckOut);
+  const nights = hasDates
+    ? Math.max(1, Math.round((new Date(search.selectedCheckOut) - new Date(search.selectedCheckIn)) / 86400000))
+    : 1;
+  const pricing = computeRoomPricing(cheapestRoom, state.guests, roomsCount, nights);
+  const perNight = Math.round(pricing.roomTotal / (roomsCount * nights));
+  // "Estimate" (not a firm per-night rate) whenever we don't have real
+  // dates to price against yet — nights defaults to 1 in that case, so the
+  // number is a starting-from figure rather than what they'll actually pay.
+  return { perNight, isEstimate: !hasDates };
+}
+
 const ui = {
   renderHotelCard(h) {
     if (!SHOW_HOTELS) return '';
     const img = getImageUrl(h.image);
     const isFav = state.favorites.includes(h.id);
+    const { perNight, isEstimate } = estimatedHotelPricePerNight(h);
     return `
       <div onclick="showHotelPage('${h.id}')" class="hotel-card cursor-pointer">
         <div class="hotel-card-img-wrap">
@@ -970,7 +993,7 @@ const ui = {
           </div>
           <div class="flex items-center justify-between">
             <div class="hotel-card-amenities">${(h.amenities || []).slice(0, 2).map(a => `<span class="px-1.5 py-0.5 rounded" style="background:var(--bg-field)">${a}</span>`).join('')}</div>
-            <div class="text-left flex-shrink-0"><p class="text-base md:text-lg font-bold text-violet-500 font-display">${utils.formatPrice(h.price)}</p><p class="text-[8px]">/ Night</p></div>
+            <div class="text-left flex-shrink-0"><p class="text-base md:text-lg font-bold text-violet-500 font-display">${utils.formatPrice(perNight)}</p><p class="text-[8px]">${isEstimate ? t('estimatedPerNight') : '/ ' + t('nightLabel')}</p></div>
           </div>
         </div>
       </div>`;
