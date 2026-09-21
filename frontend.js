@@ -680,7 +680,29 @@ const search = {
     this.updateDateDisplays();
   },
 
-  
+
+
+updateHeroContent(tab) {
+    const heroData = {
+      hotels: {
+        eyebrow: '',
+        title: '',
+        subtitle: ''
+      },
+      excursions: {
+        eyebrow: '',
+        title: '',
+        subtitle: ''
+      }
+    };
+    const data = heroData[tab] || heroData.hotels;
+    document.getElementById('heroEyebrowText').innerHTML = data.eyebrow;
+    document.getElementById('heroTitleText').innerHTML = data.title;
+    document.getElementById('heroSubtitleText').textContent = data.subtitle;
+    startHeroBackgroundRotation(tab);
+  },
+
+
 
   openGuestDropdown() {
     document.getElementById('searchGuestDropdown').style.display = 'flex';
