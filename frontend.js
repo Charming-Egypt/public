@@ -1373,6 +1373,7 @@ function applyCategoryVisibility() {
   document.getElementById('desktopHotelsLink')?.classList.toggle('hidden', !SHOW_HOTELS);
   document.getElementById('footerHotelsLink')?.classList.toggle('hidden', !SHOW_HOTELS);
   document.getElementById('categoryTileHotels')?.classList.toggle('hidden', !SHOW_HOTELS);
+  document.getElementById('categoryTileRestaurants')?.classList.toggle('hidden', !SHOW_HOTELS);
   document.querySelectorAll('.drawer-link').forEach(link => {
     const onclick = link.getAttribute('onclick') || '';
     if (onclick.includes("nav.go('excursions')") && !SHOW_EXCURSIONS) link.style.display = 'none';
