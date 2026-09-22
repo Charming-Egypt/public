@@ -644,11 +644,13 @@ const profileAvatar = {
     const wrap = document.getElementById('profileAvatarWrap');
     const drawerAv = document.getElementById('drawerAvatar');
     const navAv = document.getElementById('navProfileAvatar');
+    const snavAv = document.getElementById('snavProfileAvatar');
     const navAvDesktop = document.getElementById('navProfileAvatarDesktop');
     const sidebarAv = document.getElementById('sidebarProfileAvatar');
     if (wrap) wrap.innerHTML = photoURL ? `<img src="${photoURL}" class="w-full h-full object-cover">` : `<span class="font-display text-5xl font-bold text-violet-600" id="profileAvatarLetter">${letter}</span>`;
     if (drawerAv) drawerAv.innerHTML = photoURL ? `<img src="${photoURL}" class="w-full h-full object-cover">` : letter;
     if (navAv) navAv.innerHTML = photoURL ? `<img src="${photoURL}" alt="">` : letter;
+    if (snavAv) snavAv.innerHTML = photoURL ? `<img src="${photoURL}" alt="">` : letter;
     if (navAvDesktop) navAvDesktop.innerHTML = photoURL ? `<img src="${photoURL}" alt="">` : letter;
     if (sidebarAv) sidebarAv.innerHTML = photoURL ? `<img src="${photoURL}" alt="">` : letter;
   },
