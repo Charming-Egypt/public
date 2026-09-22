@@ -367,7 +367,7 @@ function getSharmawyBenefitsHtml(level) {
 // childPricingTiers when one is open (showHotelPage sets state.currentRoom),
 // otherwise falls back to this generic 0-17 range for the search-page picker
 // where no specific room/price is known yet.
-const DEFAULT_CHILD_AGE_MAX = 12; // matches the site's existing "Children = age 2-12" convention (Infants under 2 are a separate free counter)
+const DEFAULT_CHILD_AGE_MAX = 11; // matches the site's existing "Children = age 2-12" convention (Infants under 2 are a separate free counter)
 
 function renderChildAgeInputs() {
   const containers = ['childAgesList', 'searchChildAgesList'].map(id => document.getElementById(id)).filter(Boolean);
