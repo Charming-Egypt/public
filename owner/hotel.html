@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0f1b44">
+<title>Discover Sharm — لوحة الفنادق</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../console/console.css">
+</head>
+<body>
+<script src="../console/console.js"></script>
+<script>
+const I18 = (k, l, long) => ({ k, l, t: 'i18n', long });
+DS.ownerPanel({
+  key: 'hotels', title: 'لوحة مالك الفنادق', api: '/api/owner/hotels', itemsLabel: 'فنادقي', addLabel: 'إضافة فندق', title_of: i => i.name,
+  schema: [
+    I18('name', 'اسم الفندق'),
+    { k: 'category', l: 'الفئة', opts: ['budget', 'luxury'] },
+    { k: 'price', l: 'أقل سعر في الليلة (EGP)', t: 'num' },
+    I18('location', 'العنوان'),
+    { k: 'image', l: 'الصورة الرئيسية (رابط)', t: 'url' },
+    { k: 'images', l: 'صور إضافية', t: 'urls' },
+    I18('description', 'وصف قصير', true),
+    I18('fullDescription', 'الوصف الكامل', true),
+    { k: 'amenities', l: 'المرافق', t: 'i18nlist' },
+    { k: 'unavailableDates', l: 'أيام مقفولة (مفيش حجز)', t: 'dates' },
+    { k: 'rooms', l: 'الغرف', t: 'list', add: 'غرفة', sub: [
+      I18('type', 'نوع الغرفة'), { k: 'price', l: 'السعر/ليلة', t: 'num' }, { k: 'size', l: 'المساحة (35m²)' }, I18('beds', 'الأسرّة'),
+      { k: 'guests', l: 'أقصى عدد ضيوف', t: 'num' }, { k: 'baseOccupancy', l: 'الإشغال الأساسي', t: 'num' },
+      { k: 'extraAdultFee', l: 'رسوم بالغ إضافي', t: 'num' }, { k: 'freeChildrenPerRoom', l: 'أطفال مجانًا/غرفة', t: 'num' },
+      { k: 'extraChildFee', l: 'رسوم طفل إضافي', t: 'num' }, { k: 'image', l: 'صورة الغرفة (رابط)', t: 'url' }, I18('description', 'وصف الغرفة', true)] },
+  ],
+});
+</script>
+</body>
+</html>

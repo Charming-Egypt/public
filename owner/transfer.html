@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0f1b44">
+<title>Discover Sharm — لوحة الترانسفير</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../console/console.css">
+</head>
+<body>
+<script src="../console/console.js"></script>
+<script>
+const I18 = (k, l, long) => ({ k, l, t: 'i18n', long });
+DS.ownerPanel({
+  key: 'transfers', title: 'لوحة الترانسفير', api: '/api/owner/transfers', itemsLabel: 'سياراتي', addLabel: 'إضافة سيارة', title_of: i => i.vehicleType,
+  schema: [
+    I18('vehicleType', 'نوع السيارة'),
+    { k: 'capacity', l: 'عدد الركاب', t: 'num' },
+    { k: 'price', l: 'السعر (EGP)', t: 'num' },
+    { k: 'image', l: 'الصورة (رابط)', t: 'url' },
+    I18('description', 'الوصف', true),
+    { k: 'features', l: 'المميزات', t: 'i18nlist' },
+  ],
+});
+</script>
+</body>
+</html>
