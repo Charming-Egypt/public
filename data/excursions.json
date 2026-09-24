@@ -1,11 +1,11 @@
 [
   {
     "id": "e1",
-    "owner":"GuaSyGgxrgZABfQo765oFlFCXJx1",
+    "owner": "GuaSyGgxrgZABfQo765oFlFCXJx1",
     "category": "Boat trip",
     "title": {
-      "en": "Ras Mohammed Snorkeling Trip",
       "ar": "رحلة سنوركل رأس محمد",
+      "en": "Ras Mohammed Snorkeling Trip",
       "ru": "Снорклинг-тур в Рас-Мохаммед",
       "de": "Ras-Mohammed-Schnorcheltour",
       "it": "Escursione Snorkeling a Ras Mohammed",
@@ -15,14 +15,14 @@
     "rating": 4.8,
     "reviews": 268,
     "duration": {
-      "en": "Full Day (8h)",
       "ar": "يوم كامل (٨ ساعات)",
+      "en": "Full Day (8h)",
       "ru": "Целый день (8 ч)",
       "de": "Ganzer Tag (8 Std.)",
       "it": "Giornata intera (8h)",
       "tr": "Tam Gün (8s)"
     },
-    "image": "https://www.discover-sharm.com/m/images/ras-m/1.jpg",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR198euI0KuyPgFLPb62ocPQNohqGHLSbCezSgbAY6Cc4WZUHLTTp4snMo&s=10",
     "images": [
       "https://www.discover-sharm.com/m/images/ras-m/1.jpg",
       "https://www.discover-sharm.com/m/images/ras-m/2.jpg",
@@ -40,35 +40,35 @@
       "https://cdn.getyourguide.com/image/format=auto%2Cfit=crop%2Cgravity=auto%2Cquality=60%2Cwidth=385%2Cdpr=2/tour_img/ef6f364533457ac4e6ad3abcab002f6c081a29af3bf31ea4d844252868731888.jpeg"
     ],
     "description": {
-      "en": "Snorkel the coral reefs of Ras Mohammed National Park, one of the world's top dive sites.",
       "ar": "مارس السنوركل بين الشعاب المرجانية في محمية رأس محمد، أحد أفضل مواقع الغوص في العالم.",
+      "en": "Snorkel the coral reefs of Ras Mohammed National Park, one of the world's top dive sites.",
       "ru": "Понырять с маской у коралловых рифов национального парка Рас-Мохаммед — одного из лучших дайв-сайтов мира.",
       "de": "Schnorcheln Sie an den Korallenriffen des Ras-Mohammed-Nationalparks, einem der besten Tauchspots der Welt.",
       "it": "Fai snorkeling tra le barriere coralline del Parco Nazionale di Ras Mohammed, uno dei migliori siti di immersione al mondo.",
       "tr": "Dünyanın en iyi dalış noktalarından biri olan Ras Muhammed Milli Parkı'nın mercan resiflerinde şnorkel yapın."
     },
     "fullDescription": {
-      "en": "Spend a full day exploring the coral gardens and dramatic reef walls of Ras Mohammed National Park. Includes full snorkeling gear, a marine-life briefing, and a beachside lunch. Suitable for beginners and experienced snorkelers alike.",
       "ar": "اقضِ يومًا كاملاً في استكشاف حدائق المرجان وجدران الشعاب المذهلة في محمية رأس محمد. يشمل معدات سنوركل كاملة وإحاطة عن الحياة البحرية وغداء على الشاطئ.",
+      "en": "Spend a full day exploring the coral gardens and dramatic reef walls of Ras Mohammed National Park. Includes full snorkeling gear, a marine-life briefing, and a beachside lunch. Suitable for beginners and experienced snorkelers alike.",
       "ru": "Проведите целый день, исследуя коралловые сады и рифовые стены национального парка Рас-Мохаммед. В программе — снаряжение, инструктаж и обед на пляже.",
       "de": "Verbringen Sie einen ganzen Tag mit der Erkundung der Korallengärten und Riffwände des Ras-Mohammed-Nationalparks. Inklusive Ausrüstung, Briefing und Strandmittagessen.",
       "it": "Trascorri un'intera giornata esplorando i giardini di corallo e le pareti della barriera del Parco Nazionale di Ras Mohammed. Include attrezzatura, briefing e pranzo in spiaggia.",
       "tr": "Ras Muhammed Milli Parkı'nın mercan bahçelerini ve resif duvarlarını keşfederek tam bir gün geçirin. Şnorkel ekipmanı, deniz canlıları brifingi ve sahilde öğle yemeği dahildir."
     },
     "includes": {
-      "en": [
-        "Hotel pickup & drop-off",
-        "Snorkeling equipment",
-        "Lunch & soft drinks",
-        "National park entry fees",
-        "English-speaking guide"
-      ],
       "ar": [
         "نقل من وإلى الفندق",
         "معدات سنوركل",
         "غداء ومشروبات غازية",
         "رسوم دخول المحمية",
         "مرشد يتحدث الإنجليزية"
+      ],
+      "en": [
+        "Hotel pickup & drop-off",
+        "Snorkeling equipment",
+        "Lunch & soft drinks",
+        "National park entry fees",
+        "English-speaking guide"
       ],
       "ru": [
         "Трансфер от/до отеля",
@@ -100,23 +100,23 @@
       ]
     },
     "meetingPoint": {
-      "en": "Hotel lobby pickup, 7:30 AM",
       "ar": "الاستلام من لوبي الفندق، ٧:٣٠ صباحًا",
+      "en": "Hotel lobby pickup, 7:30 AM",
       "ru": "Встреча в лобби отеля, 7:30",
       "de": "Abholung Hotellobby, 7:30 Uhr",
       "it": "Ritiro in hotel, ore 7:30",
       "tr": "Otel lobisinden alış, 07:30"
     },
     "excludes": {
-      "en": [
-        "Alcoholic beverages",
-        "Underwater camera rental",
-        "Gratuities (optional)"
-      ],
       "ar": [
         "المشروبات الكحولية",
         "استئجار كاميرا تحت الماء",
         "الإكراميات (اختياري)"
+      ],
+      "en": [
+        "Alcoholic beverages",
+        "Underwater camera rental",
+        "Gratuities (optional)"
       ],
       "ru": [
         "Алкогольные напитки",
@@ -140,17 +140,17 @@
       ]
     },
     "whatToBring": {
-      "en": [
-        "Swimsuit",
-        "Towel",
-        "Sunscreen",
-        "Comfortable sandals"
-      ],
       "ar": [
         "ملابس سباحة",
         "منشفة",
         "واقي شمس",
         "صندل مريح"
+      ],
+      "en": [
+        "Swimsuit",
+        "Towel",
+        "Sunscreen",
+        "Comfortable sandals"
       ],
       "ru": [
         "Купальник",
@@ -181,16 +181,16 @@
       {
         "time": "07:30",
         "title": {
-          "en": "Hotel Pickup",
           "ar": "الاستلام من الفندق",
+          "en": "Hotel Pickup",
           "ru": "Встреча в отеле",
           "de": "Hotelabholung",
           "it": "Ritiro in hotel",
           "tr": "Otelden Alış"
         },
         "description": {
-          "en": "Our air-conditioned vehicle collects you from your hotel lobby.",
           "ar": "سيارتنا المكيّفة تستلمك من لوبي الفندق.",
+          "en": "Our air-conditioned vehicle collects you from your hotel lobby.",
           "ru": "Наш кондиционируемый автомобиль заберёт вас из лобби отеля.",
           "de": "Unser klimatisiertes Fahrzeug holt Sie von der Hotellobby ab.",
           "it": "Il nostro veicolo climatizzato ti preleva dalla hall dell'hotel.",
@@ -200,16 +200,16 @@
       {
         "time": "09:00",
         "title": {
-          "en": "Arrival & Briefing",
           "ar": "الوصول والإحاطة",
+          "en": "Arrival & Briefing",
           "ru": "Прибытие и инструктаж",
           "de": "Ankunft & Briefing",
           "it": "Arrivo e briefing",
           "tr": "Varış ve Brifing"
         },
         "description": {
-          "en": "Meet your guide and get a short safety and marine-life briefing before gearing up.",
           "ar": "قابل مرشدك واحصل على إحاطة قصيرة عن السلامة والحياة البحرية قبل ارتداء المعدات.",
+          "en": "Meet your guide and get a short safety and marine-life briefing before gearing up.",
           "ru": "Познакомьтесь с гидом и пройдите короткий инструктаж по безопасности перед экипировкой.",
           "de": "Treffen Sie Ihren Guide und erhalten Sie ein kurzes Sicherheits-Briefing vor der Ausrüstung.",
           "it": "Incontra la tua guida e ricevi un breve briefing sulla sicurezza prima di equipaggiarti.",
@@ -219,16 +219,16 @@
       {
         "time": "09:30",
         "title": {
-          "en": "First Snorkeling Stop",
           "ar": "محطة السنوركل الأولى",
+          "en": "First Snorkeling Stop",
           "ru": "Первая остановка для снорклинга",
           "de": "Erster Schnorchelstopp",
           "it": "Prima tappa snorkeling",
           "tr": "İlk Şnorkel Durağı"
         },
         "description": {
-          "en": "Explore the coral gardens at the first reef site.",
           "ar": "استكشف حدائق المرجان في موقع الشعاب الأول.",
+          "en": "Explore the coral gardens at the first reef site.",
           "ru": "Исследуйте коралловые сады на первом рифе.",
           "de": "Erkunden Sie die Korallengärten am ersten Riff.",
           "it": "Esplora i giardini di corallo nel primo sito.",
@@ -238,16 +238,16 @@
       {
         "time": "12:00",
         "title": {
-          "en": "Lunch on the Beach",
           "ar": "غداء على الشاطئ",
+          "en": "Lunch on the Beach",
           "ru": "Обед на пляже",
           "de": "Mittagessen am Strand",
           "it": "Pranzo in spiaggia",
           "tr": "Sahilde Öğle Yemeği"
         },
         "description": {
-          "en": "A relaxed lunch break at a shaded beach spot inside the park.",
           "ar": "استراحة غداء هادئة في بقعة شاطئية مظللة داخل المحمية.",
+          "en": "A relaxed lunch break at a shaded beach spot inside the park.",
           "ru": "Спокойный обеденный перерыв в тенистом месте на пляже парка.",
           "de": "Eine entspannte Mittagspause an einem schattigen Strandplatz im Park.",
           "it": "Una pausa pranzo rilassante in un punto ombreggiato della spiaggia nel parco.",
@@ -257,16 +257,16 @@
       {
         "time": "13:00",
         "title": {
-          "en": "Second Snorkeling Stop",
           "ar": "محطة السنوركل الثانية",
+          "en": "Second Snorkeling Stop",
           "ru": "Вторая остановка для снорклинга",
           "de": "Zweiter Schnorchelstopp",
           "it": "Seconda tappa snorkeling",
           "tr": "İkinci Şnorkel Durağı"
         },
         "description": {
-          "en": "A second reef site with different marine life to explore.",
           "ar": "موقع شعاب ثانٍ بحياة بحرية مختلفة لاستكشافها.",
+          "en": "A second reef site with different marine life to explore.",
           "ru": "Второй риф с иной морской живностью для изучения.",
           "de": "Ein zweites Riff mit anderer Meereswelt zum Erkunden.",
           "it": "Un secondo sito con una fauna marina diversa da esplorare.",
@@ -276,16 +276,16 @@
       {
         "time": "15:30",
         "title": {
-          "en": "Return to Hotel",
           "ar": "العودة إلى الفندق",
+          "en": "Return to Hotel",
           "ru": "Возвращение в отель",
           "de": "Rückfahrt zum Hotel",
           "it": "Ritorno in hotel",
           "tr": "Otele Dönüş"
         },
         "description": {
-          "en": "Relax on the drive back as we drop you at your hotel.",
           "ar": "استرخِ في الطريق أثناء عودتك إلى فندقك.",
+          "en": "Relax on the drive back as we drop you at your hotel.",
           "ru": "Отдохните по пути назад, пока мы довезём вас до отеля.",
           "de": "Entspannen Sie sich auf der Rückfahrt zu Ihrem Hotel.",
           "it": "Rilassati durante il tragitto di ritorno al tuo hotel.",
@@ -296,7 +296,7 @@
   },
   {
     "id": "e2",
-    "owner":"GuaSyGgxrgZABfQo765oFlFCXJx2",
+    "owner": "GuaSyGgxrgZABfQo765oFlFCXJx2",
     "category": "Desert Safari",
     "title": {
       "en": "White Desert Safari & BBQ Dinner",
