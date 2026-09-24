@@ -299,8 +299,8 @@
     "owner": "BwomDIPc14TitJPZwdYjApde6Vy1",
     "category": "Desert Safari",
     "title": {
-      "en": "White Desert Safari & BBQ Dinner",
       "ar": "رحلة سفاري الصحراء البيضاء وعشاء شواء",
+      "en": "White Desert Safari & BBQ Dinner",
       "ru": "Сафари в Белую пустыню и барбекю-ужин",
       "de": "Wüstensafari & BBQ-Dinner",
       "it": "Safari nel Deserto Bianco e cena BBQ",
@@ -310,14 +310,14 @@
     "rating": 4.7,
     "reviews": 268,
     "duration": {
-      "en": "Evening (5h)",
       "ar": "مسائية (٥ ساعات)",
+      "en": "Evening (5h)",
       "ru": "Вечер (5 ч)",
       "de": "Abend (5 Std.)",
       "it": "Serale (5h)",
       "tr": "Akşam (5s)"
     },
-    "image": "https://www.discover-sharm.com/m/images/Safari/1.jpg",
+    "image": "https://egyptra.pro/uploads/products/product_m23452--urghada-uad-afari-amel-ide-ed-356_68e55f8d5318b.webp",
     "images": [
       "https://www.discover-sharm.com/m/images/Safari/1.jpg",
       "https://cdn.getyourguide.com/image/format=auto%2Cfit=crop%2Cgravity=auto%2Cquality=60%2Cwidth=385%2Cdpr=2/tour_img/254dbc59b19e367266ccce37153f84d13c3b35b62f0ed024959ce4935a1a2e9f.jpg",
@@ -327,35 +327,35 @@
       "https://cdn.getyourguide.com/image/format=auto%2Cfit=crop%2Cgravity=auto%2Cquality=60%2Cwidth=385%2Cdpr=2/tour_img/ecc954bc121bcfcf5b1c4b882b2aed580f4de967a1304860594e58c4991160ad.jpg"
     ],
     "description": {
-      "en": "Quad biking, camel rides and a Bedouin BBQ dinner under the stars.",
       "ar": "قيادة دراجات رباعية وركوب جمال وعشاء شواء بدوي تحت النجوم.",
+      "en": "Quad biking, camel rides and a Bedouin BBQ dinner under the stars.",
       "ru": "Катание на квадроциклах, верблюдах и ужин-барбекю у бедуинов под звездами.",
       "de": "Quad-Biking, Kamelreiten und ein Beduinen-BBQ-Dinner unter dem Sternenhimmel.",
       "it": "Quad, giro in cammello e cena BBQ beduina sotto le stelle.",
       "tr": "ATV sürüşü, deve gezisi ve yıldızların altında Bedevi barbekü yemeği."
     },
     "fullDescription": {
-      "en": "Ride a quad bike across the golden dunes, meet a local Bedouin family for tea, take a short camel ride, and finish with a traditional BBQ dinner and stargazing in the open desert.",
       "ar": "قد دراجة رباعية عبر الكثبان الذهبية، والتقِ بعائلة بدوية لتناول الشاي، واستمتع بجولة قصيرة على الجمل، واختتم يومك بعشاء شواء تقليدي ومراقبة النجوم.",
+      "en": "Ride a quad bike across the golden dunes, meet a local Bedouin family for tea, take a short camel ride, and finish with a traditional BBQ dinner and stargazing in the open desert.",
       "ru": "Прокатитесь на квадроцикле по золотым дюнам, познакомьтесь с бедуинской семьей за чаем, прокатитесь на верблюде и завершите вечер традиционным ужином-барбекю под звездами.",
       "de": "Fahren Sie mit dem Quad über goldene Dünen, treffen Sie eine Beduinenfamilie zum Tee, machen Sie eine kurze Kamelfahrt und genießen Sie ein traditionelles BBQ-Dinner unter den Sternen.",
       "it": "Guida un quad tra le dune dorate, incontra una famiglia beduina per un tè, fai un breve giro in cammello e concludi con una cena BBQ tradizionale sotto le stelle.",
       "tr": "Altın renkli kum tepelerinde ATV sürün, çay için yerel bir Bedevi ailesiyle tanışın, kısa bir deve turu yapın ve açık çölde geleneksel barbekü yemeği ve yıldız gözlemiyle günü tamamlayın."
     },
     "includes": {
-      "en": [
-        "Hotel pickup & drop-off",
-        "Quad ATV bike",
-        "Camel ride",
-        "BBQ dinner",
-        "Tea with Bedouins"
-      ],
       "ar": [
         "نقل من وإلى الفندق",
         "دراجة رباعية الدفع",
         "ركوب جمل",
         "عشاء شواء",
         "شاي مع البدو"
+      ],
+      "en": [
+        "Hotel pickup & drop-off",
+        "Quad ATV bike",
+        "Camel ride",
+        "BBQ dinner",
+        "Tea with Bedouins"
       ],
       "ru": [
         "Трансфер от/до отеля",
@@ -387,23 +387,23 @@
       ]
     },
     "meetingPoint": {
-      "en": "Hotel lobby pickup, 3:30 PM",
       "ar": "الاستلام من لوبي الفندق، ٣:٣٠ عصرًا",
+      "en": "Hotel lobby pickup, 3:30 PM",
       "ru": "Встреча в лобби отеля, 15:30",
       "de": "Abholung Hotellobby, 15:30 Uhr",
       "it": "Ritiro in hotel, ore 15:30",
       "tr": "Otel lobisinden alış, 15:30"
     },
     "excludes": {
-      "en": [
-        "Personal photos with camels (optional paid service)",
-        "Alcoholic beverages",
-        "Gratuities (optional)"
-      ],
       "ar": [
         "صور شخصية مع الجمال (خدمة مدفوعة اختيارية)",
         "المشروبات الكحولية",
         "الإكراميات (اختياري)"
+      ],
+      "en": [
+        "Personal photos with camels (optional paid service)",
+        "Alcoholic beverages",
+        "Gratuities (optional)"
       ],
       "ru": [
         "Личные фото с верблюдами (платная услуга по желанию)",
@@ -427,17 +427,17 @@
       ]
     },
     "whatToBring": {
-      "en": [
-        "Closed shoes",
-        "Light jacket (desert cools at night)",
-        "Scarf or bandana (dust)",
-        "Camera"
-      ],
       "ar": [
         "حذاء مغلق",
         "سترة خفيفة (الصحراء تبرد ليلاً)",
         "وشاح أو بندانا (للغبار)",
         "كاميرا"
+      ],
+      "en": [
+        "Closed shoes",
+        "Light jacket (desert cools at night)",
+        "Scarf or bandana (dust)",
+        "Camera"
       ],
       "ru": [
         "Закрытая обувь",
@@ -468,16 +468,16 @@
       {
         "time": "15:30",
         "title": {
-          "en": "Hotel Pickup",
           "ar": "الاستلام من الفندق",
+          "en": "Hotel Pickup",
           "ru": "Встреча в отеле",
           "de": "Hotelabholung",
           "it": "Ritiro in hotel",
           "tr": "Otelden Alış"
         },
         "description": {
-          "en": "Our vehicle collects you from your hotel.",
           "ar": "سيارتنا تستلمك من فندقك.",
+          "en": "Our vehicle collects you from your hotel.",
           "ru": "Наш автомобиль заберёт вас из отеля.",
           "de": "Unser Fahrzeug holt Sie von Ihrem Hotel ab.",
           "it": "Il nostro veicolo ti preleva dal tuo hotel.",
@@ -487,16 +487,16 @@
       {
         "time": "16:15",
         "title": {
-          "en": "Quad Biking Adventure",
           "ar": "مغامرة الدراجات الرباعية",
+          "en": "Quad Biking Adventure",
           "ru": "Приключение на квадроцикле",
           "de": "Quad-Biking-Abenteuer",
           "it": "Avventura in quad",
           "tr": "ATV Macerası"
         },
         "description": {
-          "en": "Ride across the golden dunes as the sun starts to lower.",
           "ar": "اقطع الكثبان الذهبية مع بدء غروب الشمس.",
+          "en": "Ride across the golden dunes as the sun starts to lower.",
           "ru": "Прокатитесь по золотым дюнам, когда солнце начинает садиться.",
           "de": "Fahren Sie über die goldenen Dünen, während die Sonne zu sinken beginnt.",
           "it": "Attraversa le dune dorate mentre il sole inizia a calare.",
@@ -506,16 +506,16 @@
       {
         "time": "17:30",
         "title": {
-          "en": "Bedouin Tea & Camel Ride",
           "ar": "شاي بدوي وركوب جمال",
+          "en": "Bedouin Tea & Camel Ride",
           "ru": "Бедуинский чай и катание на верблюде",
           "de": "Beduinentee & Kamelritt",
           "it": "Tè beduino e giro in cammello",
           "tr": "Bedevi Çayı ve Deve Turu"
         },
         "description": {
-          "en": "Meet a local Bedouin family for sweet tea and a short camel ride.",
           "ar": "التقِ بعائلة بدوية محلية لتناول الشاي الحلو وركوب قصير على الجمل.",
+          "en": "Meet a local Bedouin family for sweet tea and a short camel ride.",
           "ru": "Познакомьтесь с местной бедуинской семьёй за сладким чаем и короткой прогулкой на верблюде.",
           "de": "Treffen Sie eine lokale Beduinenfamilie bei süßem Tee und einem kurzen Kamelritt.",
           "it": "Incontra una famiglia beduina locale per un tè dolce e un breve giro in cammello.",
@@ -525,16 +525,16 @@
       {
         "time": "18:30",
         "title": {
-          "en": "Sunset Over the Dunes",
           "ar": "غروب الشمس فوق الكثبان",
+          "en": "Sunset Over the Dunes",
           "ru": "Закат над дюнами",
           "de": "Sonnenuntergang über den Dünen",
           "it": "Tramonto sulle dune",
           "tr": "Kum Tepelerinde Gün Batımı"
         },
         "description": {
-          "en": "Watch the sun set over the desert from a scenic viewpoint.",
           "ar": "شاهد غروب الشمس فوق الصحراء من نقطة إطلالة بانورامية.",
+          "en": "Watch the sun set over the desert from a scenic viewpoint.",
           "ru": "Понаблюдайте закат над пустыней с живописной смотровой площадки.",
           "de": "Beobachten Sie den Sonnenuntergang über der Wüste von einem malerischen Aussichtspunkt.",
           "it": "Guarda il tramonto sul deserto da un punto panoramico.",
@@ -544,16 +544,16 @@
       {
         "time": "19:00",
         "title": {
-          "en": "BBQ Dinner Under the Stars",
           "ar": "عشاء شواء تحت النجوم",
+          "en": "BBQ Dinner Under the Stars",
           "ru": "Ужин-барбекю под звёздами",
           "de": "BBQ-Dinner unter den Sternen",
           "it": "Cena BBQ sotto le stelle",
           "tr": "Yıldızların Altında Barbekü Yemeği"
         },
         "description": {
-          "en": "A traditional BBQ dinner served in an open-air desert camp.",
           "ar": "عشاء شواء تقليدي يُقدّم في مخيم صحراوي مفتوح.",
+          "en": "A traditional BBQ dinner served in an open-air desert camp.",
           "ru": "Традиционный ужин-барбекю в открытом пустынном лагере.",
           "de": "Ein traditionelles BBQ-Dinner in einem Wüstenlager unter freiem Himmel.",
           "it": "Una cena BBQ tradizionale servita in un campo nel deserto all'aperto.",
@@ -563,16 +563,16 @@
       {
         "time": "20:15",
         "title": {
-          "en": "Return to Hotel",
           "ar": "العودة إلى الفندق",
+          "en": "Return to Hotel",
           "ru": "Возвращение в отель",
           "de": "Rückfahrt zum Hotel",
           "it": "Ritorno in hotel",
           "tr": "Otele Dönüş"
         },
         "description": {
-          "en": "We drive you back to your hotel.",
           "ar": "نُقلك عائدًا إلى فندقك.",
+          "en": "We drive you back to your hotel.",
           "ru": "Мы отвезём вас обратно в отель.",
           "de": "Wir bringen Sie zurück zu Ihrem Hotel.",
           "it": "Ti riportiamo al tuo hotel.",
