@@ -57,9 +57,9 @@ DS.opts = (map, cur) => Object.entries(map).map(([k, v]) => `<option value="${k}
 
 // ---------- toast / modal ----------
 DS.toast = (msg, bad) => { const t = $('#toast'); t.textContent = msg; t.className = 'show' + (bad ? ' bad' : ''); clearTimeout(t._t); t._t = setTimeout(() => t.className = '', 3400); };
-DS.modal = ({ title, body, actions, onOpen }) => {
+DS.modal = ({ title, body, actions, onOpen, wide }) => {
   const ov = document.createElement('div'); ov.className = 'ov';
-  ov.innerHTML = `<div class="md"><div class="mh"><span>${esc(title)}</span><button class="x" type="button">×</button></div><div class="mb"></div><div class="mf"></div></div>`;
+  ov.innerHTML = `<div class="md ${wide ? 'wide' : ''}"><div class="mh"><span>${esc(title)}</span><button class="x" type="button">×</button></div><div class="mb"></div><div class="mf"></div></div>`;
   const mb = $('.mb', ov), mf = $('.mf', ov);
   if (typeof body === 'string') mb.innerHTML = body; else mb.appendChild(body);
   const close = () => ov.remove();
@@ -91,10 +91,10 @@ DS.acctText = a => !a ? '—' : a.method === 'instapay' ? `${a.instapay.handle} 
 
 // ---------- form engine (schema-driven) ----------
 // field: { k, l, t: text|num|url|select|textarea|urls|dates|i18n|i18nlist|list, opts, long, sub, h }
-let dl = 0, ll = 0; const LISTS = {};
+let dl = 0, ll = 0, vv = 0; const LISTS = {}, IMGV = {};
 function fld(f, v) {
   const t = f.t || 'text', hint = f.h ? `<small>${esc(f.h)}</small>` : '';
-  let inner = '', lid = '';
+  let inner = '', lid = '', vid = '';
   if (t === 'i18n' || t === 'i18nlist') {
     const area = f.long || t === 'i18nlist';
     const one = lg => { let x = v && v[lg]; if (t === 'i18nlist') x = Array.isArray(x) ? x.join('\n') : ''; 
@@ -104,6 +104,13 @@ function fld(f, v) {
   } else if (t === 'list') {
     lid = 'L' + (++ll); LISTS[lid] = f;
     inner = `<div class="items">${(Array.isArray(v) ? v : []).map(it => li(f, it)).join('')}</div><button type="button" class="btn ghost sm" data-add>+ ${esc(f.add || 'إضافة')}</button>`;
+  } else if (t === 'img' || t === 'imgs') {
+    vid = 'V' + (++vv); IMGV[vid] = t === 'img' ? (v ? [v] : []) : (Array.isArray(v) ? v.slice() : []);
+    inner = `<div class="imgw"><div class="thumbs"></div><div class="row"><button type="button" class="btn ghost sm" data-up>${DS.ic('plus')} رفع ${t === 'imgs' ? 'صور' : 'صورة'} من الجهاز</button><input type="file" accept="image/*" hidden ${t === 'imgs' ? 'multiple' : ''}><input class="ur" dir="ltr" placeholder="أو الصق رابط صورة" style="flex:1;min-width:150px"><button type="button" class="btn ghost sm" data-ad>إضافة الرابط</button></div></div>`;
+  } else if (t === 'bool') {
+    inner = `<label class="sw"><input type="checkbox" ${v ? 'checked' : ''}><span>${esc(f.h || 'مفعّل')}</span></label>`;
+  } else if (t === 'obj') {
+    inner = `<div class="grid2">${f.sub.map(x => fld(x, v && v[x.k])).join('')}</div>`;
   } else if (t === 'select') {
     inner = `<select>${f.opts.map(o => { const [ov, ol] = Array.isArray(o) ? o : [o, o]; return `<option value="${esc(ov)}" ${ov === v ? 'selected' : ''}>${esc(ol)}</option>`; }).join('')}</select>`;
   } else if (t === 'textarea' || t === 'urls' || t === 'dates') {
@@ -113,16 +120,47 @@ function fld(f, v) {
     const id = f.opts ? 'dl' + (++dl) : '';
     inner = `<input type="${t === 'num' ? 'number' : t === 'url' ? 'url' : t === 'pass' ? 'password' : 'text'}" ${t === 'num' ? 'min="0" step="any"' : ''} value="${esc(v == null ? '' : v)}" ${id ? `list="${id}"` : ''}>` + (id ? `<datalist id="${id}">${f.opts.map(o => `<option value="${esc(o)}">`).join('')}</datalist>` : '');
   }
-  return `<div class="fld" data-k="${f.k}" data-t="${t}" ${lid ? `data-lid="${lid}"` : ''}><label>${esc(f.l || f.k)}</label>${inner}${hint}</div>`;
+  return `<div class="fld" data-k="${f.k}" data-t="${t}" ${lid ? `data-lid="${lid}"` : ''} ${vid ? `data-vid="${vid}"` : ''}><label>${esc(f.l || f.k)}</label>${inner}${hint}</div>`;
 }
 const li = (f, it) => `<div class="li"><button type="button" class="rm" data-rm>×</button><div class="grid2">${f.sub.map(s => fld(s, it && it[s.k])).join('')}</div></div>`;
+// client-side compression: every uploaded image becomes a JPEG data URI of at most ~200K characters
+const IMG_MAX_CHARS = 200000;
+async function compressImage(file) {
+  if (!/^image\//.test(file.type)) throw new Error('الملف ده مش صورة');
+  const url = URL.createObjectURL(file), img = new Image();
+  try { img.src = url; await img.decode(); } catch { URL.revokeObjectURL(url); throw new Error('مش قادر أقرا الصورة'); }
+  let max = 1280, q = 0.8, out = '';
+  for (let i = 0; i < 8; i++) {
+    const k = Math.min(1, max / Math.max(img.width, img.height)), c = document.createElement('canvas');
+    c.width = Math.max(1, Math.round(img.width * k)); c.height = Math.max(1, Math.round(img.height * k));
+    const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(img, 0, 0, c.width, c.height);
+    out = c.toDataURL('image/jpeg', q); if (out.length <= IMG_MAX_CHARS) break;
+    if (q > 0.55) q -= 0.1; else { max = Math.round(max * 0.8); q = 0.75; }
+  }
+  URL.revokeObjectURL(url);
+  if (out.length > IMG_MAX_CHARS * 1.3) throw new Error('الصورة كبيرة جدًا حتى بعد الضغط');
+  return out;
+}
+DS.safeSrc = u => /^(https?:\/\/|\/|data:image\/)/i.test(u || '') ? u : '';
+const drawThumbs = w => { $('.thumbs', w).innerHTML = w._v.map((u, i) => `<div class="th"><img src="${esc(DS.safeSrc(u))}" alt=""><button type="button" data-rmimg="${i}" title="حذف">×</button>${w.dataset.t === 'imgs' && i ? `<button type="button" class="st" data-first="${i}" title="اجعلها الرئيسية">★</button>` : ''}</div>`).join('') || '<span class="muted">مفيش صور</span>'; };
+const initImgs = root => root.querySelectorAll('.fld[data-vid]').forEach(w => { if (!w._v) { w._v = IMGV[w.dataset.vid] || []; drawThumbs(w); } });
 DS.form = (schema, values) => {
   const root = document.createElement('div'); root.className = 'form';
-  root.innerHTML = schema.map(f => fld(f, values && values[f.k])).join('');
+  root.innerHTML = schema.map(f => fld(f, values && values[f.k])).join(''); initImgs(root);
   root.onclick = e => {
-    if (e.target.closest('[data-rm]')) e.target.closest('.li').remove();
+    if (e.target.closest('[data-rm]')) { e.target.closest('.li').remove(); return; }
     const add = e.target.closest('[data-add]');
-    if (add) { const w = add.closest('.fld'), f = LISTS[w.dataset.lid]; $('.items', w).insertAdjacentHTML('beforeend', li(f, {})); }
+    if (add) { const w = add.closest('.fld'), f = LISTS[w.dataset.lid]; $('.items', w).insertAdjacentHTML('beforeend', li(f, {})); initImgs(root); return; }
+    const w = e.target.closest('.fld[data-vid]'); if (!w) return;
+    if (e.target.closest('[data-up]')) $('input[type=file]', w).click();
+    const rm = e.target.closest('[data-rmimg]'); if (rm) { w._v.splice(+rm.dataset.rmimg, 1); drawThumbs(w); }
+    const fs = e.target.closest('[data-first]'); if (fs) { w._v.unshift(w._v.splice(+fs.dataset.first, 1)[0]); drawThumbs(w); }
+    if (e.target.closest('[data-ad]')) { const i = $('.ur', w), u = i.value.trim(); if (!/^https?:\/\//i.test(u)) return DS.toast('الصق رابط صورة صحيح (يبدأ بـ https://)', true); w._v = w.dataset.t === 'img' ? [u] : w._v.concat(u); i.value = ''; drawThumbs(w); }
+  };
+  root.onchange = async e => {
+    if (e.target.type !== 'file') return; const w = e.target.closest('.fld[data-vid]'), files = [...e.target.files].slice(0, 12); e.target.value = ''; if (!w) return;
+    DS.toast('جاري تجهيز الصور…');
+    for (const f of files) { try { const d = await compressImage(f); w._v = w.dataset.t === 'img' ? [d] : w._v.concat(d); drawThumbs(w); } catch (er) { DS.toast(er.message, true); } }
   };
   return root;
 };
@@ -134,6 +172,10 @@ DS.collect = (root, schema) => {
     if (!w) continue;
     const t = f.t || 'text';
     if (t === 'i18n' || t === 'i18nlist') { const o = {}; w.querySelectorAll('[data-lg]').forEach(i => { if (t === 'i18n') { const x = i.value.trim(); if (x) o[i.dataset.lg] = x; } else { const arr = i.value.split('\n').map(z => z.trim()).filter(Boolean); if (arr.length) o[i.dataset.lg] = arr; } }); out[f.k] = o; }
+    else if (t === 'img') out[f.k] = (w._v || [])[0] || '';
+    else if (t === 'imgs') out[f.k] = (w._v || []).slice();
+    else if (t === 'bool') out[f.k] = $('input', w).checked;
+    else if (t === 'obj') out[f.k] = DS.collect(w.querySelector('.grid2'), f.sub);
     else if (t === 'list') out[f.k] = [...w.querySelectorAll(':scope > .items > .li')].map(l => DS.collect(l.querySelector('.grid2'), f.sub));
     else if (t === 'urls' || t === 'dates') out[f.k] = lines($('textarea', w).value);
     else if (t === 'textarea') out[f.k] = $('textarea', w).value.trim();
@@ -261,6 +303,44 @@ DS.bookingsView = (o = {}) => async (m) => {
 };
 
 
+
+// ---------- reviews (same look as the public site: avatar, Verified badge, stars, photos, rating bars) + replies ----------
+DS.lightbox = (imgs, i = 0) => { const b = document.createElement('div'); b.innerHTML = imgs.map(u => `<img src="${esc(DS.safeSrc(u))}" style="width:100%;border-radius:12px;margin-bottom:10px">`).join(''); DS.modal({ title: `الصور (${imgs.length})`, body: b, wide: true, onOpen: mb => { const t = mb.children[i]; if (t) t.scrollIntoView(); } }); };
+DS.reviewsView = (o = {}) => async (m) => {
+  let list = (await DS.api('/reviews')).reviews, f = { item: '', star: 0, open: false };
+  const stars = n => `<span class="stars">${'★'.repeat(Math.round(n))}<i>${'★'.repeat(5 - Math.round(n))}</i></span>`;
+  const rp = r => o.admin ? `/reviews/${encodeURIComponent(r.type)}/${encodeURIComponent(r.itemId)}/${encodeURIComponent(r.id)}` : `/reviews/${encodeURIComponent(r.itemId)}/${encodeURIComponent(r.id)}`;
+  const items = [...new Map(list.map(r => [r.type + '/' + r.itemId, r.itemName || r.itemId])).entries()];
+  const draw = () => {
+    const rows = list.filter(r => (!f.item || r.type + '/' + r.itemId === f.item) && (!f.star || Math.round(r.rating) === f.star) && (!f.open || !r.reply));
+    const base = list.filter(r => !f.item || r.type + '/' + r.itemId === f.item), avg = base.length ? base.reduce((a, r) => a + Number(r.rating || 0), 0) / base.length : 0;
+    const cnt = [5, 4, 3, 2, 1].map(s => base.filter(r => Math.round(r.rating) === s).length), mx = Math.max(1, ...cnt);
+    m.innerHTML = `<h2 class="pt">التقييمات والتعليقات <span class="muted">${rows.length}</span></h2>
+      <div class="card rv-sum"><div class="rv-avg"><b>${avg ? avg.toFixed(1) : '–'}</b>${stars(avg)}<span class="muted">${base.length} تقييم موثّق</span></div><div class="rv-bars">${[5, 4, 3, 2, 1].map((s, i) => `<div class="rating-bar-row"><span>${s} ★</span><div class="tr"><i style="width:${cnt[i] / mx * 100}%"></i></div><span>${cnt[i]}</span></div>`).join('')}</div></div>
+      <div class="row" style="margin-bottom:12px"><select id="ri" style="max-width:260px"><option value="">كل العناصر</option>${items.map(([k, n]) => `<option value="${esc(k)}" ${f.item === k ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select>
+        <div class="chips" style="margin:0">${[0, 5, 4, 3, 2, 1].map(s => `<span class="chip ${f.star === s ? 'on' : ''}" data-st="${s}">${s ? s + ' ★' : 'الكل'}</span>`).join('')}<span class="chip ${f.open ? 'on' : ''}" data-open="1">بدون رد</span></div></div>` +
+      (rows.length ? `<div class="rvgrid">${rows.map((r, i) => { const ph = r.images && r.images.length ? r.images : (r.image ? [r.image] : []), ini = (r.name || 'G').trim().charAt(0).toUpperCase();
+        return `<div class="rv-card"><div class="rv-head"><div class="rv-av">${r.photoURL && DS.safeSrc(r.photoURL) ? `<img src="${esc(DS.safeSrc(r.photoURL))}" alt="">` : esc(ini)}</div><div class="fl"><b>${esc(r.name || 'Guest')}</b><div class="muted"><span class="badge b-green">✔ Verified</span> · ${r.createdAt ? new Date(r.createdAt).toLocaleDateString('en-GB') : ''}</div></div><span class="badge b-gray">${esc(r.itemName || '')}</span></div>
+          <div class="rv-stars">${stars(r.rating)}</div><p class="rv-c">${esc(r.comment || '')}</p>
+          ${ph.length ? `<div class="rv-ph">${ph.slice(0, 3).map((u, k) => `<div data-ph="${i}:${k}"><img src="${esc(DS.safeSrc(u))}" alt="">${k === 2 && ph.length > 3 ? `<span>+${ph.length - 3}</span>` : ''}</div>`).join('')}</div>` : ''}
+          ${r.reply && r.reply.text ? `<div class="rv-reply"><div class="rv-rh">${DS.ic('mail')} رد ${esc(r.reply.byName || '')} <span class="muted">· ${DS.dt(r.reply.at)}</span></div><p>${esc(r.reply.text)}</p></div>` : ''}
+          <div class="row" style="margin-top:12px"><button class="btn sm" data-re="${i}">${r.reply ? 'تعديل الرد' : 'رد على التعليق'}</button>${r.reply ? `<button class="btn ghost sm" data-rd="${i}">حذف الرد</button>` : ''}${o.admin ? `<button class="btn ghost sm" data-dr="${i}">حذف التعليق</button>` : ''}</div></div>`; }).join('')}</div>` : '<div class="empty">مفيش تعليقات</div>');
+    $('#ri', m).onchange = e => { f.item = e.target.value; draw(); };
+    m.onclick = async e => {
+      const st = e.target.closest('[data-st]'); if (st) { f.star = +st.dataset.st; return draw(); }
+      if (e.target.closest('[data-open]')) { f.open = !f.open; return draw(); }
+      const ph = e.target.closest('[data-ph]'); if (ph) { const [i, k] = ph.dataset.ph.split(':'), r = rows[+i]; return DS.lightbox(r.images && r.images.length ? r.images : [r.image], +k); }
+      const re = e.target.closest('[data-re]'), rd = e.target.closest('[data-rd]'), dr = e.target.closest('[data-dr]');
+      try {
+        if (re) { const r = rows[+re.dataset.re], b = document.createElement('div'); b.innerHTML = `<div class="rv-card" style="margin-bottom:12px"><b>${esc(r.name)}</b> ${stars(r.rating)}<p class="rv-c">${esc(r.comment || '')}</p></div><div class="fld"><label>ردك (بيظهر تحت التعليق في الموقع)</label><textarea id="rt" maxlength="1000" rows="4">${esc(r.reply ? r.reply.text : '')}</textarea></div>`;
+          DS.modal({ title: 'الرد على التعليق', body: b, actions: [{ t: 'نشر الرد', fn: async () => { const rep = (await DS.api(rp(r) + '/reply', { method: 'PUT', body: { text: $('#rt', b).value } })).reply; r.reply = rep; DS.toast('اتنشر'); draw(); } }] }); }
+        if (rd && confirm('حذف الرد؟')) { const r = rows[+rd.dataset.rd]; await DS.api(rp(r) + '/reply', { method: 'DELETE' }); delete r.reply; draw(); }
+        if (dr && confirm('حذف التعليق نهائيًا؟')) { const r = rows[+dr.dataset.dr]; await DS.api(rp(r), { method: 'DELETE' }); list = list.filter(x => x !== r); draw(); }
+      } catch (er) { DS.toast(er.message, true); }
+    };
+  };
+  draw();
+};
 // ---------- owner finance view ----------
 DS.financeView = () => async (m) => {
   const d = await DS.api('/finance'), S = d.summary, open = d.payouts.find(p => p.status === 'requested');
@@ -316,7 +396,7 @@ DS.ownerPanel = (c) => {
           { h: '', f: i => `<button class="btn ghost sm" data-e="${esc(i.id)}">تعديل</button> <button class="btn ghost sm" data-d="${esc(i.id)}">حذف</button>` }], list, { empty: `لسه مضفتش ${c.itemsLabel}` });
       const edit = (it) => {
         const form = DS.form(c.schema, it || {});
-        DS.modal({ title: it ? 'تعديل' : c.addLabel, body: form, actions: [{ t: 'حفظ', fn: async (mb) => {
+        DS.modal({ title: it ? 'تعديل' : c.addLabel, body: form, wide: true, actions: [{ t: 'حفظ', fn: async (mb) => {
           const body = DS.collect(form, c.schema);
           await DS.api(it ? '/items/' + encodeURIComponent(it.id) : '/items', { method: it ? 'PUT' : 'POST', body });
           DS.toast('اتحفظ'); me.itemCount++; setTimeout(DS.reload, 100);
@@ -331,10 +411,7 @@ DS.ownerPanel = (c) => {
     } },
     { label: 'الحجوزات', icon: 'cal', render: DS.bookingsView({}) },
     { label: 'المحاسبة', icon: 'wallet', render: DS.financeView() },
-    ...(me.hasReviews ? [{ label: 'التقييمات', icon: 'star', render: async m => {
-      const r = (await DS.api('/reviews')).reviews;
-      m.innerHTML = '<h2 class="pt">التقييمات</h2>' + DS.table([{ h: 'العميل', f: x => esc(x.name) }, { h: 'التقييم', f: x => '★'.repeat(x.rating || 0) }, { h: 'التعليق', f: x => esc(x.comment) }, { h: 'التاريخ', f: x => DS.dt(x.createdAt) }], r, { empty: 'مفيش تقييمات لسه' });
-    } }] : []),
+    ...(me.hasReviews ? [{ label: 'التقييمات', icon: 'star', render: DS.reviewsView({}) }] : []),
   ] });
 };
 })();
