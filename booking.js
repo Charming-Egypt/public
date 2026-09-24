@@ -510,6 +510,7 @@ function startBooking(hotelId, roomIndex) {
   if (!h || !r) return;
   state.currentHotel = h;
   state.currentRoom = r;
+  state.currentRoomIndex = roomIndex; // lets the server recompute the price for exactly this room
   state.bookingDraft = {
     name: currentUser?.displayName || currentUser?.name || '',
     email: currentUser?.email || '',
@@ -672,6 +673,7 @@ async function payAndConfirmHotelBooking(roomTotal, taxes, total, nights) {
       infants: state.guests.infants || 0,
       rooms: state.guests.rooms,
       roomType: state.currentRoom.type,
+      roomIndex: state.currentRoomIndex,
       nights,
       payment: state.bookingDraft.payment,
       total,
