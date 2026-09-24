@@ -3386,3 +3386,8 @@ html[data-theme="light"] .theme-switch .knob {
   }
 
 
+
+/* Host / team reply under a review */
+.review-reply{margin-top:12px;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.06);border-inline-start:3px solid #f5b544}
+.review-reply-head{font-size:12px;font-weight:700;display:flex;gap:6px;align-items:center;color:#f5b544}.review-reply-head span{opacity:.7;font-weight:500}
+.review-reply p{margin-top:4px;font-size:13px;line-height:1.7;white-space:pre-wrap;word-break:break-word}

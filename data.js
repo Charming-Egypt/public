@@ -869,6 +869,11 @@ async function loadReviews(type, id, containerId, summaryId, barsId) {
                 ${(i === 2 && photos.length > 3) ? `<div class="review-photo-more">+${photos.length - 3}</div>` : ''}
               </div>`).join('')}
           </div>` : ''}
+        ${rv.reply && rv.reply.text ? `
+          <div class="review-reply">
+            <div class="review-reply-head"><i class="fa-solid fa-reply"></i> ${esc(rv.reply.byName || 'Host')} <span>· Response</span></div>
+            <p>${esc(rv.reply.text)}</p>
+          </div>` : ''}
       </div>`;
     }).join('');
 
