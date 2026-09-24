@@ -123,13 +123,13 @@ function fld(f, v) {
   return `<div class="fld" data-k="${f.k}" data-t="${t}" ${lid ? `data-lid="${lid}"` : ''} ${vid ? `data-vid="${vid}"` : ''}><label>${esc(f.l || f.k)}</label>${inner}${hint}</div>`;
 }
 const li = (f, it) => `<div class="li"><button type="button" class="rm" data-rm>×</button><div class="grid2">${f.sub.map(s => fld(s, it && it[s.k])).join('')}</div></div>`;
-// client-side compression: every uploaded image becomes a JPEG data URI of at most ~200K characters
-const IMG_MAX_CHARS = 200000;
+// client-side compression (max 1600px, ~450KB JPEG) then upload: the worker commits the file into the GitHub repo and returns its direct URL
+const IMG_MAX_CHARS = 600000;
 async function compressImage(file) {
   if (!/^image\//.test(file.type)) throw new Error('الملف ده مش صورة');
   const url = URL.createObjectURL(file), img = new Image();
   try { img.src = url; await img.decode(); } catch { URL.revokeObjectURL(url); throw new Error('مش قادر أقرا الصورة'); }
-  let max = 1280, q = 0.8, out = '';
+  let max = 1600, q = 0.82, out = '';
   for (let i = 0; i < 8; i++) {
     const k = Math.min(1, max / Math.max(img.width, img.height)), c = document.createElement('canvas');
     c.width = Math.max(1, Math.round(img.width * k)); c.height = Math.max(1, Math.round(img.height * k));
@@ -159,8 +159,16 @@ DS.form = (schema, values) => {
   };
   root.onchange = async e => {
     if (e.target.type !== 'file') return; const w = e.target.closest('.fld[data-vid]'), files = [...e.target.files].slice(0, 12); e.target.value = ''; if (!w) return;
-    DS.toast('جاري تجهيز الصور…');
-    for (const f of files) { try { const d = await compressImage(f); w._v = w.dataset.t === 'img' ? [d] : w._v.concat(d); drawThumbs(w); } catch (er) { DS.toast(er.message, true); } }
+    w.style.opacity = '.6'; w.style.pointerEvents = 'none';
+    let n = 0;
+    for (const f of files) {
+      try {
+        DS.toast(`جاري رفع الصورة ${++n} من ${files.length}…`);
+        const { url } = await DS.api('/upload', { method: 'POST', body: { image: await compressImage(f) } }); // sequential: one commit at a time
+        w._v = w.dataset.t === 'img' ? [url] : w._v.concat(url); drawThumbs(w);
+      } catch (er) { DS.toast(er.message, true); }
+    }
+    w.style.opacity = ''; w.style.pointerEvents = ''; if (n) DS.toast('تم رفع الصور ✔ (اتحفظت على GitHub)');
   };
   return root;
 };
