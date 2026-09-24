@@ -10,6 +10,44 @@ const tr = DS.tr = o => (o && typeof o === 'object') ? (o.ar || o.en || Object.v
 DS.money = n => Number(n || 0).toLocaleString('en-US');
 DS.dt = iso => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleDateString('en-GB') + ' ' + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }); };
 
+// ---------- icons ----------
+const IC = { home: 'M3 10.5 12 3l9 7.5V21H3zM9 21v-6h6v6', cal: 'M8 2v4M16 2v4M3 9h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z', wallet: 'M3 7a2 2 0 0 1 2-2h13v4M3 7v11a2 2 0 0 0 2 2h15V9H5a2 2 0 0 1-2-2zM16 14h.01',
+  users: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75', box: 'M21 8 12 3 3 8v8l9 5 9-5zM3 8l9 5 9-5M12 13v8', star: 'M12 3l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.8 6.2 20.9l1.1-6.5L2.6 9.8l6.5-.9z',
+  shield: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z', layers: 'M12 3 2 8l10 5 10-5zM2 13l10 5 10-5', code: 'M8 8l-5 4 5 4M16 8l5 4-5 4M14 4l-4 16', mail: 'M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zM3 7l9 6 9-6',
+  brief: 'M3 8h18v12H3zM8 8V5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v3', list: 'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01', menu: 'M4 6h16M4 12h16M4 18h16', sun: 'M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4',
+  moon: 'M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z', out: 'M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9', trend: 'M3 17l6-6 4 4 8-8M15 7h6v6', alert: 'M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z',
+  coins: 'M12 8c-4 0-7-1.3-7-3s3-3 7-3 7 1.3 7 3-3 3-7 3zM5 5v14c0 1.7 3 3 7 3s7-1.3 7-3V5M5 12c0 1.7 3 3 7 3s7-1.3 7-3', pct: 'M19 5 5 19M6.5 9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM17.5 20a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z', plus: 'M12 5v14M5 12h14', check: 'M20 6 9 17l-5-5' };
+DS.ic = n => `<svg class="i" viewBox="0 0 24 24"><path d="${IC[n] || ''}"/></svg>`;
+DS.stat = (n, l, o = {}) => `<div class="stat">${o.icon ? `<div class="ico ${o.tone || ''}">${DS.ic(o.icon)}</div>` : ''}<div><b>${n}</b><span>${l}</span>${o.sub ? `<small>${o.sub}</small>` : ''}</div></div>`;
+// ---------- inline SVG charts (no libraries) ----------
+const nice = m => { const p = Math.pow(10, Math.floor(Math.log10(m || 1))), f = m / p; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * p; };
+const short = v => v >= 1e6 ? +(v / 1e6).toFixed(1) + 'M' : v >= 1e3 ? +(v / 1e3).toFixed(1) + 'K' : Math.round(v * 10) / 10;
+function frame(labels, max, W, H, L, R, T, B, x, y) {
+  let g = ''; for (let k = 0; k <= 4; k++) { const yy = y(max * k / 4); g += `<line x1="${L}" x2="${W - R}" y1="${yy}" y2="${yy}" style="stroke:var(--line)"/><text x="${L - 7}" y="${yy + 4}" text-anchor="end">${short(max * k / 4)}</text>`; }
+  const step = Math.ceil(labels.length / 7); labels.forEach((l, i) => { if (i % step === 0 || i === labels.length - 1) g += `<text x="${x(i)}" y="${H - 7}" text-anchor="middle">${l}</text>`; });
+  return g;
+}
+DS.area = (labels, values, color = 'var(--gold)', id = 'a') => {
+  const W = 640, H = 220, L = 46, R = 12, T = 14, B = 28, n = labels.length; if (!n) return '<div class="empty">مفيش بيانات</div>';
+  const max = nice(Math.max(1, ...values)), x = i => L + (n === 1 ? 0 : i * (W - L - R) / (n - 1)), y = v => T + (H - T - B) * (1 - v / max);
+  const pts = values.map((v, i) => [x(i), y(v)]), line = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}">${frame(labels, max, W, H, L, R, T, B, x, y)}<defs><linearGradient id="g${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:${color};stop-opacity:.38"/><stop offset="1" style="stop-color:${color};stop-opacity:0"/></linearGradient></defs><path d="${line} L${x(n - 1)} ${y(0)} L${x(0)} ${y(0)}Z" style="fill:url(#g${id})"/><path d="${line}" style="fill:none;stroke:${color};stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round"/>${pts.map((p, i) => `<circle cx="${p[0]}" cy="${p[1]}" r="3.2" style="fill:${color}"><title>${labels[i]}: ${DS.money(values[i])}</title></circle>`).join('')}</svg>`;
+};
+DS.bars = (labels, values, color = 'var(--blue)') => {
+  const W = 640, H = 220, L = 46, R = 12, T = 14, B = 28, n = labels.length; if (!n) return '<div class="empty">مفيش بيانات</div>';
+  const max = nice(Math.max(1, ...values)), bw = (W - L - R) / n, x = i => L + bw * i + bw / 2, y = v => T + (H - T - B) * (1 - v / max);
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}">${frame(labels, max, W, H, L, R, T, B, x, y)}${values.map((v, i) => `<rect x="${x(i) - Math.min(bw * .6, 26) / 2}" y="${y(v)}" width="${Math.min(bw * .6, 26)}" height="${Math.max(0, y(0) - y(v))}" rx="5" style="fill:${color}"><title>${labels[i]}: ${DS.money(v)}</title></rect>`).join('')}</svg>`;
+};
+DS.donut = (items) => {
+  const tot = items.reduce((a, i) => a + i.v, 0), r = 54, C = 2 * Math.PI * r; let off = 0;
+  const seg = tot ? items.filter(i => i.v).map(i => { const d = i.v / tot * C, s = `<circle cx="70" cy="70" r="${r}" fill="none" stroke-width="18" style="stroke:${i.c}" stroke-dasharray="${d} ${C - d}" stroke-dashoffset="${-off}" transform="rotate(-90 70 70)"><title>${i.l}: ${i.v}</title></circle>`; off += d; return s; }).join('') : `<circle cx="70" cy="70" r="${r}" fill="none" stroke-width="18" style="stroke:var(--line)"/>`;
+  return `<div class="donutbox"><svg viewBox="0 0 140 140" width="150" height="150">${seg}<text x="70" y="68" text-anchor="middle" style="font-size:24px;font-weight:800;fill:var(--ink)">${tot}</text><text x="70" y="86" text-anchor="middle" style="font-size:10px;fill:var(--muted)">إجمالي</text></svg><div class="legend">${items.map(i => `<div><i style="background:${i.c}"></i>${i.l} <b style="color:var(--ink)">${i.v}</b></div>`).join('')}</div></div>`;
+};
+DS.hbars = (items) => { const mx = Math.max(1, ...items.map(i => i.v)); return items.map(i => `<div class="bar"><div><span>${i.l}</span><b>${i.v}</b></div><div class="tr"><i style="width:${Math.round(i.v / mx * 100)}%;background:${i.c}"></i></div></div>`).join('') || '<div class="empty">—</div>'; };
+DS.daysBack = (n) => Array.from({ length: n }, (_, k) => new Date(Date.now() - (n - 1 - k) * 864e5).toISOString().slice(0, 10));
+DS.hero = (title, sub, actions) => `<div class="hero"><div><h2>${title}</h2><p>${sub}</p></div><div class="row">${actions || ''}</div></div>`;
+DS.STC = { pending_payment: 'var(--amber)', completed: 'var(--green)', failed: 'var(--red)', cancelled: '#8b93b8', refunded: 'var(--purple)' };
+
 // ---------- badges ----------
 const PAY = { pending_payment: ['بانتظار الدفع', 'amber'], completed: ['مدفوع', 'green'], failed: ['فشل', 'red'], cancelled: ['ملغي', 'gray'], refunded: ['مسترد', 'purple'] };
 const OWN = { new: ['جديد', 'blue'], confirmed: ['مؤكد', 'green'], done: ['تم', 'green'], no_show: ['لم يحضر', 'red'] };
@@ -38,7 +76,7 @@ DS.modal = ({ title, body, actions, onOpen }) => {
 // ---------- tables ----------
 DS.table = (cols, rows, o = {}) => !rows.length ? `<div class="empty">${o.empty || 'مفيش بيانات'}</div>` :
   `<div class="tw"><table><thead><tr>${cols.map(c => `<th>${c.h}</th>`).join('')}</tr></thead><tbody>${rows.map((r, i) =>
-    `<tr ${o.click ? `class="click" data-i="${i}"` : ''}>${cols.map(c => `<td>${c.f(r, i)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    `<tr ${o.click ? `class="click" data-i="${i}"` : ''}>${cols.map(c => `<td data-label="${esc(String(c.h).replace(/<[^>]*>/g, ''))}">${c.f(r, i)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
 DS.thumb = u => u ? `<img class="thumb" src="${esc(u)}" loading="lazy" onerror="this.style.visibility='hidden'">` : '<span class="thumb" style="display:inline-block"></span>';
 
 // CSV export (UTF-8 BOM so Excel shows Arabic; leading = + - @ neutralised against formula injection)
@@ -50,7 +88,6 @@ DS.csv = (name, head, rows) => {
 };
 DS.METHOD = { instapay: 'إنستا باي', bank: 'تحويل بنكي' };
 DS.acctText = a => !a ? '—' : a.method === 'instapay' ? `${a.instapay.handle} · ${a.instapay.name || ''} ${a.instapay.phone || ''}` : `${a.bank.bankName} · ${a.bank.accountName} · ${a.bank.accountNumber || ''} ${a.bank.iban || ''}`;
-DS.stat = (n, l) => `<div class="stat"><b>${n}</b><span>${l}</span></div>`;
 
 // ---------- form engine (schema-driven) ----------
 // field: { k, l, t: text|num|url|select|textarea|urls|dates|i18n|i18nlist|list, opts, long, sub, h }
@@ -124,26 +161,37 @@ function logout(msg) {
 async function enter() {
   try { ME = await DS.api('/me'); } catch (e) { if (TOKEN) logout(e.message); return; }
   $('#login').classList.add('hide'); $('#app').classList.remove('hide');
-  $('#who').textContent = ME.email || ME.name || '';
+  const nm = ME.name || ME.email || '؟'; $('#who').textContent = nm; $('#av').textContent = nm.trim()[0].toUpperCase(); $('#rl').textContent = CFG.roleLabel || '';
   VIEWS = typeof CFG.views === 'function' ? CFG.views(ME) : CFG.views;
-  $('#tabs').innerHTML = VIEWS.map((v, i) => `<button data-i="${i}">${v.label}</button>`).join('');
+  $('#nav').innerHTML = VIEWS.map((v, i) => `<button data-i="${i}">${DS.ic(v.icon || 'home')}<span>${v.label}</span></button>`).join('');
   show(0);
 }
 async function show(i) {
-  [...$('#tabs').children].forEach((b, j) => b.classList.toggle('on', i === j));
-  const m = $('#main'); m.innerHTML = '<div class="empty">جاري التحميل…</div>';
+  [...$('#nav').children].forEach((b, j) => b.classList.toggle('on', i === j));
+  $('#ptitle').textContent = VIEWS[i].label; document.body.classList.remove('nav-open'); window.scrollTo(0, 0);
+  const m = $('#main'); m.onclick = null; m.innerHTML = '<div class="stats"><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div></div><div class="skel" style="height:260px"></div>';
   try { await VIEWS[i].render(m); } catch (e) { m.innerHTML = `<div class="err">${esc(e.message)}</div>`; }
 }
-DS.reload = () => { const i = [...$('#tabs').children].findIndex(b => b.classList.contains('on')); show(Math.max(0, i)); };
+DS.reload = () => { const i = [...$('#nav').children].findIndex(b => b.classList.contains('on')); show(Math.max(0, i)); };
+DS.go = label => { const i = VIEWS.findIndex(v => v.label === label); if (i >= 0) show(i); };
+const theme = t => { document.documentElement.dataset.theme = t; try { localStorage.setItem('ds_theme', t); } catch {} const b = $('#th'); if (b) b.innerHTML = DS.ic(t === 'dark' ? 'sun' : 'moon'); };
 DS.start = (cfg) => {
   CFG = cfg; document.title = cfg.title;
+  let th = 'light'; try { th = localStorage.getItem('ds_theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); } catch {}
+  document.documentElement.dataset.theme = th;
   document.body.innerHTML = `
-  <div id="login"><form class="lcard" id="lf"><h1>Discover<span>Sharm</span></h1><p>${esc(cfg.title)}</p><div id="lerr" class="err hide"></div>
+  <div id="login"><div class="lbrand"><div><div class="brand"><span class="lg">DS</span><b>Discover<span>Sharm</span></b></div><h1 style="margin-top:38px">${esc(cfg.title)}</h1><p>لوحة تحكم متكاملة لإدارة الحجوزات والأرباح والمحتوى — بشكل آمن وسريع من أي جهاز.</p></div>
+    <div class="lpts"><div>${DS.ic('shield')} صلاحيات محمية من السيرفر</div><div>${DS.ic('wallet')} محاسبة وأرباح شفافة</div><div>${DS.ic('trend')} تقارير وإحصائيات لحظية</div></div></div>
+    <div class="lform"><form class="lcard" id="lf"><h2>تسجيل الدخول</h2><p>ادخل بحسابك للمتابعة</p><div id="lerr" class="err hide"></div>
     <div class="fld"><label>البريد الإلكتروني</label><input id="em" type="email" autocomplete="username" required></div>
     <div class="fld"><label>كلمة المرور</label><input id="pw" type="password" autocomplete="current-password" required></div>
-    <button class="btn" style="width:100%" id="lb">تسجيل الدخول</button></form></div>
-  <div id="app" class="hide"><header class="top"><div><b>Discover<span>Sharm</span></b><small>${esc(cfg.title)}</small></div><div class="row"><small id="who"></small><button class="btn ghost sm" id="out">خروج</button></div></header>
-    <nav class="tabs" id="tabs"></nav><main id="main"></main></div><div id="toast"></div>`;
+    <button class="btn" style="width:100%;padding:13px" id="lb">دخول</button></form></div></div>
+  <div id="app" class="hide"><aside class="side"><div class="brand"><span class="lg">DS</span><div><b>Discover<span>Sharm</span></b><small>${esc(cfg.title)}</small></div></div><nav id="nav"></nav>
+    <div class="sfoot"><span class="av" id="av"></span><div><b id="who"></b><small id="rl"></small></div><button id="out" title="خروج">${DS.ic('out')}</button></div></aside>
+    <div class="content"><header class="top"><button class="ib" id="burger">${DS.ic('menu')}</button><h1 id="ptitle"></h1><button class="ib" id="th"></button></header><main id="main"></main></div></div><div id="scrim"></div><div id="toast"></div>`;
+  theme(th);
+  $('#th').onclick = () => theme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
+  $('#burger').onclick = () => document.body.classList.add('nav-open'); $('#scrim').onclick = () => document.body.classList.remove('nav-open');
   $('#lf').onsubmit = async e => {
     e.preventDefault(); const b = $('#lb'); b.disabled = true; $('#lerr').classList.add('hide');
     try {
@@ -155,7 +203,7 @@ DS.start = (cfg) => {
     b.disabled = false;
   };
   $('#out').onclick = () => logout();
-  $('#tabs').onclick = e => { const b = e.target.closest('button'); if (b) show(+b.dataset.i); };
+  $('#nav').onclick = e => { const b = e.target.closest('button'); if (b) show(+b.dataset.i); };
   try { const s = JSON.parse(localStorage.getItem(sk()) || 'null'); if (s && tokenExp(s.t) > Date.now() + 60000) { TOKEN = s.t; enter(); } } catch {}
 };
 
@@ -244,17 +292,23 @@ DS.financeView = () => async (m) => {
 // ---------- owner panel factory (trips / hotels / transfers) ----------
 DS.ownerPanel = (c) => {
   const items = async () => (await DS.api('/items')).items;
-  DS.start({ key: c.key, title: c.title, api: c.api, views: (me) => [
-    { label: 'الرئيسية', render: async m => {
-      const [it, bk, fn] = await Promise.all([items(), DS.api('/bookings'), DS.api('/finance')]); const b = bk.bookings;
-      m.innerHTML = `<h2 class="pt">أهلاً ${esc(me.name || '')}</h2><div class="stats">
-        <div class="stat"><b>${it.length}${me.maxItems ? ' / ' + me.maxItems : ''}</b><span>${c.itemsLabel}</span></div>
-        <div class="stat"><b>${b.length}</b><span>كل الحجوزات</span></div>
-        <div class="stat"><b>${b.filter(x => !x.earning && x.status === 'completed').length}</b><span>مدفوعة وبانتظار تسجيل التنفيذ</span></div>
-        <div class="stat"><b>${DS.money(fn.summary.available)}</b><span>أرباح متاحة للصرف (EGP)</span></div></div>
-        <div class="card"><b>آخر الحجوزات</b>${DS.table([{ h: 'الحجز', f: x => esc(x.id) }, { h: 'العميل', f: x => esc(x.name || '') }, { h: 'على', f: x => esc(bItem(x)) }, { h: 'الإجمالي', f: x => DS.money(x.total) }, { h: 'الدفع', f: x => DS.badge(PAY, x.status) }], b.slice(0, 5))}</div>`;
+  DS.start({ key: c.key, title: c.title, roleLabel: c.roleLabel, api: c.api, views: (me) => [
+    { label: 'الرئيسية', icon: 'home', render: async m => {
+      const [it, bk, fn] = await Promise.all([items(), DS.api('/bookings'), DS.api('/finance')]); const b = bk.bookings, S = fn.summary;
+      const days = DS.daysBack(14), cnt = Object.fromEntries(days.map(d => [d, 0])); b.forEach(x => { const d = String(x.createdAt).slice(0, 10); if (d in cnt) cnt[d]++; });
+      const mon = {}; fn.earnings.forEach(e => { const k = String(e.serviceDate || e.at).slice(0, 7); mon[k] = (mon[k] || 0) + e.net; }); const mk = Object.keys(mon).sort().slice(-6);
+      const st = {}; b.forEach(x => st[x.status] = (st[x.status] || 0) + 1);
+      const wait = b.filter(x => !x.earning && x.status === 'completed').length;
+      m.innerHTML = DS.hero('أهلاً ' + esc(me.name || ''), new Date().toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }), `<button class="btn" data-go="${c.itemsLabel}">${DS.ic('plus')} ${c.addLabel}</button><button class="btn ghost" data-go="المحاسبة">${DS.ic('wallet')} المحاسبة</button>`) +
+        `<div class="stats">${DS.stat(it.length + (me.maxItems ? ' / ' + me.maxItems : ''), c.itemsLabel, { icon: 'box', tone: 'gold' })}${DS.stat(b.length, 'كل الحجوزات', { icon: 'cal' })}${DS.stat(wait, 'مدفوعة وبانتظار تسجيل التنفيذ', { icon: 'alert', tone: wait ? 'red' : 'green' })}${DS.stat(DS.money(S.available), 'أرباح متاحة للصرف (جنيه)', { icon: 'wallet', tone: 'green' })}${DS.stat(DS.money(S.earned), 'إجمالي أرباحك المسجّلة', { icon: 'trend', tone: 'purple' })}</div>
+        <div class="g2"><div class="card"><span class="ct">الحجوزات — آخر 14 يوم</span>${DS.area(days.map(d => d.slice(5).replace('-', '/')), days.map(d => cnt[d]), 'var(--blue)', 'o1')}</div>
+          <div class="card"><span class="ct">حالة الحجوزات</span>${DS.donut(Object.entries(st).map(([k, v]) => ({ l: DS.PAY[k] ? DS.PAY[k][0] : k, v, c: DS.STC[k] || '#999' })))}</div></div>
+        <div class="g2"><div class="card"><span class="ct">صافي أرباحك بالشهر (جنيه)</span>${mk.length ? DS.bars(mk, mk.map(k => Math.round(mon[k])), 'var(--green)') : '<div class="empty">الأرباح بتظهر بعد تسجيل تنفيذ الخدمات</div>'}</div>
+          <div class="card"><span class="ct">تنبيهات</span>${wait ? `<p>عندك <b>${wait}</b> حجز مدفوع بانتظار تسجيل التنفيذ — سجّله بعد ميعاد الخدمة عشان أرباحك تظهر.</p><button class="btn sm" style="margin-top:10px" data-go="الحجوزات">فتح الحجوزات</button>` : '<p class="muted">كل حاجة تمام ✔ مفيش حاجة معلّقة.</p>'}<p class="muted" style="margin-top:12px">نسبة عمولة المنصة عليك: <b>${fn.rate}%</b> (على السعر قبل الضرائب).</p></div></div>
+        <h2 class="pt">آخر الحجوزات</h2>` + DS.table([{ h: 'الحجز', f: x => `<b>${esc(x.id)}</b><div class="muted">${DS.dt(x.createdAt)}</div>` }, { h: 'العميل', f: x => esc(x.name || '') }, { h: 'على', f: x => esc(bItem(x)) }, { h: 'الإجمالي', f: x => DS.money(x.total) }, { h: 'الدفع', f: x => DS.badge(PAY, x.status) }], b.slice(0, 6), { empty: 'مفيش حجوزات لسه' });
+      m.onclick = e => { const g = e.target.closest('[data-go]'); if (g) DS.go(g.dataset.go); };
     } },
-    { label: c.itemsLabel, render: async m => {
+    { label: c.itemsLabel, icon: 'box', render: async m => {
       const list = await items(), full = me.maxItems && list.length >= me.maxItems;
       m.innerHTML = `<h2 class="pt">${c.itemsLabel} <span class="row"><span class="muted">${me.maxItems ? `الحد الأقصى ${me.maxItems}` : ''}</span><button class="btn" id="add" ${full ? 'disabled' : ''}>+ ${c.addLabel}</button></span></h2>` +
         DS.table([{ h: '', f: i => DS.thumb(i.image || (i.images || [])[0]) }, { h: 'الاسم', f: i => `<b>${esc(tr(c.title_of(i)))}</b><div class="muted">${esc(i.id)}</div>` }, { h: 'السعر', f: i => DS.money(i.price) + ' EGP' },
@@ -275,9 +329,9 @@ DS.ownerPanel = (c) => {
         if (de && confirm('تأكيد الحذف؟ الحجوزات القديمة هتفضل محفوظة.')) { await DS.api('/items/' + encodeURIComponent(de.dataset.d), { method: 'DELETE' }); DS.toast('اتحذف'); DS.reload(); }
       };
     } },
-    { label: 'الحجوزات', render: DS.bookingsView({}) },
-    { label: 'المحاسبة', render: DS.financeView() },
-    ...(me.hasReviews ? [{ label: 'التقييمات', render: async m => {
+    { label: 'الحجوزات', icon: 'cal', render: DS.bookingsView({}) },
+    { label: 'المحاسبة', icon: 'wallet', render: DS.financeView() },
+    ...(me.hasReviews ? [{ label: 'التقييمات', icon: 'star', render: async m => {
       const r = (await DS.api('/reviews')).reviews;
       m.innerHTML = '<h2 class="pt">التقييمات</h2>' + DS.table([{ h: 'العميل', f: x => esc(x.name) }, { h: 'التقييم', f: x => '★'.repeat(x.rating || 0) }, { h: 'التعليق', f: x => esc(x.comment) }, { h: 'التاريخ', f: x => DS.dt(x.createdAt) }], r, { empty: 'مفيش تقييمات لسه' });
     } }] : []),
