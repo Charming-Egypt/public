@@ -14,7 +14,7 @@
 <script>
 const I18 = (k, l, long) => ({ k, l, t: 'i18n', long });
 DS.ownerPanel({
-  key: 'trips', title: 'لوحة مكتب الرحلات', api: '/api/owner/trips', itemsLabel: 'رحلاتي', addLabel: 'إضافة رحلة', title_of: i => i.title,
+  key: 'trips', title: 'لوحة مكتب الرحلات', roleLabel: 'مكتب رحلات', api: '/api/owner/trips', itemsLabel: 'رحلاتي', addLabel: 'إضافة رحلة', title_of: i => i.title,
   schema: [
     I18('title', 'اسم الرحلة'),
     { k: 'category', l: 'الفئة', opts: ['Boat trip', 'Desert Safari', 'Diving', 'Snorkeling', 'Quad', 'City Tour'] },
