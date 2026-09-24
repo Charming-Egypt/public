@@ -13,10 +13,10 @@ const rname = (roles, id) => { const r = roles.find(x => x.uid === id); return r
 const roles = async () => (await api('/roles')).roles;
 
 // ---- create / promote account ----
-const ACC = [{ k: 'role', l: 'نوع الحساب', t: 'select', opts: ROLE_OPTS }, { k: 'name', l: 'الاسم' }, { k: 'email', l: 'الإيميل', h: 'لحساب جديد' }, { k: 'pw', l: 'كلمة مرور مبدئية (6+ حروف)', t: 'pass', h: 'لحساب جديد' }, { k: 'phone', l: 'التليفون' }, { k: 'uid', l: 'أو: uid لحساب موجود', h: 'لو العميل مسجّل قبل كده (من تبويب العملاء) سيب الإيميل والباسورد فاضيين' }];
+const ACC = [{ k: 'role', l: 'نوع الحساب', t: 'select', opts: ROLE_OPTS }, { k: 'name', l: 'الاسم' }, { k: 'email', l: 'الإيميل', h: 'لحساب جديد' }, { k: 'pw', l: 'كلمة مرور مبدئية (6+ حروف)', t: 'pass', h: 'لحساب جديد' }, { k: 'phone', l: 'التليفون' }, { k: 'commissionRate', l: 'نسبة عمولة خاصة % (فاضي = الافتراضي)', t: 'num' }, { k: 'uid', l: 'أو: uid لحساب موجود', h: 'لو العميل مسجّل قبل كده (من تبويب العملاء) سيب الإيميل والباسورد فاضيين' }];
 function accountModal(pre) {
   const f = form(ACC, pre || {});
-  modal({ title: 'إنشاء / ترقية حساب أونر', body: f, actions: [{ t: 'حفظ', fn: async () => { const v = collect(f, ACC); await api('/roles', { method: 'POST', body: { role: v.role, name: v.name, email: v.email, password: v.pw, phone: v.phone, uid: v.uid || undefined } }); toast('تم'); setTimeout(DS.reload, 100); } }] });
+  modal({ title: 'إنشاء / ترقية حساب أونر', body: f, actions: [{ t: 'حفظ', fn: async () => { const v = collect(f, ACC); await api('/roles', { method: 'POST', body: { role: v.role, name: v.name, email: v.email, password: v.pw, phone: v.phone, commissionRate: v.commissionRate, uid: v.uid || undefined } }); toast('تم'); setTimeout(DS.reload, 100); } }] });
 }
 
 DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', api: '/api/admin', views: [
@@ -33,6 +33,7 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', api: '/api/adm
     const list = (await roles());
     m.innerHTML = `<h2 class="pt">حسابات الأونرز <button class="btn" id="add">+ حساب جديد</button></h2>` + table([
       { h: 'الاسم', f: r => `<b>${esc(r.name || '—')}</b><div class="muted">${esc(r.email || '')}</div>` }, { h: 'النوع', f: r => ROLE_L[r.role] || r.role },
+      { h: 'العمولة', f: r => r.commissionRate != null ? r.commissionRate + '%' : '<span class="muted">افتراضي</span>' }, { h: 'حساب الاستلام', f: r => r.hasPayout ? DS.METHOD[r.payoutMethod] : '<span class="muted">—</span>' },
       { h: 'الحالة', f: r => r.status === 'suspended' ? '<span class="badge b-red">موقوف</span>' : '<span class="badge b-green">نشط</span>' },
       { h: 'العناصر', f: r => Object.entries(r.itemCounts || {}).map(([t, n]) => (TYPES[t] || t) + ': ' + n).join('<br>') || '—' },
       { h: '', f: r => `<button class="btn ghost sm" data-a="edit" data-u="${r.uid}">تعديل</button> <button class="btn ghost sm" data-a="tog" data-u="${r.uid}">${r.status === 'suspended' ? 'تفعيل' : 'إيقاف'}</button> <button class="btn ghost sm" data-a="pw" data-u="${r.uid}">باسورد</button> <button class="btn ghost sm" data-a="del" data-u="${r.uid}">حذف</button>` }],
@@ -44,8 +45,8 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', api: '/api/adm
         if (a === 'tog') { await api('/roles/' + r.uid, { method: 'PUT', body: { status: r.status === 'suspended' ? 'active' : 'suspended' } }); DS.reload(); }
         if (a === 'pw') { if (confirm('نبعت إيميل إعادة تعيين الباسورد لـ ' + r.email + '؟')) { await api('/roles/' + r.uid + '/reset-password', { method: 'POST', body: {} }); toast('اتبعت'); } }
         if (a === 'del') { if (confirm('إزالة صلاحيات الحساب؟ (الحساب نفسه هيفضل كعميل عادي، وعناصره هتفضل مسجلة باسمه)')) { await api('/roles/' + r.uid, { method: 'DELETE' }); DS.reload(); } }
-        if (a === 'edit') { const S = [{ k: 'name', l: 'الاسم' }, { k: 'phone', l: 'التليفون' }, { k: 'role', l: 'النوع', t: 'select', opts: ROLE_OPTS }], f = form(S, r);
-          modal({ title: 'تعديل ' + (r.name || ''), body: f, actions: [{ t: 'حفظ', fn: async () => { await api('/roles/' + r.uid, { method: 'PUT', body: collect(f, S) }); DS.reload(); } }] }); }
+        if (a === 'edit') { const S = [{ k: 'name', l: 'الاسم' }, { k: 'phone', l: 'التليفون' }, { k: 'role', l: 'النوع', t: 'select', opts: ROLE_OPTS }, { k: 'commissionRate', l: 'نسبة عمولة خاصة % (فاضي = الافتراضي)', t: 'num' }], f = form(S, r);
+          modal({ title: 'تعديل ' + (r.name || ''), body: f, actions: [{ t: 'حفظ', fn: async () => { const v = collect(f, S); if (!('commissionRate' in v)) v.commissionRate = null; await api('/roles/' + r.uid, { method: 'PUT', body: v }); DS.reload(); } }] }); }
       } catch (er) { toast(er.message, true); }
     };
   } },
@@ -97,6 +98,75 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', api: '/api/adm
   } },
   // ================= bookings =================
   { label: 'الحجوزات', render: async m => DS.bookingsView({ admin: true, roles: await roles() })(m) },
+  // ================= accounting =================
+  { label: 'المحاسبة', render: async m => {
+    let tab = 'report', rs = (await roles()).filter(r => r.role !== 'super_admin'), q = { from: '', to: '', basis: 'booked', type: '', owner: '' }, sel = '';
+    const PS = { requested: ['قيد المراجعة', 'amber'], paid: ['اتحوّل', 'green'], rejected: ['مرفوض', 'red'], cancelled: ['ملغي', 'gray'] };
+    const rawName = id => { const r = rs.find(x => x.uid === id); return r ? (r.name || r.email) : ''; };
+    const oname = id => { const r = rs.find(x => x.uid === id); return r ? esc(r.name || r.email) : '—'; };
+    const ownerSel = (id, cur, all) => `<select id="${id}">${all ? '<option value="">كل الأونرز</option>' : '<option value="">— اختار أونر —</option>'}${rs.map(r => `<option value="${r.uid}" ${r.uid === cur ? 'selected' : ''}>${esc(r.name || r.email)} (${ROLE_L[r.role]})</option>`).join('')}</select>`;
+    const V = {
+      // ---- reports ----
+      report: async box => {
+        const qs = Object.entries(q).filter(([, v]) => v).map(([k, v]) => k + '=' + encodeURIComponent(v)).join('&'), d = await api('/finance/report?' + qs), t = d.totals;
+        box.innerHTML = `<div class="card"><div class="row"><label class="muted">من</label><input type="date" id="qf" value="${q.from}" style="max-width:150px"><label class="muted">إلى</label><input type="date" id="qt" value="${q.to}" style="max-width:150px">
+          <select id="qb" style="max-width:190px"><option value="booked" ${q.basis === 'booked' ? 'selected' : ''}>بتاريخ الحجز (المبيعات)</option><option value="realized" ${q.basis === 'realized' ? 'selected' : ''}>بتاريخ التنفيذ (المحقق)</option></select>
+          <select id="qy" style="max-width:130px"><option value="">كل الأنواع</option><option value="hotel" ${q.type === 'hotel' ? 'selected' : ''}>فنادق</option><option value="excursion" ${q.type === 'excursion' ? 'selected' : ''}>رحلات</option><option value="transfer" ${q.type === 'transfer' ? 'selected' : ''}>ترانسفير</option></select>${ownerSel('qo', q.owner, true)}<button class="btn" id="qg">تحديث</button></div></div>
+          <div class="stats">${DS.stat(money(t.gross), 'مبيعات مدفوعة (قبل الضرائب)')}${DS.stat(money(t.taxes), 'ضرائب/رسوم محصّلة (للمنصة)')}${DS.stat(money(t.commissionRealized), 'عمولتك المحققة (خدمات اتنفّذت)')}${DS.stat(money(t.commissionPending), 'عمولة معلّقة (لسه الخدمة ماتمتش)')}${DS.stat(money(t.netRealized), 'صافي الأونرز المحقق')}${DS.stat(money(t.owed), 'مستحق للأونرز دلوقتي')}${DS.stat(money(t.paidOut), 'اتحوّل للأونرز')}${DS.stat(money(t.pendingPayouts), 'طلبات صرف مفتوحة')}${t.unowned ? DS.stat(money(t.unowned), 'مبيعات بدون أونر') : ''}</div>
+          <h2 class="pt">حسب الأونر <button class="btn ghost sm" id="c1">CSV</button></h2>` + table([{ h: 'الأونر', f: o => `<b>${esc(o.name)}</b><div class="muted">${ROLE_L[o.role]}</div>` }, { h: 'حجوزات', f: o => o.bookings }, { h: 'مبيعات', f: o => money(o.gross) }, { h: 'عمولة محققة', f: o => money(o.commissionRealized) }, { h: 'عمولة معلّقة', f: o => money(o.commissionPending) }, { h: 'صافي محقق', f: o => money(o.netRealized) }, { h: 'رصيده المتاح', f: o => `<b>${money(o.balance.available)}</b>` }, { h: 'اتحوّل له', f: o => money(o.balance.paid) }], d.owners) +
+          `<h2 class="pt" style="margin-top:16px">تفاصيل الحجوزات ${d.truncated ? '<span class="muted">(أول 1500)</span>' : ''} <button class="btn ghost sm" id="c2">CSV</button></h2>` + table([{ h: 'الحجز', f: r => esc(r.id) }, { h: 'الأونر', f: r => oname(r.ownerUid) }, { h: 'العنصر', f: r => esc(r.item) }, { h: 'الحجز', f: r => dt(r.createdAt) }, { h: 'الخدمة', f: r => esc(r.serviceDate) }, { h: 'المبلغ', f: r => money(r.gross) }, { h: '%', f: r => r.rate ?? '' }, { h: 'العمولة', f: r => r.commission == null ? '' : money(r.commission) }, { h: 'الحالة', f: r => r.realized ? '<span class="badge b-green">محقق</span>' : '<span class="badge b-amber">معلّق</span>' }], d.rows.slice(0, 200));
+        box.querySelector('#qg').onclick = () => { q = { from: box.querySelector('#qf').value, to: box.querySelector('#qt').value, basis: box.querySelector('#qb').value, type: box.querySelector('#qy').value, owner: box.querySelector('#qo').value }; draw(); };
+        box.querySelector('#c1').onclick = () => DS.csv('owners-report.csv', ['الأونر', 'النوع', 'حجوزات', 'مبيعات', 'عمولة محققة', 'عمولة معلقة', 'صافي محقق', 'رصيد متاح', 'اتحوّل'], d.owners.map(o => [o.name, ROLE_L[o.role], o.bookings, o.gross, o.commissionRealized, o.commissionPending, o.netRealized, o.balance.available, o.balance.paid]));
+        box.querySelector('#c2').onclick = () => DS.csv('bookings-report.csv', ['الحجز', 'النوع', 'الأونر', 'العنصر', 'العميل', 'تاريخ الحجز', 'تاريخ الخدمة', 'المبلغ', 'نسبة العمولة', 'العمولة', 'صافي الأونر', 'الحالة'], d.rows.map(r => [r.id, r.type, rawName(r.ownerUid), r.item, r.customer, r.createdAt, r.serviceDate, r.gross, r.rate, r.commission, r.net, r.realized ? 'محقق' : 'معلّق']));
+      },
+      // ---- payout requests ----
+      payouts: async box => {
+        const st = V._st ?? 'requested', d = (await api('/finance/payouts' + (st ? '?status=' + st : ''))).payouts;
+        box.innerHTML = `<div class="row" style="justify-content:space-between"><div class="chips">${['requested', 'paid', 'rejected', ''].map(k => `<span class="chip ${k === st ? 'on' : ''}" data-s="${k}">${k ? PS[k][0] : 'الكل'}</span>`).join('')}</div><button class="btn" id="mp">+ تسجيل صرف يدوي</button></div>` +
+          table([{ h: 'الرقم', f: p => `<b>${esc(p.id)}</b><div class="muted">${dt(p.requestedAt)}</div>` }, { h: 'الأونر', f: p => oname(p.ownerUid) }, { h: 'المبلغ', f: p => `<b>${money(p.amount)}</b>` }, { h: 'التحويل على', f: p => `${DS.METHOD[p.method] || ''}<div class="muted" dir="auto">${esc(DS.acctText(p.account))}</div>` }, { h: 'الحالة', f: p => DS.badge(PS, p.status) + (p.reference ? `<div class="muted">${esc(p.reference)}</div>` : '') },
+            { h: '', f: p => p.status === 'requested' ? `<button class="btn sm" data-a="paid" data-i="${p.id}">تم التحويل</button> <button class="btn ghost sm" data-a="rej" data-i="${p.id}">رفض</button>` : '' }], d, { empty: 'مفيش طلبات' });
+        box.onclick = async e => {
+          const c = e.target.closest('[data-s]'); if (c) { V._st = c.dataset.s; return draw(); }
+          const b = e.target.closest('[data-a]'); if (!b) return;
+          try {
+            if (b.dataset.a === 'paid') { const ref = prompt('رقم العملية / مرجع التحويل (إنستا باي أو بنك):'); if (!ref) return; await api('/finance/payouts/' + b.dataset.i, { method: 'PUT', body: { status: 'paid', reference: ref } }); }
+            if (b.dataset.a === 'rej') { const why = prompt('سبب الرفض (هيظهر للأونر):'); if (!why) return; await api('/finance/payouts/' + b.dataset.i, { method: 'PUT', body: { status: 'rejected', note: why } }); }
+            draw();
+          } catch (er) { toast(er.message, true); }
+        };
+        box.querySelector('#mp').onclick = () => { const S = [{ k: 'ownerUid', l: 'الأونر', t: 'select', opts: rs.map(r => [r.uid, r.name || r.email]) }, { k: 'amount', l: 'المبلغ', t: 'num' }, { k: 'method', l: 'الطريقة', t: 'select', opts: [['instapay', 'إنستا باي'], ['bank', 'تحويل بنكي']] }, { k: 'reference', l: 'رقم العملية / المرجع' }, { k: 'note', l: 'ملاحظة' }], f = form(S, {});
+          modal({ title: 'تسجيل صرف اتعمل بالفعل', body: f, actions: [{ t: 'حفظ', fn: async () => { await api('/finance/payouts', { method: 'POST', body: collect(f, S) }); toast('اتسجّل'); draw(); } }] }); };
+      },
+      // ---- owner statement ----
+      owner: async box => {
+        box.innerHTML = `<div class="card">${ownerSel('so', sel, false)}</div><div id="st"></div>`;
+        box.querySelector('#so').onchange = e => { sel = e.target.value; draw(); };
+        if (!sel) return;
+        const d = await api('/finance/owner/' + sel), S = d.summary, st = box.querySelector('#st');
+        st.innerHTML = `<div class="stats">${DS.stat(money(S.available), 'رصيد متاح')}${DS.stat(money(S.earned), 'أرباح مسجّلة')}${DS.stat(money(S.commission), 'عمولتك من الأونر ده')}${DS.stat(money(S.paid), 'اتحوّل')}${DS.stat(money(S.pending), 'قيد الصرف')}${DS.stat(money(S.adjustments), 'تسويات')}</div>
+          <div class="card"><b>حساب الاستلام:</b> <span class="muted">${d.account ? DS.METHOD[d.account.method] + ' — ' + esc(DS.acctText(d.account)) : 'لسه ماضافش حساب'}</span> &nbsp; <span class="muted">عمولته: ${d.rate}%</span> <button class="btn ghost sm" id="ad" style="float:left">+ تسوية</button></div>
+          <h2 class="pt">الأرباح المسجّلة</h2>` + table([{ h: 'الحجز', f: e => esc(e.id) }, { h: 'العنصر', f: e => esc(e.item) }, { h: 'الخدمة', f: e => esc(e.serviceDate) }, { h: 'المبلغ', f: e => money(e.gross) }, { h: 'العمولة', f: e => `${money(e.commission)} (${e.rate}%)` }, { h: 'الصافي', f: e => money(e.net) }], d.earnings) +
+          `<h2 class="pt" style="margin-top:14px">الصرف والتسويات</h2>` + table([{ h: 'التاريخ', f: p => dt(p.paidAt || p.requestedAt) }, { h: 'المبلغ', f: p => money(p.amount) }, { h: 'الحالة', f: p => DS.badge(PS, p.status) }, { h: 'مرجع', f: p => esc(p.reference || p.note || '') }], d.payouts) +
+          (d.adjustments.length ? table([{ h: 'التسوية', f: x => dt(x.createdAt) }, { h: 'المبلغ', f: x => money(x.amount) }, { h: 'السبب', f: x => esc(x.reason) }], d.adjustments) : '');
+        st.querySelector('#ad').onclick = () => { const S2 = [{ k: 'amount', l: 'المبلغ (موجب = ليه، سالب = عليه)', t: 'num' }, { k: 'reason', l: 'السبب' }], f = form(S2, {});
+          f.querySelector('input').removeAttribute('min');
+          modal({ title: 'تسوية يدوية', body: f, actions: [{ t: 'حفظ', fn: async () => { const v = collect(f, S2); await api('/finance/adjustments', { method: 'POST', body: { ownerUid: sel, amount: v.amount, reason: v.reason } }); toast('اتسجّلت'); draw(); } }] }); };
+      },
+      // ---- settings ----
+      settings: async box => {
+        const d = await api('/finance/settings'), S = [{ k: 'hotel', l: 'عمولة الفنادق %', t: 'num' }, { k: 'excursion', l: 'عمولة الرحلات %', t: 'num' }, { k: 'transfer', l: 'عمولة الترانسفير %', t: 'num' }, { k: 'minPayout', l: 'أقل مبلغ للصرف (جنيه)', t: 'num' }], f = form(S, { ...d.settings.rates, minPayout: d.settings.minPayout });
+        box.innerHTML = '<div class="card"><b>النسب الافتراضية</b><p class="muted" style="margin:6px 0 12px">بتتطبق وقت تسجيل تنفيذ الخدمة. تغييرها مبيأثرش على أرباح اتسجّلت قبل كده. لأونر معيّن: من تبويب الأونرز ← تعديل ← نسبة عمولة خاصة.</p></div>';
+        box.firstChild.appendChild(f); const b = document.createElement('button'); b.className = 'btn'; b.textContent = 'حفظ'; box.firstChild.appendChild(b);
+        b.onclick = async () => { const v = collect(f, S); try { await api('/finance/settings', { method: 'PUT', body: { rates: { hotel: v.hotel, excursion: v.excursion, transfer: v.transfer }, minPayout: v.minPayout } }); toast('اتحفظ'); } catch (e) { toast(e.message, true); } };
+      },
+    };
+    const draw = async () => {
+      m.innerHTML = `<h2 class="pt">المحاسبة</h2><div class="chips" id="tb">${[['report', 'التقارير'], ['payouts', 'طلبات الصرف'], ['owner', 'كشف حساب أونر'], ['settings', 'العمولات']].map(([k, l]) => `<span class="chip ${k === tab ? 'on' : ''}" data-t="${k}">${l}</span>`).join('')}</div><div id="fb"><div class="empty">جاري التحميل…</div></div>`;
+      m.querySelector('#tb').onclick = e => { const c = e.target.closest('[data-t]'); if (c) { tab = c.dataset.t; draw(); } };
+      try { await V[tab](m.querySelector('#fb')); } catch (e) { m.querySelector('#fb').innerHTML = `<div class="err">${esc(e.message)}</div>`; }
+    };
+    await draw();
+  } },
   // ================= partner applications =================
   { label: 'طلبات الشركاء', render: async m => {
     const list = (await api('/applications')).applications, R = { Hotel: 'hotels_owner', 'Trip Supplier': 'trips_owner', Transfer: 'transfers_owner' };
