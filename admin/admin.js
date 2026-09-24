@@ -5,9 +5,6 @@ const ROLE_L = { super_admin: 'سوبر أدمن', trips_owner: 'مكتب رحل
 const ROLE_OPTS = Object.entries(ROLE_L).filter(([k]) => k !== 'super_admin');
 const TYPES = { hotel: 'الفنادق', excursion: 'الرحلات', transfer: 'الترانسفير', destination: 'الوجهات', restaurant: 'المطاعم', article: 'المقالات', review: 'تقييمات الموقع' };
 const OWNER_ROLE = { hotel: 'hotels_owner', excursion: 'trips_owner', transfer: 'transfers_owner' };
-const TEMPLATE = { hotel: { name: { ar: '', en: '' }, category: 'budget', price: 0, rating: 0, reviews: 0, location: { ar: '', en: '' }, image: '', images: [], description: { ar: '', en: '' }, amenities: { ar: [], en: [] }, rooms: [], unavailableDates: [] },
-  excursion: { title: { ar: '', en: '' }, category: '', price: 0, rating: 0, reviews: 0, duration: { ar: '', en: '' }, image: '', images: [], description: { ar: '', en: '' }, itinerary: [] },
-  transfer: { vehicleType: { ar: '', en: '' }, capacity: 4, price: 0, image: '', description: { ar: '', en: '' }, features: { ar: [], en: [] } } };
 const nameOf = i => tr(i.name || i.title || i.vehicleType || i.itemName) || i.id;
 const rname = (roles, id) => { const r = roles.find(x => x.uid === id); return r ? esc(r.name || r.email) : (id ? '<span class="muted">' + esc(id.slice(0, 8)) + '…</span>' : '<span class="muted">—</span>'); };
 const roles = async () => (await api('/roles')).roles;
@@ -73,30 +70,33 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', roleLabel: 'س
     };
     await load();
   } },
-  // ================= content =================
+  // ================= content (visual editor — no JSON editing) =================
   { label: 'المحتوى', icon: 'layers', render: async m => {
-    let type = 'hotel', rs = await roles();
+    let type = 'hotel', q = '', rs = await roles();
     const draw = async () => {
-      const d = await api('/items/' + type), owned = !!OWNER_ROLE[type], items = d.items;
-      m.innerHTML = `<h2 class="pt">المحتوى <button class="btn" id="add">+ إضافة</button></h2><div class="chips">${Object.entries(TYPES).map(([k, v]) => `<span class="chip ${k === type ? 'on' : ''}" data-t="${k}">${v}</span>`).join('')}</div>` +
-        table([{ h: '', f: i => thumb(i.image) }, { h: 'الاسم', f: i => `<b>${esc(nameOf(i))}</b><div class="muted">${esc(i.id)}</div>` }, ...(owned ? [{ h: 'المالك', f: i => rname(rs, i.owner) }] : []), { h: 'السعر', f: i => i.price != null ? money(i.price) : '' },
-          { h: '', f: i => `<button class="btn ghost sm" data-e="${esc(i.id)}">تعديل</button> <button class="btn ghost sm" data-d="${esc(i.id)}">حذف</button>` }], items);
+      const d = await api('/items/' + type), owned = !!OWNER_ROLE[type], schema = DS.SCH_ADMIN[type], items = d.items;
+      const list = items.filter(i => !q || (nameOf(i) + ' ' + i.id).toLowerCase().includes(q.toLowerCase()));
+      m.innerHTML = `<h2 class="pt">المحتوى <span class="muted">${items.length}</span></h2><div class="chips">${Object.entries(TYPES).map(([k, v]) => `<span class="chip ${k === type ? 'on' : ''}" data-t="${k}">${v}</span>`).join('')}</div>
+        <div class="tools"><input type="search" id="qs" placeholder="بحث بالاسم..." value="${esc(q)}"><button class="btn" id="add">${DS.ic('plus')} إضافة</button></div>` +
+        (list.length ? `<div class="igrid">${list.map(i => { const cv = DS.safeSrc(i.image || (i.images || [])[0]); return `<div class="ic"><div class="cv">${cv ? `<img src="${esc(cv)}" loading="lazy" alt="">` : DS.ic('layers')}${owned ? `<span class="badge ${i.owner ? 'b-blue' : 'b-gray'}">${i.owner ? rname(rs, i.owner) : 'بدون مالك'}</span>` : ''}</div>
+          <div class="bd"><b>${esc(nameOf(i))}</b><span class="muted">${esc(i.id)}${i.price != null ? ' · ' + money(i.price) + ' EGP' : ''}${i.rating ? ' · ★ ' + Number(i.rating).toFixed(1) : ''}</span></div>
+          <div class="ft"><button class="btn ghost sm" data-e="${esc(i.id)}">تعديل</button><button class="btn ghost sm" data-d="${esc(i.id)}">حذف</button></div></div>`; }).join('')}</div>` : '<div class="empty">مفيش عناصر</div>');
       const edit = (it) => {
-        const b = document.createElement('div');
-        const owners = rs.filter(r => r.role === OWNER_ROLE[type]);
-        b.innerHTML = (owned ? `<div class="fld"><label>المالك</label><select id="ow"><option value="">— بدون —</option>${owners.map(r => `<option value="${r.uid}" ${it && it.owner === r.uid ? 'selected' : ''}>${esc(r.name || r.email)}</option>`).join('')}</select></div>` + (type === 'hotel' ? '<div class="fld"><label><input type="checkbox" id="fc" style="width:auto"> تجاوز حد الفندقين للأونر ده</label></div>' : '') : '') +
-          `<div class="fld"><label>البيانات (JSON)</label><textarea id="js" dir="ltr" style="min-height:300px;font-family:monospace;font-size:12px"></textarea></div>`;
-        b.querySelector('#js').value = JSON.stringify(it || TEMPLATE[type] || { id: '' }, null, 2);
-        modal({ title: it ? 'تعديل ' + nameOf(it) : 'إضافة', body: b, actions: [{ t: 'حفظ', fn: async () => {
-          let o; try { o = JSON.parse(b.querySelector('#js').value); } catch (e) { throw new Error('JSON غلط: ' + e.message); }
+        const b = document.createElement('div'), owners = rs.filter(r => r.role === OWNER_ROLE[type]), f = DS.form(schema, it || {});
+        b.innerHTML = owned ? `<div class="card" style="background:var(--soft)"><div class="fld"><label>المالك (الأونر المسؤول عن العنصر)</label><select id="ow"><option value="">— بدون —</option>${owners.map(r => `<option value="${r.uid}" ${it && it.owner === r.uid ? 'selected' : ''}>${esc(r.name || r.email)}</option>`).join('')}</select></div>` + (type === 'hotel' ? '<label class="sw"><input type="checkbox" id="fc"><span>تجاوز حد الفندقين لهذا الأونر</span></label>' : '') + '</div>' : '';
+        b.appendChild(f);
+        modal({ title: it ? 'تعديل: ' + nameOf(it) : 'إضافة جديد', body: b, wide: true, actions: [{ t: 'حفظ', fn: async () => {
+          const o = { ...(it || {}), ...collect(f, schema) };
+          if (!nameOf(o) || nameOf(o) === o.id) throw new Error('اكتب الاسم الأول');
           if (owned) { const ow = b.querySelector('#ow').value; if (ow) o.owner = ow; else delete o.owner; }
           const force = b.querySelector('#fc') && b.querySelector('#fc').checked ? '?force=1' : '';
           await api('/items/' + type + (it ? '/' + encodeURIComponent(it.id) : '') + force, { method: it ? 'PUT' : 'POST', body: o }); toast('اتحفظ'); setTimeout(draw, 100);
         } }] });
       };
       m.querySelector('#add').onclick = () => edit(null);
+      m.querySelector('#qs').oninput = e => { q = e.target.value; const p = e.target.selectionStart; draw().then(() => { const i = m.querySelector('#qs'); i.focus(); i.setSelectionRange(p, p); }); };
       m.onclick = async e => {
-        const c = e.target.closest('[data-t]'); if (c) { type = c.dataset.t; return draw(); }
+        const c = e.target.closest('[data-t]'); if (c) { type = c.dataset.t; q = ''; return draw(); }
         const ed = e.target.closest('[data-e]'), de = e.target.closest('[data-d]');
         if (ed) edit(items.find(i => i.id === ed.dataset.e));
         if (de && confirm('حذف نهائي؟')) { try { await api('/items/' + type + '/' + encodeURIComponent(de.dataset.d), { method: 'DELETE' }); draw(); } catch (er) { toast(er.message, true); } }
@@ -202,12 +202,8 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', roleLabel: 'س
         { t: 'مسح', cls: 'red', fn: async () => { await api('/messages/' + x.id, { method: 'DELETE' }); DS.reload(); } }] });
     };
   } },
-  // ================= reviews moderation =================
-  { label: 'التقييمات', icon: 'star', render: async m => {
-    const list = (await api('/reviews')).reviews;
-    m.innerHTML = '<h2 class="pt">مراجعة التقييمات</h2>' + table([{ h: 'على', f: r => `${esc(r.type)}<div class="muted">${esc(r.itemId)}</div>` }, { h: 'العميل', f: r => esc(r.name) }, { h: '★', f: r => r.rating }, { h: 'التعليق', f: r => esc(String(r.comment).slice(0, 120)) }, { h: '', f: r => `<button class="btn ghost sm" data-i="${esc(r.type + '/' + r.itemId + '/' + r.id)}">مسح</button>` }], list, { empty: 'مفيش تقييمات' });
-    m.onclick = async e => { const b = e.target.closest('[data-i]'); if (b && confirm('مسح التقييم؟')) { await api('/reviews/' + b.dataset.i, { method: 'DELETE' }); DS.reload(); } };
-  } },
+  // ================= reviews (site-style cards + replies) =================
+  { label: 'التقييمات', icon: 'star', render: DS.reviewsView({ admin: true }) },
   // ================= raw files =================
   { label: 'الملفات', icon: 'code', render: async m => {
     const files = (await api('/files')).files; let cur = files[0];
