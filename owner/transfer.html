@@ -14,7 +14,7 @@
 <script>
 const I18 = (k, l, long) => ({ k, l, t: 'i18n', long });
 DS.ownerPanel({
-  key: 'transfers', title: 'لوحة الترانسفير', api: '/api/owner/transfers', itemsLabel: 'سياراتي', addLabel: 'إضافة سيارة', title_of: i => i.vehicleType,
+  key: 'transfers', title: 'لوحة الترانسفير', roleLabel: 'ترانسفير', api: '/api/owner/transfers', itemsLabel: 'سياراتي', addLabel: 'إضافة سيارة', title_of: i => i.vehicleType,
   schema: [
     I18('vehicleType', 'نوع السيارة'),
     { k: 'capacity', l: 'عدد الركاب', t: 'num' },
