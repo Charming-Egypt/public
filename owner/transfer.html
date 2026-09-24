@@ -11,19 +11,9 @@
 </head>
 <body>
 <script src="../console/console.js"></script>
+<script src="../console/schemas.js"></script>
 <script>
-const I18 = (k, l, long) => ({ k, l, t: 'i18n', long });
-DS.ownerPanel({
-  key: 'transfers', title: 'لوحة الترانسفير', roleLabel: 'ترانسفير', api: '/api/owner/transfers', itemsLabel: 'سياراتي', addLabel: 'إضافة سيارة', title_of: i => i.vehicleType,
-  schema: [
-    I18('vehicleType', 'نوع السيارة'),
-    { k: 'capacity', l: 'عدد الركاب', t: 'num' },
-    { k: 'price', l: 'السعر (EGP)', t: 'num' },
-    { k: 'image', l: 'الصورة (رابط)', t: 'url' },
-    I18('description', 'الوصف', true),
-    { k: 'features', l: 'المميزات', t: 'i18nlist' },
-  ],
-});
+DS.ownerPanel({ key: 'transfers', title: 'لوحة الترانسفير', roleLabel: 'ترانسفير', api: '/api/owner/transfers', itemsLabel: 'سياراتي', addLabel: 'إضافة سيارة', title_of: i => i.vehicleType, schema: DS.SCH.transfer });
 </script>
 </body>
 </html>

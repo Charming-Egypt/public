@@ -11,29 +11,9 @@
 </head>
 <body>
 <script src="../console/console.js"></script>
+<script src="../console/schemas.js"></script>
 <script>
-const I18 = (k, l, long) => ({ k, l, t: 'i18n', long });
-DS.ownerPanel({
-  key: 'hotels', title: 'لوحة مالك الفنادق', roleLabel: 'مالك فنادق', api: '/api/owner/hotels', itemsLabel: 'فنادقي', addLabel: 'إضافة فندق', title_of: i => i.name,
-  schema: [
-    I18('name', 'اسم الفندق'),
-    { k: 'category', l: 'الفئة', opts: ['budget', 'luxury'] },
-    { k: 'price', l: 'أقل سعر في الليلة (EGP)', t: 'num' },
-    I18('location', 'العنوان'),
-    { k: 'image', l: 'الصورة الرئيسية (رابط)', t: 'url' },
-    { k: 'images', l: 'صور إضافية', t: 'urls' },
-    I18('description', 'وصف قصير', true),
-    I18('fullDescription', 'الوصف الكامل', true),
-    { k: 'amenities', l: 'المرافق', t: 'i18nlist' },
-    { k: 'unavailableDates', l: 'أيام مقفولة (مفيش حجز)', t: 'dates' },
-    { k: 'rooms', l: 'الغرف', t: 'list', add: 'غرفة', sub: [
-      I18('type', 'نوع الغرفة'), { k: 'price', l: 'السعر/ليلة', t: 'num' }, { k: 'size', l: 'المساحة (35m²)' }, I18('beds', 'الأسرّة'),
-      { k: 'guests', l: 'أقصى عدد ضيوف', t: 'num' }, { k: 'baseOccupancy', l: 'الإشغال الأساسي', t: 'num' },
-      { k: 'extraAdultFee', l: 'رسوم بالغ إضافي', t: 'num' }, { k: 'freeChildrenPerRoom', l: 'أطفال مجانًا/غرفة', t: 'num' },
-      { k: 'extraChildFee', l: 'رسوم طفل إضافي', t: 'num' }, { k: 'image', l: 'صورة الغرفة (رابط)', t: 'url' }, I18('description', 'وصف الغرفة', true),
-      { k: 'childPricingTiers', l: 'رسوم الأطفال حسب السن (للّيلة) — اختياري', t: 'list', add: 'شريحة سن', sub: [{ k: 'minAge', l: 'من سن', t: 'num' }, { k: 'maxAge', l: 'إلى سن', t: 'num' }, { k: 'fee', l: 'الرسوم/ليلة', t: 'num' }] }] },
-  ],
-});
+DS.ownerPanel({ key: 'hotels', title: 'لوحة مالك الفنادق', roleLabel: 'مالك فنادق', api: '/api/owner/hotels', itemsLabel: 'فنادقي', addLabel: 'إضافة فندق', title_of: i => i.name, schema: DS.SCH.hotel });
 </script>
 </body>
 </html>

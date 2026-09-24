@@ -11,26 +11,9 @@
 </head>
 <body>
 <script src="../console/console.js"></script>
+<script src="../console/schemas.js"></script>
 <script>
-const I18 = (k, l, long) => ({ k, l, t: 'i18n', long });
-DS.ownerPanel({
-  key: 'trips', title: 'لوحة مكتب الرحلات', roleLabel: 'مكتب رحلات', api: '/api/owner/trips', itemsLabel: 'رحلاتي', addLabel: 'إضافة رحلة', title_of: i => i.title,
-  schema: [
-    I18('title', 'اسم الرحلة'),
-    { k: 'category', l: 'الفئة', opts: ['Boat trip', 'Desert Safari', 'Diving', 'Snorkeling', 'Quad', 'City Tour'] },
-    { k: 'price', l: 'السعر للفرد (EGP)', t: 'num' },
-    I18('duration', 'المدة (مثال: يوم كامل 8 ساعات)'),
-    { k: 'image', l: 'الصورة الرئيسية (رابط)', t: 'url' },
-    { k: 'images', l: 'صور إضافية', t: 'urls' },
-    I18('description', 'وصف قصير', true),
-    I18('fullDescription', 'الوصف الكامل', true),
-    I18('meetingPoint', 'نقطة التجمّع'),
-    { k: 'includes', l: 'السعر يشمل', t: 'i18nlist' },
-    { k: 'excludes', l: 'السعر لا يشمل', t: 'i18nlist' },
-    { k: 'whatToBring', l: 'المطلوب إحضاره', t: 'i18nlist' },
-    { k: 'itinerary', l: 'برنامج الرحلة', t: 'list', add: 'خطوة', sub: [{ k: 'time', l: 'الوقت (07:30)' }, I18('title', 'العنوان'), I18('description', 'الوصف', true)] },
-  ],
-});
+DS.ownerPanel({ key: 'trips', title: 'لوحة مكتب الرحلات', roleLabel: 'مكتب رحلات', api: '/api/owner/trips', itemsLabel: 'رحلاتي', addLabel: 'إضافة رحلة', title_of: i => i.title, schema: DS.SCH.excursion });
 </script>
 </body>
 </html>
