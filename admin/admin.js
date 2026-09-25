@@ -220,7 +220,8 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', roleLabel: 'س
   // ================= audit + maintenance =================
   { label: 'السجل', icon: 'list', render: async m => {
     const l = (await api('/audit?limit=150')).log;
-    m.innerHTML = `<h2 class="pt">سجل العمليات <button class="btn ghost" id="ri">مزامنة ملكية الحجوزات</button></h2>` + table([{ h: 'الوقت', f: x => dt(x.ts) }, { h: 'العملية', f: x => esc(x.action) }, { h: 'الهدف', f: x => esc(x.target || '') }, { h: 'المنفّذ', f: x => `<span class="muted">${esc((x.role || '') + ' ' + String(x.uid).slice(0, 8))}</span>` }], l);
+    m.innerHTML = `<h2 class="pt">سجل العمليات <span class="row"><button class="btn ghost" id="pp">تنظيف جلسات الدفع المنتهية</button><button class="btn ghost" id="ri">مزامنة ملكية الحجوزات</button></span></h2>` + table([{ h: 'الوقت', f: x => dt(x.ts) }, { h: 'العملية', f: x => esc(x.action) }, { h: 'الهدف', f: x => esc(x.target || '') }, { h: 'المنفّذ', f: x => `<span class="muted">${esc((x.role || '') + ' ' + String(x.uid).slice(0, 8))}</span>` }], l);
+    m.querySelector('#pp').onclick = async () => { if (!confirm('هيتمسح أي checkout مادفعش وعدّى عليه أكتر من 24 ساعة. متأكد؟')) return; try { const r = await api('/maintenance/purge-pending', { method: 'POST', body: {} }); toast('اتمسح ' + r.removed + ' جلسة'); } catch (e) { toast(e.message, true); } };
     m.querySelector('#ri').onclick = async () => { if (!confirm('هيعيد ربط كل الحجوزات بأونر العنصر الحالي. متأكد؟')) return; try { const r = await api('/maintenance/reindex', { method: 'POST', body: {} }); toast('اتحدّث ' + r.bookingsUpdated + ' حجز'); } catch (e) { toast(e.message, true); } };
   } },
 ] });
