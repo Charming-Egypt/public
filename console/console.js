@@ -258,7 +258,7 @@ DS.start = (cfg) => {
 };
 
 // ---------- bookings view (owner + admin) ----------
-const FL = { id: 'رقم الحجز', name: 'الاسم', email: 'الإيميل', phone: 'التليفون', requests: 'طلبات خاصة', checkin: 'الوصول', checkout: 'المغادرة', nights: 'الليالي', rooms: 'عدد الغرف', roomType: 'نوع الغرفة', adults: 'بالغين', children: 'أطفال', childAges: 'أعمار الأطفال', infants: 'رُضّع', guests: 'الضيوف', date: 'التاريخ', time: 'الوقت', participants: 'عدد الأفراد', passengers: 'عدد الركاب', direction: 'الاتجاه', flightNo: 'رقم الرحلة', address: 'العنوان', payment: 'طريقة الدفع', total: 'الإجمالي', currency: 'العملة', createdAt: 'وقت الحجز', cancelReason: 'سبب الإلغاء' };
+const FL = { id: 'رقم الحجز', name: 'الاسم', email: 'الإيميل', phone: 'التليفون', requests: 'طلبات خاصة', checkin: 'الوصول', checkout: 'المغادرة', nights: 'الليالي', rooms: 'عدد الغرف', roomType: 'نوع الغرفة', adults: 'بالغين', children: 'أطفال', childAges: 'أعمار الأطفال', infants: 'رُضّع', guests: 'الضيوف', date: 'التاريخ', time: 'الوقت', participants: 'عدد الأفراد', passengers: 'عدد الركاب', direction: 'الاتجاه', flightNo: 'رقم الرحلة', address: 'العنوان', payment: 'طريقة الدفع', total: 'الإجمالي', currency: 'العملة', createdAt: 'وقت الحجز', paidAt: 'وقت الدفع', cancelReason: 'سبب الإلغاء' };
 const bItem = b => tr(b.hotelName || b.title || b.vehicleType) || '—';
 const bWhen = b => b.checkin ? `${b.checkin} ← ${b.checkout || ''}` : `${b.date || ''} ${b.time || ''}`;
 const bQty = b => b.type === 'hotel' ? `${b.adults || 0} + ${b.children || 0}` : (b.participants || b.passengers || '');
@@ -288,7 +288,8 @@ DS.bookingsView = (o = {}) => async (m) => {
   const detail = (b) => {
     const kv = Object.keys(FL).filter(k => b[k] !== undefined && b[k] !== '' && !(Array.isArray(b[k]) && !b[k].length)).map(k => `<b>${FL[k]}</b><span>${esc(Array.isArray(b[k]) ? b[k].join(', ') : k === 'createdAt' ? DS.dt(b[k]) : k === 'roomType' ? tr(b[k]) : b[k])}</span>`).join('');
     const body = document.createElement('div');
-    body.innerHTML = `<div class="kv"><b>الحجز على</b><span>${esc(bItem(b))}</span>${kv}</div>
+    const vch = admin && b.voucher ? `<b>الفاوتشر</b><span>${b.voucher.status === 'sent' ? 'اتبعت على ' + esc(b.voucher.to) : 'فشل الإرسال: ' + esc(b.voucher.error || '')}</span>` : '';
+    body.innerHTML = `<div class="kv"><b>الحجز على</b><span>${esc(bItem(b))}</span>${kv}${vch}</div>
       ${admin ? `<div class="fld"><label>حالة الدفع</label><select id="bs">${DS.opts(PAY, b.status)}</select></div><div class="fld"><label>ملاحظة الإدارة</label><textarea id="ba">${esc(b.adminNote || '')}</textarea></div>` : ''}
       <div class="fld"><label>حالة التنفيذ</label><select id="bo" ${b.earning && !admin ? 'disabled' : ''}>${ownOpts(b)}</select>
         <small>${b.earning ? (b.earning.void ? 'الأرباح اتلغت (استرداد/تعديل).' : `الأرباح اتسجّلت: صافي ${DS.money(b.earning.net)} جنيه بعد عمولة ${b.earning.rate}%` + (admin ? ` (${DS.money(b.earning.commission)})` : '') + ' — مينفعش تتغيّر.') : 'اختيار "' + DONE_L[b.type] + '" بيسجّل أرباحك (بعد عمولة المنصة) ومينفعش يتراجع. بيتفتح بعد ميعاد الخدمة وبعد الدفع.'}</small></div>
