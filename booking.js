@@ -376,6 +376,8 @@ function renderBookingConfirmation(b) {
         <div class="flex justify-between mb-2"><span>${t('bookingIdLabel2')}</span><span class="font-bold">${b.id}</span></div>
         <div class="flex justify-between mb-2"><span>${t('checkinLabel')}</span><span>${utils.formatDate(b.checkin || b.date)}</span></div>
         <div class="flex justify-between mb-4"><span>${t('totalLabel')}</span><span class="font-bold text-violet-500">${b.priceFormatted}</span></div>
+        <button onclick="downloadVoucher('${b.id}', this)" class="btn-gold w-full py-4 rounded-2xl font-bold mb-2"><i class="fa-solid fa-file-pdf"></i> ${voucherLabels().dl}</button>
+        <p class="text-center text-[11px] mb-3 opacity-70">${voucherLabels().sent}</p>
         <button onclick="finishBooking('bookings')" class="btn-violet w-full py-4 rounded-2xl font-bold mb-3">${t('viewMyBookingsBtn')}</button>
         <button onclick="finishBooking('home')" class="btn-outline-violet w-full py-4 rounded-2xl font-bold">${t('backToHomeBtn')}</button>
       </div>
@@ -1315,6 +1317,7 @@ function showBookingDetails(bookingId) {
       <div class="relative -mt-4 rounded-t-[28px] p-5" style="background:var(--bg-card)">
         ${bookingDetailBody(b)}
         ${b.type !== 'transfer' ? (b.reviewed ? `<div class="text-center text-xs py-2 mb-2"><i class="fa-solid fa-circle-check text-green-500"></i> ${t('alreadyReviewedMsg')}</div>` : (!isUpcoming ? `<button onclick="reviews.openModal('${b.type}','${b.hotelId || b.excursionId}', '${b.id}')" class="w-full py-3.5 rounded-2xl font-bold border border-violet-400/40 text-violet-500 mb-2"><i class="fa-solid fa-pen"></i> ${t('writeReviewBtn')}</button>` : '')) : ''}
+        ${b.status === 'completed' ? `<button onclick="downloadVoucher('${b.id}', this)" class="btn-outline-violet w-full py-4 rounded-2xl font-bold mt-2"><i class="fa-solid fa-file-pdf"></i> ${voucherLabels().dl}</button><button onclick="resendVoucher('${b.id}')" class="w-full py-3 text-xs font-bold opacity-70">${voucherLabels().em}</button>` : ''}
         ${isUpcoming ? `<button onclick="cancelBooking('${b.id}')" class="w-full py-4 rounded-2xl font-bold text-red-500 border border-red-400/30 mt-2">${t('cancelBookingBtn')}</button>` : ''}
       </div>
     </div>`;
@@ -1338,6 +1341,23 @@ function bookingDetailBody(b) {
 }
 function closeBookingDetails() { const p = document.getElementById('bookingDetailsPage'); if (p) p.remove(); nav.go('bookings'); }
 async function cancelBooking(bookingId) { if (!confirm(t('confirmCancelBooking'))) return; try { await apiFetch(`/api/hotels/booking/${bookingId}`, { method: 'DELETE' }); toast(t('bookingCancelledMsg'), 'info'); bookings.load(); closeBookingDetails(); } catch (e) { toast(t('cancellationFailedPrefix') + e.message, 'error'); } }
+
+// ==================== VOUCHER (PDF) ====================
+// The confirmation e-mail + PDF voucher are sent by the notifications worker as soon as the payment is confirmed.
+function voucherLabels() {
+  return (typeof I18N !== 'undefined' && I18N.get && I18N.get() === 'ar')
+    ? { dl: 'تحميل الفاوتشر (PDF)', em: 'ابعتلي الفاوتشر على الإيميل تاني', ok: 'اتبعت على إيميلك ✔', sent: 'بعتنالك تأكيد الحجز والفاوتشر على الإيميل' }
+    : { dl: 'Download voucher (PDF)', em: 'Email me the voucher again', ok: 'Voucher sent to your e-mail ✔', sent: 'A confirmation e-mail with your voucher is on its way' };
+}
+async function downloadVoucher(id, btn) {
+  try { if (btn) btn.disabled = true; const r = await apiFetch('/api/notify/voucher-link', { method: 'POST', body: JSON.stringify({ orderId: id }) }); window.open(r.pdf, '_blank'); }
+  catch (e) { toast(e.message, 'error'); } finally { if (btn) btn.disabled = false; }
+}
+async function resendVoucher(id) {
+  try { await apiFetch('/api/notify/resend', { method: 'POST', body: JSON.stringify({ orderId: id }) }); toast(voucherLabels().ok, 'success'); }
+  catch (e) { toast(e.message, 'error'); }
+}
+window.downloadVoucher = downloadVoucher; window.resendVoucher = resendVoucher;
 
 // ==================== EXPOSE GLOBALLY ====================
 window.showDestinationPage = showDestinationPage;
