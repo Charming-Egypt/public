@@ -340,9 +340,15 @@ body:has(#transferDetailPage.active) .bottom-nav {
   color: var(--chrome-text-muted);
 }
 
-/* Active state = orange color only, no dot indicator underneath (per request). */
+/* Active state = orange color only, no dot indicator underneath (per request).
+   Scoped + !important: .bottom-nav/.sticky-home-header force every [class*="text-white"]
+   element to var(--chrome-text) with !important, which was silently overriding this. */
 .nav-item.active {
   color: #f97316;
+}
+.bottom-nav .nav-item.active,
+.sticky-home-header .nav-item.active {
+  color: #f97316 !important;
 }
 
 .nav-item-home {
