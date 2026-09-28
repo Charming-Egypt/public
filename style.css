@@ -3391,6 +3391,12 @@ html[data-theme="light"] .theme-switch .knob {
 
   }
 
+.footer-mobile-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px; /* مسافة بين العناصر */
+}
 
 
 /* Host / team reply under a review */
