@@ -167,7 +167,7 @@ function renderJournalPage() {
   if (!grid) return;
   grid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-28';
   const countEl = document.getElementById('journalCount'); if (countEl) countEl.textContent = (CATALOG.articles || []).length;
-  if (!CATALOG.articles || !CATALOG.articles.length) { grid.innerHTML = '<p class="text-center py-16" style="color:var(--text-secondary)">No stories yet — check back soon</p>'; return; }
+  if (!CATALOG.articles || !CATALOG.articles.length) { grid.innerHTML = `<p class="text-center py-16" style="color:var(--text-secondary)">${t('noStoriesYetMsg')}</p>`; return; }
   grid.innerHTML = CATALOG.articles.map(a => `
     <div onclick="showArticlePage('${a.id}')" class="article-card cursor-pointer">
       <img src="${getImageUrl(a.image)}" class="article-card-img" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
@@ -218,9 +218,9 @@ function paymentMethodsBlock(currentMethod, onchangeFn) {
           <input type="text" id="payCardName" autocomplete="cc-name" placeholder="${t('phNameOnCard')}" class="input-field w-full px-3 py-2.5 text-sm">
         </div>
         <label class="flex items-center gap-2 text-xs text-white/60 pt-1 cursor-pointer">
-          <input type="checkbox" id="payCardSave" class="w-4 h-4 accent-violet-600"> Save this card for faster checkout next time
+          <input type="checkbox" id="payCardSave" class="w-4 h-4 accent-violet-600"> ${t('saveCardLabel')}
         </label>
-        <p class="text-[10px] text-white/30 flex items-center gap-1.5"><i class="fa-solid fa-lock"></i> Payments are encrypted and processed securely by Kashier.</p>
+        <p class="text-[10px] text-white/30 flex items-center gap-1.5"><i class="fa-solid fa-lock"></i> ${t('securePaymentNote')}</p>
       </div>`;
   } else if (currentMethod === 'instapay') {
     detailFields = `
@@ -240,6 +240,20 @@ function paymentMethodsBlock(currentMethod, onchangeFn) {
 
 function formatCardNumberInput(el) {
   el.value = el.value.replace(/[^\d]/g, '').replace(/(.{4})/g, '$1 ').trim().slice(0, 23);
+}
+
+// Must match bookings-worker's DEPOSIT_RATIO/rounding exactly (Math.round, whole EGP) —
+// the server recomputes and rejects the charge if this ever drifts from its own figure.
+const DEPOSIT_RATIO = 0.5;
+function depositOf(total) { return Math.round(total * DEPOSIT_RATIO); }
+function depositSummaryBlock(total) {
+  const deposit = depositOf(total), remaining = total - deposit;
+  return `
+    <div class="booking-summary-row" style="color:var(--brand-violet); font-weight:700;"><span>${t('depositDueNowLabel') || 'Pay now (non-refundable deposit)'}</span><span>${utils.formatPrice(deposit)}</span></div>
+    <div class="booking-summary-row" style="color:var(--text-secondary); font-size:11px;"><span>${t('depositRemainingLabel') || 'Remaining, due on arrival'}</span><span>${utils.formatPrice(remaining)}</span></div>`;
+}
+function depositPayBtnLabel(total) {
+  return `${t('payDepositBtn') || 'Pay deposit'} — ${utils.formatPrice(depositOf(total))}`;
 }
 
 // Dispatches to the card or wallet flow based on the selected payment
@@ -364,7 +378,7 @@ function renderBookingConfirmation(b) {
             <div class="absolute inset-0 bg-gold-400/20 rounded-full animate-ping"></div>
             <div class="relative w-full h-full rounded-full bg-gradient-to-br from-violet-400 to-violet-700 flex items-center justify-center shadow-2xl"><i class="fa-solid fa-check text-4xl text-white"></i></div>
           </div>
-          <h2 class="font-display text-2xl font-bold text-white mb-1">Booking Confirmed!</h2>
+          <h2 class="font-display text-2xl font-bold text-white mb-1">${t('bookingConfirmedTitle')}</h2>
           <p class="text-white/60 text-sm">${t('paymentReceivedMsg')}</p>
         </div>
       </div>
@@ -436,12 +450,12 @@ function showHotelPage(hotelId, opts = {}) {
           ${(h.amenities || []).slice(0, 6).map(a => `<div class="field-box rounded-xl p-2.5 flex flex-col items-center gap-1.5 text-center"><i class="fa-solid ${amenityIcon(a)} text-violet-500"></i><span class="text-[9px] leading-tight">${a}</span></div>`).join('')}
         </div>
         <div>
-          <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold">— ABOUT</p>
+          <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold">${t('aboutPlace')}</p>
           <h3 class="font-display text-lg font-bold mb-2">${t('aboutThisHotelHeader')}</h3>
           <p class="text-sm leading-relaxed">${h.fullDescription || h.description || ''}</p>
         </div>
         <div>
-          <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold">— ROOMS</p>
+          <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold">${t('roomsSectionLabel')}</p>
           <h3 class="font-display text-lg font-bold mb-3">${t('roomOptionsHeader')}</h3>
           <div class="space-y-3 lg:grid lg:grid-cols-2 lg:gap-3 lg:space-y-0" id="hotelRoomsList">
             ${(h.rooms || []).map((r, i) => `
@@ -471,7 +485,7 @@ function showHotelPage(hotelId, opts = {}) {
             </div>
             <div class="rating-bar-chart" id="hotelRatingBars"></div>
           </div>
-          <button onclick="reviews.openModal('hotel','${h.id}')" class="w-full py-2.5 rounded-xl text-xs font-bold border border-violet-400/40 text-violet-500 mb-3 mt-4"><i class="fa-solid fa-pen"></i> Write a Review</button>
+          <button onclick="reviews.openModal('hotel','${h.id}')" class="w-full py-2.5 rounded-xl text-xs font-bold border border-violet-400/40 text-violet-500 mb-3 mt-4"><i class="fa-solid fa-pen"></i> ${t('writeReviewBtn')}</button>
           <div class="space-y-3" id="hotelReviewsList"></div>
         </div>
         </div>
@@ -499,7 +513,7 @@ function selectRoomOnDetail(hotelId, roomIndex) {
   const h = CATALOG.hotels.find(x => x.id === hotelId); const r = h?.rooms?.[roomIndex]; if (!r) return;
   // Updates BOTH the mobile fixed bar and the desktop sticky sidebar card,
   // since a room pick needs to stay in sync wherever the price/button show.
-  document.querySelectorAll('#hotelDetailPage .detail-sidebar-price').forEach(el => { el.innerHTML = `${utils.formatPrice(r.price)}<span class="text-xs"> / Night</span>`; });
+  document.querySelectorAll('#hotelDetailPage .detail-sidebar-price').forEach(el => { el.innerHTML = `${utils.formatPrice(r.price)}<span class="text-xs"> / ${t('nightLabel')}</span>`; });
   document.querySelectorAll('#hotelDetailPage .detail-book-btn').forEach(btn => btn.setAttribute('onclick', `startBooking('${hotelId}', ${roomIndex})`));
   document.querySelectorAll('#hotelRoomsList .room-option-card').forEach((card, i) => card.classList.toggle('room-selected', i === roomIndex));
 }
@@ -549,13 +563,14 @@ function renderBookingStep(step) {
       </div>` : ''}
       <div class="booking-summary-row"><span>${t('taxesFeesLabel')}</span><span>${utils.formatPrice(Math.round(pricing.roomTotal * 0.1))}</span></div>
       <div class="booking-summary-total"><span>${t('totalLabel')}</span><span>${utils.formatPrice(total)}</span></div>
+      ${depositSummaryBlock(total)}
     </div>`;
   let bodyHtml = '';
   if (step === 2) {
     bodyHtml = `
       <div class="p-5 booking-step-main">
         <div class="booking-guest-card">
-          <p class="booking-guest-label"><i class="fa-solid fa-circle-user"></i> Booking For</p>
+          <p class="booking-guest-label"><i class="fa-solid fa-circle-user"></i> ${t('bookingForLabel')}</p>
           <p class="booking-guest-name">${esc(state.bookingDraft.name || 'Guest')}</p>
           <p class="booking-guest-line">${esc(state.bookingDraft.email || '')}${state.bookingDraft.phone ? ' · ' + esc(state.bookingDraft.phone) : ''}</p>
         </div>
@@ -581,7 +596,7 @@ function renderBookingStep(step) {
       <div class="p-5 booking-step-main">
         <h3 class="font-display text-lg font-bold mb-3">${t('paymentMethodHeader')}</h3>
         <div class="space-y-3 mb-5">${paymentMethodsBlock(state.bookingDraft.payment, 'setHotelPaymentMethod')}</div>
-        <button onclick="payAndConfirmHotelBooking(${pricing.roomTotal}, ${Math.round(pricing.roomTotal * 0.1)}, ${total}, ${nights})" id="hotelPayBtn" class="btn-violet w-full py-4 rounded-2xl font-bold">${t('payNowBtn')}</button>
+        <button onclick="payAndConfirmHotelBooking(${pricing.roomTotal}, ${Math.round(pricing.roomTotal * 0.1)}, ${total}, ${nights})" id="hotelPayBtn" class="btn-violet w-full py-4 rounded-2xl font-bold">${depositPayBtnLabel(total)}</button>
       </div>
       <div class="booking-step-side">${orderSummaryCard}</div>`;
   }
@@ -679,6 +694,8 @@ async function payAndConfirmHotelBooking(roomTotal, taxes, total, nights) {
       nights,
       payment: state.bookingDraft.payment,
       total,
+      depositAmount: depositOf(total),
+      remainingAmount: total - depositOf(total),
       currency: 'EGP',
       priceFormatted: utils.formatPrice(total),
       status: 'pending_payment',
@@ -691,9 +708,12 @@ async function payAndConfirmHotelBooking(roomTotal, taxes, total, nights) {
     // Direct API charge — customer never leaves this page. Card fields are
     // collected by our own form (see paymentMethodsBlock) and 3D Secure, if
     // triggered, opens as an in-page modal rather than a redirect.
-    const success = await processKashierPayment(orderId, total, 'EGP', btn);
-    if (!success) { btn.disabled = false; btn.innerHTML = t('payNowBtn'); return; }
+    // Only the deposit is charged now — bookings-worker enforces this same
+    // 50% figure server-side and rejects any other amount.
+    const success = await processKashierPayment(orderId, depositOf(total), 'EGP', btn);
+    if (!success) { btn.disabled = false; btn.innerHTML = depositPayBtnLabel(total); return; }
     bookingData.status = 'completed';
+    bookingData.balanceStatus = bookingData.remainingAmount > 0 ? 'due' : 'paid';
     state.bookings.unshift(bookingData);
     bookings.render();
     renderBookingConfirmation(bookingData);
@@ -764,7 +784,7 @@ function showExcursionPage(excursionId, opts = {}) {
         </div>` : ''}
 
         <div>
-          <h3 class="font-display text-lg font-bold mb-3">Prices &amp; Inclusions</h3>
+          <h3 class="font-display text-lg font-bold mb-3">${t('pricesInclusionsLabel')}</h3>
           <div class="inclusion-cards">
             <div class="inclusion-card inclusion-card-in">
               <p class="inclusion-card-title"><i class="fa-solid fa-circle-check"></i> Included</p>
@@ -772,7 +792,7 @@ function showExcursionPage(excursionId, opts = {}) {
             </div>
             ${(x.excludes || []).length ? `
             <div class="inclusion-card inclusion-card-out">
-              <p class="inclusion-card-title"><i class="fa-solid fa-circle-xmark"></i> Not Included</p>
+              <p class="inclusion-card-title"><i class="fa-solid fa-circle-xmark"></i> ${t('notIncludedLabel')}</p>
               ${x.excludes.map(i => `<div class="inclusion-row"><i class="fa-solid fa-xmark"></i>${i}</div>`).join('')}
             </div>` : ''}
           </div>
@@ -872,13 +892,14 @@ function renderExcursionBookingStep(step) {
       <div class="booking-summary-row"><span>${x.title} × ${state.bookingDraft.participants}</span><span>${utils.formatPrice(subtotal)}</span></div>
       <div class="booking-summary-row"><span>${t('taxesFeesLabel')}</span><span>${utils.formatPrice(taxes)}</span></div>
       <div class="booking-summary-total"><span>${t('totalLabel')}</span><span>${utils.formatPrice(total)}</span></div>
+      ${depositSummaryBlock(total)}
     </div>`;
   let bodyHtml = '';
   if (step === 2) {
     bodyHtml = `
       <div class="p-5 booking-step-main">
         <div class="booking-guest-card">
-          <p class="booking-guest-label"><i class="fa-solid fa-circle-user"></i> Booking For</p>
+          <p class="booking-guest-label"><i class="fa-solid fa-circle-user"></i> ${t('bookingForLabel')}</p>
           <p class="booking-guest-name">${esc(state.bookingDraft.name || 'Guest')}</p>
           <p class="booking-guest-line">${esc(state.bookingDraft.email || '')}${state.bookingDraft.phone ? ' · ' + esc(state.bookingDraft.phone) : ''}</p>
         </div>
@@ -904,7 +925,7 @@ function renderExcursionBookingStep(step) {
       <div class="p-5 booking-step-main">
         <h3 class="font-display text-lg font-bold mb-3">${t('paymentMethodHeader')}</h3>
         <div class="space-y-3 mb-5">${paymentMethodsBlock(state.bookingDraft.payment, 'setExcursionPaymentMethod')}</div>
-        <button onclick="payAndConfirmExcursionBooking(${subtotal}, ${taxes}, ${total})" id="excursionPayBtn" class="btn-violet w-full py-4 rounded-2xl font-bold">${t('payNowBtn')}</button>
+        <button onclick="payAndConfirmExcursionBooking(${subtotal}, ${taxes}, ${total})" id="excursionPayBtn" class="btn-violet w-full py-4 rounded-2xl font-bold">${depositPayBtnLabel(total)}</button>
         <button onclick="renderExcursionBookingStep(2)" class="w-full text-center text-violet-500 text-sm font-semibold mt-4">${t('backBtn')}</button>
       </div>
       <div class="booking-step-side">${orderSummaryCard}</div>`;
@@ -950,6 +971,8 @@ async function payAndConfirmExcursionBooking(subtotal, taxes, total) {
       participants: state.bookingDraft.participants,
       payment: state.bookingDraft.payment,
       total,
+      depositAmount: depositOf(total),
+      remainingAmount: total - depositOf(total),
       currency: 'EGP',
       priceFormatted: utils.formatPrice(total),
       status: 'pending_payment',
@@ -962,9 +985,12 @@ async function payAndConfirmExcursionBooking(subtotal, taxes, total) {
     // Direct API charge — customer never leaves this page. Card fields are
     // collected by our own form (see paymentMethodsBlock) and 3D Secure, if
     // triggered, opens as an in-page modal rather than a redirect.
-    const success = await processKashierPayment(orderId, total, 'EGP', btn);
-    if (!success) { btn.disabled = false; btn.innerHTML = t('payNowBtn'); return; }
+    // Only the deposit is charged now — bookings-worker enforces this same
+    // 50% figure server-side and rejects any other amount.
+    const success = await processKashierPayment(orderId, depositOf(total), 'EGP', btn);
+    if (!success) { btn.disabled = false; btn.innerHTML = depositPayBtnLabel(total); return; }
     bookingData.status = 'completed';
+    bookingData.balanceStatus = bookingData.remainingAmount > 0 ? 'due' : 'paid';
     state.bookings.unshift(bookingData);
     bookings.render();
     renderBookingConfirmation(bookingData);
@@ -1017,13 +1043,14 @@ function renderTransferBookingStep(step) {
       <div class="booking-summary-row"><span>${v.vehicleType} ${t('transferSuffix')}</span><span>${utils.formatPrice(subtotal)}</span></div>
       <div class="booking-summary-row"><span>${t('taxesFeesLabel')}</span><span>${utils.formatPrice(taxes)}</span></div>
       <div class="booking-summary-total"><span>${t('totalLabel')}</span><span>${utils.formatPrice(total)}</span></div>
+      ${depositSummaryBlock(total)}
     </div>`;
   let bodyHtml = '';
   if (step === 2) {
     bodyHtml = `
       <div class="p-5 booking-step-main">
         <div class="booking-guest-card">
-          <p class="booking-guest-label"><i class="fa-solid fa-circle-user"></i> Booking For</p>
+          <p class="booking-guest-label"><i class="fa-solid fa-circle-user"></i> ${t('bookingForLabel')}</p>
           <p class="booking-guest-name">${esc(state.bookingDraft.name || 'Guest')}</p>
           <p class="booking-guest-line">${esc(state.bookingDraft.email || '')}${state.bookingDraft.phone ? ' · ' + esc(state.bookingDraft.phone) : ''}</p>
         </div>
@@ -1035,7 +1062,7 @@ function renderTransferBookingStep(step) {
           </div>
           <input type="text" id="tkFlightNo" value="${state.bookingDraft.flightNo}" placeholder="${t('phFlightNumber')}" class="input-field w-full px-3 py-2.5 text-sm">
           <div id="hotelField" class="field-box p-3">
-            <label class="text-[10px]">Hotel Name &amp; Address</label>
+            <label class="text-[10px]">${t('hotelNameAddressLabel')}</label>
             <input type="text" id="tkAddress" required value="${state.bookingDraft.address}" placeholder="Hotel name & address" class="input-field w-full px-3 py-2.5 text-sm">
           </div>
           <div class="grid grid-cols-2 gap-3">
@@ -1064,7 +1091,7 @@ function renderTransferBookingStep(step) {
       <div class="p-5 booking-step-main">
         <h3 class="font-display text-lg font-bold mb-3">${t('paymentMethodHeader')}</h3>
         <div class="space-y-3 mb-5">${paymentMethodsBlock(state.bookingDraft.payment, 'setTransferPaymentMethod')}</div>
-        <button onclick="payAndConfirmTransferBooking(${subtotal}, ${taxes}, ${total})" id="transferPayBtn" class="btn-violet w-full py-4 rounded-2xl font-bold">${t('payNowBtn')}</button>
+        <button onclick="payAndConfirmTransferBooking(${subtotal}, ${taxes}, ${total})" id="transferPayBtn" class="btn-violet w-full py-4 rounded-2xl font-bold">${depositPayBtnLabel(total)}</button>
         <button onclick="renderTransferBookingStep(2)" class="w-full text-center text-violet-500 text-sm font-semibold mt-4">${t('backBtn')}</button>
       </div>
       <div class="booking-step-side">${orderSummaryCard}</div>`;
@@ -1125,6 +1152,8 @@ async function payAndConfirmTransferBooking(subtotal, taxes, total) {
       passengers: state.bookingDraft.passengers,
       payment: state.bookingDraft.payment,
       total,
+      depositAmount: depositOf(total),
+      remainingAmount: total - depositOf(total),
       currency: 'EGP',
       priceFormatted: utils.formatPrice(total),
       status: 'pending_payment',
@@ -1137,9 +1166,12 @@ async function payAndConfirmTransferBooking(subtotal, taxes, total) {
     // Direct API charge — customer never leaves this page. Card fields are
     // collected by our own form (see paymentMethodsBlock) and 3D Secure, if
     // triggered, opens as an in-page modal rather than a redirect.
-    const success = await processKashierPayment(orderId, total, 'EGP', btn);
-    if (!success) { btn.disabled = false; btn.innerHTML = t('payNowBtn'); return; }
+    // Only the deposit is charged now — bookings-worker enforces this same
+    // 50% figure server-side and rejects any other amount.
+    const success = await processKashierPayment(orderId, depositOf(total), 'EGP', btn);
+    if (!success) { btn.disabled = false; btn.innerHTML = depositPayBtnLabel(total); return; }
     bookingData.status = 'completed';
+    bookingData.balanceStatus = bookingData.remainingAmount > 0 ? 'due' : 'paid';
     state.bookings.unshift(bookingData);
     bookings.render();
     renderBookingConfirmation(bookingData);
@@ -1250,7 +1282,7 @@ function showDestinationPage(id, opts = {}) {
           <p class="text-xs flex items-center gap-1" style="color:var(--text-secondary)"><i class="fa-solid fa-location-dot text-violet-500"></i>${d.location || ''}</p>
         </div>
         <div>
-          <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold">— ABOUT</p>
+          <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold">${t('aboutPlace')}</p>
           <p class="text-sm leading-relaxed" style="color:var(--text-secondary)">${d.fullDescription || d.description}</p>
         </div>
       </div>

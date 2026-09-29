@@ -1206,11 +1206,11 @@ function showTransferPage(id, opts = {}) {
       </div>
       <div class="relative -mt-6 rounded-t-[28px] p-6 space-y-6" style="background:var(--bg-card)">
         <div>
-          <p class="text-violet-500 text-sm font-semibold mb-2">— ABOUT THIS TRANSFER</p>
+          <p class="text-violet-500 text-sm font-semibold mb-2">${t('aboutTransferLabel')}</p>
           <p class="text-sm leading-relaxed" style="color:var(--text-secondary)">${v.fullDescription || v.description}</p>
         </div>
         <div>
-          <p class="text-violet-500 text-sm font-semibold mb-3">— FEATURES</p>
+          <p class="text-violet-500 text-sm font-semibold mb-3">${t('featuresLabel')}</p>
           <div class="grid grid-cols-2 gap-3">
             ${(v.features || []).map(f => `<div class="field-box rounded-xl p-3 flex items-center gap-2 text-sm"><i class="fa-solid fa-check text-green-500"></i> ${f}</div>`).join('')}
           </div>
