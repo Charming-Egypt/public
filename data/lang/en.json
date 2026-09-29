@@ -434,5 +434,16 @@
   "estimatedPerNight": "estimated / night",
   "excursionDateLabelCaps": "EXCURSION DATE",
   "guestsLabelCaps": "GUESTS",
-  "selectCategoryLabelCaps": "SELECT CATEGORY"
+  "selectCategoryLabelCaps": "SELECT CATEGORY",
+  "bookingForLabel": "Booking For",
+  "aboutTransferLabel": "— ABOUT THIS TRANSFER",
+  "featuresLabel": "— FEATURES",
+  "noStoriesYetMsg": "No stories yet — check back soon",
+  "saveCardLabel": "Save this card for faster checkout next time",
+  "securePaymentNote": "Payments are encrypted and processed securely by Kashier.",
+  "bookingConfirmedTitle": "Booking Confirmed!",
+  "roomsSectionLabel": "— ROOMS",
+  "pricesInclusionsLabel": "Prices & Inclusions",
+  "notIncludedLabel": "Not Included",
+  "hotelNameAddressLabel": "Hotel Name & Address"
 }

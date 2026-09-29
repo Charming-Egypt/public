@@ -434,5 +434,16 @@
   "estimatedPerNight": "تقديري / لليلة",
   "excursionDateLabelCaps": "تاريخ الرحلة",
   "guestsLabelCaps": "الضيوف",
-  "selectCategoryLabelCaps": "اختار الفئة"
+  "selectCategoryLabelCaps": "اختار الفئة",
+  "bookingForLabel": "الحجز باسم",
+  "aboutTransferLabel": "— عن هذا الانتقال",
+  "featuresLabel": "— المميزات",
+  "noStoriesYetMsg": "لا توجد قصص بعد — تابعنا قريبًا",
+  "saveCardLabel": "احفظ هذه البطاقة للدفع بشكل أسرع في المرة القادمة",
+  "securePaymentNote": "يتم تشفير المدفوعات ومعالجتها بأمان عبر Kashier.",
+  "bookingConfirmedTitle": "تم تأكيد الحجز!",
+  "roomsSectionLabel": "— الغرف",
+  "pricesInclusionsLabel": "الأسعار وما يشمله",
+  "notIncludedLabel": "غير مشمول",
+  "hotelNameAddressLabel": "اسم الفندق والعنوان"
 }
