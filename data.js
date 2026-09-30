@@ -23,6 +23,11 @@ const state = {
   currency: localStorage.getItem('ds_display_currency') || 'EGP',
   currentFilter: 'all',
   currentExcursionFilter: 'all',
+  excursionSearchQuery: '',
+  excursionSortBy: 'popular',
+  excursionMinPrice: null,
+  excursionMaxPrice: null,
+  excursionMinRating: 0,
   searchQuery: '',
   currentHotel: null,
   currentRoom: null,
@@ -366,13 +371,15 @@ function getImageUrl(item) {
 
 function localizeItem(raw, lang) {
   const out = Object.assign({}, raw);
-  MULTILANG_FIELDS.forEach(f => {
-    if (raw[f] !== undefined) out[f] = localizeValue(raw[f], lang);
-  });
+  // Always run every multilang field through localizeValue — even when the raw
+  // item never had that key at all. localizeValue(undefined, lang) safely
+  // returns '' (see above), whereas leaving out[f] untouched left it as the
+  // literal `undefined`, which template literals then print as the text
+  // "undefined" right on the card. This is what fixes that everywhere at once,
+  // for every catalog type, instead of patching each template one by one.
+  MULTILANG_FIELDS.forEach(f => { out[f] = localizeValue(raw[f], lang); });
   MULTILANG_ARRAY_FIELDS.forEach(f => {
-    if (raw[f] !== undefined) {
-      out[f] = Array.isArray(raw[f]) ? raw[f].map(v => localizeValue(v, lang)) : localizeValue(raw[f], lang);
-    }
+    out[f] = Array.isArray(raw[f]) ? raw[f].map(v => localizeValue(v, lang)) : (raw[f] !== undefined ? localizeValue(raw[f], lang) : []);
   });
   if (Array.isArray(raw.rooms)) {
     out.rooms = raw.rooms.map(room => ({

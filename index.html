@@ -683,7 +683,8 @@
 
           <!-- Mobile footer -->
           <div class="lg:hidden footer-mobile">
-              <div class="payment-icon-row justify-center">
+            <img src="https://blogger.googleusercontent.com/img/a/AVvXsEijXrWtde6tToaU9FtagWqPfjqA6WXHuyb4o-kQ208kWktjrv7N0nDGNdYbT2fl_mIDx4PsLwQ11GKYLYWhnA5n3ccOWGHIW1izBqqhLJhXhfeLFsCAa5pAgAfGvCx0opO6HJ_ZdNjRP3koAnLAEAdzWFbmj7KRiUAWxveqhw3pBPNhoFnBlVJvbwVGmdpQ=s1600" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-7 w-auto mb-4" alt="Discover Sharm" />
+            <div class="payment-icon-row justify-center">
               <div class="payment-icon-box"><i class="fa-brands fa-cc-visa"></i></div>
               <div class="payment-icon-box"><i class="fa-brands fa-cc-mastercard"></i></div>
               <div class="payment-icon-box"><i class="fa-solid fa-wallet"></i></div>
@@ -730,12 +731,32 @@
             <div class="text-center"><p class="section-subtitle" data-i18n="activitiesEyebrow">— ACTIVITIES</p><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)" data-i18n="excursionsTitle">Excursions</h1></div>
             <div class="w-11"></div>
           </div>
+          <div class="relative mb-3">
+            <i class="fa-solid fa-magnifying-glass absolute top-1/2 -translate-y-1/2" style="inset-inline-start:14px; color:var(--text-secondary)"></i>
+            <input id="excursionSearchInput" type="text" oninput="excursionsUi.onSearchInput(this.value)" data-i18n-placeholder="searchExcursions" placeholder="Search Excursions" class="w-full field-box rounded-xl text-sm py-3" style="padding-inline-start:40px; padding-inline-end:12px; color:var(--text-primary)">
+          </div>
           <div class="horizontal-scroll !px-0 listing-filter-row">
-            <button onclick="search.filterExcursionCategory('all')" class="filter-chip excursion-chip active flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-layer-group"></i> <span data-i18n="all">All</span></button>
-            <button onclick="search.filterExcursionCategory('Diving')" class="filter-chip excursion-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-person-swimming"></i> <span data-i18n="catDiving">Diving</span></button>
-            <button onclick="search.filterExcursionCategory('Desert Safari')" class="filter-chip excursion-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-person-hiking"></i> <span data-i18n="catDesert">Desert Safari</span></button>
-            <button onclick="search.filterExcursionCategory('Boat Trip')" class="filter-chip excursion-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-sailboat"></i> <span data-i18n="catBoat">Boat Trip</span></button>
-            <button onclick="search.filterExcursionCategory('City Tour')" class="filter-chip excursion-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-city"></i> <span data-i18n="catCity">City Tour</span></button>
+            <button onclick="search.filterExcursionCategory('all')" data-cat="all" class="filter-chip excursion-chip active flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-layer-group"></i> <span data-i18n="all">All</span></button>
+            <button onclick="search.filterExcursionCategory('diving')" data-cat="diving" class="filter-chip excursion-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-person-swimming"></i> <span data-i18n="catDiving">Diving</span></button>
+            <button onclick="search.filterExcursionCategory('desert')" data-cat="desert" class="filter-chip excursion-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-person-hiking"></i> <span data-i18n="catDesert">Desert Safari</span></button>
+            <button onclick="search.filterExcursionCategory('boat')" data-cat="boat" class="filter-chip excursion-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-sailboat"></i> <span data-i18n="catBoat">Boat Trip</span></button>
+            <button onclick="search.filterExcursionCategory('city')" data-cat="city" class="filter-chip excursion-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-city"></i> <span data-i18n="catCity">City Tour</span></button>
+          </div>
+          <div class="flex items-center gap-2 mt-3 flex-wrap">
+            <select id="excursionSortSelect" onchange="excursionsUi.onSortChange(this.value)" class="field-box rounded-xl text-xs py-2 px-3" style="color:var(--text-primary)">
+              <option value="popular" data-i18n="sortPopular">Popular</option>
+              <option value="priceLow" data-i18n="sortPriceLowHigh">Price: Low to High</option>
+              <option value="priceHigh" data-i18n="sortPriceHighLow">Price: High to Low</option>
+              <option value="rating" data-i18n="sortTopRated">Top Rated</option>
+            </select>
+            <input id="excursionMinPriceInput" type="number" min="0" oninput="excursionsUi.onPriceChange(this.value, document.getElementById('excursionMaxPriceInput').value)" data-i18n-placeholder="minPriceLabel" placeholder="Min Price" class="field-box rounded-xl text-xs py-2 px-3 w-24" style="color:var(--text-primary)">
+            <input id="excursionMaxPriceInput" type="number" min="0" oninput="excursionsUi.onPriceChange(document.getElementById('excursionMinPriceInput').value, this.value)" data-i18n-placeholder="maxPriceLabel" placeholder="Max Price" class="field-box rounded-xl text-xs py-2 px-3 w-24" style="color:var(--text-primary)">
+            <select id="excursionMinRatingSelect" onchange="excursionsUi.onMinRatingChange(this.value)" class="field-box rounded-xl text-xs py-2 px-3" style="color:var(--text-primary)">
+              <option value="0" data-i18n="anyRatingLabel">Any</option>
+              <option value="4">4.0+ ★</option>
+              <option value="4.5">4.5+ ★</option>
+            </select>
+            <button onclick="excursionsUi.clearFilters()" class="text-xs font-semibold px-3 py-2 rounded-xl" style="color:var(--brand-violet)"><i class="fa-solid fa-rotate-left"></i> <span data-i18n="clearFiltersBtn">Clear Filters</span></button>
           </div>
         </div>
         <div class="px-5 pt-4 space-y-4 pb-28" id="excursionsList"></div>

@@ -792,7 +792,10 @@ updateHeroContent(tab) {
   },
   handle(q) { state.searchQuery = q.toLowerCase(); },
   filterCategory(cat) { state.currentFilter = cat; },
-  filterExcursionCategory(cat) { state.currentExcursionFilter = cat; },
+  filterExcursionCategory(cat) {
+    state.currentExcursionFilter = cat;
+    if (typeof excursionsUi !== 'undefined') excursionsUi.render();
+  },
   init() {
     const tomorrow = new Date();
     tomorrow.setHours(0,0,0,0);
@@ -1100,16 +1103,96 @@ const excursionsUi = {
         </div>
       </div>`;
   },
+  // Excursion category values in the catalog are raw, inconsistently-cased
+  // strings ("Boat trip", "Desert Safari", ...) — never translated, and only
+  // matched against filter chips by exact string equality (so "Boat Trip" on
+  // a chip would silently fail to match "Boat trip" in the data). This maps
+  // any raw category text onto one of the canonical slugs the filter chips
+  // and the catXxx translation keys already use, so both the chip matching
+  // and the on-card label work regardless of exactly how the source data
+  // capitalized or phrased it. Unrecognized categories fall back to catOther
+  // instead of ever printing raw, untranslated English on the card.
+  categorySlug(raw) {
+    const s = (raw || '').toLowerCase();
+    if (s.includes('div') || s.includes('snork')) return 'diving';
+    if (s.includes('desert') || s.includes('safari')) return 'desert';
+    if (s.includes('boat') || s.includes('sail') || s.includes('cruise')) return 'boat';
+    if (s.includes('city') || s.includes('tour')) return 'city';
+    return 'other';
+  },
+  categoryLabel(raw) {
+    const slug = this.categorySlug(raw);
+    const key = { diving: 'catDiving', desert: 'catDesert', boat: 'catBoat', city: 'catCity', other: 'catOther' }[slug];
+    return t(key);
+  },
+  // Applies every active filter (category, free-text search, price range,
+  // minimum rating) together, then the chosen sort — this is what makes the
+  // filters combine instead of only the last one clicked taking effect.
+  filteredSorted() {
+    const q = (state.excursionSearchQuery || '').trim().toLowerCase();
+    let list = CATALOG.excursions.filter(x => {
+      if (state.currentExcursionFilter !== 'all' && this.categorySlug(x.category) !== state.currentExcursionFilter) return false;
+      if (q && !(`${x.title} ${x.description || ''}`.toLowerCase().includes(q))) return false;
+      if (state.excursionMinPrice != null && x.price < state.excursionMinPrice) return false;
+      if (state.excursionMaxPrice != null && x.price > state.excursionMaxPrice) return false;
+      if (state.excursionMinRating && Number(x.rating || 0) < state.excursionMinRating) return false;
+      return true;
+    });
+    const sorted = list.slice();
+    if (state.excursionSortBy === 'priceLow') sorted.sort((a, b) => (a.price || 0) - (b.price || 0));
+    else if (state.excursionSortBy === 'priceHigh') sorted.sort((a, b) => (b.price || 0) - (a.price || 0));
+    else if (state.excursionSortBy === 'rating') sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    else sorted.sort((a, b) => (b.reviews || 0) - (a.reviews || 0)); // 'popular' default
+    return sorted;
+  },
   render() {
     if (!SHOW_EXCURSIONS) return;
     const list = document.getElementById('excursionsList');
     if (!list) return;
-    let filtered = CATALOG.excursions;
-    if (state.currentExcursionFilter !== 'all') filtered = filtered.filter(x => x.category === state.currentExcursionFilter);
+    // Keep the chip row, search box, and sort/price controls in sync with state
+    // every render — covers both a fresh page load and a filter changing while
+    // the person is already on this page (previously this list never
+    // re-rendered on a chip click at all, so filtering silently did nothing).
+    document.querySelectorAll('.excursion-chip').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.cat === state.currentExcursionFilter);
+    });
+    const searchInput = document.getElementById('excursionSearchInput');
+    if (searchInput && searchInput.value !== state.excursionSearchQuery) searchInput.value = state.excursionSearchQuery;
+    const sortSelect = document.getElementById('excursionSortSelect');
+    if (sortSelect) sortSelect.value = state.excursionSortBy;
+
+    const filtered = this.filteredSorted();
     const countEl = document.getElementById('excursionsCount'); if (countEl) countEl.textContent = filtered.length;
     list.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-28';
-    if (filtered.length === 0) { list.innerHTML = `<div class="text-center py-16">${t('noExcursionsFoundMsg')}</div>`; return; }
+    if (filtered.length === 0) {
+      list.innerHTML = `<div class="text-center py-16 col-span-full"><p class="mb-2">${t('noExcursionsFoundMsg')}</p><p class="text-xs" style="color:var(--text-secondary)">${t('noResultsFilterHint')}</p></div>`;
+      return;
+    }
     list.innerHTML = filtered.map(x => this.renderCard(x)).join('');
+  },
+  onSearchInput(q) {
+    state.excursionSearchQuery = q;
+    clearTimeout(this._searchDebounceTimer);
+    this._searchDebounceTimer = setTimeout(() => this.render(), 250);
+  },
+  onSortChange(v) { state.excursionSortBy = v; this.render(); },
+  onPriceChange(min, max) {
+    state.excursionMinPrice = min === '' || min == null ? null : Number(min);
+    state.excursionMaxPrice = max === '' || max == null ? null : Number(max);
+    this.render();
+  },
+  onMinRatingChange(v) { state.excursionMinRating = Number(v) || 0; this.render(); },
+  clearFilters() {
+    state.currentExcursionFilter = 'all';
+    state.excursionSearchQuery = '';
+    state.excursionSortBy = 'popular';
+    state.excursionMinPrice = null;
+    state.excursionMaxPrice = null;
+    state.excursionMinRating = 0;
+    const priceMin = document.getElementById('excursionMinPriceInput'); if (priceMin) priceMin.value = '';
+    const priceMax = document.getElementById('excursionMaxPriceInput'); if (priceMax) priceMax.value = '';
+    const ratingSel = document.getElementById('excursionMinRatingSelect'); if (ratingSel) ratingSel.value = '0';
+    this.render();
   },
   renderCard(x) {
     const img = getImageUrl(x.image);
@@ -1118,8 +1201,8 @@ const excursionsUi = {
         <div class="relative h-52 overflow-hidden">
           <img src="${img}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
           <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-          <span class="absolute top-3 left-3 bg-violet-600/90 text-white text-xs font-bold px-3 py-1 rounded-full">${x.category}</span>
-          <span class="absolute top-3 right-3 rating-pill px-2 py-1 rounded-full flex items-center gap-1"><i class="fa-solid fa-star text-gold-400 text-[10px]"></i><span class="text-[10px] font-bold text-gold-400">${Number(x.rating).toFixed(1)}</span></span>
+          <span class="absolute top-3 left-3 bg-violet-600/90 text-white text-xs font-bold px-3 py-1 rounded-full">${this.categoryLabel(x.category)}</span>
+          <span class="absolute top-3 right-3 rating-pill px-2 py-1 rounded-full flex items-center gap-1"><i class="fa-solid fa-star text-gold-400 text-[10px]"></i><span class="text-[10px] font-bold text-gold-400">${x.rating ? Number(x.rating).toFixed(1) : '—'}</span></span>
           <div class="absolute bottom-3 left-3 right-3 text-white">
             <h3 class="font-display font-bold text-lg leading-tight line-clamp-1">${x.title}</h3>
           </div>
@@ -1127,7 +1210,7 @@ const excursionsUi = {
         <div class="p-4 flex flex-col justify-between flex-1">
           <div class="flex items-center gap-4 text-xs text-gray-500 mb-3">
             <span><i class="fa-regular fa-clock text-violet-500"></i> ${x.duration}</span>
-            <span><i class="fa-solid fa-location-dot text-violet-500"></i> ${x.meetingPoint || 'Sharm'}</span>
+            <span><i class="fa-solid fa-location-dot text-violet-500"></i> ${x.meetingPoint || t('sharmElSheikhShort')}</span>
           </div>
           <div class="flex items-center justify-between">
             <div>
@@ -1262,7 +1345,7 @@ const restaurantsUi = {
         <div class="relative h-36 overflow-hidden">
           <img src="${img}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
           <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-          <span class="absolute top-3 left-3 bg-ink-950/70 text-white text-xs font-bold px-3 py-1 rounded-full capitalize">${r.category}</span>
+          <span class="absolute top-3 left-3 bg-ink-950/70 text-white text-xs font-bold px-3 py-1 rounded-full capitalize">${t(r.category === 'cafe' ? 'cafeCategoryLabel' : 'restaurantCategoryLabel')}</span>
           <span class="absolute top-3 right-3 rating-pill px-2 py-1 rounded-full flex items-center gap-1"><i class="fa-solid fa-star text-gold-400 text-[10px]"></i><span class="text-[10px] font-bold text-gold-400">${r.rating}</span></span>
         </div>
         <div class="p-4">
