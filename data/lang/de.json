@@ -445,5 +445,20 @@
   "roomsSectionLabel": "— ZIMMER",
   "pricesInclusionsLabel": "Preise & Leistungen",
   "notIncludedLabel": "Nicht enthalten",
-  "hotelNameAddressLabel": "Hotelname & Adresse"
+  "hotelNameAddressLabel": "Hotelname & Adresse",
+  "sortByLabel": "Sortieren nach",
+  "sortPopular": "Beliebt",
+  "sortPriceLowHigh": "Preis: aufsteigend",
+  "sortPriceHighLow": "Preis: absteigend",
+  "sortTopRated": "Top bewertet",
+  "clearFiltersBtn": "Filter zurücksetzen",
+  "minPriceLabel": "Mindestpreis",
+  "maxPriceLabel": "Höchstpreis",
+  "anyRatingLabel": "Beliebig",
+  "catOther": "Sonstiges",
+  "noResultsFilterHint": "Versuchen Sie, Ihre Filter oder Suchbegriffe anzupassen",
+  "filtersLabel": "Filter",
+  "restaurantCategoryLabel": "Restaurant",
+  "cafeCategoryLabel": "Café",
+  "sharmElSheikhShort": "Sharm El-Sheikh"
 }

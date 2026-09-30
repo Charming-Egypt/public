@@ -445,5 +445,20 @@
   "roomsSectionLabel": "— CAMERE",
   "pricesInclusionsLabel": "Prezzi e cosa include",
   "notIncludedLabel": "Non incluso",
-  "hotelNameAddressLabel": "Nome e indirizzo dell'hotel"
+  "hotelNameAddressLabel": "Nome e indirizzo dell'hotel",
+  "sortByLabel": "Ordina per",
+  "sortPopular": "Popolari",
+  "sortPriceLowHigh": "Prezzo: dal più basso",
+  "sortPriceHighLow": "Prezzo: dal più alto",
+  "sortTopRated": "Più votati",
+  "clearFiltersBtn": "Cancella filtri",
+  "minPriceLabel": "Prezzo minimo",
+  "maxPriceLabel": "Prezzo massimo",
+  "anyRatingLabel": "Qualsiasi",
+  "catOther": "Altro",
+  "noResultsFilterHint": "Prova a modificare i filtri o i termini di ricerca",
+  "filtersLabel": "Filtri",
+  "restaurantCategoryLabel": "Ristorante",
+  "cafeCategoryLabel": "Caffè",
+  "sharmElSheikhShort": "Sharm El Sheikh"
 }

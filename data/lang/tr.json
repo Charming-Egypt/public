@@ -445,5 +445,20 @@
   "roomsSectionLabel": "— ODALAR",
   "pricesInclusionsLabel": "Fiyatlar ve Dahil Olanlar",
   "notIncludedLabel": "Dahil Değil",
-  "hotelNameAddressLabel": "Otel Adı ve Adresi"
+  "hotelNameAddressLabel": "Otel Adı ve Adresi",
+  "sortByLabel": "Sırala",
+  "sortPopular": "Popüler",
+  "sortPriceLowHigh": "Fiyat: Düşükten Yükseğe",
+  "sortPriceHighLow": "Fiyat: Yüksekten Düşüğe",
+  "sortTopRated": "En Yüksek Puanlı",
+  "clearFiltersBtn": "Filtreleri Temizle",
+  "minPriceLabel": "Min. Fiyat",
+  "maxPriceLabel": "Maks. Fiyat",
+  "anyRatingLabel": "Herhangi",
+  "catOther": "Diğer",
+  "noResultsFilterHint": "Filtrelerinizi veya arama terimlerinizi değiştirmeyi deneyin",
+  "filtersLabel": "Filtreler",
+  "restaurantCategoryLabel": "Restoran",
+  "cafeCategoryLabel": "Kafe",
+  "sharmElSheikhShort": "Şarm El-Şeyh"
 }

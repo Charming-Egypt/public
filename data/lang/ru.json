@@ -445,5 +445,20 @@
   "roomsSectionLabel": "— НОМЕРА",
   "pricesInclusionsLabel": "Цены и что включено",
   "notIncludedLabel": "Не включено",
-  "hotelNameAddressLabel": "Название и адрес отеля"
+  "hotelNameAddressLabel": "Название и адрес отеля",
+  "sortByLabel": "Сортировать по",
+  "sortPopular": "Популярные",
+  "sortPriceLowHigh": "Цена: по возрастанию",
+  "sortPriceHighLow": "Цена: по убыванию",
+  "sortTopRated": "Высокий рейтинг",
+  "clearFiltersBtn": "Сбросить фильтры",
+  "minPriceLabel": "Мин. цена",
+  "maxPriceLabel": "Макс. цена",
+  "anyRatingLabel": "Любой",
+  "catOther": "Другое",
+  "noResultsFilterHint": "Попробуйте изменить фильтры или поисковый запрос",
+  "filtersLabel": "Фильтры",
+  "restaurantCategoryLabel": "Ресторан",
+  "cafeCategoryLabel": "Кафе",
+  "sharmElSheikhShort": "Шарм-эль-Шейх"
 }

@@ -445,5 +445,20 @@
   "roomsSectionLabel": "— الغرف",
   "pricesInclusionsLabel": "الأسعار وما يشمله",
   "notIncludedLabel": "غير مشمول",
-  "hotelNameAddressLabel": "اسم الفندق والعنوان"
+  "hotelNameAddressLabel": "اسم الفندق والعنوان",
+  "sortByLabel": "ترتيب حسب",
+  "sortPopular": "الأكثر شيوعًا",
+  "sortPriceLowHigh": "السعر: من الأقل للأعلى",
+  "sortPriceHighLow": "السعر: من الأعلى للأقل",
+  "sortTopRated": "الأعلى تقييمًا",
+  "clearFiltersBtn": "مسح الفلاتر",
+  "minPriceLabel": "أقل سعر",
+  "maxPriceLabel": "أعلى سعر",
+  "anyRatingLabel": "أي تقييم",
+  "catOther": "أخرى",
+  "noResultsFilterHint": "جرّب تعديل الفلاتر أو كلمات البحث",
+  "filtersLabel": "الفلاتر",
+  "restaurantCategoryLabel": "مطعم",
+  "cafeCategoryLabel": "مقهى",
+  "sharmElSheikhShort": "شرم الشيخ"
 }
