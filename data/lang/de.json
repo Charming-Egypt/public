@@ -460,5 +460,16 @@
   "filtersLabel": "Filter",
   "restaurantCategoryLabel": "Restaurant",
   "cafeCategoryLabel": "Café",
-  "sharmElSheikhShort": "Sharm El-Sheikh"
+  "sharmElSheikhShort": "Sharm El-Sheikh",
+  "family": "Familienfreundlich",
+  "resort": "Resort",
+  "beachfront": "Direkt am Strand",
+  "upToCapacityLabel": "Für bis zu {n} Passagiere",
+  "transferWord": "Transfer",
+  "capacityFilterLabel": "Kapazität",
+  "sortCapacity": "Meiste Plätze",
+  "searchTransfersPlaceholder": "Transfer suchen...",
+  "noTransfersFoundMsg": "Keine Transfers gefunden",
+  "reviewSubmittedMsg": "Bewertung gesendet!",
+  "morePhotosLabel": "+{n} Fotos"
 }

@@ -460,5 +460,16 @@
   "filtersLabel": "Filtreler",
   "restaurantCategoryLabel": "Restoran",
   "cafeCategoryLabel": "Kafe",
-  "sharmElSheikhShort": "Şarm El-Şeyh"
+  "sharmElSheikhShort": "Şarm El-Şeyh",
+  "family": "Aile Dostu",
+  "resort": "Tatil Köyü",
+  "beachfront": "Sahile Sıfır",
+  "upToCapacityLabel": "{n} yolcuya kadar",
+  "transferWord": "Transfer",
+  "capacityFilterLabel": "Kapasite",
+  "sortCapacity": "En Çok Yolcu",
+  "searchTransfersPlaceholder": "Transfer ara...",
+  "noTransfersFoundMsg": "Transfer bulunamadı",
+  "reviewSubmittedMsg": "Değerlendirme gönderildi!",
+  "morePhotosLabel": "+{n} Fotoğraf"
 }

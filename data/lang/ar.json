@@ -460,5 +460,16 @@
   "filtersLabel": "الفلاتر",
   "restaurantCategoryLabel": "مطعم",
   "cafeCategoryLabel": "مقهى",
-  "sharmElSheikhShort": "شرم الشيخ"
+  "sharmElSheikhShort": "شرم الشيخ",
+  "family": "عائلي",
+  "resort": "منتجع",
+  "beachfront": "على الشاطئ",
+  "upToCapacityLabel": "تتسع لـ {n} راكب",
+  "transferWord": "انتقال",
+  "capacityFilterLabel": "عدد الركاب",
+  "sortCapacity": "الأكثر سعة",
+  "searchTransfersPlaceholder": "ابحث عن وسيلة انتقال...",
+  "noTransfersFoundMsg": "لا توجد وسائل انتقال",
+  "reviewSubmittedMsg": "تم إرسال التقييم!",
+  "morePhotosLabel": "+{n} صورة"
 }

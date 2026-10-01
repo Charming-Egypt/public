@@ -460,5 +460,16 @@
   "filtersLabel": "Filters",
   "restaurantCategoryLabel": "Restaurant",
   "cafeCategoryLabel": "Café",
-  "sharmElSheikhShort": "Sharm El Sheikh"
+  "sharmElSheikhShort": "Sharm El Sheikh",
+  "family": "Family",
+  "resort": "Resort",
+  "beachfront": "Beachfront",
+  "upToCapacityLabel": "Up to {n} passengers",
+  "transferWord": "Transfer",
+  "capacityFilterLabel": "Capacity",
+  "sortCapacity": "Most Passengers",
+  "searchTransfersPlaceholder": "Search transfers...",
+  "noTransfersFoundMsg": "No transfers found",
+  "reviewSubmittedMsg": "Review submitted!",
+  "morePhotosLabel": "+{n} Photos"
 }

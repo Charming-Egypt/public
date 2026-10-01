@@ -460,5 +460,16 @@
   "filtersLabel": "Фильтры",
   "restaurantCategoryLabel": "Ресторан",
   "cafeCategoryLabel": "Кафе",
-  "sharmElSheikhShort": "Шарм-эль-Шейх"
+  "sharmElSheikhShort": "Шарм-эль-Шейх",
+  "family": "Семейный",
+  "resort": "Курорт",
+  "beachfront": "На берегу моря",
+  "upToCapacityLabel": "До {n} пассажиров",
+  "transferWord": "Трансфер",
+  "capacityFilterLabel": "Вместимость",
+  "sortCapacity": "Больше мест",
+  "searchTransfersPlaceholder": "Поиск трансфера...",
+  "noTransfersFoundMsg": "Трансферы не найдены",
+  "reviewSubmittedMsg": "Отзыв отправлен!",
+  "morePhotosLabel": "+{n} фото"
 }
