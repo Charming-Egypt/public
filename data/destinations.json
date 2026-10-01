@@ -281,40 +281,40 @@
   {
     "id": "d6",
     "name": {
-      "en": "SOHO Square",
       "ar": "سوهو سكوير",
+      "en": "SOHO Square",
       "ru": "SOHO Square",
       "de": "SOHO Square",
       "it": "SOHO Square",
       "tr": "SOHO Square"
     },
     "tagline": {
-      "en": "Modern entertainment, dining and shows",
       "ar": "مركز ترفيهي حديث للعروض والمطاعم والتسوق",
+      "en": "Modern entertainment, dining and shows",
       "ru": "Современные развлечения, рестораны и шоу",
       "de": "Moderne Unterhaltung, Gastronomie und Shows",
       "it": "Intrattenimento moderno, ristoranti e spettacoli",
       "tr": "Modern eğlence, restoranlar ve gösteriler"
     },
     "description": {
-      "en": "A pedestrian entertainment complex with a dancing fountain, ice rink and international restaurants.",
       "ar": "مجمع ترفيهي للمشاة يضم نافورة راقصة وصالة تزلج على الجليد ومطاعم عالمية.",
+      "en": "A pedestrian entertainment complex with a dancing fountain, ice rink and international restaurants.",
       "ru": "Пешеходный развлекательный комплекс с танцующим фонтаном, катком и международными ресторанами.",
       "de": "Ein Fußgänger-Unterhaltungskomplex mit Musikbrunnen, Eisbahn und internationalen Restaurants.",
       "it": "Un complesso pedonale per lo svago con fontana danzante, pista di pattinaggio e ristoranti internazionali.",
       "tr": "Dans eden fıskiyesi, buz pateni pisti ve uluslararası restoranlarıyla yaya eğlence kompleksi."
     },
     "fullDescription": {
-      "en": "SOHO Square is a pedestrian-only entertainment complex in Sharm El Sheikh featuring a musical dancing fountain, an ice-skating rink, shops, and a wide range of restaurants and cafes. It is particularly popular in the evening when the fountain and lighting displays are active.",
       "ar": "سوهو سكوير مجمع ترفيهي مخصص للمشاة في شرم الشيخ، يضم نافورة موسيقية راقصة، صالة تزلج على الجليد، محلات تجارية، ومجموعة واسعة من المطاعم والمقاهي. يحظى بشعبية خاصة في المساء عندما تعمل النافورة وعروض الإضاءة.",
+      "en": "SOHO Square is a pedestrian-only entertainment complex in Sharm El Sheikh featuring a musical dancing fountain, an ice-skating rink, shops, and a wide range of restaurants and cafes. It is particularly popular in the evening when the fountain and lighting displays are active.",
       "ru": "SOHO Square — пешеходный развлекательный комплекс в Шарм-эль-Шейхе с музыкальным танцующим фонтаном, катком, магазинами и широким выбором ресторанов и кафе. Особенно популярен вечером, когда работают фонтан и световые шоу.",
       "de": "SOHO Square ist ein reiner Fußgänger-Unterhaltungskomplex in Sharm El Sheikh mit einem musikalischen Tanzbrunnen, einer Eisbahn, Geschäften und einer breiten Auswahl an Restaurants und Cafés. Besonders beliebt am Abend, wenn Brunnen- und Lichtshows laufen.",
       "it": "SOHO Square è un complesso pedonale per lo svago a Sharm El Sheikh con una fontana musicale danzante, una pista di pattinaggio, negozi e un'ampia gamma di ristoranti e caffè. Particolarmente popolare la sera, quando sono attivi la fontana e gli spettacoli di luci.",
       "tr": "SOHO Square, Sharm El Sheikh'te yalnızca yayalara açık; müzikli dans eden fıskiyesi, buz pateni pisti, mağazaları ve geniş restoran-kafe seçenekleriyle bir eğlence kompleksidir. Fıskiye ve ışık gösterilerinin etkin olduğu akşamları özellikle popülerdir."
     },
     "location": {
-      "en": "Sharks Bay area, Sharm El Sheikh",
       "ar": "منطقة خليج شارك باي، شرم الشيخ",
+      "en": "Sharks Bay area, Sharm El Sheikh",
       "ru": "Район Шаркс-Бэй, Шарм-эль-Шейх",
       "de": "Sharks-Bay-Gebiet, Sharm El Sheikh",
       "it": "Zona Sharks Bay, Sharm El Sheikh",
@@ -329,7 +329,7 @@
     "phone": "+20 10 00109109",
     "google_place_id": "ChIJ-SUwp5hJUxQR13GK4yhFy-Q",
     "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJ-SUwp5hJUxQR13GK4yhFy-Q",
-    "image": "",
+    "image": "https://media.gemini.media/img/original/2021/12/27/2021_12_27_11_33_27_106.jpg",
     "images": []
   }
 ]
