@@ -1,4 +1,4 @@
-/* Discover Sharm — True Dual Experience (Mobile App Bottom Bar + Desktop Pro Workspace) */
+/* Discover Sharm — Clean Mobile & Desktop System */
 :root {
   --navy: #0b1736;
   --gold: #f59e0b;
@@ -100,12 +100,11 @@ main { width: 100%; max-width: 1400px; margin: 0 auto; padding: 32px; }
 #scrim { display: none; }
 
 /* ==========================================================
-   📱 MOBILE APP EXPERIENCE (هاتف - تصميم تطبيق جوال حقيقي)
+   📱 MOBILE APP EXPERIENCE (هاتف - تصميم تطبيق جوال نظيف)
    ========================================================== */
 @media(max-width: 1023px) {
   #app { display: block; }
   
-  /* إخفاء السايدبار الجانبي التقليدي وإظهاره كقائمة منسدلة جانبية عند الضغط على الـ Burger */
   aside.side { 
     position: fixed; 
     top: 0; 
@@ -146,25 +145,10 @@ main { width: 100%; max-width: 1400px; margin: 0 auto; padding: 32px; }
   }
   
   main { 
-    padding: 16px 16px 100px; /* مساحة كبيرة أسفل الشاشة لتفادي تغطية المحتوى بواسطة شريط التطبيق السفلي */
+    padding: 16px 16px 30px; /* مساحة مناسبة بدون أي قص أو شريط وهمي */
   }
 
-  /* 📲 شريط تنقل سفلي ثابت للهاتف (Mobile Bottom App Bar) يشبه التطبيقات الأصلية */
-  .content::after {
-    content: '';
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 70px;
-    background: color-mix(in srgb, var(--card) 92%, transparent);
-    backdrop-filter: blur(16px);
-    border-top: 1px solid var(--line);
-    z-index: 50;
-    box-shadow: 0 -10px 25px rgba(0,0,0,0.08);
-  }
-
-  /* تحويل الجداول إلى كروت تطبيقات (App-like Cards) بالهاتف */
+  /* تحويل الجداول إلى كروت تطبيقات بالهاتف */
   .tw { background: none; border: 0; box-shadow: none; overflow: visible; }
   table, tbody { display: block; }
   thead { display: none; }
@@ -192,12 +176,10 @@ main { width: 100%; max-width: 1400px; margin: 0 auto; padding: 32px; }
   td[data-label=""] { justify-content: flex-start; flex-wrap: wrap; padding-top: 12px; border-top: 1px solid var(--line); margin-top: 8px; }
   td > * { max-width: 65%; }
 
-  /* شبكة الإحصائيات بالهاتف */
   .stats { grid-template-columns: 1fr 1fr; gap: 12px; }
   .stat { padding: 16px; border-radius: 16px; }
   .stat b { font-size: 20px; }
 
-  /* النوافذ المنسدلة (Modals) كأنها شاشات تطبيق منبثقة من الأسفل */
   .ov { align-items: flex-end; padding: 0; }
   .md { max-height: 94dvh; border-radius: 28px 28px 0 0; width: 100%; }
   .md .mb { padding: 18px 20px; }
@@ -283,12 +265,12 @@ tr.click:hover td { background: var(--soft); }
 input, select, textarea { width: 100%; padding: 13px 18px; border: 1.5px solid var(--line); border-radius: 14px; background: var(--in); transition: all 0.2s ease; font-size: 14.5px; }
 input:focus, select:focus, textarea:focus { outline: 0; border-color: var(--gold); box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.15); background: var(--card); }
 
-/* ---------- النوافذ المنبثقة (Modals) والـ Toast ---------- */
+/* ---------- النوافذ المنبثقة والـ Toast ---------- */
 .ov { position: fixed; inset: 0; background: rgba(3, 7, 18, 0.65); backdrop-filter: blur(6px); z-index: 80; display: flex; align-items: center; justify-content: center; }
 .md { background: var(--card); width: 100%; max-width: 800px; max-height: 92dvh; border-radius: 24px; display: flex; flex-direction: column; animation: up 0.25s cubic-bezier(0.16, 1, 0.3, 1); border: 1px solid var(--line); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3); }
 @keyframes up { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-.md .mh { padding: 20px 26px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 18px; }
+.md .mh { padding: 20px 26px; border-bottom: 1px solid var(--line); thead: display: none; display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 18px; }
 .md .mb { padding: 22px 26px; overflow-y: auto; }
 .md .mf { padding: 18px 26px; border-top: 1px solid var(--line); display: flex; gap: 12px; flex-wrap: wrap; background: var(--soft); border-radius: 0 0 24px 24px; }
 .x { border: 0; background: none; font-size: 26px; cursor: pointer; color: var(--muted); }
