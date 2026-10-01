@@ -269,7 +269,6 @@ details summary { cursor: pointer; color: var(--blue); font-size: 13px; margin: 
 .igrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
 .ic { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; box-shadow: var(--sh); display: flex; flex-direction: column; transition: transform 0.2s, border-color 0.2s; }
 .ic:hover { transform: translateY(-3px); border-color: var(--gold); }
-.ic .cv { height: 160px; background: var(--soft) center/cover; position: relative; display: grid; place-items: center; color: var(--muted); }
 .ic .cv .badge { position: absolute; top: 12px; inset-inline-start: 12px; }
 .ic .bd { padding: 16px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
 .ic .bd b { font-size: 16px; line-height: 1.4; letter-spacing: -0.2px; }
@@ -310,4 +309,17 @@ details summary { cursor: pointer; color: var(--blue); font-size: 13px; margin: 
 .rv-rh { font-weight: 700; font-size: 13px; display: flex; gap: 8px; align-items: center; }
 .rv-rh .i { width: 16px; height: 16px; color: var(--gold); }
 .rv-reply p { margin-top: 6px; line-height: 1.7; white-space: pre-wrap; font-size: 13px; }
-.ic .cv img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ic .cv { 
+  height: 160px; 
+  background: var(--soft) center/cover; 
+  position: relative; 
+  overflow: hidden; /* لقص أي جزء زائد من الصورة داخل الـ container */
+  display: block;   /* لمنع سلوك الـ Grid الافتراضي الذي يسبب التداخل */
+}
+
+.ic .cv img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+  display: block; 
+}
