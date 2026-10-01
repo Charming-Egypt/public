@@ -173,40 +173,40 @@
   {
     "id": "d4",
     "name": {
-      "en": "Al-Sahaba Mosque",
       "ar": "مسجد الصحابة",
+      "en": "Al-Sahaba Mosque",
       "ru": "Мечеть Аль-Сахаба",
       "de": "Al-Sahaba-Moschee",
       "it": "Moschea Al-Sahaba",
       "tr": "Sahabe Camii"
     },
     "tagline": {
-      "en": "A landmark mosque in the heart of the Old Market",
       "ar": "معلم بارز في قلب السوق القديم",
+      "en": "A landmark mosque in the heart of the Old Market",
       "ru": "Знаковая мечеть в самом сердце Старого рынка",
       "de": "Eine markante Moschee im Herzen des Alten Marktes",
       "it": "Una moschea di riferimento nel cuore del Vecchio Mercato",
       "tr": "Eski Çarşı'nın kalbinde simge bir cami"
     },
     "description": {
-      "en": "A large, richly decorated mosque standing at the center of the Old Market, free to visit outside prayer times.",
       "ar": "مسجد كبير وغني بالزخارف يتوسط السوق القديم، ويمكن زيارته مجانًا خارج أوقات الصلاة.",
+      "en": "A large, richly decorated mosque standing at the center of the Old Market, free to visit outside prayer times.",
       "ru": "Большая, богато украшенная мечеть в центре Старого рынка, вход свободный вне часов молитвы.",
       "de": "Eine große, reich verzierte Moschee im Zentrum des Alten Marktes, außerhalb der Gebetszeiten kostenlos zu besichtigen.",
       "it": "Una grande moschea riccamente decorata nel cuore del Vecchio Mercato, visitabile gratuitamente al di fuori degli orari di preghiera.",
       "tr": "Eski Çarşı'nın merkezinde yer alan, zengin süslemelere sahip büyük bir cami; namaz vakitleri dışında ücretsiz ziyaret edilebilir."
     },
     "fullDescription": {
-      "en": "Al-Sahaba Mosque stands at the center of Sharm El Sheikh's Old Market and is considered one of the city's architectural landmarks, featuring twin minarets and detailed stonework. Visitors are welcome outside prayer times, and modest dress (including a headscarf and full-length garment for women, available on site) is required.",
       "ar": "يتوسط مسجد الصحابة السوق القديم في شرم الشيخ، ويُعد من أبرز معالمها المعمارية بمئذنتيه التوأم وزخارفه الحجرية الدقيقة. يُرحَّب بالزوار خارج أوقات الصلاة، ويُشترط ارتداء زي محتشم (يشمل غطاء رأس وثوب طويل للسيدات، متوفر في الموقع).",
+      "en": "Al-Sahaba Mosque stands at the center of Sharm El Sheikh's Old Market and is considered one of the city's architectural landmarks, featuring twin minarets and detailed stonework. Visitors are welcome outside prayer times, and modest dress (including a headscarf and full-length garment for women, available on site) is required.",
       "ru": "Мечеть Аль-Сахаба расположена в центре Старого рынка Шарм-эль-Шейха и считается одной из архитектурных достопримечательностей города благодаря двум минаретам и детальной каменной резьбе. Посетителей принимают вне часов молитвы; требуется скромная одежда (для женщин — платок и длинное платье, доступны на месте).",
       "de": "Die Al-Sahaba-Moschee steht im Zentrum des Alten Marktes von Sharm El Sheikh und gilt mit ihren zwei Minaretten und detaillierten Steinmetzarbeiten als architektonisches Wahrzeichen der Stadt. Besucher sind außerhalb der Gebetszeiten willkommen; angemessene Kleidung (für Frauen Kopftuch und langes Gewand, vor Ort erhältlich) ist erforderlich.",
       "it": "La Moschea Al-Sahaba sorge al centro del Vecchio Mercato di Sharm El Sheikh ed è considerata uno dei simboli architettonici della città, con due minareti gemelli e intagli in pietra dettagliati. I visitatori sono benvenuti al di fuori degli orari di preghiera; è richiesto un abbigliamento modesto (per le donne velo e abito lungo, disponibili sul posto).",
       "tr": "Sahabe Camii, Sharm El Sheikh'in Eski Çarşısının merkezinde yer alır ve ikiz minareleri ile ayrıntılı taş işçiliğiyle şehrin mimari simgelerinden biri kabul edilir. Ziyaretçiler namaz vakitleri dışında kabul edilir; tesiste sağlanan başörtüsü ve uzun elbise dahil olmak üzere mütevazı kıyafet gereklidir."
     },
     "location": {
-      "en": "Old Market, Sharm El Sheikh",
       "ar": "السوق القديم، شرم الشيخ",
+      "en": "Old Market, Sharm El Sheikh",
       "ru": "Старый рынок, Шарм-эль-Шейх",
       "de": "Alter Markt, Sharm El Sheikh",
       "it": "Vecchio Mercato, Sharm El Sheikh",
@@ -221,7 +221,7 @@
     "phone": "",
     "google_place_id": "ChIJSVTNrS86UxQRsvjUALKtRF0",
     "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJSVTNrS86UxQRsvjUALKtRF0",
-    "image": "",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZd99IuLUs7b_e8mOW698Jf2Se-_5rXCTFGK60bpf0T1ZetTFu7r8KiwQM&s=10",
     "images": []
   },
   {
