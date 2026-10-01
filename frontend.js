@@ -1152,7 +1152,7 @@ const excursionsUi = {
               <div class="price-block">
                 <span class="price-from">${t('fromLabel')}</span>
                 <div class="price-value" data-price-egp="${x.price}">${price}</div>
-                <span class="price-per-person">/ person</span>
+                <span class="price-per-person">/ ${t('perPersonLabel')}</span>
               </div>
               <button class="book-btn action-btn" onclick="event.stopPropagation(); showExcursionPage('${x.id}')">
                 <i class="fas fa-bolt"></i> ${t('bookNowBtn')}
@@ -1274,7 +1274,7 @@ const excursionsUi = {
           <div class="flex items-center justify-between">
             <div>
               <p class="text-[10px] text-gray-500">${t('fromLabel')}</p>
-              <p class="font-display font-bold text-violet-500 text-xl">${utils.formatPrice(x.price)}<span class="text-xs font-normal"> /${t('person')}</span></p>
+              <p class="font-display font-bold text-violet-500 text-xl">${utils.formatPrice(x.price)}<span class="text-xs font-normal"> /${t('perPersonLabel')}</span></p>
             </div>
             <button class="btn-gold px-5 py-2.5 rounded-xl text-sm font-bold text-ink-900">${t('bookNowBtn')}</button>
           </div>
