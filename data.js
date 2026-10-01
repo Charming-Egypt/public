@@ -22,12 +22,21 @@ const state = {
   favorites: [],
   currency: localStorage.getItem('ds_display_currency') || 'EGP',
   currentFilter: 'all',
+  hotelSortBy: 'popular',
+  hotelMinPrice: null,
+  hotelMaxPrice: null,
+  hotelMinRating: 0,
   currentExcursionFilter: 'all',
   excursionSearchQuery: '',
   excursionSortBy: 'popular',
   excursionMinPrice: null,
   excursionMaxPrice: null,
   excursionMinRating: 0,
+  transferSearchQuery: '',
+  transferSortBy: 'popular',
+  transferMinPrice: null,
+  transferMaxPrice: null,
+  transferMinCapacity: 0,
   searchQuery: '',
   currentHotel: null,
   currentRoom: null,
@@ -792,11 +801,13 @@ const reviews = {
         }),
       });
       document.getElementById('reviewModal').classList.add('hidden');
-      toast('Review submitted!', 'success');
-      const barsId = this.currentTarget.type === 'hotel' ? 'hotelRatingBars' : 'excursionRatingBars';
-      loadReviews(this.currentTarget.type, this.currentTarget.id,
-        this.currentTarget.type === 'hotel' ? 'hotelReviewsList' : 'excursionReviewsList',
-        this.currentTarget.type === 'hotel' ? 'hotelRatingSummary' : 'excursionRatingSummary', barsId);
+      toast(t('reviewSubmittedMsg'), 'success');
+      const ids = {
+        hotel: { list: 'hotelReviewsList', summary: 'hotelRatingSummary', bars: 'hotelRatingBars' },
+        excursion: { list: 'excursionReviewsList', summary: 'excursionRatingSummary', bars: 'excursionRatingBars' },
+        transfer: { list: 'transferReviewsList', summary: 'transferRatingSummary', bars: 'transferRatingBars' },
+      }[this.currentTarget.type] || { list: 'excursionReviewsList', summary: 'excursionRatingSummary', bars: 'excursionRatingBars' };
+      loadReviews(this.currentTarget.type, this.currentTarget.id, ids.list, ids.summary, ids.bars);
     } catch (e) {
       toast(e.message, 'error');
     } finally {

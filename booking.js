@@ -24,7 +24,7 @@ function renderPhotoGrid(images) {
   const cells = shown.map((img, i) => `
     <div class="photo-grid-cell ${i === 0 ? 'photo-grid-main' : ''}" onclick="openLightbox(${i})">
       <img src="${getImageUrl(img)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" alt="">
-      ${(i === shown.length - 1 && remaining > 0) ? `<div class="photo-grid-more"><i class="fa-solid fa-images"></i> +${remaining} Photos</div>` : ''}
+      ${(i === shown.length - 1 && remaining > 0) ? `<div class="photo-grid-more"><i class="fa-solid fa-images"></i> ${t('morePhotosLabel').replace('{n}', remaining)}</div>` : ''}
     </div>`).join('');
   return `<div class="photo-grid photo-grid-5">${cells}</div>`;
 }
@@ -867,7 +867,9 @@ function showExcursionPage(excursionId, opts = {}) {
 }
 
 function closeExcursionPage() { const p = document.getElementById('excursionDetailPage'); if (p) p.remove(); nav.go('excursions'); }
-function onExcursionGalleryScroll(el) { const idx = Math.round(el.scrollLeft / el.clientWidth); document.querySelectorAll('#excursionGalleryDots .gallery-dot').forEach((d, i) => d.classList.toggle('active', i === idx)); }
+function onGalleryScroll(el, dotsId) { const idx = Math.round(el.scrollLeft / el.clientWidth); document.querySelectorAll(`#${dotsId} .gallery-dot`).forEach((d, i) => d.classList.toggle('active', i === idx)); }
+// Back-compat alias — existing excursion markup calls this by name directly.
+function onExcursionGalleryScroll(el) { onGalleryScroll(el, 'excursionGalleryDots'); }
 function startExcursionBooking(id) {
   if (!authToken) { toast(t('errLoginToBook'), 'error'); return; }
   const x = CATALOG.excursions.find(i => i.id === id);

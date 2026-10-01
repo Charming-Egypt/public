@@ -791,7 +791,10 @@ updateHeroContent(tab) {
     nav.go('excursions');
   },
   handle(q) { state.searchQuery = q.toLowerCase(); },
-  filterCategory(cat) { state.currentFilter = cat; },
+  filterCategory(cat) {
+    state.currentFilter = cat;
+    if (typeof hotels !== 'undefined') hotels.render();
+  },
   filterExcursionCategory(cat) {
     state.currentExcursionFilter = cat;
     if (typeof excursionsUi !== 'undefined') excursionsUi.render();
@@ -987,6 +990,7 @@ const ui = {
         <div class="hotel-card-img-wrap">
           <img src="${img}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="hotel-card-img hover:scale-105 transition-transform duration-500">
           ${h.bestseller ? `<div class="absolute top-2 right-2 badge-bestseller text-[8px] font-black px-2 py-0.5 rounded-md">${t('bestSellerBadge')}</div>` : ''}
+          ${h.category ? `<span class="absolute top-2 left-2 bg-violet-600/90 text-white text-[9px] font-bold px-2 py-0.5 rounded-md">${hotels.categoryLabel(h.category)}</span>` : ''}
           <div class="absolute bottom-2 right-2 rating-pill px-1.5 py-0.5 rounded-md flex items-center gap-1"><i class="fa-solid fa-star text-gold-400 text-[8px]"></i><span class="text-[9px] font-bold text-gold-400">${h.rating}</span></div>
         </div>
         <div class="hotel-card-body">
@@ -1035,20 +1039,75 @@ const ui = {
 
 // ==================== HOTELS RENDERER ====================
 const hotels = {
+  // Known slugs already have their own translation key of the same name
+  // (budget/luxury/family/resort/beachfront); anything else falls back to
+  // catOther instead of printing raw, untranslated data on the card.
+  categoryLabel(raw) {
+    const known = ['budget', 'luxury', 'family', 'resort', 'beachfront'];
+    const slug = (raw || '').toLowerCase();
+    return known.includes(slug) ? t(slug) : t('catOther');
+  },
+  filteredSorted() {
+    const q = (state.searchQuery || '').trim().toLowerCase();
+    let list = CATALOG.hotels.filter(h => {
+      if (state.currentFilter !== 'all' && (h.category || '').toLowerCase() !== state.currentFilter) return false;
+      if (q && !(`${h.name} ${h.location || ''}`.toLowerCase().includes(q))) return false;
+      if (state.hotelMinPrice != null && h.price < state.hotelMinPrice) return false;
+      if (state.hotelMaxPrice != null && h.price > state.hotelMaxPrice) return false;
+      if (state.hotelMinRating && Number(h.rating || 0) < state.hotelMinRating) return false;
+      return true;
+    });
+    const sorted = list.slice();
+    if (state.hotelSortBy === 'priceLow') sorted.sort((a, b) => (a.price || 0) - (b.price || 0));
+    else if (state.hotelSortBy === 'priceHigh') sorted.sort((a, b) => (b.price || 0) - (a.price || 0));
+    else if (state.hotelSortBy === 'rating') sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    else sorted.sort((a, b) => (b.reviews || 0) - (a.reviews || 0)); // 'popular' default
+    return sorted;
+  },
   render() {
     if (!SHOW_HOTELS) return;
     const list = document.getElementById('hotelsList');
     if (!list) return;
-    let filtered = CATALOG.hotels;
-    if (state.currentFilter !== 'all') filtered = filtered.filter(h => h.category === state.currentFilter);
-    if (state.searchQuery) filtered = filtered.filter(h => h.name.toLowerCase().includes(state.searchQuery));
+    document.querySelectorAll('.hotel-chip').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.cat === state.currentFilter);
+    });
+    const searchInput = document.getElementById('hotelSearchInput');
+    if (searchInput && searchInput.value !== state.searchQuery) searchInput.value = state.searchQuery;
+    const sortSelect = document.getElementById('hotelSortSelect');
+    if (sortSelect) sortSelect.value = state.hotelSortBy;
+
+    const filtered = this.filteredSorted();
     const countEl = document.getElementById('hotelsCount'); if (countEl) countEl.textContent = filtered.length;
     list.className = 'space-y-3 lg:space-y-0 lg:grid lg:grid-cols-2 xl:grid-cols-3 lg:gap-6 pb-28';
     if (filtered.length === 0) {
-      list.innerHTML = `<div class="text-center py-16">${t('noHotelsFoundMsg')}</div>`;
+      list.innerHTML = `<div class="text-center py-16 col-span-full"><p class="mb-2">${t('noHotelsFoundMsg')}</p><p class="text-xs" style="color:var(--text-secondary)">${t('noResultsFilterHint')}</p></div>`;
       return;
     }
     list.innerHTML = filtered.map(h => ui.renderHotelCard(h)).join('');
+  },
+  onSearchInput(q) {
+    state.searchQuery = q.toLowerCase();
+    clearTimeout(this._searchDebounceTimer);
+    this._searchDebounceTimer = setTimeout(() => this.render(), 250);
+  },
+  onSortChange(v) { state.hotelSortBy = v; this.render(); },
+  onPriceChange(min, max) {
+    state.hotelMinPrice = min === '' || min == null ? null : Number(min);
+    state.hotelMaxPrice = max === '' || max == null ? null : Number(max);
+    this.render();
+  },
+  onMinRatingChange(v) { state.hotelMinRating = Number(v) || 0; this.render(); },
+  clearFilters() {
+    state.currentFilter = 'all';
+    state.searchQuery = '';
+    state.hotelSortBy = 'popular';
+    state.hotelMinPrice = null;
+    state.hotelMaxPrice = null;
+    state.hotelMinRating = 0;
+    const priceMin = document.getElementById('hotelMinPriceInput'); if (priceMin) priceMin.value = '';
+    const priceMax = document.getElementById('hotelMaxPriceInput'); if (priceMax) priceMax.value = '';
+    const ratingSel = document.getElementById('hotelMinRatingSelect'); if (ratingSel) ratingSel.value = '0';
+    this.render();
   }
 };
 
@@ -1226,13 +1285,62 @@ const excursionsUi = {
 
 // ==================== TRANSFERS RENDERER ====================
 const transfersUi = {
+  filteredSorted() {
+    const q = (state.transferSearchQuery || '').trim().toLowerCase();
+    let list = CATALOG.transfers.filter(v => {
+      if (q && !(`${v.vehicleType} ${v.description || ''}`.toLowerCase().includes(q))) return false;
+      if (state.transferMinPrice != null && v.price < state.transferMinPrice) return false;
+      if (state.transferMaxPrice != null && v.price > state.transferMaxPrice) return false;
+      if (state.transferMinCapacity && Number(v.capacity || 0) < state.transferMinCapacity) return false;
+      return true;
+    });
+    const sorted = list.slice();
+    if (state.transferSortBy === 'priceLow') sorted.sort((a, b) => (a.price || 0) - (b.price || 0));
+    else if (state.transferSortBy === 'priceHigh') sorted.sort((a, b) => (b.price || 0) - (a.price || 0));
+    else if (state.transferSortBy === 'capacity') sorted.sort((a, b) => (b.capacity || 0) - (a.capacity || 0));
+    else sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0)); // 'popular' default
+    return sorted;
+  },
   render() {
     if (!SHOW_TRANSFERS) return;
     const list = document.getElementById('transfersList');
-    if (list) {
-      list.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-28';
-      list.innerHTML = CATALOG.transfers.map(v => this.renderCard(v)).join('');
+    if (!list) return;
+    const searchInput = document.getElementById('transferSearchInput');
+    if (searchInput && searchInput.value !== state.transferSearchQuery) searchInput.value = state.transferSearchQuery;
+    const sortSelect = document.getElementById('transferSortSelect');
+    if (sortSelect) sortSelect.value = state.transferSortBy;
+
+    const filtered = this.filteredSorted();
+    const countEl = document.getElementById('transfersCount'); if (countEl) countEl.textContent = filtered.length;
+    list.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-28';
+    if (filtered.length === 0) {
+      list.innerHTML = `<div class="text-center py-16 col-span-full"><p class="mb-2">${t('noTransfersFoundMsg')}</p><p class="text-xs" style="color:var(--text-secondary)">${t('noResultsFilterHint')}</p></div>`;
+      return;
     }
+    list.innerHTML = filtered.map(v => this.renderCard(v)).join('');
+  },
+  onSearchInput(q) {
+    state.transferSearchQuery = q;
+    clearTimeout(this._searchDebounceTimer);
+    this._searchDebounceTimer = setTimeout(() => this.render(), 250);
+  },
+  onSortChange(v) { state.transferSortBy = v; this.render(); },
+  onPriceChange(min, max) {
+    state.transferMinPrice = min === '' || min == null ? null : Number(min);
+    state.transferMaxPrice = max === '' || max == null ? null : Number(max);
+    this.render();
+  },
+  onMinCapacityChange(v) { state.transferMinCapacity = Number(v) || 0; this.render(); },
+  clearFilters() {
+    state.transferSearchQuery = '';
+    state.transferSortBy = 'popular';
+    state.transferMinPrice = null;
+    state.transferMaxPrice = null;
+    state.transferMinCapacity = 0;
+    const priceMin = document.getElementById('transferMinPriceInput'); if (priceMin) priceMin.value = '';
+    const priceMax = document.getElementById('transferMaxPriceInput'); if (priceMax) priceMax.value = '';
+    const capSel = document.getElementById('transferMinCapacitySelect'); if (capSel) capSel.value = '0';
+    this.render();
   },
   renderCard(v) {
     const img = getImageUrl(v.image);
@@ -1246,7 +1354,7 @@ const transfersUi = {
         <div class="p-4">
           <div class="flex items-center justify-between mb-3">
             <h3 class="font-display font-bold text-lg">${v.vehicleType}</h3>
-            <span class="text-xs font-bold px-3 py-1 rounded-full bg-violet-50 text-violet-600"><i class="fa-solid fa-user-group mr-1"></i> Up to ${v.capacity}</span>
+            <span class="text-xs font-bold px-3 py-1 rounded-full bg-violet-50 text-violet-600"><i class="fa-solid fa-user-group mr-1"></i> ${v.capacity}</span>
           </div>
           <p class="text-sm text-gray-500 mb-4 line-clamp-2">${v.description}</p>
           <div class="flex flex-wrap gap-2 mb-4">
@@ -1268,52 +1376,86 @@ const transfersUi = {
 function showTransferPage(id, opts = {}) {
   const v = CATALOG.transfers.find(t => t.id === id);
   if (!v) return toast(t('errTransferNotFound'), 'error');
-
-  const page = document.createElement('div');
-  page.id = 'transferDetailPage';
-  page.className = 'page';
+  state.currentTransfer = v;
+  const old = document.getElementById('transferDetailPage'); if (old) old.remove();
+  const page = document.createElement('div'); page.id = 'transferDetailPage'; page.className = 'page';
+  const capacityLine = t('upToCapacityLabel').replace('{n}', v.capacity);
+  const bookingCard = `
+    <div class="detail-price-row">
+      <div><p class="text-[9px]">${t('oneWayTripLabel')}</p><p class="text-xl font-bold text-violet-500 font-display">${utils.formatPrice(v.price)}</p></div>
+      <div class="detail-sidebar-rating"><i class="fa-solid fa-star text-gold-400"></i> ${Number(v.rating || 4.5).toFixed(1)}${v.reviews ? ` <span>(${v.reviews})</span>` : ''}</div>
+    </div>
+    <button onclick="startTransferBooking('${v.id}')" class="btn-gold w-full py-3.5 rounded-2xl font-bold text-ink-900">${t('bookNowBtn')}</button>
+    <p class="detail-sidebar-note"><i class="fa-solid fa-users"></i> ${capacityLine}</p>`;
   page.innerHTML = `
     <div class="min-h-screen pb-28" style="background:var(--bg-card)">
-      <div class="relative h-80">
-        <img src="${getImageUrl(v.image)}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
-        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+      <div class="relative h-72 detail-gallery">
+        <div id="transferGallery" class="gallery-track w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth" style="scrollbar-width:none" onscroll="onGalleryScroll(this, 'transferGalleryDots')">
+          ${(v.images || [v.image]).map((img, i) => `<img src="${getImageUrl(img)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%" onclick="openLightbox(${i})">`).join('')}
+        </div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 pointer-events-none"></div>
         <button onclick="closeTransferPage()" class="absolute top-4 right-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900 z-10"><i class="fa-solid fa-arrow-right"></i></button>
-        <div class="absolute bottom-5 left-5 right-5 text-white">
-          <div class="flex items-center gap-2 mb-2">
-            <span class="bg-gold-400 text-ink-900 text-xs font-bold px-3 py-1 rounded-full"><i class="fa-solid fa-shuttle-van mr-1"></i> ${v.vehicleType}</span>
-            <span class="rating-pill px-2 py-1 rounded-full flex items-center gap-1"><i class="fa-solid fa-star text-gold-400 text-[10px]"></i><span class="text-[10px] font-bold text-gold-400">${v.rating || 4.5}</span></span>
-          </div>
-          <h1 class="font-display text-3xl font-bold leading-tight mb-2">${v.vehicleType} Transfer</h1>
-          <p class="text-sm text-white/80"><i class="fa-solid fa-users"></i> Up to ${v.capacity} passengers</p>
-        </div>
+        <div class="absolute top-4 left-4 bg-violet-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-full z-10"><i class="fa-solid fa-shuttle-van"></i> ${v.vehicleType}</div>
+        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10" id="transferGalleryDots">${(v.images || [v.image]).map((_, i) => `<div class="gallery-dot ${i === 0 ? 'active' : ''}"></div>`).join('')}</div>
       </div>
-      <div class="relative -mt-6 rounded-t-[28px] p-6 space-y-6" style="background:var(--bg-card)">
+      ${renderPhotoGrid(v.images || [v.image])}
+      <div class="detail-layout">
+        <div class="detail-main relative -mt-6 rounded-t-[28px] p-5 space-y-6 pb-32" style="background:var(--bg-card)">
         <div>
-          <p class="text-violet-500 text-sm font-semibold mb-2">${t('aboutTransferLabel')}</p>
-          <p class="text-sm leading-relaxed" style="color:var(--text-secondary)">${v.fullDescription || v.description}</p>
+          <h2 class="font-display text-2xl font-bold mb-1 leading-tight">${v.vehicleType} ${t('transferWord')}</h2>
+          <div class="flex items-center gap-2 text-sm mb-1">${utils.renderStars(v.rating || 4.5)}<span class="text-xs">${Number(v.rating || 4.5).toFixed(1)}${v.reviews ? ` (${v.reviews})` : ''}</span></div>
+          <p class="text-xs"><i class="fa-solid fa-users text-violet-500"></i> ${capacityLine}</p>
         </div>
+
+        <div class="trust-badge-row">
+          <div class="trust-badge"><i class="fa-solid fa-star"></i><span>${Number(v.rating || 4.5).toFixed(1)} ${t('ratingLabel')}</span></div>
+          <div class="trust-badge"><i class="fa-solid fa-rotate-left"></i><span>${t('freeCancellationBadge')}</span></div>
+          <div class="trust-badge"><i class="fa-solid fa-bolt"></i><span>${t('instantConfirmationBadge')}</span></div>
+          <div class="trust-badge"><i class="fa-solid fa-shield-heart"></i><span>${t('secureBookingBadge')}</span></div>
+        </div>
+
         <div>
-          <p class="text-violet-500 text-sm font-semibold mb-3">${t('featuresLabel')}</p>
+          <h3 class="font-display text-lg font-bold mb-2">${t('aboutTransferLabel')}</h3>
+          <p class="text-sm leading-relaxed">${v.fullDescription || v.description}</p>
+        </div>
+
+        ${(v.features || []).length ? `
+        <div>
+          <h3 class="font-display text-lg font-bold mb-3">${t('featuresLabel')}</h3>
           <div class="grid grid-cols-2 gap-3">
-            ${(v.features || []).map(f => `<div class="field-box rounded-xl p-3 flex items-center gap-2 text-sm"><i class="fa-solid fa-check text-green-500"></i> ${f}</div>`).join('')}
+            ${v.features.map(f => `<div class="field-box rounded-xl p-3 flex items-center gap-2 text-sm"><i class="fa-solid fa-check text-green-500"></i> ${f}</div>`).join('')}
           </div>
-        </div>
+        </div>` : ''}
+
         <div class="card rounded-2xl p-4">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-xs text-gray-500">${t('oneWayTripLabel')}</p>
-              <p class="font-display font-bold text-violet-500 text-2xl">${utils.formatPrice(v.price)}</p>
+          <h3 class="font-display text-lg font-bold mb-4">${t('realStoriesTravelersHeader')}</h3>
+          <div class="rating-summary-block">
+            <div class="rating-summary-score">
+              <p class="rating-summary-number" id="transferRatingSummary">–</p>
+              <div class="text-gold-500 text-sm" id="transferRatingStars"></div>
+              <p class="rating-summary-count" id="transferRatingCount"></p>
             </div>
-            <button onclick="startTransferBooking('${v.id}')" class="btn-gold px-8 py-3 rounded-xl font-bold text-ink-900">${t('bookNowBtn')}</button>
+            <div class="rating-bar-chart" id="transferRatingBars"></div>
           </div>
+          <button onclick="reviews.openModal('transfer','${v.id}')" class="w-full py-2.5 rounded-xl text-xs font-bold border border-violet-400/40 text-violet-500 mb-3 mt-4">${t('writeReviewBtn')}</button>
+          <div class="space-y-3" id="transferReviewsList"></div>
         </div>
+        </div>
+        <aside class="detail-sidebar">
+          <div class="detail-sidebar-card">${bookingCard}</div>
+        </aside>
+      </div>
+      <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto backdrop-blur-xl border-t p-4 flex items-center justify-between z-10 detail-mobile-bar" style="background:var(--bg-card); border-color:var(--border-card)">
+        <div><p class="text-[9px]">${t('oneWayTripLabel')}</p><p class="text-xl font-bold text-violet-500 font-display">${utils.formatPrice(v.price)}</p></div>
+        <button onclick="startTransferBooking('${v.id}')" class="btn-gold px-7 py-3 rounded-2xl font-bold text-ink-900">${t('bookNowBtn')}</button>
       </div>
     </div>`;
   document.getElementById('mainApp').appendChild(page);
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   page.classList.add('active');
   window.scrollTo(0,0);
-  routeToDetail('transfers', v.id, `${v.vehicleType} Transfer`, opts);
+  routeToDetail('transfers', v.id, `${v.vehicleType} ${t('transferWord')}`, opts);
+  loadReviews('transfer', v.id, 'transferReviewsList', 'transferRatingSummary', 'transferRatingBars');
 }
 
 function closeTransferPage() {

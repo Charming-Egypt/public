@@ -780,6 +780,30 @@
           </div>
           <p class="text-xs leading-relaxed mt-2" style="color:var(--text-secondary)" data-i18n="transfersSubtitle">Choose a vehicle for your ride between Sharm El Sheikh International Airport (SSH) and your hotel.</p>
         </div>
+        <div class="px-5 pt-2 pb-2">
+          <div class="relative mb-3">
+            <i class="fa-solid fa-magnifying-glass absolute top-1/2 -translate-y-1/2" style="inset-inline-start:14px; color:var(--text-secondary)"></i>
+            <input id="transferSearchInput" type="text" oninput="transfersUi.onSearchInput(this.value)" data-i18n-placeholder="searchTransfersPlaceholder" placeholder="Search transfers..." class="w-full field-box rounded-xl text-sm py-3" style="padding-inline-start:40px; padding-inline-end:12px; color:var(--text-primary)">
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <select id="transferSortSelect" onchange="transfersUi.onSortChange(this.value)" class="field-box rounded-xl text-xs py-2 px-3" style="color:var(--text-primary)">
+              <option value="popular" data-i18n="sortPopular">Popular</option>
+              <option value="priceLow" data-i18n="sortPriceLowHigh">Price: Low to High</option>
+              <option value="priceHigh" data-i18n="sortPriceHighLow">Price: High to Low</option>
+              <option value="capacity" data-i18n="sortCapacity">Most Passengers</option>
+            </select>
+            <input id="transferMinPriceInput" type="number" min="0" oninput="transfersUi.onPriceChange(this.value, document.getElementById('transferMaxPriceInput').value)" data-i18n-placeholder="minPriceLabel" placeholder="Min Price" class="field-box rounded-xl text-xs py-2 px-3 w-24" style="color:var(--text-primary)">
+            <input id="transferMaxPriceInput" type="number" min="0" oninput="transfersUi.onPriceChange(document.getElementById('transferMinPriceInput').value, this.value)" data-i18n-placeholder="maxPriceLabel" placeholder="Max Price" class="field-box rounded-xl text-xs py-2 px-3 w-24" style="color:var(--text-primary)">
+            <select id="transferMinCapacitySelect" onchange="transfersUi.onMinCapacityChange(this.value)" class="field-box rounded-xl text-xs py-2 px-3" style="color:var(--text-primary)">
+              <option value="0" data-i18n="anyRatingLabel">Any</option>
+              <option value="2">2+</option>
+              <option value="4">4+</option>
+              <option value="7">7+</option>
+              <option value="10">10+</option>
+            </select>
+            <button onclick="transfersUi.clearFilters()" class="text-xs font-semibold px-3 py-2 rounded-xl" style="color:var(--brand-violet)"><i class="fa-solid fa-rotate-left"></i> <span data-i18n="clearFiltersBtn">Clear Filters</span></button>
+          </div>
+        </div>
         <div class="px-5 pt-4 space-y-4 pb-28" id="transfersList"></div>
       </div>
     </div>
@@ -814,10 +838,38 @@
             <p class="listing-count"><span id="hotelsCount">0</span> hotels along the Red Sea</p>
           </div>
         </div>
-        <div class="px-5 pt-6 pb-4 header-light lg:hidden">
-          <div class="flex items-center gap-3 mb-2">
+        <div class="px-5 pt-6 pb-4 header-light">
+          <div class="flex items-center gap-3 mb-2 lg:hidden">
             <button onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right"></i></button>
             <div><p class="section-subtitle" data-i18n="stayEyebrow">— WHERE TO STAY</p><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)" data-i18n="hotelsTitle">Hotels</h1></div>
+          </div>
+          <div class="relative mb-3">
+            <i class="fa-solid fa-magnifying-glass absolute top-1/2 -translate-y-1/2" style="inset-inline-start:14px; color:var(--text-secondary)"></i>
+            <input id="hotelSearchInput" type="text" oninput="hotels.onSearchInput(this.value)" data-i18n-placeholder="searchHotels" placeholder="Search Hotels" class="w-full field-box rounded-xl text-sm py-3" style="padding-inline-start:40px; padding-inline-end:12px; color:var(--text-primary)">
+          </div>
+          <div class="horizontal-scroll !px-0 listing-filter-row">
+            <button onclick="search.filterCategory('all')" data-cat="all" class="filter-chip hotel-chip active flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-layer-group"></i> <span data-i18n="all">All</span></button>
+            <button onclick="search.filterCategory('budget')" data-cat="budget" class="filter-chip hotel-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-coins"></i> <span data-i18n="budget">Budget</span></button>
+            <button onclick="search.filterCategory('luxury')" data-cat="luxury" class="filter-chip hotel-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-gem"></i> <span data-i18n="luxury">Luxury</span></button>
+            <button onclick="search.filterCategory('family')" data-cat="family" class="filter-chip hotel-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-people-roof"></i> <span data-i18n="family">Family</span></button>
+            <button onclick="search.filterCategory('resort')" data-cat="resort" class="filter-chip hotel-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-umbrella-beach"></i> <span data-i18n="resort">Resort</span></button>
+            <button onclick="search.filterCategory('beachfront')" data-cat="beachfront" class="filter-chip hotel-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-water"></i> <span data-i18n="beachfront">Beachfront</span></button>
+          </div>
+          <div class="flex items-center gap-2 mt-3 flex-wrap">
+            <select id="hotelSortSelect" onchange="hotels.onSortChange(this.value)" class="field-box rounded-xl text-xs py-2 px-3" style="color:var(--text-primary)">
+              <option value="popular" data-i18n="sortPopular">Popular</option>
+              <option value="priceLow" data-i18n="sortPriceLowHigh">Price: Low to High</option>
+              <option value="priceHigh" data-i18n="sortPriceHighLow">Price: High to Low</option>
+              <option value="rating" data-i18n="sortTopRated">Top Rated</option>
+            </select>
+            <input id="hotelMinPriceInput" type="number" min="0" oninput="hotels.onPriceChange(this.value, document.getElementById('hotelMaxPriceInput').value)" data-i18n-placeholder="minPriceLabel" placeholder="Min Price" class="field-box rounded-xl text-xs py-2 px-3 w-24" style="color:var(--text-primary)">
+            <input id="hotelMaxPriceInput" type="number" min="0" oninput="hotels.onPriceChange(document.getElementById('hotelMinPriceInput').value, this.value)" data-i18n-placeholder="maxPriceLabel" placeholder="Max Price" class="field-box rounded-xl text-xs py-2 px-3 w-24" style="color:var(--text-primary)">
+            <select id="hotelMinRatingSelect" onchange="hotels.onMinRatingChange(this.value)" class="field-box rounded-xl text-xs py-2 px-3" style="color:var(--text-primary)">
+              <option value="0" data-i18n="anyRatingLabel">Any</option>
+              <option value="4">4.0+ ★</option>
+              <option value="4.5">4.5+ ★</option>
+            </select>
+            <button onclick="hotels.clearFilters()" class="text-xs font-semibold px-3 py-2 rounded-xl" style="color:var(--brand-violet)"><i class="fa-solid fa-rotate-left"></i> <span data-i18n="clearFiltersBtn">Clear Filters</span></button>
           </div>
         </div>
         <div class="px-5 pt-4 pb-28" id="hotelsList"></div>
