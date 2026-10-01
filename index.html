@@ -28,7 +28,7 @@
     // FALLBACK_LOGO were only defined in data.js, a failed logo load before
     // that point would throw "FALLBACK_LOGO is not defined" instead of
     // showing the fallback image.
-    window.FALLBACK_LOGO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23fcd34d'/%3E%3Cstop offset='50%25' stop-color='%23fbbf24'/%3E%3Cstop offset='100%25' stop-color='%23d97706'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='120' height='120' rx='28' fill='url(%23g)'/%3E%3Ctext x='60' y='68' text-anchor='middle' font-family='Georgia,serif' font-weight='700' font-size='42' fill='%230c0918'%3EDS%3C/text%3E%3C/svg%3E";
+    window.FALLBACK_LOGO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23fcd34d'/%3E%3Cstop offset='50%25' stop-color='%23fbbf24'/%3E%3Cstop offset='100%25' stop-color='%23d97706'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='120' height='120' rx='28' fill='url(%23g)'/%3E%3Ctext x='60' y='68' text-anchor='middle' font-family='Georgia,serif' font-weight='700' font-size='42' fill='%23000000'%3EDS%3C/text%3E%3C/svg%3E";
   </script>
 
   <link rel="stylesheet" href="/style.css?v=12" />
@@ -43,7 +43,7 @@
         extend: {
           fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Playfair Display', 'serif'] },
           colors: {
-            ink: { 950: '#0c0918', 900: '#15101f', 800: '#1f1830', 700: '#2b2140', 600: '#382a54' },
+            ink: { 950: '#000000', 900: '#050505', 800: '#1a1a1a', 700: '#262626', 600: '#333333' },
             violet: { 50: '#fff7ed', 400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c' },
             gold: { 300: '#fcd34d', 400: '#fbbf24', 500: '#f59e0b', 600: '#d97706' },
             mist: { 50: '#f8f7fc', 100: '#f1eef9', 200: '#e8e3f4' }
@@ -99,7 +99,7 @@
     <div class="relative z-10 min-h-full flex flex-col lg:flex-row lg:items-stretch">
 
       <!-- ============ DESKTOP DESIGN — brand panel (lg and up only) ============ -->
-      <div class="hidden lg:flex lg:w-1/2 xl:w-3/5 flex-col justify-center px-16 xl:px-24 py-14 relative overflow-hidden border-r" style="border-color:#2b2140; background-image:linear-gradient(160deg, rgba(23,16,41,.88) 0%, rgba(16,12,28,.80) 55%, rgba(12,9,24,.92) 100%), url('https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1600&q=85'); background-size:cover; background-position:center;">
+      <div class="hidden lg:flex lg:w-1/2 xl:w-3/5 flex-col justify-center px-16 xl:px-24 py-14 relative overflow-hidden border-r" style="border-color:#262626; background-image:linear-gradient(160deg, rgba(10, 10, 10, .88) 0%, rgba(5, 5, 5, .80) 55%, rgba(0, 0, 0, .92) 100%), url('https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1600&q=85'); background-size:cover; background-position:center;">
         <div class="relative z-10 max-w-lg">
           <div class="w-16 h-16 mb-8 bg-gradient-to-br from-gold-300 via-gold-400 to-gold-600 rounded-2xl flex items-center justify-center shadow-2xl">
             <i class="fa-solid fa-compass text-2xl text-ink-900"></i>
@@ -109,15 +109,15 @@
           <p class="text-white/50 text-base mb-10" data-i18n="authBrandSubtitle">Handpicked hotels, private excursions, and seamless transfers — all in one place.</p>
           <ul class="space-y-4">
             <li class="flex items-center gap-3 text-white/70 text-sm">
-              <span class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/5 border" style="border-color:#2b2140;"><i class="fa-solid fa-hotel text-gold-400"></i></span>
+              <span class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/5 border" style="border-color:#262626;"><i class="fa-solid fa-hotel text-gold-400"></i></span>
               <span data-i18n="authFeatureHotels">Handpicked hotels & resorts</span>
             </li>
             <li class="flex items-center gap-3 text-white/70 text-sm">
-              <span class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/5 border" style="border-color:#2b2140;"><i class="fa-solid fa-umbrella-beach text-gold-400"></i></span>
+              <span class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/5 border" style="border-color:#262626;"><i class="fa-solid fa-umbrella-beach text-gold-400"></i></span>
               <span data-i18n="authFeatureExcursions">Private excursions & tours</span>
             </li>
             <li class="flex items-center gap-3 text-white/70 text-sm">
-              <span class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/5 border" style="border-color:#2b2140;"><i class="fa-solid fa-headset text-gold-400"></i></span>
+              <span class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/5 border" style="border-color:#262626;"><i class="fa-solid fa-headset text-gold-400"></i></span>
               <span data-i18n="authFeatureSupport">24/7 support in your language</span>
             </li>
           </ul>
@@ -137,7 +137,7 @@
             <p class="text-white/50 text-sm mt-1" data-i18n="authSubtitle">Sign in to manage your bookings</p>
           </div>
 
-          <div class="card-strong rounded-3xl p-6 lg:p-8" style="background:#171029; border:1px solid #2b2140;">
+          <div class="card-strong rounded-3xl p-6 lg:p-8" style="background:#0a0a0a; border:1px solid #262626;">
             <!-- Google's own rendered button is mounted here by initGoogleSignInButton() —
                  far more reliable across browsers than a custom button driving One Tap. -->
             <div id="googleSignInBtn" class="w-full flex justify-center mb-4" style="min-height:44px;"></div>
@@ -150,26 +150,26 @@
               <div id="authNameWrap" class="hidden space-y-4">
                 <div>
                   <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5" data-i18n="fullNameLabel">FULL NAME</label>
-                  <input type="text" id="authName" maxlength="60" autocomplete="name" class="input-field w-full px-3 py-2.5 text-sm text-white" style="background:#1f1830;" />
+                  <input type="text" id="authName" maxlength="60" autocomplete="name" class="input-field w-full px-3 py-2.5 text-sm text-white" style="background:#1a1a1a;" />
                 </div>
                 <div class="grid grid-cols-[110px_1fr] gap-2">
                   <div>
                     <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5" data-i18n="countryCode">COUNTRY CODE</label>
-                    <select id="authCountryCode" class="input-field w-full px-2 py-2.5 text-sm text-white" style="background:#1f1830;"></select>
+                    <select id="authCountryCode" class="input-field w-full px-2 py-2.5 text-sm text-white" style="background:#1a1a1a;"></select>
                   </div>
                   <div>
                     <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5" data-i18n="phoneNumber">PHONE NUMBER</label>
-                    <input type="tel" id="authPhone" placeholder="1xx xxx xxxx" maxlength="20" autocomplete="tel-national" class="input-field w-full px-3 py-2.5 text-sm text-white" style="background:#1f1830;" />
+                    <input type="tel" id="authPhone" placeholder="1xx xxx xxxx" maxlength="20" autocomplete="tel-national" class="input-field w-full px-3 py-2.5 text-sm text-white" style="background:#1a1a1a;" />
                   </div>
                 </div>
               </div>
               <div>
                 <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5" data-i18n="email">EMAIL ADDRESS</label>
-                <input type="email" id="authEmail" required maxlength="254" placeholder="you@example.com" autocomplete="email" class="input-field w-full px-3 py-2.5 text-sm text-white" style="background:#1f1830;" />
+                <input type="email" id="authEmail" required maxlength="254" placeholder="you@example.com" autocomplete="email" class="input-field w-full px-3 py-2.5 text-sm text-white" style="background:#1a1a1a;" />
               </div>
               <div>
                 <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5" data-i18n="password">PASSWORD</label>
-                <input type="password" id="authPassword" required minlength="6" placeholder="••••••••" autocomplete="current-password" class="input-field w-full px-3 py-2.5 text-sm text-white" style="background:#1f1830;" />
+                <input type="password" id="authPassword" required minlength="6" placeholder="••••••••" autocomplete="current-password" class="input-field w-full px-3 py-2.5 text-sm text-white" style="background:#1a1a1a;" />
               </div>
               <button type="submit" id="authSubmitBtn" class="btn-gold w-full py-3.5 rounded-2xl font-bold text-ink-900 mt-2" data-i18n="loginBtn">Log In</button>
             </form>
@@ -188,8 +188,8 @@
   <!-- Kashier 3D Secure — small in-page modal, not a redirect. The customer
        stays on this URL the entire time; only the bank's OTP challenge
        (which no gateway can skip) appears inside this iframe. -->
-  <div id="kashier3dsModal" class="fixed inset-0 z-[999] hidden items-center justify-center p-4" style="background:rgba(8,6,16,.85);">
-    <div class="relative w-full max-w-md rounded-2xl overflow-hidden shadow-2xl" style="height:min(600px,92vh); background:#171029; border:1px solid #2b2140;">
+  <div id="kashier3dsModal" class="fixed inset-0 z-[999] hidden items-center justify-center p-4" style="background:rgba(0,0,0,.85);">
+    <div class="relative w-full max-w-md rounded-2xl overflow-hidden shadow-2xl" style="height:min(600px,92vh); background:#0a0a0a; border:1px solid #262626;">
       <button onclick="closeKashier3ds(false)" class="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
       <iframe id="kashier3dsFrame" class="w-full h-full border-0" src="" title="Card verification" allowfullscreen></iframe>
     </div>
@@ -370,7 +370,7 @@
       <div class="pt-4 border-t border-white/10 space-y-4">
         <div class="flex items-center justify-between">
           <span class="text-white/60 text-xs font-semibold" data-i18n="darkMode">Dark Mode</span>
-          <div class="theme-switch" id="themeSwitchDrawer" onclick="THEME.toggle()"><div class="knob"><i class="fa-solid fa-moon" style="font-size:9px;color:#171029"></i></div></div>
+          <div class="theme-switch" id="themeSwitchDrawer" onclick="THEME.toggle()"><div class="knob"><i class="fa-solid fa-moon" style="font-size:9px;color:#0a0a0a"></i></div></div>
         </div>
         <div class="flex items-center justify-between">
           <span class="text-white/60 text-xs font-semibold" data-i18n="language">Language</span>
@@ -493,7 +493,7 @@
             </div>
           </div>
 
-          <button onclick="search.performSearch()" style="width:100%; background:linear-gradient(135deg, #fbbf24, #f59e0b); border:none; border-radius:16px; padding:16px; margin-top:8px; color:#171029; font-size:16px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer;">
+          <button onclick="search.performSearch()" style="width:100%; background:linear-gradient(135deg, #fbbf24, #f59e0b); border:none; border-radius:16px; padding:16px; margin-top:8px; color:#0a0a0a; font-size:16px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer;">
             <i class="fa-solid fa-magnifying-glass"></i> <span data-i18n="checkAvailabilityBtn">Check Availability</span>
           </button>
 
@@ -577,7 +577,7 @@
 
         <!-- Transfer promo banner -->
         <div class="px-5 mb-8">
-          <div id="transferPromoBanner" class="banner-creative rounded-[26px] relative overflow-hidden cursor-pointer" onclick="nav.go('transfers')" style="background-image:linear-gradient(120deg,rgba(23,16,41,.88),rgba(23,16,41,.35) 60%,rgba(23,16,41,.1)), url('https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1000&q=80')">
+          <div id="transferPromoBanner" class="banner-creative rounded-[26px] relative overflow-hidden cursor-pointer" onclick="nav.go('transfers')" style="background-image:linear-gradient(120deg,rgba(10, 10, 10, .88),rgba(10, 10, 10, .35) 60%,rgba(10, 10, 10, .1)), url('https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1000&q=80')">
             <div class="relative z-10 p-6 lg:p-12 text-white max-w-[75%] lg:max-w-[50%]">
               <div class="inline-block bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-[10px] lg:text-xs font-bold mb-3 border border-white/20"><i class="fa-solid fa-shuttle-van text-orange-300 ml-1"></i><span data-i18n="airportTransferBadge">AIRPORT TRANSFERS</span></div>
               <p class="font-display text-2xl lg:text-4xl font-bold mb-1 lg:mb-2" data-i18n="transferPromoTitle">Land & Go</p>
@@ -1204,7 +1204,7 @@
             </div>
             <div class="flex justify-between items-center">
               <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:var(--bg-field)"><i class="fa-solid fa-moon text-violet-500"></i></div><span class="text-sm font-medium" style="color:var(--text-primary)" data-i18n="darkMode">Dark Mode</span></div>
-              <div class="theme-switch" id="themeSwitchSettings" onclick="THEME.toggle()"><div class="knob"><i class="fa-solid fa-moon" style="font-size:9px;color:#171029"></i></div></div>
+              <div class="theme-switch" id="themeSwitchSettings" onclick="THEME.toggle()"><div class="knob"><i class="fa-solid fa-moon" style="font-size:9px;color:#0a0a0a"></i></div></div>
             </div>
           </div>
         </div>

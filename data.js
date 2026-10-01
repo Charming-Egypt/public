@@ -14,7 +14,7 @@ try {
 }
 let authMode = 'login';
 
-const PLACEHOLDER_IMG = "data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27300%27%3E%3Crect fill=%27%232b2140%27 width=%27400%27 height=%27300%27/%3E%3Ctext x=%27200%27 y=%27150%27 text-anchor=%27middle%27 dy=%27.3em%27 fill=%27%239d94b8%27 font-size=%2720%27 font-family=%27sans-serif%27%3ENo Image%3C/text%3E%3C/svg%3E";
+const PLACEHOLDER_IMG = "data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27300%27%3E%3Crect fill=%27%23262626%27 width=%27400%27 height=%27300%27/%3E%3Ctext x=%27200%27 y=%27150%27 text-anchor=%27middle%27 dy=%27.3em%27 fill=%27%23a3a3a3%27 font-size=%2720%27 font-family=%27sans-serif%27%3ENo Image%3C/text%3E%3C/svg%3E";
 
 // ==================== STATE ====================
 const state = {
@@ -579,7 +579,7 @@ async function initGoogleSignInButton() {
   if (!container) return;
 
   if (isInAppBrowser()) {
-    container.innerHTML = `<div class="w-full py-3.5 px-4 rounded-2xl text-xs text-center text-white/60 border leading-relaxed" style="border-color:#2b2140;">
+    container.innerHTML = `<div class="w-full py-3.5 px-4 rounded-2xl text-xs text-center text-white/60 border leading-relaxed" style="border-color:#262626;">
       <i class="fa-solid fa-arrow-up-right-from-square mr-1.5"></i>
       <span data-i18n="openInBrowserForGoogle">${t('openInBrowserForGoogle', "Open this page in your phone's browser (not this app) to sign in with Google.")}</span>
     </div>`;
