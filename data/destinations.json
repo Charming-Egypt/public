@@ -227,40 +227,40 @@
   {
     "id": "d5",
     "name": {
-      "en": "Old Market (Souk)",
       "ar": "السوق القديم",
+      "en": "Old Market (Souk)",
       "ru": "Старый рынок (Сук)",
       "de": "Alter Markt (Souk)",
       "it": "Vecchio Mercato (Souk)",
       "tr": "Eski Çarşı (Sûk)"
     },
     "tagline": {
-      "en": "Traditional Egyptian shopping and seafood dining",
       "ar": "التسوق التقليدي والمأكولات البحرية الأصيلة",
+      "en": "Traditional Egyptian shopping and seafood dining",
       "ru": "Традиционный базар и рестораны морепродуктов",
       "de": "Traditionelles ägyptisches Einkaufen und Fischrestaurants",
       "it": "Shopping tradizionale egiziano e ristoranti di pesce",
       "tr": "Geleneksel Mısır alışverişi ve deniz ürünleri restoranları"
     },
     "description": {
-      "en": "A lively bazaar with spice shops, souvenir stalls and seafood restaurants, busiest in the evening.",
       "ar": "سوق شعبي نابض بالحياة يضم محلات التوابل ومحلات الهدايا ومطاعم المأكولات البحرية، وأكثر ازدحامًا في المساء.",
+      "en": "A lively bazaar with spice shops, souvenir stalls and seafood restaurants, busiest in the evening.",
       "ru": "Оживлённый базар с лавками специй, сувенирными киосками и рыбными ресторанами, наиболее людный вечером.",
       "de": "Ein belebter Basar mit Gewürzläden, Souvenirständen und Fischrestaurants, abends am geschäftigsten.",
       "it": "Un vivace bazar con negozi di spezie, bancarelle di souvenir e ristoranti di pesce, più frequentato la sera.",
       "tr": "Baharat dükkanları, hediyelik eşya standları ve deniz ürünleri restoranlarıyla dolu, akşamları en yoğun olan canlı bir pazar."
     },
     "fullDescription": {
-      "en": "The Old Market is Sharm El Sheikh's traditional bazaar district, home to Al-Sahaba Mosque and dozens of shops selling spices, textiles, leather goods and souvenirs, alongside popular seafood restaurants where fish is chosen fresh and cooked to order. Prices are generally negotiable and the area comes alive after sunset.",
       "ar": "يُعد السوق القديم الحي التجاري التقليدي في شرم الشيخ، ويضم مسجد الصحابة وعشرات المحلات التي تبيع التوابل والمنسوجات والمنتجات الجلدية والهدايا التذكارية، إلى جانب مطاعم مأكولات بحرية شهيرة يختار فيها الزبون السمك طازجًا ليُطهى حسب الطلب. الأسعار قابلة للتفاوض عمومًا، وتنشط المنطقة بشكل خاص بعد غروب الشمس.",
+      "en": "The Old Market is Sharm El Sheikh's traditional bazaar district, home to Al-Sahaba Mosque and dozens of shops selling spices, textiles, leather goods and souvenirs, alongside popular seafood restaurants where fish is chosen fresh and cooked to order. Prices are generally negotiable and the area comes alive after sunset.",
       "ru": "Старый рынок — традиционный торговый квартал Шарм-эль-Шейха, где находится мечеть Аль-Сахаба и десятки лавок со специями, тканями, кожаными изделиями и сувенирами, а также популярные рыбные рестораны, где рыбу выбирают свежей и готовят на заказ. Цены обычно можно обсуждать, а район особенно оживает после заката.",
       "de": "Der Alte Markt ist das traditionelle Basarviertel von Sharm El Sheikh mit der Al-Sahaba-Moschee und Dutzenden Geschäften für Gewürze, Textilien, Lederwaren und Souvenirs sowie beliebten Fischrestaurants, in denen der Fisch frisch ausgewählt und nach Wunsch zubereitet wird. Preise sind meist verhandelbar, das Viertel belebt sich besonders nach Sonnenuntergang.",
       "it": "Il Vecchio Mercato è il quartiere del bazar tradizionale di Sharm El Sheikh, sede della Moschea Al-Sahaba e di decine di negozi di spezie, tessuti, articoli in pelle e souvenir, oltre a rinomati ristoranti di pesce dove il pesce viene scelto fresco e cucinato su richiesta. I prezzi sono generalmente negoziabili e la zona si anima soprattutto dopo il tramonto.",
       "tr": "Eski Çarşı, Sahabe Camii'ne ev sahipliği yapan ve baharat, tekstil, deri ürünleri ve hediyelik eşya satan onlarca dükkanın yanı sıra balığın taze seçilip sipariş üzerine pişirildiği popüler deniz ürünleri restoranlarının bulunduğu Sharm El Sheikh'in geleneksel çarşı bölgesidir. Fiyatlar genellikle pazarlığa açıktır ve bölge özellikle gün batımından sonra canlanır."
     },
     "location": {
-      "en": "Old Town, Sharm El Sheikh",
       "ar": "المدينة القديمة، شرم الشيخ",
+      "en": "Old Town, Sharm El Sheikh",
       "ru": "Старый город, Шарм-эль-Шейх",
       "de": "Altstadt, Sharm El Sheikh",
       "it": "Città Vecchia, Sharm El Sheikh",
@@ -275,7 +275,7 @@
     "phone": "+20 10 18683119",
     "google_place_id": "ChIJa-E1Hy46UxQRRJIer96S6Qo",
     "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJa-E1Hy46UxQRRJIer96S6Qo",
-    "image": "",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfO68RTZYWRPgXK_V-rGs2qJ4l8Xsh6WQNslnVzVY5MYwDY_ghVp7CcbU&s=10",
     "images": []
   },
   {
