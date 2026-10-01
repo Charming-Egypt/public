@@ -119,40 +119,40 @@
   {
     "id": "d3",
     "name": {
-      "en": "Farsha Cafe",
       "ar": "كافيه فرشة",
+      "en": "Farsha Cafe",
       "ru": "Кафе Фарша",
       "de": "Farsha Cafe",
       "it": "Farsha Cafe",
       "tr": "Farsha Cafe"
     },
     "tagline": {
-      "en": "An iconic Bedouin-style cliffside lounge",
       "ar": "مقهى جبلي بطراز بدوي أيقوني",
+      "en": "An iconic Bedouin-style cliffside lounge",
       "ru": "Культовое кафе в бедуинском стиле на скале",
       "de": "Ein ikonisches Bedouinen-Café an der Klippe",
       "it": "Un iconico locale beduino sulla scogliera",
       "tr": "Kayalıkta ikonik Bedevi tarzı kafe"
     },
     "description": {
-      "en": "A well-known Bedouin-style cafe and lounge built on the cliffside at Hadaba, overlooking the sea.",
       "ar": "مقهى ولاونج معروف بطراز بدوي، مبني على حافة هضبة أم السيد مطلاً على البحر.",
+      "en": "A well-known Bedouin-style cafe and lounge built on the cliffside at Hadaba, overlooking the sea.",
       "ru": "Известное кафе-лаунж в бедуинском стиле, построенное на скале в районе Хадаба с видом на море.",
       "de": "Ein bekanntes Café und Lounge im Beduinenstil, das auf der Klippe von Hadaba mit Meerblick errichtet wurde.",
       "it": "Un noto caffè-lounge in stile beduino, costruito sulla scogliera di Hadaba con vista sul mare.",
       "tr": "Hadaba'daki kayalık üzerine deniz manzaralı olarak inşa edilmiş, tanınmış Bedevi tarzı bir kafe ve lounge."
     },
     "fullDescription": {
-      "en": "Located in the Hadaba (Ras Um Sid) district, Farsha Cafe is one of the most photographed spots in Sharm El Sheikh, known for its traditional floor cushions, lanterns, and terraced seating carved into the cliff. It draws large crowds especially around sunset, and note that it operates on a walk-in, no-reservation basis.",
       "ar": "يقع كافيه فرشة في منطقة الهضبة (رأس أم السيد)، وهو من أكثر الأماكن تصويرًا في شرم الشيخ، ويشتهر بوسائده الأرضية التقليدية وفوانينه ومقاعده المتدرجة المنحوتة في الصخر. يستقطب أعدادًا كبيرة من الزوار خاصة عند الغروب، مع العلم أنه لا يقبل الحجز المسبق ويعتمد على الدخول المباشر فقط.",
+      "en": "Located in the Hadaba (Ras Um Sid) district, Farsha Cafe is one of the most photographed spots in Sharm El Sheikh, known for its traditional floor cushions, lanterns, and terraced seating carved into the cliff. It draws large crowds especially around sunset, and note that it operates on a walk-in, no-reservation basis.",
       "ru": "Расположенное в районе Хадаба (Рас-Умм-Сид), кафе Фарша — одно из самых фотографируемых мест в Шарм-эль-Шейхе, известное традиционными напольными подушками, фонарями и террасными сиденьями, вырезанными в скале. Особенно многолюдно на закате; бронирование не предусмотрено, вход только по живой очереди.",
       "de": "Im Stadtteil Hadaba (Ras Um Sid) gelegen, ist das Farsha Cafe einer der meistfotografierten Orte in Sharm El Sheikh, bekannt für traditionelle Bodenkissen, Laternen und terrassenförmige, in den Felsen gehauene Sitzplätze. Besonders bei Sonnenuntergang sehr belebt; es gibt keine Reservierung, nur Einlass nach Wartereihenfolge.",
       "it": "Situato nel quartiere di Hadaba (Ras Um Sid), il Farsha Cafe è uno dei luoghi più fotografati di Sharm El Sheikh, noto per i cuscini tradizionali a terra, le lanterne e i posti a sedere a terrazza scavati nella roccia. Molto affollato soprattutto al tramonto; non si accettano prenotazioni, solo ingresso diretto.",
       "tr": "Hadaba (Ras Um Sid) bölgesinde yer alan Farsha Cafe, geleneksel yer minderleri, fenerler ve kayalığa oyulmuş teraslı oturma alanlarıyla tanınan, Sharm El Sheikh'in en çok fotoğraflanan yerlerinden biridir. Özellikle gün batımında çok kalabalık olur; rezervasyon kabul edilmez, yalnızca sırayla giriş yapılır."
     },
     "location": {
-      "en": "Hadaba (Ras Um Sid), Sharm El Sheikh",
       "ar": "هضبة أم السيد، شرم الشيخ",
+      "en": "Hadaba (Ras Um Sid), Sharm El Sheikh",
       "ru": "Хадаба (Рас-Умм-Сид), Шарм-эль-Шейх",
       "de": "Hadaba (Ras Um Sid), Sharm El Sheikh",
       "it": "Hadaba (Ras Um Sid), Sharm El Sheikh",
