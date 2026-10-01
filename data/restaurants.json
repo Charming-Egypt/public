@@ -21,8 +21,10 @@
     "priceLevel": 2,
     "rating": 4.6,
     "reviews": 4053,
-    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSAjRCwV4BWPEnv7H5eo9Qv15fP12zqWpNiWEcIPwQq8avOf2m2wkpo3cQ&s=10",
-    "images": [],
+    "image": "https://5starsegypttours.com/wp-content/uploads/2025/02/Mahony-Restaurant-Sharm-El-Sheikh-1.webp",
+    "images": [
+      "https://5starsegypttours.com/wp-content/uploads/2025/02/Mahony-Restaurant-Sharm-El-Sheikh-1.webp"
+    ],
     "description": {},
     "fullDescription": {},
     "location": {
