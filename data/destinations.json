@@ -65,40 +65,40 @@
   {
     "id": "d2",
     "name": {
-      "en": "Naama Bay",
       "ar": "خليج نعمة",
+      "en": "Naama Bay",
       "ru": "Наама Бэй",
       "de": "Naama Bay",
       "it": "Naama Bay",
       "tr": "Naama Bay"
     },
     "tagline": {
-      "en": "The lively tourist heart of Sharm El Sheikh",
       "ar": "القلب السياحي النابض بالحياة في شرم الشيخ",
+      "en": "The lively tourist heart of Sharm El Sheikh",
       "ru": "Оживлённое туристическое сердце Шарм-эль-Шейха",
       "de": "Das lebendige touristische Herz von Sharm El Sheikh",
       "it": "Il vivace cuore turistico di Sharm El Sheikh",
       "tr": "Sharm El Sheikh'in hareketli turizm merkezi"
     },
     "description": {
-      "en": "A beachfront promenade lined with hotels, restaurants, cafes and shops in the center of Sharm El Sheikh.",
       "ar": "ممشى ساحلي يضم الفنادق والمطاعم والمقاهي والمحلات في وسط شرم الشيخ.",
+      "en": "A beachfront promenade lined with hotels, restaurants, cafes and shops in the center of Sharm El Sheikh.",
       "ru": "Прибрежный променад с отелями, ресторанами, кафе и магазинами в центре Шарм-эль-Шейха.",
       "de": "Eine Strandpromenade mit Hotels, Restaurants, Cafés und Geschäften im Zentrum von Sharm El Sheikh.",
       "it": "Un lungomare fiancheggiato da hotel, ristoranti, caffè e negozi nel centro di Sharm El Sheikh.",
       "tr": "Sharm El Sheikh'in merkezinde oteller, restoranlar, kafeler ve mağazalarla çevrili bir sahil yürüyüş yolu."
     },
     "fullDescription": {
-      "en": "Naama Bay is the main tourist hub of Sharm El Sheikh, centered on a pedestrian beachfront promenade. It combines sandy beaches and calm swimming waters with a dense concentration of hotels, international restaurants, cafes, shops and water-sports operators, and is especially lively in the evenings.",
       "ar": "يُعد خليج نعمة المركز السياحي الرئيسي في شرم الشيخ، ويتمحور حول ممشى ساحلي مخصص للمشاة. يجمع بين الشواطئ الرملية ومياه السباحة الهادئة وتركز كثيف للفنادق والمطاعم العالمية والمقاهي والمحلات ومشغلي الرياضات المائية، وتزداد حيويته بشكل خاص في المساء.",
+      "en": "Naama Bay is the main tourist hub of Sharm El Sheikh, centered on a pedestrian beachfront promenade. It combines sandy beaches and calm swimming waters with a dense concentration of hotels, international restaurants, cafes, shops and water-sports operators, and is especially lively in the evenings.",
       "ru": "Наама Бэй — главный туристический центр Шарм-эль-Шейха, сосредоточенный вокруг пешеходной набережной. Здесь сочетаются песчаные пляжи со спокойной водой и плотная концентрация отелей, международных ресторанов, кафе, магазинов и операторов водных видов спорта; особенно оживлённо по вечерам.",
       "de": "Naama Bay ist das touristische Zentrum von Sharm El Sheikh und dreht sich um eine Fußgänger-Strandpromenade. Sandstrände und ruhiges Wasser treffen hier auf eine hohe Dichte an Hotels, internationalen Restaurants, Cafés, Geschäften und Wassersportanbietern; abends besonders lebendig.",
       "it": "Naama Bay è il principale centro turistico di Sharm El Sheikh, incentrato su un lungomare pedonale. Unisce spiagge sabbiose e acque calme a un'alta concentrazione di hotel, ristoranti internazionali, caffè, negozi e operatori di sport acquatici, particolarmente vivace la sera.",
       "tr": "Naama Bay, yaya sahil yürüyüş yoluna dayanan Sharm El Sheikh'in ana turizm merkezidir. Kumlu plajlar ve sakin sularla birlikte yoğun otel, uluslararası restoran, kafe, mağaza ve su sporları işletmeleri barındırır; özellikle akşamları çok canlıdır."
     },
     "location": {
-      "en": "Central Sharm El Sheikh",
       "ar": "وسط شرم الشيخ",
+      "en": "Central Sharm El Sheikh",
       "ru": "Центр Шарм-эль-Шейха",
       "de": "Zentrum von Sharm El Sheikh",
       "it": "Centro di Sharm El Sheikh",
@@ -113,7 +113,7 @@
     "phone": "",
     "google_place_id": "ChIJi2edSoc3UxQR0CSgCn6HllE",
     "google_maps_url": "https://www.google.com/maps/place/?q=place_id:ChIJi2edSoc3UxQR0CSgCn6HllE",
-    "image": "",
+    "image": "https://cdn2.wingie.com/uploads/f_webp,s_500x300,q_60,fit_cover/altswq_4c8251e40c.jpg",
     "images": []
   },
   {
