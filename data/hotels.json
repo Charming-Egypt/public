@@ -179,24 +179,24 @@
     "id": "h2",
     "category": "luxury",
     "name": {
-      "en": "Cataract Resort Aqua Park",
       "ar": "منتجع كاتاراكت - أكوابارك",
+      "en": "Cataract Resort Aqua Park",
       "ru": "Cataract Resort Aqua Park",
       "de": "Cataract Resort Aqua Park",
       "it": "Cataract Resort Aqua Park",
       "tr": "Cataract Resort Aqua Park"
     },
     "description": {
-      "en": "Elegant suites with panoramic views",
       "ar": "أجنحة أنيقة بإطلالات بانورامية",
+      "en": "Elegant suites with panoramic views",
       "ru": "Элегантные люксы с панорамным видом",
       "de": "Elegante Suiten mit Panoramablick",
       "it": "Eleganti suite con vista panoramica",
       "tr": "Panoramik manzaralı zarif suitler"
     },
     "fullDescription": {
-      "en": "Discover Deluxe Suites offers an intimate luxury experience with spacious suites, private balconies overlooking the Red Sea, and personalized service for the discerning traveler.",
       "ar": "يقدم ديسكفر ديلوكس سويتس تجربة فخامة حميمية بأجنحة واسعة وشرفات خاصة تطل على البحر الأحمر وخدمة شخصية للمسافر المميز.",
+      "en": "Discover Deluxe Suites offers an intimate luxury experience with spacious suites, private balconies overlooking the Red Sea, and personalized service for the discerning traveler.",
       "ru": "Discover Deluxe Suites предлагает изысканный отдых в просторных люксах с личными балконами с видом на Красное море.",
       "de": "Discover Deluxe Suites bietet ein intimes Luxuserlebnis mit geräumigen Suiten und privaten Balkonen zum Roten Meer.",
       "it": "Discover Deluxe Suites offre un'esperienza di lusso intima con ampie suite e balconi privati affacciati sul Mar Rosso.",
@@ -206,8 +206,8 @@
     "rating": 5,
     "reviews": 189,
     "location": {
-      "en": "456 Sharks Bay, Sharm El Sheikh",
       "ar": "٤٥٦ خليج القرش، شرم الشيخ",
+      "en": "456 Sharks Bay, Sharm El Sheikh",
       "ru": "Sharks Bay 456, Шарм-эль-Шейх",
       "de": "Sharks Bay 456, Sharm El Sheikh",
       "it": "Sharks Bay 456, Sharm El Sheikh",
@@ -222,19 +222,19 @@
       "https://q-xx.bstatic.com/xdata/images/hotel/max500/716940913.jpg?k=b53afcad40447bf4b370c586313ff5defed59dcb20f975d3406e5b623aba88f0&o="
     ],
     "amenities": {
-      "en": [
-        "Free WiFi",
-        "Breakfast",
-        "Gym",
-        "Beach Access",
-        "Concierge"
-      ],
       "ar": [
         "واي فاي مجاني",
         "إفطار",
         "صالة رياضية",
         "وصول مباشر للشاطئ",
         "خدمة كونسيرج"
+      ],
+      "en": [
+        "Free WiFi",
+        "Breakfast",
+        "Gym",
+        "Beach Access",
+        "Concierge"
       ],
       "ru": [
         "Бесплатный Wi-Fi",
@@ -269,8 +269,8 @@
     "rooms": [
       {
         "type": {
-          "en": "Junior Suite",
           "ar": "جناح جونيور",
+          "en": "Junior Suite",
           "ru": "Джуниор люкс",
           "de": "Junior-Suite",
           "it": "Junior Suite",
@@ -279,27 +279,28 @@
         "price": 4750,
         "size": "45m²",
         "beds": {
-          "en": "1 King Bed",
           "ar": "سرير كينج واحد",
+          "en": "1 King Bed",
           "ru": "1 кровать king-size",
           "de": "1 Kingsize-Bett",
           "it": "1 letto king",
           "tr": "1 King Yatak"
         },
         "guests": 2,
+        "baseOccupancy": 2,
+        "extraAdultFee": 1190,
+        "freeChildrenPerRoom": 2,
+        "extraChildFee": 600,
         "image": "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=400&q=80",
         "description": {
-          "en": "An elegant junior suite with a private balcony, sitting area, and rain shower — quiet, comfortable and close to the beach path.",
           "ar": "جناح جونيور أنيق بشرفة خاصة ومنطقة جلوس ودُش مطري — هادئ ومريح وقريب من ممر الشاطئ.",
+          "en": "An elegant junior suite with a private balcony, sitting area, and rain shower — quiet, comfortable and close to the beach path.",
           "ru": "Элегантный джуниор-люкс с личным балконом, зоной отдыха и тропическим душем.",
           "de": "Eine elegante Junior-Suite mit privatem Balkon, Sitzbereich und Regendusche.",
           "it": "Un'elegante junior suite con balcone privato, area salotto e doccia a pioggia.",
           "tr": "Özel balkonu, oturma alanı ve yağmurlama duşuyla şık bir junior suit."
         },
-        "baseOccupancy": 2,
-        "extraAdultFee": 1190,
-        "freeChildrenPerRoom": 2,
-        "extraChildFee": 600
+        "childPricingTiers": []
       }
     ],
     "unavailableDates": [
@@ -308,6 +309,7 @@
       "2026-09-13",
       "2026-09-14",
       "2026-09-15"
-    ]
+    ],
+    "owner": "BwomDIPc14TitJPZwdYjApde6Vy1"
   }
 ]
