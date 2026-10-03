@@ -246,14 +246,50 @@ function formatCardNumberInput(el) {
 // the server recomputes and rejects the charge if this ever drifts from its own figure.
 const DEPOSIT_RATIO = 0.5;
 function depositOf(total) { return Math.round(total * DEPOSIT_RATIO); }
-function depositSummaryBlock(total) {
+// amountDueNow() is the single source of truth both the summary UI and the
+// actual charge call read from — keeps them impossible to drift apart.
+function amountDueNow(type, total) {
+  const plan = (state.bookingDraft.paymentPlan && state.bookingDraft.paymentPlan[type]) || 'full';
+  return plan === 'deposit' ? depositOf(total) : total;
+}
+function payBtnLabel(type, total) {
+  const plan = (state.bookingDraft.paymentPlan && state.bookingDraft.paymentPlan[type]) || 'full';
+  return `${t('bookNowBtn')} — ${utils.formatPrice(amountDueNow(type, total))}`;
+}
+// Two radio options the guest actively picks between — full amount (nothing
+// owed later) or a 50% non-refundable deposit (rest due on arrival). Neither
+// is charged until they choose; 'full' is the default.
+function paymentPlanSelector(total, type) {
+  if (!state.bookingDraft.paymentPlan) state.bookingDraft.paymentPlan = {};
+  state.bookingDraft.paymentPlan[type] = 'full';
   const deposit = depositOf(total), remaining = total - deposit;
   return `
-    <div class="booking-summary-row" style="color:var(--brand-violet); font-weight:700;"><span>${t('depositDueNowLabel') || 'Pay now (non-refundable deposit)'}</span><span>${utils.formatPrice(deposit)}</span></div>
-    <div class="booking-summary-row" style="color:var(--text-secondary); font-size:11px;"><span>${t('depositRemainingLabel') || 'Remaining, due on arrival'}</span><span>${utils.formatPrice(remaining)}</span></div>`;
+    <div class="payment-plan-selector space-y-2 my-3">
+      <p class="text-xs font-semibold mb-1" style="color:var(--text-secondary)">${t('choosePaymentOptionLabel')}</p>
+      <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer" style="border-color:var(--brand-violet)">
+        <input type="radio" name="paymentPlan_${type}" value="full" checked onchange="updatePaymentPlan('${type}', ${total}, this.value)">
+        <div class="flex-1 flex items-center justify-between">
+          <span class="text-sm font-semibold">${t('payFullAmountLabel')}</span>
+          <span class="text-sm font-bold">${utils.formatPrice(total)}</span>
+        </div>
+      </label>
+      <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer" style="border-color:var(--border-field)">
+        <input type="radio" name="paymentPlan_${type}" value="deposit" onchange="updatePaymentPlan('${type}', ${total}, this.value)">
+        <div class="flex-1 flex items-center justify-between">
+          <span class="text-sm font-semibold">${t('payDepositOptionLabel')}</span>
+          <span class="text-sm font-bold">${utils.formatPrice(deposit)}</span>
+        </div>
+      </label>
+      <p class="text-xs" id="paymentPlanNote_${type}" style="color:var(--text-secondary)">${t('payFullNoteLabel')}</p>
+    </div>`;
 }
-function depositPayBtnLabel(total) {
-  return `${t('payDepositBtn') || 'Pay deposit'} — ${utils.formatPrice(depositOf(total))}`;
+function updatePaymentPlan(type, total, plan) {
+  if (!state.bookingDraft.paymentPlan) state.bookingDraft.paymentPlan = {};
+  state.bookingDraft.paymentPlan[type] = plan;
+  const btn = document.getElementById(type + 'PayBtn');
+  if (btn) btn.innerHTML = payBtnLabel(type, total);
+  const note = document.getElementById('paymentPlanNote_' + type);
+  if (note) note.textContent = plan === 'deposit' ? t('payDepositNoteLabel').replace('{n}', utils.formatPrice(total - depositOf(total))) : t('payFullNoteLabel');
 }
 
 // Dispatches to the card or wallet flow based on the selected payment
@@ -327,11 +363,13 @@ async function processKashierWallet(orderId, amount, currency, btn) {
 // back via postMessage, per Kashier's own 3D Secure handling docs.
 let _kashier3dsResolve = null;
 let _kashier3dsOrderId = null;
+let _kashier3dsMode = 'booking';
 
-function handleKashier3ds(redirectUrl, orderId) {
+function handleKashier3ds(redirectUrl, orderId, mode) {
   return new Promise((resolve) => {
     _kashier3dsResolve = resolve;
     _kashier3dsOrderId = orderId;
+    _kashier3dsMode = mode || 'booking';
     const modal = document.getElementById('kashier3dsModal');
     const frame = document.getElementById('kashier3dsFrame');
     if (!modal || !frame) { resolve(false); return; }
@@ -358,9 +396,115 @@ async function kashier3dsMessageListener(e) {
   // Confirm against our own backend rather than trusting the postMessage
   // alone — it's the same source the webhook writes to.
   try {
-    const check = await apiFetch('/api/kashier/charge-status', { method: 'POST', body: JSON.stringify({ orderId: _kashier3dsOrderId }) });
-    closeKashier3ds(check.status === 'completed');
+    const endpoint = _kashier3dsMode === 'balance' ? '/api/kashier/charge-balance-status' : '/api/kashier/charge-status';
+    const check = await apiFetch(endpoint, { method: 'POST', body: JSON.stringify({ orderId: _kashier3dsOrderId }) });
+    closeKashier3ds(check.status === 'completed' || check.status === 'captured');
   } catch { closeKashier3ds(false); }
+}
+
+// ==================== PAY THE REMAINING BALANCE ====================
+let _balancePayOrderId = null;
+let _balancePayAmount = null;
+
+function openPayBalanceModal(orderId, amount) {
+  _balancePayOrderId = orderId;
+  _balancePayAmount = amount;
+  const old = document.getElementById('payBalanceModal'); if (old) old.remove();
+  const modal = document.createElement('div');
+  modal.id = 'payBalanceModal';
+  modal.className = 'fixed inset-0 z-[300] flex items-end sm:items-center justify-center';
+  modal.innerHTML = `
+    <div class="absolute inset-0" style="background:rgba(0,0,0,.6)" onclick="closePayBalanceModal()"></div>
+    <div class="relative w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl p-5" style="background:var(--bg-card); max-height:90vh; overflow-y:auto;">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="font-display text-lg font-bold">${t('payRemainingBtn')}</h3>
+        <button onclick="closePayBalanceModal()" class="w-9 h-9 rounded-full field-box flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <p class="text-sm mb-3" style="color:var(--text-secondary)">${t('balanceDueLabel').replace('{n}', utils.formatPrice(amount))}</p>
+      <div id="payBalanceCardFields">${balanceCardFieldsBlock()}</div>
+      <button id="payBalanceSubmitBtn" onclick="submitBalancePayment()" class="btn-gold w-full py-3.5 rounded-2xl font-bold text-ink-900 mt-3">${t('payRemainingBtn')} — ${utils.formatPrice(amount)}</button>
+    </div>`;
+  document.body.appendChild(modal);
+}
+function balanceCardFieldsBlock() {
+  return `
+    <div class="card rounded-2xl p-4 space-y-3">
+      <div>
+        <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5">${t('cardNumberLabel')}</label>
+        <input type="text" id="payCardNumber" inputmode="numeric" autocomplete="cc-number" maxlength="23" placeholder="1234 5678 9012 3456" class="input-field w-full px-3 py-2.5 text-sm" oninput="formatCardNumberInput(this)">
+      </div>
+      <div class="grid grid-cols-3 gap-2">
+        <div>
+          <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5">MM</label>
+          <input type="text" id="payCardMonth" inputmode="numeric" maxlength="2" placeholder="MM" autocomplete="cc-exp-month" class="input-field w-full px-3 py-2.5 text-sm text-center">
+        </div>
+        <div>
+          <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5">YY</label>
+          <input type="text" id="payCardYear" inputmode="numeric" maxlength="2" placeholder="YY" autocomplete="cc-exp-year" class="input-field w-full px-3 py-2.5 text-sm text-center">
+        </div>
+        <div>
+          <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5">${t('cvvLabel')}</label>
+          <input type="password" id="payCardCvv" inputmode="numeric" maxlength="4" placeholder="${t('cvvLabel')}" autocomplete="cc-csc" class="input-field w-full px-3 py-2.5 text-sm text-center">
+        </div>
+      </div>
+      <div>
+        <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5">${t('nameOnCardLabel')}</label>
+        <input type="text" id="payCardName" autocomplete="cc-name" placeholder="${t('phNameOnCard')}" class="input-field w-full px-3 py-2.5 text-sm">
+      </div>
+      <label class="flex items-center gap-2 text-xs text-white/60 pt-1 cursor-pointer">
+        <input type="checkbox" id="payCardSave" class="w-4 h-4 accent-violet-600"> ${t('saveCardLabel')}
+      </label>
+      <p class="text-[10px] text-white/30 flex items-center gap-1.5"><i class="fa-solid fa-lock"></i> ${t('securePaymentNote')}</p>
+    </div>`;
+}
+function closePayBalanceModal() {
+  const m = document.getElementById('payBalanceModal');
+  if (m) m.remove();
+  _balancePayOrderId = null; _balancePayAmount = null;
+}
+
+async function submitBalancePayment() {
+  const orderId = _balancePayOrderId, amount = _balancePayAmount;
+  if (!orderId) return;
+  const btn = document.getElementById('payBalanceSubmitBtn');
+  const number = (document.getElementById('payCardNumber')?.value || '').replace(/\s+/g, '');
+  const month = (document.getElementById('payCardMonth')?.value || '').trim().padStart(2, '0');
+  const year = (document.getElementById('payCardYear')?.value || '').trim().padStart(2, '0');
+  const cvv = (document.getElementById('payCardCvv')?.value || '').trim();
+  const name = (document.getElementById('payCardName')?.value || '').trim();
+  const save = document.getElementById('payCardSave')?.checked || false;
+  if (!/^\d{12,19}$/.test(number)) { toast(t('errCardNumber'), 'error'); return; }
+  if (!/^\d{2}$/.test(month) || !/^\d{2}$/.test(year)) { toast(t('errExpiryDate'), 'error'); return; }
+  if (!/^\d{3,4}$/.test(cvv)) { toast(t('errCvv'), 'error'); return; }
+  if (!name) { toast(t('errCardName'), 'error'); return; }
+
+  btn.disabled = true; btn.innerHTML = t('processingLabel');
+  let res;
+  try {
+    res = await apiFetch('/api/kashier/charge-balance', {
+      method: 'POST',
+      body: JSON.stringify({ orderId, amount, currency: 'EGP', card: { number, month, year, cvv, name }, save }),
+    });
+  } catch (e) {
+    toast(e.message || 'Payment failed', 'error');
+    btn.disabled = false; btn.innerHTML = `${t('payRemainingBtn')} — ${utils.formatPrice(amount)}`;
+    return;
+  } finally {
+    ['payCardNumber', 'payCardMonth', 'payCardYear', 'payCardCvv', 'payCardName'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  }
+
+  let ok = false;
+  if (res.status === '3ds_required') ok = await handleKashier3ds(res.authentication.redirectUrl, orderId, 'balance');
+  else if (res.status === 'captured') ok = true;
+
+  if (ok) {
+    toast(t('balancePaidLabel'), 'success');
+    closePayBalanceModal();
+    bookings.load(); // refresh the list so the badge flips to "paid in full"
+  } else {
+    toast(res.message || 'Payment was declined — please check your card details', 'error');
+    btn.disabled = false; btn.innerHTML = `${t('payRemainingBtn')} — ${utils.formatPrice(amount)}`;
+  }
 }
 
 function renderBookingConfirmation(b) {
@@ -563,7 +707,7 @@ function renderBookingStep(step) {
       </div>` : ''}
       <div class="booking-summary-row"><span>${t('taxesFeesLabel')}</span><span>${utils.formatPrice(Math.round(pricing.roomTotal * 0.1))}</span></div>
       <div class="booking-summary-total"><span>${t('totalLabel')}</span><span>${utils.formatPrice(total)}</span></div>
-      ${depositSummaryBlock(total)}
+      ${paymentPlanSelector(total, 'hotel')}
     </div>`;
   let bodyHtml = '';
   if (step === 2) {
@@ -596,7 +740,7 @@ function renderBookingStep(step) {
       <div class="p-5 booking-step-main">
         <h3 class="font-display text-lg font-bold mb-3">${t('paymentMethodHeader')}</h3>
         <div class="space-y-3 mb-5">${paymentMethodsBlock(state.bookingDraft.payment, 'setHotelPaymentMethod')}</div>
-        <button onclick="payAndConfirmHotelBooking(${pricing.roomTotal}, ${Math.round(pricing.roomTotal * 0.1)}, ${total}, ${nights})" id="hotelPayBtn" class="btn-violet w-full py-4 rounded-2xl font-bold">${depositPayBtnLabel(total)}</button>
+        <button onclick="payAndConfirmHotelBooking(${pricing.roomTotal}, ${Math.round(pricing.roomTotal * 0.1)}, ${total}, ${nights})" id="hotelPayBtn" class="btn-violet w-full py-4 rounded-2xl font-bold">${payBtnLabel('hotel', total)}</button>
       </div>
       <div class="booking-step-side">${orderSummaryCard}</div>`;
   }
@@ -694,8 +838,7 @@ async function payAndConfirmHotelBooking(roomTotal, taxes, total, nights) {
       nights,
       payment: state.bookingDraft.payment,
       total,
-      depositAmount: depositOf(total),
-      remainingAmount: total - depositOf(total),
+      paymentPlan: (state.bookingDraft.paymentPlan && state.bookingDraft.paymentPlan.hotel) || 'full',
       currency: 'EGP',
       priceFormatted: utils.formatPrice(total),
       status: 'pending_payment',
@@ -708,12 +851,11 @@ async function payAndConfirmHotelBooking(roomTotal, taxes, total, nights) {
     // Direct API charge — customer never leaves this page. Card fields are
     // collected by our own form (see paymentMethodsBlock) and 3D Secure, if
     // triggered, opens as an in-page modal rather than a redirect.
-    // Only the deposit is charged now — bookings-worker enforces this same
-    // 50% figure server-side and rejects any other amount.
-    const success = await processKashierPayment(orderId, depositOf(total), 'EGP', btn);
-    if (!success) { btn.disabled = false; btn.innerHTML = depositPayBtnLabel(total); return; }
+    // Charges exactly what the chosen plan owes now — bookings-worker computes
+    // and stores the same deposit/full split server-side and rejects any other amount.
+    const success = await processKashierPayment(orderId, amountDueNow('hotel', total), 'EGP', btn);
+    if (!success) { btn.disabled = false; btn.innerHTML = payBtnLabel('hotel', total); return; }
     bookingData.status = 'completed';
-    bookingData.balanceStatus = bookingData.remainingAmount > 0 ? 'due' : 'paid';
     state.bookings.unshift(bookingData);
     bookings.render();
     renderBookingConfirmation(bookingData);
@@ -894,7 +1036,7 @@ function renderExcursionBookingStep(step) {
       <div class="booking-summary-row"><span>${x.title} × ${state.bookingDraft.participants}</span><span>${utils.formatPrice(subtotal)}</span></div>
       <div class="booking-summary-row"><span>${t('taxesFeesLabel')}</span><span>${utils.formatPrice(taxes)}</span></div>
       <div class="booking-summary-total"><span>${t('totalLabel')}</span><span>${utils.formatPrice(total)}</span></div>
-      ${depositSummaryBlock(total)}
+      ${paymentPlanSelector(total, 'excursion')}
     </div>`;
   let bodyHtml = '';
   if (step === 2) {
@@ -927,7 +1069,7 @@ function renderExcursionBookingStep(step) {
       <div class="p-5 booking-step-main">
         <h3 class="font-display text-lg font-bold mb-3">${t('paymentMethodHeader')}</h3>
         <div class="space-y-3 mb-5">${paymentMethodsBlock(state.bookingDraft.payment, 'setExcursionPaymentMethod')}</div>
-        <button onclick="payAndConfirmExcursionBooking(${subtotal}, ${taxes}, ${total})" id="excursionPayBtn" class="btn-violet w-full py-4 rounded-2xl font-bold">${depositPayBtnLabel(total)}</button>
+        <button onclick="payAndConfirmExcursionBooking(${subtotal}, ${taxes}, ${total})" id="excursionPayBtn" class="btn-violet w-full py-4 rounded-2xl font-bold">${payBtnLabel('excursion', total)}</button>
         <button onclick="renderExcursionBookingStep(2)" class="w-full text-center text-violet-500 text-sm font-semibold mt-4">${t('backBtn')}</button>
       </div>
       <div class="booking-step-side">${orderSummaryCard}</div>`;
@@ -973,8 +1115,7 @@ async function payAndConfirmExcursionBooking(subtotal, taxes, total) {
       participants: state.bookingDraft.participants,
       payment: state.bookingDraft.payment,
       total,
-      depositAmount: depositOf(total),
-      remainingAmount: total - depositOf(total),
+      paymentPlan: (state.bookingDraft.paymentPlan && state.bookingDraft.paymentPlan.excursion) || 'full',
       currency: 'EGP',
       priceFormatted: utils.formatPrice(total),
       status: 'pending_payment',
@@ -987,12 +1128,11 @@ async function payAndConfirmExcursionBooking(subtotal, taxes, total) {
     // Direct API charge — customer never leaves this page. Card fields are
     // collected by our own form (see paymentMethodsBlock) and 3D Secure, if
     // triggered, opens as an in-page modal rather than a redirect.
-    // Only the deposit is charged now — bookings-worker enforces this same
-    // 50% figure server-side and rejects any other amount.
-    const success = await processKashierPayment(orderId, depositOf(total), 'EGP', btn);
-    if (!success) { btn.disabled = false; btn.innerHTML = depositPayBtnLabel(total); return; }
+    // Charges exactly what the chosen plan owes now — bookings-worker computes
+    // and stores the same deposit/full split server-side and rejects any other amount.
+    const success = await processKashierPayment(orderId, amountDueNow('excursion', total), 'EGP', btn);
+    if (!success) { btn.disabled = false; btn.innerHTML = payBtnLabel('excursion', total); return; }
     bookingData.status = 'completed';
-    bookingData.balanceStatus = bookingData.remainingAmount > 0 ? 'due' : 'paid';
     state.bookings.unshift(bookingData);
     bookings.render();
     renderBookingConfirmation(bookingData);
@@ -1045,7 +1185,7 @@ function renderTransferBookingStep(step) {
       <div class="booking-summary-row"><span>${v.vehicleType} ${t('transferSuffix')}</span><span>${utils.formatPrice(subtotal)}</span></div>
       <div class="booking-summary-row"><span>${t('taxesFeesLabel')}</span><span>${utils.formatPrice(taxes)}</span></div>
       <div class="booking-summary-total"><span>${t('totalLabel')}</span><span>${utils.formatPrice(total)}</span></div>
-      ${depositSummaryBlock(total)}
+      ${paymentPlanSelector(total, 'transfer')}
     </div>`;
   let bodyHtml = '';
   if (step === 2) {
@@ -1093,7 +1233,7 @@ function renderTransferBookingStep(step) {
       <div class="p-5 booking-step-main">
         <h3 class="font-display text-lg font-bold mb-3">${t('paymentMethodHeader')}</h3>
         <div class="space-y-3 mb-5">${paymentMethodsBlock(state.bookingDraft.payment, 'setTransferPaymentMethod')}</div>
-        <button onclick="payAndConfirmTransferBooking(${subtotal}, ${taxes}, ${total})" id="transferPayBtn" class="btn-violet w-full py-4 rounded-2xl font-bold">${depositPayBtnLabel(total)}</button>
+        <button onclick="payAndConfirmTransferBooking(${subtotal}, ${taxes}, ${total})" id="transferPayBtn" class="btn-violet w-full py-4 rounded-2xl font-bold">${payBtnLabel('transfer', total)}</button>
         <button onclick="renderTransferBookingStep(2)" class="w-full text-center text-violet-500 text-sm font-semibold mt-4">${t('backBtn')}</button>
       </div>
       <div class="booking-step-side">${orderSummaryCard}</div>`;
@@ -1154,8 +1294,7 @@ async function payAndConfirmTransferBooking(subtotal, taxes, total) {
       passengers: state.bookingDraft.passengers,
       payment: state.bookingDraft.payment,
       total,
-      depositAmount: depositOf(total),
-      remainingAmount: total - depositOf(total),
+      paymentPlan: (state.bookingDraft.paymentPlan && state.bookingDraft.paymentPlan.transfer) || 'full',
       currency: 'EGP',
       priceFormatted: utils.formatPrice(total),
       status: 'pending_payment',
@@ -1168,12 +1307,11 @@ async function payAndConfirmTransferBooking(subtotal, taxes, total) {
     // Direct API charge — customer never leaves this page. Card fields are
     // collected by our own form (see paymentMethodsBlock) and 3D Secure, if
     // triggered, opens as an in-page modal rather than a redirect.
-    // Only the deposit is charged now — bookings-worker enforces this same
-    // 50% figure server-side and rejects any other amount.
-    const success = await processKashierPayment(orderId, depositOf(total), 'EGP', btn);
-    if (!success) { btn.disabled = false; btn.innerHTML = depositPayBtnLabel(total); return; }
+    // Charges exactly what the chosen plan owes now — bookings-worker computes
+    // and stores the same deposit/full split server-side and rejects any other amount.
+    const success = await processKashierPayment(orderId, amountDueNow('transfer', total), 'EGP', btn);
+    if (!success) { btn.disabled = false; btn.innerHTML = payBtnLabel('transfer', total); return; }
     bookingData.status = 'completed';
-    bookingData.balanceStatus = bookingData.remainingAmount > 0 ? 'due' : 'paid';
     state.bookings.unshift(bookingData);
     bookings.render();
     renderBookingConfirmation(bookingData);

@@ -986,8 +986,24 @@ const bookings = {
           <h3 class="font-display font-bold text-sm">${b.type === 'hotel' ? b.hotelName : b.type === 'excursion' ? b.title : b.vehicleType + ' Transfer'}</h3>
           <p class="text-[10px]">${utils.formatDate(b.checkin || b.date)}</p>
           <p class="font-bold text-violet-500 text-sm">${b.priceFormatted || utils.formatPrice(b.total)}</p>
+          ${this.balanceStatusBlock(b)}
         </div>
       </div>`).join('');
+  },
+  // Only bookings paid via the 50% deposit plan ever carry balanceStatus —
+  // a plain full-payment booking has none, so this renders nothing for it.
+  balanceStatusBlock(b) {
+    if (b.balanceStatus === 'due' && b.remainingAmount > 0) {
+      return `
+        <div class="mt-2 flex items-center justify-between gap-2 p-2 rounded-lg" style="background:var(--bg-field)">
+          <span class="text-[10px] font-semibold" style="color:var(--brand-violet)"><i class="fa-solid fa-clock"></i> ${t('balanceDueLabel').replace('{n}', utils.formatPrice(b.remainingAmount))}</span>
+          <button onclick="event.stopPropagation(); openPayBalanceModal('${b.id}', ${b.remainingAmount})" class="text-[10px] font-bold px-3 py-1.5 rounded-lg btn-gold text-ink-900">${t('payRemainingBtn')}</button>
+        </div>`;
+    }
+    if (b.balanceStatus === 'paid' && b.paymentPlan === 'deposit') {
+      return `<p class="text-[10px] mt-1" style="color:#16a34a"><i class="fa-solid fa-circle-check"></i> ${t('balancePaidLabel')}</p>`;
+    }
+    return '';
   },
   switchTab(tab) {
     state.currentBookingTab = tab;
