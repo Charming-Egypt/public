@@ -471,5 +471,15 @@
   "searchTransfersPlaceholder": "Cerca transfer...",
   "noTransfersFoundMsg": "Nessun transfer trovato",
   "reviewSubmittedMsg": "Recensione inviata!",
-  "morePhotosLabel": "+{n} foto"
+  "morePhotosLabel": "+{n} foto",
+  "payFullAmountLabel": "Paga l'importo totale",
+  "payDepositOptionLabel": "Paga un acconto del 50% ora",
+  "payFullNoteLabel": "Nessun saldo da pagare in seguito.",
+  "payDepositNoteLabel": "Saldo di {n} da pagare all'arrivo, acconto non rimborsabile.",
+  "choosePaymentOptionLabel": "Scegli come vuoi pagare",
+  "balanceDueLabel": "Saldo da pagare: {n}",
+  "payRemainingBtn": "Paga il resto",
+  "balancePaidLabel": "Pagato per intero",
+  "processingLabel": "Elaborazione in corso…",
+  "noBookingsYetMsg": "Nessuna prenotazione ancora"
 }

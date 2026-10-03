@@ -471,5 +471,15 @@
   "searchTransfersPlaceholder": "Поиск трансфера...",
   "noTransfersFoundMsg": "Трансферы не найдены",
   "reviewSubmittedMsg": "Отзыв отправлен!",
-  "morePhotosLabel": "+{n} фото"
+  "morePhotosLabel": "+{n} фото",
+  "payFullAmountLabel": "Оплатить полностью",
+  "payDepositOptionLabel": "Внести депозит 50% сейчас",
+  "payFullNoteLabel": "Остатка к доплате не будет.",
+  "payDepositNoteLabel": "Остаток {n} оплачивается по прибытии, депозит не возвращается.",
+  "choosePaymentOptionLabel": "Выберите способ оплаты",
+  "balanceDueLabel": "К доплате: {n}",
+  "payRemainingBtn": "Оплатить остаток",
+  "balancePaidLabel": "Оплачено полностью",
+  "processingLabel": "Обработка…",
+  "noBookingsYetMsg": "Пока нет бронирований"
 }

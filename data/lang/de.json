@@ -471,5 +471,15 @@
   "searchTransfersPlaceholder": "Transfer suchen...",
   "noTransfersFoundMsg": "Keine Transfers gefunden",
   "reviewSubmittedMsg": "Bewertung gesendet!",
-  "morePhotosLabel": "+{n} Fotos"
+  "morePhotosLabel": "+{n} Fotos",
+  "payFullAmountLabel": "Vollen Betrag zahlen",
+  "payDepositOptionLabel": "50% Anzahlung jetzt leisten",
+  "payFullNoteLabel": "Kein Restbetrag später fällig.",
+  "payDepositNoteLabel": "Restbetrag {n} bei Ankunft fällig, Anzahlung nicht erstattungsfähig.",
+  "choosePaymentOptionLabel": "Wählen Sie Ihre Zahlungsoption",
+  "balanceDueLabel": "Restbetrag fällig: {n}",
+  "payRemainingBtn": "Restbetrag zahlen",
+  "balancePaidLabel": "Vollständig bezahlt",
+  "processingLabel": "Wird verarbeitet…",
+  "noBookingsYetMsg": "Noch keine Buchungen"
 }

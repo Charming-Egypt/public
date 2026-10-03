@@ -471,5 +471,15 @@
   "searchTransfersPlaceholder": "Search transfers...",
   "noTransfersFoundMsg": "No transfers found",
   "reviewSubmittedMsg": "Review submitted!",
-  "morePhotosLabel": "+{n} Photos"
+  "morePhotosLabel": "+{n} Photos",
+  "payFullAmountLabel": "Pay full amount",
+  "payDepositOptionLabel": "Pay 50% deposit now",
+  "payFullNoteLabel": "No balance due later.",
+  "payDepositNoteLabel": "Remaining {n} due on arrival, non-refundable deposit.",
+  "choosePaymentOptionLabel": "Choose how you'd like to pay",
+  "balanceDueLabel": "Balance due: {n}",
+  "payRemainingBtn": "Pay the rest",
+  "balancePaidLabel": "Paid in full",
+  "processingLabel": "Processing…",
+  "noBookingsYetMsg": "No bookings yet"
 }

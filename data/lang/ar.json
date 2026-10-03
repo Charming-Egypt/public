@@ -471,5 +471,15 @@
   "searchTransfersPlaceholder": "ابحث عن وسيلة انتقال...",
   "noTransfersFoundMsg": "لا توجد وسائل انتقال",
   "reviewSubmittedMsg": "تم إرسال التقييم!",
-  "morePhotosLabel": "+{n} صورة"
+  "morePhotosLabel": "+{n} صورة",
+  "payFullAmountLabel": "دفع المبلغ كامل",
+  "payDepositOptionLabel": "ادفع عربون 50% الآن",
+  "payFullNoteLabel": "لا يوجد أي مبلغ متبقي لاحقًا.",
+  "payDepositNoteLabel": "المتبقي {n} يُدفع عند الوصول، والعربون غير قابل للاسترداد.",
+  "choosePaymentOptionLabel": "اختار طريقة الدفع المناسبة لك",
+  "balanceDueLabel": "المتبقي: {n}",
+  "payRemainingBtn": "ادفع الباقي",
+  "balancePaidLabel": "تم السداد بالكامل",
+  "processingLabel": "جارِ المعالجة…",
+  "noBookingsYetMsg": "لا توجد حجوزات بعد"
 }

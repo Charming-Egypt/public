@@ -471,5 +471,15 @@
   "searchTransfersPlaceholder": "Transfer ara...",
   "noTransfersFoundMsg": "Transfer bulunamadı",
   "reviewSubmittedMsg": "Değerlendirme gönderildi!",
-  "morePhotosLabel": "+{n} Fotoğraf"
+  "morePhotosLabel": "+{n} Fotoğraf",
+  "payFullAmountLabel": "Tam Tutarı Öde",
+  "payDepositOptionLabel": "Şimdi %50 Kapora Öde",
+  "payFullNoteLabel": "Sonradan ödenecek bakiye yok.",
+  "payDepositNoteLabel": "Kalan {n} varışta ödenir, kapora iade edilmez.",
+  "choosePaymentOptionLabel": "Ödeme şeklinizi seçin",
+  "balanceDueLabel": "Kalan bakiye: {n}",
+  "payRemainingBtn": "Kalanı Öde",
+  "balancePaidLabel": "Tamamen Ödendi",
+  "processingLabel": "İşleniyor…",
+  "noBookingsYetMsg": "Henüz rezervasyon yok"
 }
