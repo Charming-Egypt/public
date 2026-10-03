@@ -3,16 +3,16 @@
     "id": "r1",
     "category": "restaurant",
     "name": {
-      "ar": "Mahony Restaurant",
       "en": "Mahony Restaurant",
+      "ar": "Mahony Restaurant",
       "ru": "Mahony Restaurant",
       "de": "Mahony Restaurant",
       "it": "Mahony Restaurant",
       "tr": "Mahony Restaurant"
     },
     "cuisine": {
-      "ar": "مأكولات بحرية",
       "en": "Seafood",
+      "ar": "مأكولات بحرية",
       "ru": "Морепродукты",
       "de": "Meeresfrüchte",
       "it": "Pesce",
@@ -21,15 +21,27 @@
     "priceLevel": 2,
     "rating": 4.6,
     "reviews": 4053,
-    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLWeyH6I873yq_NFe5nCrZQGPMD8Gd6R26JqGRcJhE5KsdgQi5Lj8DRUJd&s=10",
-    "images": [
-      "https://5starsegypttours.com/wp-content/uploads/2025/02/Mahony-Restaurant-Sharm-El-Sheikh-1.webp"
-    ],
-    "description": {},
-    "fullDescription": {},
+    "image": "",
+    "images": [],
+    "description": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
+    "fullDescription": {
+      "en": "",
+      "ar": "",
+      "ru": "",
+      "de": "",
+      "it": "",
+      "tr": ""
+    },
     "location": {
-      "ar": "خليج نعمة، شرم الشيخ",
       "en": "Naama Bay, Sharm El Sheikh",
+      "ar": "خليج نعمة، شرم الشيخ",
       "ru": "Наама Бэй, Sharm El Sheikh",
       "de": "Naama Bay, Sharm El Sheikh",
       "it": "Naama Bay, Sharm El Sheikh",
@@ -42,8 +54,8 @@
     },
     "phone": "+20 11 00100031",
     "openHours": {
-      "ar": "12:00 PM – 12:00 AM يوميًا",
       "en": "12:00 PM – 12:00 AM daily",
+      "ar": "12:00 PM – 12:00 AM يوميًا",
       "ru": "12:00 PM – 12:00 AM ежедневно",
       "de": "12:00 PM – 12:00 AM täglich",
       "it": "12:00 PM – 12:00 AM tutti i giorni",
@@ -271,7 +283,7 @@
       "tr": "Mısır"
     },
     "priceLevel": 2,
-    "rating": 4,
+    "rating": 4.0,
     "reviews": 2760,
     "image": "",
     "images": [],
@@ -535,7 +547,7 @@
       "tr": "Asya Fine Dining"
     },
     "priceLevel": "",
-    "rating": 4,
+    "rating": 4.0,
     "reviews": 687,
     "image": "",
     "images": [],
@@ -601,7 +613,7 @@
       "tr": "Mısır"
     },
     "priceLevel": 2,
-    "rating": 4,
+    "rating": 4.0,
     "reviews": 829,
     "image": "",
     "images": [],
@@ -799,7 +811,7 @@
       "tr": "Deniz Ürünleri"
     },
     "priceLevel": "",
-    "rating": 4,
+    "rating": 4.0,
     "reviews": 231,
     "image": "",
     "images": [],
@@ -997,7 +1009,7 @@
       "tr": "İtalyan"
     },
     "priceLevel": "",
-    "rating": 5,
+    "rating": 5.0,
     "reviews": 4,
     "image": "",
     "images": [],
