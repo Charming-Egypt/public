@@ -23,5 +23,18 @@
     "linkTarget": "",
     "order": 1,
     "active": true
+  },
+  {
+    "title": {
+      "ar": "رحله سفاري",
+      "en": "Safari ATV"
+    },
+    "subtitle": {},
+    "date": "",
+    "image": "",
+    "linkType": "",
+    "linkTarget": "",
+    "active": false,
+    "id": "pameuqf8"
   }
 ]
