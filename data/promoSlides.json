@@ -29,9 +29,12 @@
       "ar": "رحله سفاري",
       "en": "Safari ATV"
     },
-    "subtitle": {},
+    "subtitle": {
+      "ar": "Test",
+      "en": "Test"
+    },
     "date": "",
-    "image": "",
+    "image": "https://raw.githubusercontent.com/Charming-Egypt/Public/main/data/uploads/admin/2026-10/13469f3503374fb6.jpg",
     "linkType": "",
     "linkTarget": "",
     "active": false,
