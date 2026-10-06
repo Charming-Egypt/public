@@ -481,5 +481,12 @@
   "payRemainingBtn": "Paga il resto",
   "balancePaidLabel": "Pagato per intero",
   "processingLabel": "Elaborazione in corso…",
-  "noBookingsYetMsg": "Nessuna prenotazione ancora"
+  "noBookingsYetMsg": "Nessuna prenotazione ancora",
+  "limitedSpotsLabel": "Posti limitati!",
+  "starOfDayLabel": "Protagonista del giorno",
+  "featuredBadgeLabel": "Esperienze top",
+  "discoverWord": "Discover",
+  "sharmWord": "Sharm",
+  "yourPersonalGuideLabel": "La tua guida personale",
+  "loadingYourJourneyLabel": "Caricamento del tuo viaggio…"
 }

@@ -481,5 +481,12 @@
   "payRemainingBtn": "Pay the rest",
   "balancePaidLabel": "Paid in full",
   "processingLabel": "Processing…",
-  "noBookingsYetMsg": "No bookings yet"
+  "noBookingsYetMsg": "No bookings yet",
+  "limitedSpotsLabel": "Limited spots!",
+  "starOfDayLabel": "Star of the day",
+  "featuredBadgeLabel": "Trip Stars",
+  "discoverWord": "Discover",
+  "sharmWord": "Sharm",
+  "yourPersonalGuideLabel": "Your Personal Guide",
+  "loadingYourJourneyLabel": "Loading your journey…"
 }

@@ -481,5 +481,12 @@
   "payRemainingBtn": "Restbetrag zahlen",
   "balancePaidLabel": "Vollständig bezahlt",
   "processingLabel": "Wird verarbeitet…",
-  "noBookingsYetMsg": "Noch keine Buchungen"
+  "noBookingsYetMsg": "Noch keine Buchungen",
+  "limitedSpotsLabel": "Begrenzte Plätze!",
+  "starOfDayLabel": "Star des Tages",
+  "featuredBadgeLabel": "Top Erlebnisse",
+  "discoverWord": "Discover",
+  "sharmWord": "Sharm",
+  "yourPersonalGuideLabel": "Ihr persönlicher Reiseführer",
+  "loadingYourJourneyLabel": "Ihre Reise wird geladen…"
 }

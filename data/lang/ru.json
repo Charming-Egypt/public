@@ -481,5 +481,12 @@
   "payRemainingBtn": "Оплатить остаток",
   "balancePaidLabel": "Оплачено полностью",
   "processingLabel": "Обработка…",
-  "noBookingsYetMsg": "Пока нет бронирований"
+  "noBookingsYetMsg": "Пока нет бронирований",
+  "limitedSpotsLabel": "Места ограничены!",
+  "starOfDayLabel": "Звезда дня",
+  "featuredBadgeLabel": "Звёзды поездок",
+  "discoverWord": "Discover",
+  "sharmWord": "Sharm",
+  "yourPersonalGuideLabel": "Ваш персональный гид",
+  "loadingYourJourneyLabel": "Загружаем ваше путешествие…"
 }

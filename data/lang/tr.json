@@ -481,5 +481,12 @@
   "payRemainingBtn": "Kalanı Öde",
   "balancePaidLabel": "Tamamen Ödendi",
   "processingLabel": "İşleniyor…",
-  "noBookingsYetMsg": "Henüz rezervasyon yok"
+  "noBookingsYetMsg": "Henüz rezervasyon yok",
+  "limitedSpotsLabel": "Sınırlı kontenjan!",
+  "starOfDayLabel": "Günün Yıldızı",
+  "featuredBadgeLabel": "Gezi Yıldızları",
+  "discoverWord": "Discover",
+  "sharmWord": "Sharm",
+  "yourPersonalGuideLabel": "Kişisel Rehberiniz",
+  "loadingYourJourneyLabel": "Yolculuğunuz yükleniyor…"
 }

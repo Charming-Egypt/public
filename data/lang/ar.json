@@ -481,5 +481,12 @@
   "payRemainingBtn": "ادفع الباقي",
   "balancePaidLabel": "تم السداد بالكامل",
   "processingLabel": "جارِ المعالجة…",
-  "noBookingsYetMsg": "لا توجد حجوزات بعد"
+  "noBookingsYetMsg": "لا توجد حجوزات بعد",
+  "limitedSpotsLabel": "أماكن محدودة!",
+  "starOfDayLabel": "نجم اليوم",
+  "featuredBadgeLabel": "نجوم الرحلات",
+  "discoverWord": "Discover",
+  "sharmWord": "Sharm",
+  "yourPersonalGuideLabel": "دليلك الشخصي",
+  "loadingYourJourneyLabel": "جارِ تجهيز رحلتك…"
 }
