@@ -3,7 +3,7 @@
 const { esc, tr, money, dt, badge, PAY, table, modal, form, collect, api, toast, thumb } = DS;
 const ROLE_L = { super_admin: 'سوبر أدمن', trips_owner: 'مكتب رحلات', hotels_owner: 'مالك فنادق', transfers_owner: 'ترانسفير' };
 const ROLE_OPTS = Object.entries(ROLE_L).filter(([k]) => k !== 'super_admin');
-const TYPES = { hotel: 'الفنادق', excursion: 'الرحلات', transfer: 'الترانسفير', destination: 'الوجهات', restaurant: 'المطاعم', article: 'المقالات', review: 'تقييمات الموقع' };
+const TYPES = { hotel: 'الفنادق', excursion: 'الرحلات', transfer: 'الترانسفير', destination: 'الوجهات', restaurant: 'المطاعم', article: 'المقالات', review: 'تقييمات الموقع', promoSlide: 'شرائح الصفحة الرئيسية' };
 const OWNER_ROLE = { hotel: 'hotels_owner', excursion: 'trips_owner', transfer: 'transfers_owner' };
 const nameOf = i => tr(i.name || i.title || i.vehicleType || i.itemName) || i.id;
 const rname = (roles, id) => { const r = roles.find(x => x.uid === id); return r ? esc(r.name || r.email) : (id ? '<span class="muted">' + esc(id.slice(0, 8)) + '…</span>' : '<span class="muted">—</span>'); };
