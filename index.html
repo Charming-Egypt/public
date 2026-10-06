@@ -68,25 +68,23 @@
     <div id="lightboxCounter" class="lightbox-counter">1 / 1</div>
   </div>
 
-  <div id="splashPage" class="fixed inset-0 z-[999] dark-scene flex flex-col items-center justify-center">
-    <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1600&q=80')] bg-cover bg-center opacity-25"></div>
-    <div class="stars-container" id="splashStars"></div>
-    <div class="ambient-orb orb-1"></div>
-    <div class="ambient-orb orb-2"></div>
-    <div class="relative z-10 flex flex-col items-center">
-      <div class="w-24 h-24 relative mb-6">
-        <div class="absolute inset-0 bg-gold-400 rounded-3xl opacity-25 animate-ping"></div>
-        <div class="relative w-full h-full bg-gradient-to-br from-gold-300 via-gold-400 to-gold-600 rounded-3xl flex items-center justify-center shadow-2xl border border-gold-300/50 overflow-hidden">
-          <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjJnB5c7R2uZzCNpzUtsow1OaJSWKAuybM2Wxux8wLk0EYV4TMA-xe1gIRXyrQ8Hw1dDVhgL94mMfLdMmB1HmsQXlI0vYYoJ83Z2o6Iu3r1UTxZxm7KbtD6jDQnZyVyInzRPr2dKnCqEdUuOW6QaVKtqC0fyVi7vJ65sWVJZSgiSRle3UXA3il3Qk6kdJwN=s150" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="w-full h-full object-cover" alt="Discover Sharm" />
-        </div>
+  <div id="splashPage" class="fixed inset-0 z-[999] flex flex-col items-center justify-between" style="background:#0a0a0a;">
+    <div class="absolute inset-0 bg-[url('https://egyptra.pro/uploads/products/product_m23452--urghada-uad-afari-amel-ide-ed-356_68e55f8d5318b.webp')] bg-cover bg-center"></div>
+    <div class="absolute inset-0" style="background:linear-gradient(180deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,.15) 30%, rgba(0,0,0,.1) 60%, rgba(0,0,0,.75) 100%);"></div>
+    <div class="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-8">
+      <div class="splash-logo-ring w-20 h-20 rounded-full flex items-center justify-center mb-5 overflow-hidden">
+        <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjJnB5c7R2uZzCNpzUtsow1OaJSWKAuybM2Wxux8wLk0EYV4TMA-xe1gIRXyrQ8Hw1dDVhgL94mMfLdMmB1HmsQXlI0vYYoJ83Z2o6Iu3r1UTxZxm7KbtD6jDQnZyVyInzRPr2dKnCqEdUuOW6QaVKtqC0fyVi7vJ65sWVJZSgiSRle3UXA3il3Qk6kdJwN=s150" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="w-[70%] h-[70%] object-contain" alt="Discover Sharm" />
       </div>
-      <h1 class="font-display text-2xl font-bold text-white tracking-tight" data-i18n="discoverSharm"><span class="shimmer-text">DISCOVER</span> SHARM</h1>
-      <p class="text-white/40 text-[11px] tracking-[0.3em] mt-1" data-i18n="tagline">LUXURY TRAVEL</p>
+      <h1 class="font-display text-[2rem] font-bold leading-tight">
+        <span class="text-white" data-i18n="discoverWord">Discover</span> <span style="color:#f97316" data-i18n="sharmWord">Sharm</span>
+      </h1>
+      <p class="text-white/60 text-sm mt-1.5" data-i18n="yourPersonalGuideLabel">Your Personal Guide</p>
     </div>
-    <div class="absolute bottom-16 flex gap-1.5">
-      <div class="w-2 h-2 rounded-full bg-gold-400 animate-bounce" style="animation-delay:0s"></div>
-      <div class="w-2 h-2 rounded-full bg-gold-400 animate-bounce" style="animation-delay:.15s"></div>
-      <div class="w-2 h-2 rounded-full bg-gold-400 animate-bounce" style="animation-delay:.3s"></div>
+    <div class="relative z-10 w-full px-10 pb-10">
+      <div class="splash-progress-track">
+        <div class="splash-progress-fill"></div>
+      </div>
+      <p class="text-white/55 text-xs text-center mt-3" data-i18n="loadingYourJourneyLabel">Loading your journey…</p>
     </div>
   </div>
 
@@ -454,76 +452,17 @@
         </div>
       </div>
 
-      <div class="relative z-20 px-5 s-area">
-        <div class="search-card premium-search" style="padding:4px; border-radius:20px;">
-          <div style="border:1px solid var(--border-card); border-radius:18px; overflow:hidden;">
-            <div id="searchTabsContainer" style="display:none; gap:4px; padding:8px; border-bottom:1px solid var(--border-card);">
-              <button id="searchTabHotels" onclick="search.switchTab('hotels')" class="search-tab-new active" style="flex:1;"><i class="fa-solid fa-hotel"></i> <span data-i18n="navHotels">Hotels</span></button>
-              <button id="searchTabExcursions" onclick="search.switchTab('excursions')" class="search-tab-new" style="flex:1;"><i class="fa-solid fa-umbrella-beach"></i> <span data-i18n="navExcursions">Excursions</span></button>
-            </div>
+      <div class="relative z-20 pt-6">
 
-            <div id="hotelSearchForm" class="search-form" style="display:none;">
-              <div style="display:flex; border-bottom:1px solid var(--border-card);">
-                <div style="flex:1; padding:16px 20px; cursor:pointer; text-align:center;" onclick="datepicker.open('searchCheckIn')">
-                  <div style="font-size:11px; font-weight:700; letter-spacing:1px; color:var(--text-secondary); margin-bottom:8px;" data-i18n="checkinLabelCaps">CHECK-IN</div>
-                  <div style="font-size:16px; font-weight:500; color:var(--text-primary);" id="checkinDisplay" data-i18n="selectDatePlaceholder">Select date</div>
-                </div>
-                <div style="flex:1; padding:16px 20px; cursor:pointer; text-align:center; border-left:1px solid var(--border-card);" onclick="datepicker.open('searchCheckOut')">
-                  <div style="font-size:11px; font-weight:700; letter-spacing:1px; color:var(--text-secondary); margin-bottom:8px;" data-i18n="checkoutLabelCaps">CHECK-OUT</div>
-                  <div style="font-size:16px; font-weight:500; color:var(--text-primary);" id="checkoutDisplay" data-i18n="selectDatePlaceholder">Select date</div>
-                </div>
-              </div>
-              <div style="padding:16px 20px; cursor:pointer; text-align:center;" onclick="search.openGuestDropdown()">
-                <div style="font-size:11px; font-weight:700; letter-spacing:1px; color:var(--text-secondary); margin-bottom:8px;" data-i18n="guestsLabelCaps">GUESTS</div>
-                <div style="font-size:16px; font-weight:500; color:var(--text-primary);" id="guestsDisplay" data-i18n="defaultGuestsDisplay">2 Adults, 1 Room</div>
-              </div>
-            </div>
-
-            <div id="excursionSearchForm" class="search-form" style="display:none;">
-              <div style="display:flex; border-bottom:1px solid var(--border-card);">
-                <div style="flex:1; padding:16px 20px; cursor:pointer; text-align:center;" onclick="search.openCategoryDropdown()">
-                  <div style="font-size:11px; font-weight:700; letter-spacing:1px; color:var(--text-secondary); margin-bottom:8px;" data-i18n="categoryLabelCaps">CATEGORY</div>
-                  <div style="font-size:16px; font-weight:500; color:var(--text-primary);" id="excursionCategoryDisplay" data-i18n="allCategories">All Categories</div>
-                </div>
-                <div style="flex:1; padding:16px 20px; cursor:pointer; text-align:center; border-left:1px solid var(--border-card);" onclick="datepicker.open('excursionDate')">
-                  <div style="font-size:11px; font-weight:700; letter-spacing:1px; color:var(--text-secondary); margin-bottom:8px;" data-i18n="excursionDateLabelCaps">EXCURSION DATE</div>
-                  <div style="font-size:16px; font-weight:500; color:var(--text-primary);" id="excursionDateDisplay" data-i18n="selectDatePlaceholder">Select date</div>
-                </div>
-              </div>
-            </div>
+        <!-- Promo Slider (super-admin managed) -->
+        <div id="promoSliderSection" class="mb-8 hidden">
+          <div class="relative px-5">
+            <div id="promoSliderTrack" class="promo-slider-track" onscroll="promoSliderUi.onScroll(this)"></div>
+            <button onclick="promoSliderUi.step(-1)" class="promo-slider-arrow promo-slider-arrow-prev" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>
+            <button onclick="promoSliderUi.step(1)" class="promo-slider-arrow promo-slider-arrow-next" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>
           </div>
-
-          <button onclick="search.performSearch()" style="width:100%; background:linear-gradient(135deg, #fbbf24, #f59e0b); border:none; border-radius:16px; padding:16px; margin-top:8px; color:#0a0a0a; font-size:16px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer;">
-            <i class="fa-solid fa-magnifying-glass"></i> <span data-i18n="checkAvailabilityBtn">Check Availability</span>
-          </button>
-
-          <div id="searchGuestDropdown" class="ds-modal-overlay" style="display:none; z-index:10000;">
-            <div class="ds-modal-content">
-              <div class="ds-guest-row"><div class="ds-guest-info-label" data-i18n="adults">Adults</div><div class="ds-guest-counter"><button onclick="search.adjustGuest('adults', -1)" class="ds-guest-btn">−</button><span id="searchAdultCount" class="ds-guest-value">2</span><button onclick="search.adjustGuest('adults', 1)" class="ds-guest-btn">+</button></div></div>
-              <div class="ds-guest-row"><div><div class="ds-guest-info-label" data-i18n="children">Children</div><div class="ds-guest-info-sub" data-i18n="childrenAgeHintShort">Tell us each child's age</div></div><div class="ds-guest-counter"><button onclick="search.adjustGuest('children', -1)" class="ds-guest-btn">−</button><span id="searchChildCount" class="ds-guest-value">0</span><button onclick="search.adjustGuest('children', 1)" class="ds-guest-btn">+</button></div></div>
-              <div id="searchChildAgesList" class="space-y-2"></div>
-              <div class="ds-guest-row"><div class="ds-guest-info-label" data-i18n="rooms">Rooms</div><div class="ds-guest-counter"><button onclick="search.adjustGuest('rooms', -1)" class="ds-guest-btn">−</button><span id="searchRoomCount" class="ds-guest-value">1</span><button onclick="search.adjustGuest('rooms', 1)" class="ds-guest-btn">+</button></div></div>
-              <button class="ds-modal-apply" onclick="search.closeGuestDropdown()" data-i18n="apply">Apply</button>
-            </div>
-          </div>
-
-          <div id="searchCategoryDropdown" class="ds-modal-overlay" style="display:none; z-index:10000;">
-            <div class="ds-modal-content">
-              <div class="ds-modal-label" style="text-align:center; margin-bottom:12px;" data-i18n="selectCategoryLabelCaps">SELECT CATEGORY</div>
-              <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-                <button class="ds-category-btn" data-category="all" onclick="search.setCategory('all')" data-i18n="allCategories">All Categories</button>
-                <button class="ds-category-btn" data-category="Diving" onclick="search.setCategory('Diving')" data-i18n="divingSnorkeling">Diving & Snorkeling</button>
-                <button class="ds-category-btn" data-category="Desert Safari" onclick="search.setCategory('Desert Safari')" data-i18n="desertSafari">Desert Safari</button>
-                <button class="ds-category-btn" data-category="Boat Trip" onclick="search.setCategory('Boat Trip')" data-i18n="boatTrip">Boat Trip</button>
-                <button class="ds-category-btn" data-category="City Tour" onclick="search.setCategory('City Tour')" data-i18n="cityTour">City Tour</button>
-              </div>
-              <button class="ds-modal-apply" onclick="search.closeCategoryDropdown()" data-i18n="apply">Apply</button>
-            </div>
-          </div>
+          <div id="promoSliderDots" class="flex items-center justify-center gap-1.5 mt-3"></div>
         </div>
-      </div>
-
-      <div class="relative z-20 pt-8">
 
         <!-- Explore by Category -->
         <div class="px-5 mb-8">

@@ -809,10 +809,12 @@ updateHeroContent(tab) {
     this.selectedCheckIn = utils.isoLocal(tomorrow);
     this.selectedCheckOut = utils.isoLocal(dayAfter);
     this.selectedCategory = 'all';
-    this.updateDateDisplays();
-    this.updateGuestDisplay();
-    this.setCategory('all');
-    this.switchTab(SHOW_HOTELS ? 'hotels' : 'excursions');
+    this.activeTab = SHOW_HOTELS ? 'hotels' : 'excursions';
+    // The homepage search card (tabs/date fields/category picker) has been
+    // removed — updateDateDisplays/updateGuestDisplay are still called from
+    // the real booking-flow guest/date pickers elsewhere and stay null-safe,
+    // but switchTab() specifically drove that removed card's DOM and must not
+    // run anymore.
   }
 };
 
@@ -1280,6 +1282,58 @@ const excursionsUi = {
           </div>
         </div>
       </div>`;
+  }
+};
+
+// ==================== PROMO SLIDER (homepage, super-admin managed) ====================
+const promoSliderUi = {
+  render() {
+    const section = document.getElementById('promoSliderSection');
+    const track = document.getElementById('promoSliderTrack');
+    const dots = document.getElementById('promoSliderDots');
+    if (!section || !track) return;
+    const slides = (CATALOG.promoSlides || [])
+      .filter(s => s.active !== false)
+      .sort((a, b) => (a.order || 0) - (b.order || 0));
+    if (!slides.length) { section.classList.add('hidden'); return; }
+    section.classList.remove('hidden');
+    track.innerHTML = slides.map(s => this.renderSlide(s)).join('');
+    dots.innerHTML = slides.map((_, i) => `<div class="promo-dot ${i === 0 ? 'active' : ''}"></div>`).join('');
+  },
+  renderSlide(s) {
+    const img = getImageUrl(s.image);
+    return `
+      <div class="promo-slide" onclick="promoSliderUi.go('${s.linkType || ''}', ${JSON.stringify(s.linkTarget || '')})">
+        <div class="promo-badge-row">
+          <span class="promo-badge-pill"><i class="fa-solid fa-star"></i> ${t('limitedSpotsLabel')}</span>
+          <span class="promo-badge-pill"><i class="fa-solid fa-crown"></i> ${t('featuredBadgeLabel')}</span>
+        </div>
+        <span class="promo-badge-pill promo-badge-center"><i class="fa-solid fa-fire"></i> ${t('starOfDayLabel')}</span>
+        <div>
+          <h3 class="promo-slide-title">${s.title || ''}</h3>
+          ${s.subtitle ? `<p class="promo-slide-subtitle"><i class="fa-solid fa-star text-[10px]"></i> ${s.subtitle}</p>` : ''}
+        </div>
+        <div class="promo-slide-footer">
+          <span class="promo-cta-btn"><i class="fa-solid fa-chevron-left"></i> ${t('bookNowBtn')}</span>
+          ${s.date ? `<span class="promo-date-pill"><i class="fa-regular fa-calendar"></i> ${s.date}</span>` : '<span></span>'}
+        </div>
+        <div class="promo-photo-wrap"><div class="promo-photo-card"><img src="${img}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'"></div></div>
+      </div>`;
+  },
+  go(linkType, linkTarget) {
+    if (!linkTarget) return;
+    if (linkType === 'excursion') showExcursionPage(linkTarget);
+    else if (linkType === 'hotel') showHotelPage(linkTarget);
+    else if (linkType === 'transfer') showTransferPage(linkTarget);
+    else if (linkType === 'url') window.open(linkTarget, '_blank', 'noopener');
+  },
+  onScroll(el) {
+    const idx = Math.round(el.scrollLeft / el.clientWidth);
+    document.querySelectorAll('#promoSliderDots .promo-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+  },
+  step(dir) {
+    const el = document.getElementById('promoSliderTrack');
+    if (el) el.scrollBy({ left: el.clientWidth * dir, behavior: 'smooth' });
   }
 };
 

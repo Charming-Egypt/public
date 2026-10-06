@@ -55,14 +55,14 @@ const state = {
   userStats: { completedBookings: 0, totalSpent: 0 },
 };
 
-const CATALOG = { hotels: [], excursions: [], transfers: [], destinations: [], restaurants: [], reviews: [], articles: [] };
-const CATALOG_RAW = { hotels: [], excursions: [], transfers: [], destinations: [], restaurants: [], reviews: [], articles: [] };
+const CATALOG = { hotels: [], excursions: [], transfers: [], destinations: [], restaurants: [], reviews: [], articles: [], promoSlides: [] };
+const CATALOG_RAW = { hotels: [], excursions: [], transfers: [], destinations: [], restaurants: [], reviews: [], articles: [], promoSlides: [] };
 
 // ==================== MULTILANG FIELDS ====================
 const MULTILANG_FIELDS = [
   'name', 'title', 'description', 'fullDescription', 'location', 'vehicleType',
   'duration', 'tagline', 'cuisine', 'text', 'itemName', 'excerpt', 'content',
-  'openHours', 'category', 'type', 'beds', 'size', 'meetingPoint', 'address'
+  'openHours', 'category', 'type', 'beds', 'size', 'meetingPoint', 'address', 'subtitle'
 ];
 const MULTILANG_ARRAY_FIELDS = ['amenities', 'includes', 'features', 'excludes', 'whatToBring', 'images', 'menu', 'itinerary'];
 
@@ -427,11 +427,12 @@ function localizeCatalog(lang) {
   CATALOG.restaurants = CATALOG_RAW.restaurants.map(item => localizeItem(item, lang));
   CATALOG.reviews = CATALOG_RAW.reviews.map(item => localizeItem(item, lang));
   CATALOG.articles = CATALOG_RAW.articles.map(item => localizeItem(item, lang));
+  CATALOG.promoSlides = CATALOG_RAW.promoSlides.map(item => localizeItem(item, lang));
 }
 
 // ==================== CATALOG LOADING ====================
 async function loadCatalogFromWorker() {
-  const files = ['hotels', 'excursions', 'transfers', 'destinations', 'restaurants', 'reviews', 'articles'];
+  const files = ['hotels', 'excursions', 'transfers', 'destinations', 'restaurants', 'reviews', 'articles', 'promoSlides'];
   for (const f of files) {
     try {
       // تعديل مسار جلب الملفات ليتوافق مع نقاط النهاية (Endpoints) الخاصة بالـ Worker
@@ -458,6 +459,7 @@ function refreshCatalogUI() {
   if (document.getElementById('restaurantsRow')) restaurantsUi.renderRow();
   if (document.getElementById('reviewsRow')) reviewsHomeUi.render();
   if (document.getElementById('articlesRow')) articlesUi.render();
+  if (document.getElementById('promoSliderSection')) promoSliderUi.render();
 }
 
 // ==================== AUTH ====================
