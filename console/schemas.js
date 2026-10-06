@@ -24,5 +24,8 @@ A.restaurant = [L('name', 'اسم المطعم'), L('cuisine', 'نوع المط�
   L('description', 'وصف قصير', true), L('fullDescription', 'الوصف الكامل', true), L('location', 'المنطقة'), T('address_full', 'العنوان بالتفصيل'), L('openHours', 'مواعيد العمل'), T('phone', 'التليفون'), coords, T('google_maps_url', 'رابط جوجل ماب')];
 A.article = [L('title', 'عنوان المقال'), L('excerpt', 'مقتطف', true), L('content', 'المحتوى', true), { k: 'image', l: 'الصورة', t: 'img' }, T('author', 'الكاتب'), N('readTimeMinutes', 'وقت القراءة (دقيقة)')];
 A.review = [T('name', 'اسم صاحب التقييم'), N('rating', 'التقييم (1-5)'), T('section', 'القسم', ['hotel', 'excursion', 'restaurant']), L('itemName', 'اسم العنصر'), { k: 'image', l: 'صورة', t: 'img' }, L('text', 'نص التقييم', true)];
+// Homepage promo slider — the "limited spots / star of the day / trip stars" badges
+// are fixed UI chrome (translated once, shown on every slide), not per-slide fields.
+A.promoSlide = [L('title', 'العنوان'), L('subtitle', 'الوصف القصير', true), T('date', 'التاريخ (مثال: 29 أكتوبر — اختياري)'), { k: 'image', l: 'الصورة', t: 'img' }, T('linkType', 'نوع الرابط', ['excursion', 'hotel', 'transfer', 'url']), T('linkTarget', 'هدف الرابط (ID العنصر أو رابط كامل لو "url")'), N('order', 'الترتيب (الأقل يظهر أول)'), { k: 'active', l: 'مفعّلة؟', t: 'bool', h: 'إخفاء الشريحة من الموقع بدون حذفها' }];
 DS.SCH = S; DS.SCH_ADMIN = A;
 })();
