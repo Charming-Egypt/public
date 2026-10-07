@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "title": {
+      "ar": "تجربه",
+      "en": "Test"
+    },
+    "subtitle": {
+      "ar": "رحله في الصحراء",
+      "en": "Desert Trip"
+    },
+    "date": "",
+    "image": "https://raw.githubusercontent.com/Charming-Egypt/Public/main/data/uploads/admin/2026-10/dbbb8435b7fd41ee.jpg",
+    "linkType": "excursion",
+    "linkTarget": "e2",
+    "active": true,
+    "id": "pzykxns4"
+  }
+]
