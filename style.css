@@ -172,7 +172,7 @@ body {
 /* ---------- Hero ---------- */
 .hero-section {
   position: relative;
-  height: 100vh;
+  height: 40vh;
   overflow: hidden;
 }
 
@@ -1787,7 +1787,7 @@ body:has(#transferDetailPage.active) .bottom-nav {
   }
 
   .category-tile {
-    flex-direction: row;
+   
     justify-content: flex-start;
     padding: 24px;
     font-size: 15px;
