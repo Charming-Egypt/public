@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Discover Sharm — Luxury Travel</title>
+
+  <script>
+    // Single Page Apps for GitHub Pages — decode step.
+    // https://github.com/rafgraph/spa-github-pages
+    // Reverses what 404.html did: turns "/?/excursions/e1" back into the
+    // real "/excursions/e1" in the address bar (via history.replaceState,
+    // no reload) before the router code further down ever looks at the URL.
+    (function (l) {
+      if (l.search[1] === '/') {
+        var decoded = l.search.slice(1).split('&').map(function (s) {
+          return s.replace(/~and~/g, '&');
+        }).join('?');
+        window.history.replaceState(null, null, l.pathname.slice(0, -1) + decoded + l.hash);
+      }
+    }(window.location));
+  </script>
+
+  <script>
+    // Defined inline, first thing in <head>, on purpose: the logo <img> tags
+    // below start loading as soon as the parser reaches them in <body>, which
+    // is long before data.js (loaded at the very end of the page) runs. If
+    // FALLBACK_LOGO were only defined in data.js, a failed logo load before
+    // that point would throw "FALLBACK_LOGO is not defined" instead of
+    // showing the fallback image.
+    window.FALLBACK_LOGO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23fcd34d'/%3E%3Cstop offset='50%25' stop-color='%23fbbf24'/%3E%3Cstop offset='100%25' stop-color='%23d97706'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='120' height='120' rx='28' fill='url(%23g)'/%3E%3Ctext x='60' y='68' text-anchor='middle' font-family='Georgia,serif' font-weight='700' font-size='42' fill='%23000000'%3EDS%3C/text%3E%3C/svg%3E";
+  </script>
+
+  <link rel="stylesheet" href="/style.css?v=13" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Playfair Display', 'serif'] },
+          colors: {
+            ink: { 950: '#000000', 900: '#050505', 800: '#1a1a1a', 700: '#262626', 600: '#333333' },
+            violet: { 50: '#fff7ed', 400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c' },
+            gold: { 300: '#fcd34d', 400: '#fbbf24', 500: '#f59e0b', 600: '#d97706' },
+            mist: { 50: '#f8f7fc', 100: '#f1eef9', 200: '#e8e3f4' }
+          }
+        }
+      }
+    }
+  </script>
+
+
+</head>
+<body>
+
+  <div id="toastContainer" role="status" aria-live="polite" aria-atomic="false" class="fixed top-4 left-1/2 -translate-x-1/2 z-[200] space-y-2 pointer-events-none w-[90%] max-w-md"></div>
+
+  <!-- Photo Lightbox (opened from the desktop photo grid) -->
+  <div id="photoLightbox" class="hidden lightbox-overlay" onclick="if(event.target===this) closeLightbox()">
+    <button type="button" aria-label="Close" data-i18n-aria="ariaClose" onclick="closeLightbox()" class="lightbox-close"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+    <button type="button" aria-label="Previous" data-i18n-aria="ariaPrev" onclick="lightboxStep(-1)" class="lightbox-arrow lightbox-arrow-prev"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
+    <img id="lightboxImage" class="lightbox-img" src="" alt="">
+    <button type="button" aria-label="Next" data-i18n-aria="ariaNext" onclick="lightboxStep(1)" class="lightbox-arrow lightbox-arrow-next"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
+    <div id="lightboxCounter" class="lightbox-counter">1 / 1</div>
+  </div>
+
+  <div id="splashPage" class="fixed inset-0 z-[999] flex flex-col items-center justify-between" style="background:#0a0a0a;">
+    <div class="absolute inset-0 bg-[url('https://egyptra.pro/uploads/products/product_m23452--urghada-uad-afari-amel-ide-ed-356_68e55f8d5318b.webp')] bg-cover bg-center"></div>
+    <div class="absolute inset-0" style="background:linear-gradient(180deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,.15) 30%, rgba(0,0,0,.1) 60%, rgba(0,0,0,.75) 100%);"></div>
+    <div class="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-8">
+      <div class="splash-logo-ring w-20 h-20 rounded-full flex items-center justify-center mb-5 overflow-hidden">
+        <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjJnB5c7R2uZzCNpzUtsow1OaJSWKAuybM2Wxux8wLk0EYV4TMA-xe1gIRXyrQ8Hw1dDVhgL94mMfLdMmB1HmsQXlI0vYYoJ83Z2o6Iu3r1UTxZxm7KbtD6jDQnZyVyInzRPr2dKnCqEdUuOW6QaVKtqC0fyVi7vJ65sWVJZSgiSRle3UXA3il3Qk6kdJwN=s150" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="w-[70%] h-[70%] object-contain" alt="Discover Sharm" />
+      </div>
+      <h1 class="font-display text-[2rem] font-bold leading-tight">
+        <span class="text-white" data-i18n="discoverWord">Discover</span> <span style="color:#f97316" data-i18n="sharmWord">Sharm</span>
+      </h1>
+      <p class="text-white/60 text-sm mt-1.5" data-i18n="yourPersonalGuideLabel">Your Personal Guide</p>
+    </div>
+    <div class="relative z-10 w-full px-10 pb-10">
+      <div class="splash-progress-track">
+        <div class="splash-progress-fill"></div>
+      </div>
+      <p class="text-white/55 text-xs text-center mt-3" data-i18n="loadingYourJourneyLabel">Loading your journey…</p>
+    </div>
+  </div>
+
+  <div id="authPage" class="fixed inset-0 z-[95] hidden dark-scene overflow-y-auto">
+    <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1600&q=80')] bg-cover bg-center opacity-20"></div>
+    <div class="stars-container"></div>
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+
+    <div class="relative z-10 min-h-full flex flex-col lg:flex-row lg:items-stretch">
+
+      <!-- ============ DESKTOP DESIGN — brand panel (lg and up only) ============ -->
+      <div class="hidden lg:flex lg:w-1/2 xl:w-3/5 flex-col justify-center px-16 xl:px-24 py-14 relative overflow-hidden border-r" style="border-color:#262626; background-image:linear-gradient(160deg, rgba(10, 10, 10, .88) 0%, rgba(5, 5, 5, .80) 55%, rgba(0, 0, 0, .92) 100%), url('https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1600&q=85'); background-size:cover; background-position:center;">
+        <div class="relative z-10 max-w-lg">
+          <div class="w-16 h-16 mb-8 bg-gradient-to-br from-gold-300 via-gold-400 to-gold-600 rounded-2xl flex items-center justify-center shadow-2xl">
+            <i class="fa-solid fa-compass text-2xl text-ink-900" aria-hidden="true"></i>
+          </div>
+          <p class="text-gold-400 text-sm font-semibold tracking-wide mb-3" data-i18n="tagline">Luxury travel</p>
+          <h2 class="font-display text-4xl xl:text-5xl font-bold text-white leading-tight mb-5" data-i18n="authBrandTitle">Your Sharm El Sheikh journey starts here</h2>
+          <p class="text-white/50 text-base mb-10" data-i18n="authBrandSubtitle">Handpicked hotels, private excursions, and seamless transfers — all in one place.</p>
+          <ul class="space-y-4">
+            <li class="flex items-center gap-3 text-white/70 text-sm">
+              <span class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/5 border" style="border-color:#262626;"><i class="fa-solid fa-hotel text-gold-400" aria-hidden="true"></i></span>
+              <span data-i18n="authFeatureHotels">Handpicked hotels & resorts</span>
+            </li>
+            <li class="flex items-center gap-3 text-white/70 text-sm">
+              <span class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/5 border" style="border-color:#262626;"><i class="fa-solid fa-umbrella-beach text-gold-400" aria-hidden="true"></i></span>
+              <span data-i18n="authFeatureExcursions">Private excursions & tours</span>
+            </li>
+            <li class="flex items-center gap-3 text-white/70 text-sm">
+              <span class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/5 border" style="border-color:#262626;"><i class="fa-solid fa-headset text-gold-400" aria-hidden="true"></i></span>
+              <span data-i18n="authFeatureSupport">24/7 support in your language</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ============ Shared form panel — full-bleed on mobile, right column on desktop ============ -->
+      <div class="w-full lg:w-1/2 xl:w-2/5 flex flex-col justify-center px-6 py-14 lg:px-14 lg:py-10">
+        <div class="w-full lg:max-w-md lg:mx-auto">
+          <div class="text-center mb-8 lg:hidden">
+            <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-gold-300 via-gold-400 to-gold-600 rounded-2xl flex items-center justify-center shadow-2xl"><i class="fa-solid fa-compass text-2xl text-ink-900" aria-hidden="true"></i></div>
+            <h1 class="font-display text-2xl font-bold text-white" id="authTitle" data-i18n="welcomeBack">Welcome Back</h1>
+            <p class="text-white/50 text-sm mt-1" data-i18n="authSubtitle">Sign in to manage your bookings</p>
+          </div>
+          <div class="hidden lg:block mb-8">
+            <h1 class="font-display text-2xl font-bold text-white" id="authTitleDesktop" data-i18n="welcomeBack">Welcome Back</h1>
+            <p class="text-white/50 text-sm mt-1" data-i18n="authSubtitle">Sign in to manage your bookings</p>
+          </div>
+
+          <div class="card-strong rounded-3xl p-6 lg:p-8" style="background:#0a0a0a; border:1px solid #262626;">
+            <!-- Google's own rendered button is mounted here by initGoogleSignInButton() —
+                 far more reliable across browsers than a custom button driving One Tap. -->
+            <div id="googleSignInBtn" class="w-full flex justify-center mb-4" style="min-height:44px;"></div>
+
+            <div class="flex items-center gap-3 mb-4">
+              <div class="flex-1 h-px bg-white/10"></div><span class="text-white/30 text-[10px] font-semibold" data-i18n="orDivider">OR</span><div class="flex-1 h-px bg-white/10"></div>
+            </div>
+
+            <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+              <div id="authNameWrap" class="hidden space-y-4">
+                <div>
+                  <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5" data-i18n="fullNameLabel">FULL NAME</label>
+                  <input type="text" id="authName" maxlength="60" autocomplete="name" class="input-field w-full px-3 py-2.5 text-sm text-white" style="background:#1a1a1a;" />
+                </div>
+                <div class="grid grid-cols-[110px_1fr] gap-2">
+                  <div>
+                    <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5" data-i18n="countryCode">COUNTRY CODE</label>
+                    <select id="authCountryCode" class="input-field w-full px-2 py-2.5 text-sm text-white" style="background:#1a1a1a;"></select>
+                  </div>
+                  <div>
+                    <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5" data-i18n="phoneNumber">PHONE NUMBER</label>
+                    <input type="tel" id="authPhone" placeholder="1xx xxx xxxx" maxlength="20" autocomplete="tel-national" class="input-field w-full px-3 py-2.5 text-sm text-white" style="background:#1a1a1a;" />
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5" data-i18n="email">EMAIL ADDRESS</label>
+                <input type="email" id="authEmail" required maxlength="254" placeholder="you@example.com" autocomplete="email" class="input-field w-full px-3 py-2.5 text-sm text-white" style="background:#1a1a1a;" />
+              </div>
+              <div>
+                <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5" data-i18n="password">PASSWORD</label>
+                <input type="password" id="authPassword" required minlength="6" placeholder="••••••••" autocomplete="current-password" class="input-field w-full px-3 py-2.5 text-sm text-white" style="background:#1a1a1a;" />
+              </div>
+              <button type="submit" id="authSubmitBtn" class="btn-gold w-full py-3.5 rounded-2xl font-bold text-ink-900 mt-2" data-i18n="loginBtn">Log In</button>
+            </form>
+
+            <p class="text-center text-white/50 text-xs mt-5">
+              <span id="authSwitchText" data-i18n="noAccount">Don't have an account?</span>
+              <a href="javascript:void(0)" onclick="switchAuthMode(authMode === 'login' ? 'signup' : 'login')" id="authSwitchLink" class="text-gold-400 font-semibold" data-i18n="signupBtn">Sign Up</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MODALS ============ -->
+  <!-- Kashier 3D Secure — small in-page modal, not a redirect. The customer
+       stays on this URL the entire time; only the bank's OTP challenge
+       (which no gateway can skip) appears inside this iframe. -->
+  <div id="kashier3dsModal" class="fixed inset-0 z-[999] hidden items-center justify-center p-4" style="background:rgba(0,0,0,.85);">
+    <div class="relative w-full max-w-md rounded-2xl overflow-hidden shadow-2xl" style="height:min(600px,92vh); background:#0a0a0a; border:1px solid #262626;">
+      <button type="button" aria-label="Close" data-i18n-aria="ariaClose" onclick="closeKashier3ds(false)" class="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      <iframe id="kashier3dsFrame" class="w-full h-full border-0" src="" title="Card verification" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <!-- Guests Modal -->
+  <div id="guestsModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="font-display text-xl font-bold" style="color:var(--text-primary)" data-i18n="guestsRooms">Guests & Rooms</h3>
+        <button type="button" aria-label="Close" data-i18n-aria="ariaClose" onclick="closeGuestsModal()" class="w-10 h-10 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      </div>
+      <div class="space-y-6">
+        <div class="flex items-center justify-between">
+          <div><p class="font-semibold text-sm" style="color:var(--text-primary)" data-i18n="adults">Adults</p><p class="text-xs" style="color:var(--text-secondary)" data-i18n="age13">Age 13+</p></div>
+          <div class="flex items-center gap-3"><button class="counter-btn" onclick="adjustGuestCount('adults', -1)">-</button><span id="adultsCount" class="text-xl font-bold w-8 text-center" style="color:var(--text-primary)">2</span><button class="counter-btn" onclick="adjustGuestCount('adults', 1)">+</button></div>
+        </div>
+        <div class="flex items-center justify-between">
+          <div><p class="font-semibold text-sm" style="color:var(--text-primary)" data-i18n="children">Children</p><p class="text-xs" style="color:var(--text-secondary)" data-i18n="childrenAgeHint">Tell us each child's age for accurate pricing</p></div>
+          <div class="flex items-center gap-3"><button class="counter-btn" onclick="adjustGuestCount('children', -1)">-</button><span id="childrenCount" class="text-xl font-bold w-8 text-center" style="color:var(--text-primary)">0</span><button class="counter-btn" onclick="adjustGuestCount('children', 1)">+</button></div>
+        </div>
+        <!-- One age <select> per child, injected/removed live by renderChildAgeInputs() as the
+             counter above changes. Pricing (computeRoomPricing) reads state.guests.childAges,
+             so this list is the actual source of truth for child fees, not just the count. -->
+        <div id="childAgesList" class="space-y-2"></div>
+        <div class="flex items-center justify-between">
+          <div><p class="font-semibold text-sm" style="color:var(--text-primary)" data-i18n="infants">Infants</p><p class="text-xs" style="color:var(--text-secondary)" data-i18n="under2FreeNoSeatBed">Under 2 · free, no seat/bed</p></div>
+          <div class="flex items-center gap-3"><button class="counter-btn" onclick="adjustGuestCount('infants', -1)">-</button><span id="infantsCount" class="text-xl font-bold w-8 text-center" style="color:var(--text-primary)">0</span><button class="counter-btn" onclick="adjustGuestCount('infants', 1)">+</button></div>
+        </div>
+        <div class="flex items-center justify-between border-t pt-4" style="border-color:var(--border-card)">
+          <div><p class="font-semibold text-sm" style="color:var(--text-primary)" data-i18n="rooms">Rooms</p><p class="text-xs" style="color:var(--text-secondary)" data-i18n="max5Rooms">Max 5 rooms</p></div>
+          <div class="flex items-center gap-3"><button class="counter-btn" onclick="adjustGuestCount('rooms', -1)">-</button><span id="roomsCount" class="text-xl font-bold w-8 text-center" style="color:var(--text-primary)">1</span><button class="counter-btn" onclick="adjustGuestCount('rooms', 1)">+</button></div>
+        </div>
+      </div>
+      <button onclick="applyGuests()" class="btn-gold w-full py-4 rounded-2xl font-bold text-ink-900 mt-6" data-i18n="apply">Apply</button>
+    </div>
+  </div>
+
+  <!-- Datepicker Modal (موحد للبحث والحجز) — one connected calendar handles
+       both check-in and check-out without closing in between; see the
+       `datepicker` object in frontend.js. -->
+  <div id="datepickerModal" class="modal-overlay hidden" style="z-index: 99999;">
+    <div class="modal-content" style="max-width:340px;">
+      <div class="flex items-center justify-between mb-2">
+        <button type="button" aria-label="Next" data-i18n-aria="ariaNext" onclick="datepicker.changeMonth(1)" class="w-9 h-9 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-chevron-right text-xs" aria-hidden="true"></i></button>
+        <h3 id="dpMonthLabel" class="font-display font-bold text-base" style="color:var(--text-primary)"></h3>
+        <button type="button" aria-label="Previous" data-i18n-aria="ariaPrev" onclick="datepicker.changeMonth(-1)" class="w-9 h-9 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-chevron-left text-xs" aria-hidden="true"></i></button>
+      </div>
+      <p id="dpStatus" class="text-center text-xs font-semibold mb-3" style="color:#f59e0b; min-height:16px;"></p>
+      <div id="dpPresets" class="flex gap-2 mb-3" style="display:none;">
+        <button type="button" onclick="datepicker.applyPreset(1)" class="flex-1 py-2 rounded-xl text-[11px] font-semibold field-box" style="color:var(--text-primary)" data-i18n="dpOneNight">1 Night</button>
+        <button type="button" onclick="datepicker.applyPreset(2)" class="flex-1 py-2 rounded-xl text-[11px] font-semibold field-box" style="color:var(--text-primary)" data-i18n="dpWeekend">Weekend</button>
+        <button type="button" onclick="datepicker.applyPreset(7)" class="flex-1 py-2 rounded-xl text-[11px] font-semibold field-box" style="color:var(--text-primary)" data-i18n="dpWeek">1 Week</button>
+      </div>
+      <div class="dp-grid mb-1 text-center" id="dpWeekdays"></div>
+      <div class="dp-grid" id="dpGrid"></div>
+      <button onclick="datepicker.close()" class="w-full mt-5 py-3 rounded-2xl text-sm font-semibold field-box" style="color:var(--text-primary)" data-i18n="close">Close</button>
+    </div>
+  </div>
+
+  <!-- Room preview modal -->
+  <div id="roomPreviewModal" class="modal-overlay hidden" onclick="if (event.target === this) closeRoomPreview()">
+    <div class="modal-content" style="max-width:380px; padding:0; overflow:hidden;">
+      <div id="roomPreviewContent"></div>
+    </div>
+  </div>
+
+  <!-- Write a review modal -->
+  <div id="reviewModal" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width:380px;">
+      <div class="flex justify-between items-center mb-5">
+        <h3 class="font-display text-lg font-bold" style="color:var(--text-primary)" data-i18n="writeReview">Write a Review</h3>
+        <button type="button" aria-label="Close" data-i18n-aria="ariaClose" onclick="reviews.closeModal()" class="w-9 h-9 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      </div>
+      <p class="text-xs mb-4 leading-relaxed" style="color:var(--text-secondary)" data-i18n="reviewVerifyNote">To keep reviews genuine, enter the Booking ID from your confirmation to verify you stayed / booked with us.</p>
+      <form onsubmit="reviews.submit(event)" class="space-y-4">
+        <div>
+          <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="bookingIdLabel">BOOKING ID</label>
+          <input type="text" id="reviewBookingId" required maxlength="20" placeholder="DS-XXXXXX" class="input-field w-full px-3 py-2.5 text-sm uppercase" style="color:var(--text-primary)" />
+        </div>
+        <div>
+          <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="yourRating">YOUR RATING</label>
+          <div class="star-input flex gap-2" id="reviewStarInput">
+            <i class="fa-solid fa-star" aria-hidden="true" data-star="1" onclick="reviews.setStars(1)"></i>
+            <i class="fa-solid fa-star" aria-hidden="true" data-star="2" onclick="reviews.setStars(2)"></i>
+            <i class="fa-solid fa-star" aria-hidden="true" data-star="3" onclick="reviews.setStars(3)"></i>
+            <i class="fa-solid fa-star" aria-hidden="true" data-star="4" onclick="reviews.setStars(4)"></i>
+            <i class="fa-solid fa-star" aria-hidden="true" data-star="5" onclick="reviews.setStars(5)"></i>
+          </div>
+        </div>
+        <div>
+          <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="yourName">YOUR NAME</label>
+          <input type="text" id="reviewName" required maxlength="60" class="input-field w-full px-3 py-2.5 text-sm" style="color:var(--text-primary)" />
+        </div>
+        <div>
+          <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="nationality">NATIONALITY</label>
+          <select id="reviewNationality" required class="input-field w-full px-3 py-2.5 text-sm" style="color:var(--text-primary)"></select>
+        </div>
+        <div>
+          <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="yourReview">YOUR REVIEW</label>
+          <textarea id="reviewComment" rows="3" required maxlength="1000" class="input-field w-full px-3 py-2.5 text-sm" style="color:var(--text-primary)"></textarea>
+        </div>
+        <div>
+          <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="photosOptional">PHOTOS (OPTIONAL)</label>
+          <input type="file" id="reviewImages" accept="image/*" multiple class="hidden" onchange="reviews.addImages(this.files)" />
+          <div class="review-photo-picker" id="reviewImagePreview">
+            <button type="button" onclick="document.getElementById('reviewImages').click()" class="review-photo-add" data-i18n="add"><i class="fa-solid fa-camera" aria-hidden="true"></i><span>Add</span></button>
+          </div>
+        </div>
+        <button type="submit" class="btn-violet w-full py-3.5 rounded-2xl font-bold" data-i18n="submitReview">Submit Review</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Flight passengers modal -->
+  <div id="flightPaxModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="font-display text-xl font-bold" style="color:var(--text-primary)" data-i18n="passengersClass">Passengers & Class</h3>
+        <button type="button" aria-label="Close" data-i18n-aria="ariaClose" onclick="flightSearch.closePaxModal()" class="w-10 h-10 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      </div>
+      <div class="space-y-6">
+        <div class="flex items-center justify-between">
+          <div><p class="font-semibold text-sm" style="color:var(--text-primary)" data-i18n="adults">Adults</p><p class="text-xs" style="color:var(--text-secondary)" data-i18n="age12">Age 12+</p></div>
+          <div class="flex items-center gap-3"><button class="counter-btn" onclick="flightSearch.adjust('adults',-1)">-</button><span id="fpAdults" class="text-xl font-bold w-8 text-center" style="color:var(--text-primary)">1</span><button class="counter-btn" onclick="flightSearch.adjust('adults',1)">+</button></div>
+        </div>
+        <div class="flex items-center justify-between">
+          <div><p class="font-semibold text-sm" style="color:var(--text-primary)" data-i18n="children">Children</p><p class="text-xs" style="color:var(--text-secondary)" data-i18n="age211">Age 2-11</p></div>
+          <div class="flex items-center gap-3"><button class="counter-btn" onclick="flightSearch.adjust('children',-1)">-</button><span id="fpChildren" class="text-xl font-bold w-8 text-center" style="color:var(--text-primary)">0</span><button class="counter-btn" onclick="flightSearch.adjust('children',1)">+</button></div>
+        </div>
+        <div class="flex items-center justify-between">
+          <div><p class="font-semibold text-sm" style="color:var(--text-primary)" data-i18n="infants">Infants</p><p class="text-xs" style="color:var(--text-secondary)" data-i18n="under2">Under 2</p></div>
+          <div class="flex items-center gap-3"><button class="counter-btn" onclick="flightSearch.adjust('infants',-1)">-</button><span id="fpInfants" class="text-xl font-bold w-8 text-center" style="color:var(--text-primary)">0</span><button class="counter-btn" onclick="flightSearch.adjust('infants',1)">+</button></div>
+        </div>
+        <div>
+          <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="cabinClass">CABIN CLASS</label>
+          <select id="fpCabin" class="input-field w-full px-3 py-2.5 text-sm" style="color:var(--text-primary)"><option>Economy</option><option>Business</option><option>First</option></select>
+        </div>
+      </div>
+      <button onclick="flightSearch.applyPax()" class="btn-gold w-full py-4 rounded-2xl font-bold text-ink-900 mt-6" data-i18n="apply">Apply</button>
+    </div>
+  </div>
+
+  <input type="file" id="avatarFileInput" accept="image/*" class="hidden" onchange="profileAvatar.handleFile(event)" />
+
+  <!-- Side Drawer -->
+  <div id="sideDrawerOverlay" onclick="sidebar.close()"></div>
+  <div id="sideDrawer">
+    <div class="p-5 flex flex-col h-full">
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-2">
+          <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjJnB5c7R2uZzCNpzUtsow1OaJSWKAuybM2Wxux8wLk0EYV4TMA-xe1gIRXyrQ8Hw1dDVhgL94mMfLdMmB1HmsQXlI0vYYoJ83Z2o6Iu3r1UTxZxm7KbtD6jDQnZyVyInzRPr2dKnCqEdUuOW6QaVKtqC0fyVi7vJ65sWVJZSgiSRle3UXA3il3Qk6kdJwN=s150" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-8 w-8 rounded-lg" alt="logo" />
+          <span class="font-display font-bold text-white text-sm" data-i18n="discoverSharm2">Discover Sharm</span>
+        </div>
+        <button type="button" aria-label="Close" data-i18n-aria="ariaClose" onclick="sidebar.close()" class="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-white/70"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      </div>
+      <div id="drawerUserBox" class="flex items-center gap-3 mb-6 p-3 rounded-2xl cursor-pointer" style="background:var(--chrome-field-bg)" onclick="nav.go('profile'); sidebar.close()">
+        <div class="w-11 h-11 rounded-full bg-gradient-to-br from-gold-300 to-gold-600 flex items-center justify-center font-display font-bold text-ink-900 overflow-hidden" id="drawerAvatar">A</div>
+        <div class="min-w-0 flex-1">
+          <div class="flex items-center gap-2">
+            <p class="text-white text-sm font-semibold truncate" id="drawerName" >Guest</p>
+            <span id="drawerTierBadge" class="hidden ml-2 text-base" title="Sharmawy Level"></span>
+          </div>
+          <p class="text-white/40 text-[11px] truncate" id="drawerEmail"></p>
+        </div>
+        <i class="fa-solid fa-chevron-left text-white/30 text-xs" aria-hidden="true"></i>
+      </div>
+      <div class="space-y-1 flex-1 overflow-y-auto">
+        <div class="drawer-link" onclick="nav.go('home'); sidebar.close()"><i class="fa-solid fa-house w-5 text-center" aria-hidden="true"></i><span data-i18n="navHome">Home</span></div>
+        <div class="drawer-link hidden" id="drawerHotelsLink" onclick="nav.go('hotels'); sidebar.close()"><i class="fa-solid fa-hotel w-5 text-center" aria-hidden="true"></i><span data-i18n="navHotels">Hotels</span></div>
+        <div class="drawer-link" onclick="nav.go('excursions'); sidebar.close()"><i class="fa-solid fa-umbrella-beach w-5 text-center" aria-hidden="true"></i><span data-i18n="navExcursions">Excursions</span></div>
+        <div class="drawer-link" onclick="nav.go('transfers'); sidebar.close()"><i class="fa-solid fa-shuttle-van w-5 text-center" aria-hidden="true"></i><span data-i18n="navTransfers">Airport Transfers</span></div>
+        <div class="drawer-link" onclick="nav.go('restaurants'); sidebar.close()"><i class="fa-solid fa-utensils w-5 text-center" aria-hidden="true"></i><span data-i18n="navRestaurants">Restaurants & Cafes</span></div>
+        <div class="drawer-link" onclick="nav.go('bookings'); sidebar.close()"><i class="fa-regular fa-calendar-check w-5 text-center" aria-hidden="true"></i><span data-i18n="navBookings">My Bookings</span></div>
+        <div class="drawer-link hidden" id="drawerFavoritesLink" onclick="nav.go('favorites'); sidebar.close()"><i class="fa-regular fa-heart w-5 text-center" aria-hidden="true"></i><span data-i18n="navFavorites">Favorites</span></div>
+        <div class="drawer-link" onclick="nav.go('settings'); sidebar.close()"><i class="fa-solid fa-gear w-5 text-center" aria-hidden="true"></i><span data-i18n="settingsTitle">Settings</span></div>
+      </div>
+      <div class="pt-4 border-t border-white/10 space-y-4">
+        <div class="flex items-center justify-between">
+          <span class="text-white/60 text-xs font-semibold" data-i18n="darkMode">Dark Mode</span>
+          <div class="theme-switch" id="themeSwitchDrawer" onclick="THEME.toggle()"><div class="knob"><i class="fa-solid fa-moon" aria-hidden="true" style="font-size:9px;color:#0a0a0a"></i></div></div>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-white/60 text-xs font-semibold" data-i18n="language">Language</span>
+          <select onchange="I18N.set(this.value)" class="lang-select rounded-xl px-3 py-2 text-xs outline-none" style="background:var(--chrome-field-bg); color:var(--chrome-text); border:1px solid var(--chrome-border)">
+            <option value="en">English</option><option value="ar">العربية</option><option value="ru">Русский</option><option value="de">Deutsch</option><option value="it">Italiano</option><option value="tr">Türkçe</option>
+          </select>
+        </div>
+        <button onclick="auth.logout()" class="w-full py-3 rounded-2xl text-red-400 text-sm font-semibold border border-red-400/20 flex items-center justify-center gap-2"><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i><span data-i18n="logout">Logout</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sticky Header -->
+  <div class="sticky-home-header" id="stickyHomeHeader">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <button type="button" aria-label="Open menu" data-i18n-aria="ariaMenu" onclick="sidebar.open()" class="icon-btn w-10 h-10 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
+        <img src="https://blogger.googleusercontent.com/img/a/AVvXsEijXrWtde6tToaU9FtagWqPfjqA6WXHuyb4o-kQ208kWktjrv7N0nDGNdYbT2fl_mIDx4PsLwQ11GKYLYWhnA5n3ccOWGHIW1izBqqhLJhXhfeLFsCAa5pAgAfGvCx0opO6HJ_ZdNjRP3koAnLAEAdzWFbmj7KRiUAWxveqhw3pBPNhoFnBlVJvbwVGmdpQ=s1600" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="sticky-header-logo" alt="Discover Sharm" />
+      </div>
+      <button onclick="nav.go('profile')" data-page="profile" class="nav-item icon-btn w-11 h-11 rounded-xl flex items-center justify-center">
+        <span class="nav-avatar-circle" id="snavProfileAvatar"></span>
+      </button>
+      </div>
+  </div>
+
+  <!-- Desktop Navigation (1024px and up — the bottom tab bar is mobile-only,
+       so without this, Bookings/Profile/Settings/Notifications had no way
+       to be reached on a desktop browser). Transparent over the hero by
+       default, like the mobile header-floating; gets a solid background
+       once scrolled (".scrolled", toggled in frontend.js) or on any page
+       that isn't the hero-bearing home page. -->
+  <nav id="desktopNav" class="hidden lg:flex fixed top-0 inset-x-0 z-50 items-center justify-between h-20 px-10">
+    <div class="flex items-center gap-10">
+      <button type="button" aria-label="Open menu" data-i18n-aria="ariaMenu" onclick="sidebar.open()" class="icon-btn w-11 h-11 rounded-xl flex items-center justify-center text-white flex-shrink-0"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
+      <button onclick="nav.go('home')" data-page="home" class="flex items-center gap-2 flex-shrink-0">
+        <img src="https://blogger.googleusercontent.com/img/a/AVvXsEijXrWtde6tToaU9FtagWqPfjqA6WXHuyb4o-kQ208kWktjrv7N0nDGNdYbT2fl_mIDx4PsLwQ11GKYLYWhnA5n3ccOWGHIW1izBqqhLJhXhfeLFsCAa5pAgAfGvCx0opO6HJ_ZdNjRP3koAnLAEAdzWFbmj7KRiUAWxveqhw3pBPNhoFnBlVJvbwVGmdpQ=s1600" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-9 w-auto desktop-nav-logo" alt="Discover Sharm" />
+      </button>
+      <div class="flex items-center gap-8 text-sm font-semibold">
+        <button onclick="nav.go('excursions')" data-page="excursions" class="nav-item drawer-link text-white" data-i18n="navExcursions">Excursions</button>
+        <button onclick="nav.go('hotels')" data-page="hotels" id="desktopHotelsLink" class="nav-item text-white hidden" data-i18n="navHotels">Hotels</button>
+        <button onclick="nav.go('transfers')" data-page="transfers" class="nav-item drawer-link text-white" data-i18n="navTransfers">Transfers</button>
+        <button onclick="nav.go('restaurants')" data-page="restaurants" class="nav-item drawer-link text-white" data-i18n="navRestaurants">Restaurants</button>
+        <button onclick="nav.go('bookings')" data-page="bookings" class="nav-item text-white" data-i18n="myBookings">My Bookings</button>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <button onclick="nav.go('notifications')" data-page="notifications" class="nav-item icon-btn w-11 h-11 rounded-xl flex items-center justify-center relative text-white"><i class="fa-regular fa-bell" aria-hidden="true"></i><span class="notif-badge hidden absolute top-2 right-2 w-2 h-2 bg-gold-400 rounded-full"></span></button>
+      <button type="button" aria-label="Settings" data-i18n-aria="ariaSettings" onclick="nav.go('settings')" data-page="settings" class="nav-item icon-btn w-11 h-11 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-gear" aria-hidden="true"></i></button>
+      <button onclick="nav.go('profile')" data-page="profile" class="nav-item icon-btn w-11 h-11 rounded-xl flex items-center justify-center">
+        <span class="nav-avatar-circle" id="navProfileAvatarDesktop"></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main App -->
+  <div id="mainApp" class="hidden relative z-10">
+    <!-- Home Page -->
+    <div id="homePage" class="page active">
+      <div class="hero-section dark-scene" id="heroSection">
+        <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=90" class="hero-bg-img" id="heroBgImage" onerror="this.style.display='none'" alt="" />
+        <div class="stars-container"></div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content relative z-10 pb-24 text-white">
+          <div class="px-5 pt-6 pb-4">
+            <div class="header-floating">
+              <div class="flex items-center gap-3">
+                <button type="button" aria-label="Open menu" data-i18n-aria="ariaMenu" onclick="sidebar.open()" class="icon-btn w-11 h-11 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
+                <img src="https://blogger.googleusercontent.com/img/a/AVvXsEijXrWtde6tToaU9FtagWqPfjqA6WXHuyb4o-kQ208kWktjrv7N0nDGNdYbT2fl_mIDx4PsLwQ11GKYLYWhnA5n3ccOWGHIW1izBqqhLJhXhfeLFsCAa5pAgAfGvCx0opO6HJ_ZdNjRP3koAnLAEAdzWFbmj7KRiUAWxveqhw3pBPNhoFnBlVJvbwVGmdpQ=s1600" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="site-logo" alt="Discover Sharm" />
+              </div>
+              <div>
+                <button onclick="nav.go('profile')" data-page="profile" title="Profile" aria-label="Profile" class="icon-btn w-11 h-11 rounded-xl flex items-center justify-center relative">
+          <span class="nav-avatar-circle" id="navProfileAvatar"></span>
+        </button></div>
+                 </div>
+          </div>
+          <div class="px-6 pt-6 pb-4 text-center">
+            <p class="text-gold-400 text-xs font-semibold tracking-widest mb-2 hero-text-swap" id="heroEyebrowText" data-i18n="premiumStays"></p>
+            <h1 class="font-display text-3xl md:text-4xl font-bold mb-3 leading-tight hero-text-swap" id="heroTitleText" data-i18n="heroTitle"><br /><span class="italic text-gold-400">Perfect Stay</span></h1>
+            <p class="text-white/75 text-base hero-text-swap" id="heroSubtitleText" data-i18n="heroSubtitle"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative z-20 pt-6">
+
+        <!-- Promo Slider (super-admin managed) -->
+        <div id="promoSliderSection" class="mb-8 hidden">
+          <div class="relative px-5">
+            <div id="promoSliderTrack" class="promo-slider-track" onscroll="promoSliderUi.onScroll(this)"></div>
+            <button onclick="promoSliderUi.step(-1)" class="promo-slider-arrow promo-slider-arrow-prev" aria-label="Previous"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
+            <button onclick="promoSliderUi.step(1)" class="promo-slider-arrow promo-slider-arrow-next" aria-label="Next"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
+          </div>
+          <div id="promoSliderDots" class="flex items-center justify-center gap-1.5 mt-3"></div>
+        </div>
+
+        <!-- Explore by Category -->
+        <div class="px-5 mb-8">
+          <div class="category-tile-grid">
+            <button onclick="nav.go('excursions')" class="category-tile">
+              <div class="category-tile-icon"><i class="fa-solid fa-umbrella-beach" aria-hidden="true"></i></div>
+              <span data-i18n="navExcursions">Excursions</span>
+            </button>
+            <button onclick="nav.go('hotels')" id="categoryTileHotels" class="category-tile hidden">
+              <div class="category-tile-icon"><i class="fa-solid fa-hotel" aria-hidden="true"></i></div>
+              <span data-i18n="navHotels">Hotels</span>
+            </button>
+            <button onclick="nav.go('transfers')" class="category-tile">
+              <div class="category-tile-icon"><i class="fa-solid fa-shuttle-van" aria-hidden="true"></i></div>
+              <span data-i18n="navTransfers">Transfers</span>
+            </button>
+            <button onclick="nav.go('restaurants')" id="categoryTileRestaurants" class="category-tile">
+              <div class="category-tile-icon"><i class="fa-solid fa-utensils" aria-hidden="true"></i></div>
+              <span data-i18n="navRestaurants">Restaurants</span>
+            </button>
+          </div>
+        </div>
+
+
+   <!-- Destinations Row -->
+        <div class="mb-8">
+          <div class="px-5 flex items-center justify-between mb-4">
+            <div><p class="section-subtitle" data-i18n="exploreEyebrow">— EXPLORE</p><h3 class="section-title" data-i18n="destinationsTitle">Popular Destinations</h3></div>
+          </div>
+          <div id="destinationsRow" class="horizontal-scroll px-5"></div>
+        </div>
+
+        
+        <!-- Featured Excursions Slider -->
+        <div class="px-5 mb-8">
+          <div class="flex items-center justify-between mb-4">
+            <div><p class="section-subtitle" data-i18n="thingsToDoEyebrow">— THINGS TO DO</p><h3 class="section-title" data-i18n="featuredExcursions">Featured Excursions</h3></div>
+            <button onclick="nav.go('excursions')" class="text-violet-500 text-sm font-medium flex items-center gap-1" data-i18n="viewAll">View All <i class="fa-solid fa-arrow-left text-xs" aria-hidden="true"></i></button>
+          </div>
+          <div id="featuredExcursions" class="results-scroll-snap"></div>
+        </div>
+
+        <!-- Featured Hotels -->
+        <div class="px-5 mb-8">
+          <div class="flex items-center justify-between mb-4">
+            <div><p class="section-subtitle" data-i18n="stayEyebrow">— WHERE TO STAY</p><h3 class="section-title" data-i18n="featuredHotelsTitle">Featured Hotels</h3></div>
+            <button onclick="nav.go('hotels')" class="text-violet-500 text-sm font-medium flex items-center gap-1" data-i18n="viewAll">View All <i class="fa-solid fa-arrow-left text-xs" aria-hidden="true"></i></button>
+          </div>
+          <div id="featuredHotels"></div>
+        </div>
+
+        <!-- Transfer promo banner -->
+        <div class="px-5 mb-8">
+          <div id="transferPromoBanner" class="banner-creative rounded-[26px] relative overflow-hidden cursor-pointer" onclick="nav.go('transfers')" style="background-image:linear-gradient(120deg,rgba(10, 10, 10, .88),rgba(10, 10, 10, .35) 60%,rgba(10, 10, 10, .1)), url('https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1000&q=80')">
+            <div class="relative z-10 p-6 lg:p-12 text-white max-w-[75%] lg:max-w-[50%]">
+              <div class="inline-block bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-[10px] lg:text-xs font-bold mb-3 border border-white/20"><i class="fa-solid fa-shuttle-van text-orange-300 ml-1" aria-hidden="true"></i><span data-i18n="airportTransferBadge">AIRPORT TRANSFERS</span></div>
+              <p class="font-display text-2xl lg:text-4xl font-bold mb-1 lg:mb-2" data-i18n="transferPromoTitle">Land & Go</p>
+              <p class="text-sm lg:text-base text-white/80 mb-4 lg:mb-6" data-i18n="transferPromoSubtitle">Book your ride to the hotel in advance</p>
+              <button onclick="event.stopPropagation(); nav.go('transfers')" class="btn-gold px-6 py-2.5 lg:px-8 lg:py-3.5 rounded-xl font-bold text-ink-900 text-sm lg:text-base ripple" data-i18n="bookTransfer">Book a Transfer</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Restaurants Row -->
+        <div class="mb-8">
+          <div class="px-5 flex items-center justify-between mb-4">
+            <div><p class="section-subtitle" data-i18n="diningEyebrow">— EAT & DRINK</p><h3 class="section-title" data-i18n="restaurantsTitle">Restaurants & Cafes</h3></div>
+            <button onclick="nav.go('restaurants')" class="text-violet-500 text-sm font-medium flex items-center gap-1" data-i18n="viewAll">View All <i class="fa-solid fa-arrow-left text-xs" aria-hidden="true"></i></button>
+          </div>
+          <div id="restaurantsRow" class="horizontal-scroll"></div>
+        </div>
+
+     
+
+        <!-- Reviews Row -->
+        <div class="mb-8">
+          <div class="px-5 flex items-center justify-between mb-4">
+            <div><p class="section-subtitle" data-i18n="storiesEyebrow">— GUEST STORIES</p><h3 class="section-title" data-i18n="whatGuestsSay">What Our Guests Say</h3></div>
+          </div>
+          <div class="horizontal-scroll px-5" id="reviewsRow"></div>
+        </div>
+
+        <!-- Articles -->
+        <div class="px-5 mb-8">
+          <div class="flex items-center justify-between mb-4">
+            <div><p class="section-subtitle" data-i18n="journalEyebrow">— JOURNAL</p><h3 class="section-title" data-i18n="articlesTitle">Travel Guides & Tips</h3></div>
+          </div>
+          <div id="articlesRow" class="space-y-4"></div>
+        </div>
+
+        <!-- Footer -->
+        <footer id="siteFooter">
+          <!-- Desktop footer -->
+          <div class="hidden lg:block footer-desktop">
+            <div class="footer-grid">
+              <div class="footer-brand-col">
+                <img src="https://blogger.googleusercontent.com/img/a/AVvXsEijXrWtde6tToaU9FtagWqPfjqA6WXHuyb4o-kQ208kWktjrv7N0nDGNdYbT2fl_mIDx4PsLwQ11GKYLYWhnA5n3ccOWGHIW1izBqqhLJhXhfeLFsCAa5pAgAfGvCx0opO6HJ_ZdNjRP3koAnLAEAdzWFbmj7KRiUAWxveqhw3pBPNhoFnBlVJvbwVGmdpQ=s1600" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-8 w-auto mb-4" alt="Discover Sharm" />
+                <p class="footer-tagline" data-i18n="footerTagline">Your trusted guide to hotels, excursions, transfers and dining across Sharm El-Sheikh.</p>
+                <div class="footer-social">
+                  <a href="#" class="footer-social-btn" aria-label="Instagram" title="Instagram"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a>
+                  <a href="#" class="footer-social-btn" aria-label="Facebook" title="Facebook"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i></a>
+                  <a href="#" class="footer-social-btn" aria-label="WhatsApp" title="WhatsApp"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i></a>
+                  <a href="#" class="footer-social-btn" aria-label="TikTok" title="TikTok"><i class="fa-brands fa-tiktok" aria-hidden="true"></i></a>
+                </div>
+              </div>
+
+              <div class="footer-col">
+                <h4 data-i18n="footerExplore">Explore</h4>
+                <a onclick="nav.go('excursions')" data-i18n="navExcursions">Excursions</a>
+                <a onclick="nav.go('hotels')" id="footerHotelsLink" class="hidden" data-i18n="navHotels">Hotels</a>
+                <a onclick="nav.go('transfers')" data-i18n="navTransfers">Transfers</a>
+                <a onclick="nav.go('restaurants')" data-i18n="navRestaurants">Restaurants</a>
+              </div>
+
+              <div class="footer-col">
+                <h4 data-i18n="footerCompany">Company</h4>
+                <a onclick="nav.go('about')" data-i18n="footerAbout">About Us</a>
+                <a onclick="nav.go('journal')" data-i18n="footerJournal">Travel Journal</a>
+                <a onclick="nav.go('contact')" data-i18n="footerContact">Contact</a>
+                <a onclick="nav.go('partner')" data-i18n="footerPartner">Become a Partner</a>
+              </div>
+
+              <div class="footer-col">
+                <h4 data-i18n="footerSupport">Support</h4>
+                <a onclick="nav.go('bookings')" data-i18n="myBookings">My Bookings</a>
+                <a onclick="nav.go('cancellationPolicy')" data-i18n="footerCancellation">Cancellation Policy</a>
+                <a onclick="nav.go('refundPolicy')" data-i18n="footerRefund">Refund Policy</a>
+                <a onclick="nav.go('terms')" data-i18n="footerTerms">Terms of Service</a>
+                <a onclick="nav.go('privacy')" data-i18n="footerPrivacy">Privacy Policy</a>
+              </div>
+
+              <div class="footer-col footer-payment-col">
+                <h4 data-i18n="paymentEyebrow">Secure Checkout</h4>
+                <div class="payment-icon-row">
+                  <div class="payment-icon-box"><i class="fa-brands fa-cc-visa" aria-hidden="true"></i></div>
+                  <div class="payment-icon-box"><i class="fa-brands fa-cc-mastercard" aria-hidden="true"></i></div>
+                  <div class="payment-icon-box"><i class="fa-solid fa-wallet" aria-hidden="true"></i></div>
+                  <div class="payment-icon-box"><i class="fa-solid fa-money-bill-wave" aria-hidden="true"></i></div>
+                </div>
+                <p class="footer-payment-note" data-i18n="paymentSecureNote">All payments are processed securely in Egyptian Pounds (EGP). Pay by card or InstaPay/e-wallet.</p>
+                <a href="mailto:support@discover-sharm.com" class="footer-contact-line" data-i18n="supportDiscoverSharmCom"><i class="fa-regular fa-envelope" aria-hidden="true"></i> support@discover-sharm.com</a>
+                <p class="footer-contact-line" data-i18n="sharmElSheikhSouthSinaiEgypt"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Sharm El-Sheikh, South Sinai, Egypt</p>
+              </div>
+            </div>
+
+            <div class="footer-bottom">
+              <p data-i18n="footerCopyright">© 2026 Discover Sharm. All rights reserved.</p>
+              <div class="footer-legal-links">
+                <a onclick="nav.go('terms')" data-i18n="footerTerms">Terms</a>
+                <span>·</span>
+                <a onclick="nav.go('privacy')" data-i18n="footerPrivacy">Privacy</a>
+                <span>·</span>
+                <a onclick="nav.go('privacy')" data-i18n="footerCookies">Cookies</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mobile footer -->
+          <div class="lg:hidden footer-mobile">
+            <img src="https://blogger.googleusercontent.com/img/a/AVvXsEijXrWtde6tToaU9FtagWqPfjqA6WXHuyb4o-kQ208kWktjrv7N0nDGNdYbT2fl_mIDx4PsLwQ11GKYLYWhnA5n3ccOWGHIW1izBqqhLJhXhfeLFsCAa5pAgAfGvCx0opO6HJ_ZdNjRP3koAnLAEAdzWFbmj7KRiUAWxveqhw3pBPNhoFnBlVJvbwVGmdpQ=s1600" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-7 w-auto mb-4" alt="Discover Sharm" />
+            <div class="payment-icon-row justify-center">
+              <div class="payment-icon-box"><i class="fa-brands fa-cc-visa" aria-hidden="true"></i></div>
+              <div class="payment-icon-box"><i class="fa-brands fa-cc-mastercard" aria-hidden="true"></i></div>
+              <div class="payment-icon-box"><i class="fa-solid fa-wallet" aria-hidden="true"></i></div>
+              <div class="payment-icon-box"><i class="fa-solid fa-money-bill-wave" aria-hidden="true"></i></div>
+            </div>
+            <p class="footer-payment-note" data-i18n="paymentSecureNote">All payments are processed securely in Egyptian Pounds (EGP). Pay by card or InstaPay/e-wallet.</p>
+            <div class="footer-social">
+              <a href="#" class="footer-social-btn" aria-label="Instagram"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a>
+              <a href="#" class="footer-social-btn" aria-label="Facebook"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i></a>
+              <a href="#" class="footer-social-btn" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i></a>
+              <a href="#" class="footer-social-btn" aria-label="TikTok"><i class="fa-brands fa-tiktok" aria-hidden="true"></i></a>
+            </div>
+            <div class="footer-mobile-links">
+              <a onclick="nav.go('about')" data-i18n="footerAbout">About</a>
+              <span>·</span>
+              <a onclick="nav.go('contact')" data-i18n="footerContact">Contact</a>
+              <span>·</span>
+              <a onclick="nav.go('partner')" data-i18n="footerPartner">Partner</a>
+              <span>·</span>
+              <a onclick="nav.go('terms')" data-i18n="footerTerms">Terms</a>
+              <span>·</span>
+              <a onclick="nav.go('privacy')" data-i18n="footerPrivacy">Privacy</a>
+            </div>
+            <p class="footer-copyright" data-i18n="footerCopyright">© 2026 Discover Sharm. All rights reserved.</p>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <!-- Excursions Page -->
+    <div id="excursionsPage" class="page">
+      <div class="min-h-screen">
+        <!-- Desktop listing header -->
+        <div class="listing-hero hidden lg:block">
+          <div class="listing-hero-inner">
+            <p class="listing-eyebrow" data-i18n="activitiesEyebrow">— ACTIVITIES</p>
+            <h1 class="listing-title" data-i18n="excursionsTitle">Excursions</h1>
+            <p class="listing-count"><span id="excursionsCount">0</span> experiences in Sharm El-Sheikh</p>
+          </div>
+        </div>
+        <div class="px-5 pt-6 pb-4 header-light">
+          <div class="flex items-center justify-between mb-5 lg:hidden">
+            <button type="button" aria-label="Back" data-i18n-aria="ariaBack" data-back onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+            <div class="text-center"><p class="section-subtitle" data-i18n="activitiesEyebrow">— ACTIVITIES</p><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)" data-i18n="excursionsTitle">Excursions</h1></div>
+            <div class="w-11"></div>
+          </div>
+          <div class="relative mb-3">
+            <i class="fa-solid fa-magnifying-glass absolute top-1/2 -translate-y-1/2" aria-hidden="true" style="inset-inline-start:14px; color:var(--text-secondary)"></i>
+            <input id="excursionSearchInput" type="text" oninput="excursionsUi.onSearchInput(this.value)" data-i18n-placeholder="searchExcursions" placeholder="Search Excursions" class="w-full field-box rounded-xl text-sm py-3" style="padding-inline-start:40px; padding-inline-end:12px; color:var(--text-primary)">
+          </div>
+          <div class="horizontal-scroll !px-0 listing-filter-row">
+            <button onclick="search.filterExcursionCategory('all')" data-cat="all" class="filter-chip excursion-chip active flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-layer-group" aria-hidden="true"></i> <span data-i18n="all">All</span></button>
+            <button onclick="search.filterExcursionCategory('diving')" data-cat="diving" class="filter-chip excursion-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-person-swimming" aria-hidden="true"></i> <span data-i18n="catDiving">Diving</span></button>
+            <button onclick="search.filterExcursionCategory('desert')" data-cat="desert" class="filter-chip excursion-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-person-hiking" aria-hidden="true"></i> <span data-i18n="catDesert">Desert Safari</span></button>
+            <button onclick="search.filterExcursionCategory('boat')" data-cat="boat" class="filter-chip excursion-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-sailboat" aria-hidden="true"></i> <span data-i18n="catBoat">Boat Trip</span></button>
+            <button onclick="search.filterExcursionCategory('city')" data-cat="city" class="filter-chip excursion-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-city" aria-hidden="true"></i> <span data-i18n="catCity">City Tour</span></button>
+          </div>
+          <div class="flex items-center gap-2 mt-3 flex-wrap">
+            <select id="excursionSortSelect" onchange="excursionsUi.onSortChange(this.value)" class="field-box rounded-xl text-xs py-2 px-3" style="color:var(--text-primary)">
+              <option value="popular" data-i18n="sortPopular">Popular</option>
+              <option value="priceLow" data-i18n="sortPriceLowHigh">Price: Low to High</option>
+              <option value="priceHigh" data-i18n="sortPriceHighLow">Price: High to Low</option>
+              <option value="rating" data-i18n="sortTopRated">Top Rated</option>
+            </select>
+            <input id="excursionMinPriceInput" type="number" min="0" oninput="excursionsUi.onPriceChange(this.value, document.getElementById('excursionMaxPriceInput').value)" data-i18n-placeholder="minPriceLabel" placeholder="Min Price" class="field-box rounded-xl text-xs py-2 px-3 w-24" style="color:var(--text-primary)">
+            <input id="excursionMaxPriceInput" type="number" min="0" oninput="excursionsUi.onPriceChange(document.getElementById('excursionMinPriceInput').value, this.value)" data-i18n-placeholder="maxPriceLabel" placeholder="Max Price" class="field-box rounded-xl text-xs py-2 px-3 w-24" style="color:var(--text-primary)">
+            <select id="excursionMinRatingSelect" onchange="excursionsUi.onMinRatingChange(this.value)" class="field-box rounded-xl text-xs py-2 px-3" style="color:var(--text-primary)">
+              <option value="0" data-i18n="anyRatingLabel">Any</option>
+              <option value="4">4.0+ ★</option>
+              <option value="4.5">4.5+ ★</option>
+            </select>
+            <button onclick="excursionsUi.clearFilters()" class="text-xs font-semibold px-3 py-2 rounded-xl" style="color:var(--brand-violet)"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> <span data-i18n="clearFiltersBtn">Clear Filters</span></button>
+          </div>
+        </div>
+        <div class="px-5 pt-4 space-y-4 pb-28" id="excursionsList"></div>
+      </div>
+    </div>
+
+    <!-- Transfers Page -->
+    <div id="transfersPage" class="page">
+      <div class="min-h-screen">
+        <div class="listing-hero hidden lg:block">
+          <div class="listing-hero-inner">
+            <p class="listing-eyebrow" data-i18n="rideEyebrow">— GROUND TRANSPORT</p>
+            <h1 class="listing-title" data-i18n="transfersTitle">Airport Transfers</h1>
+            <p class="listing-count" data-i18n="transfersSubtitle">Choose a vehicle for your ride between Sharm El Sheikh International Airport (SSH) and your hotel.</p>
+          </div>
+        </div>
+        <div class="px-5 pt-6 pb-4 header-light lg:hidden">
+          <div class="flex items-center gap-3 mb-2">
+            <button type="button" aria-label="Back" data-i18n-aria="ariaBack" data-back onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+            <div><p class="section-subtitle" data-i18n="rideEyebrow">— GROUND TRANSPORT</p><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)" data-i18n="transfersTitle">Airport Transfers</h1></div>
+          </div>
+          <p class="text-xs leading-relaxed mt-2" style="color:var(--text-secondary)" data-i18n="transfersSubtitle">Choose a vehicle for your ride between Sharm El Sheikh International Airport (SSH) and your hotel.</p>
+        </div>
+        <div class="px-5 pt-2 pb-2">
+          <div class="relative mb-3">
+            <i class="fa-solid fa-magnifying-glass absolute top-1/2 -translate-y-1/2" aria-hidden="true" style="inset-inline-start:14px; color:var(--text-secondary)"></i>
+            <input id="transferSearchInput" type="text" oninput="transfersUi.onSearchInput(this.value)" data-i18n-placeholder="searchTransfersPlaceholder" placeholder="Search transfers..." class="w-full field-box rounded-xl text-sm py-3" style="padding-inline-start:40px; padding-inline-end:12px; color:var(--text-primary)">
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <select id="transferSortSelect" onchange="transfersUi.onSortChange(this.value)" class="field-box rounded-xl text-xs py-2 px-3" style="color:var(--text-primary)">
+              <option value="popular" data-i18n="sortPopular">Popular</option>
+              <option value="priceLow" data-i18n="sortPriceLowHigh">Price: Low to High</option>
+              <option value="priceHigh" data-i18n="sortPriceHighLow">Price: High to Low</option>
+              <option value="capacity" data-i18n="sortCapacity">Most Passengers</option>
+            </select>
+            <input id="transferMinPriceInput" type="number" min="0" oninput="transfersUi.onPriceChange(this.value, document.getElementById('transferMaxPriceInput').value)" data-i18n-placeholder="minPriceLabel" placeholder="Min Price" class="field-box rounded-xl text-xs py-2 px-3 w-24" style="color:var(--text-primary)">
+            <input id="transferMaxPriceInput" type="number" min="0" oninput="transfersUi.onPriceChange(document.getElementById('transferMinPriceInput').value, this.value)" data-i18n-placeholder="maxPriceLabel" placeholder="Max Price" class="field-box rounded-xl text-xs py-2 px-3 w-24" style="color:var(--text-primary)">
+            <select id="transferMinCapacitySelect" onchange="transfersUi.onMinCapacityChange(this.value)" class="field-box rounded-xl text-xs py-2 px-3" style="color:var(--text-primary)">
+              <option value="0" data-i18n="anyRatingLabel">Any</option>
+              <option value="2">2+</option>
+              <option value="4">4+</option>
+              <option value="7">7+</option>
+              <option value="10">10+</option>
+            </select>
+            <button onclick="transfersUi.clearFilters()" class="text-xs font-semibold px-3 py-2 rounded-xl" style="color:var(--brand-violet)"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> <span data-i18n="clearFiltersBtn">Clear Filters</span></button>
+          </div>
+        </div>
+        <div class="px-5 pt-4 space-y-4 pb-28" id="transfersList"></div>
+      </div>
+    </div>
+
+    <!-- Restaurants Page -->
+    <div id="restaurantsPage" class="page">
+      <div class="min-h-screen">
+        <div class="listing-hero hidden lg:block">
+          <div class="listing-hero-inner">
+            <p class="listing-eyebrow" data-i18n="diningEyebrow">— EAT & DRINK</p>
+            <h1 class="listing-title" data-i18n="restaurantsTitle">Restaurants & Cafes</h1>
+            <p class="listing-count"><span id="restaurantsCount">0</span> places to eat and drink</p>
+          </div>
+        </div>
+        <div class="px-5 pt-6 pb-4 header-light lg:hidden">
+          <div class="flex items-center gap-3 mb-2">
+            <button type="button" aria-label="Back" data-i18n-aria="ariaBack" data-back onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+            <div><p class="section-subtitle" data-i18n="diningEyebrow">— EAT & DRINK</p><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)" data-i18n="restaurantsTitle">Restaurants & Cafes</h1></div>
+          </div>
+        </div>
+        <div class="px-5 pt-4 pb-28" id="restaurantsFullList"></div>
+      </div>
+    </div>
+
+    <!-- Hotels Page -->
+    <div id="hotelsPage" class="page">
+      <div class="min-h-screen">
+        <div class="listing-hero hidden lg:block">
+          <div class="listing-hero-inner">
+            <p class="listing-eyebrow" data-i18n="stayEyebrow">— WHERE TO STAY</p>
+            <h1 class="listing-title" data-i18n="hotelsTitle">Hotels</h1>
+            <p class="listing-count"><span id="hotelsCount">0</span> hotels along the Red Sea</p>
+          </div>
+        </div>
+        <div class="px-5 pt-6 pb-4 header-light">
+          <div class="flex items-center gap-3 mb-2 lg:hidden">
+            <button type="button" aria-label="Back" data-i18n-aria="ariaBack" data-back onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+            <div><p class="section-subtitle" data-i18n="stayEyebrow">— WHERE TO STAY</p><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)" data-i18n="hotelsTitle">Hotels</h1></div>
+          </div>
+          <div class="relative mb-3">
+            <i class="fa-solid fa-magnifying-glass absolute top-1/2 -translate-y-1/2" aria-hidden="true" style="inset-inline-start:14px; color:var(--text-secondary)"></i>
+            <input id="hotelSearchInput" type="text" oninput="hotels.onSearchInput(this.value)" data-i18n-placeholder="searchHotels" placeholder="Search Hotels" class="w-full field-box rounded-xl text-sm py-3" style="padding-inline-start:40px; padding-inline-end:12px; color:var(--text-primary)">
+          </div>
+          <div class="horizontal-scroll !px-0 listing-filter-row">
+            <button onclick="search.filterCategory('all')" data-cat="all" class="filter-chip hotel-chip active flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-layer-group" aria-hidden="true"></i> <span data-i18n="all">All</span></button>
+            <button onclick="search.filterCategory('budget')" data-cat="budget" class="filter-chip hotel-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-coins" aria-hidden="true"></i> <span data-i18n="budget">Budget</span></button>
+            <button onclick="search.filterCategory('luxury')" data-cat="luxury" class="filter-chip hotel-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-gem" aria-hidden="true"></i> <span data-i18n="luxury">Luxury</span></button>
+            <button onclick="search.filterCategory('family')" data-cat="family" class="filter-chip hotel-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-people-roof" aria-hidden="true"></i> <span data-i18n="family">Family</span></button>
+            <button onclick="search.filterCategory('resort')" data-cat="resort" class="filter-chip hotel-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-umbrella-beach" aria-hidden="true"></i> <span data-i18n="resort">Resort</span></button>
+            <button onclick="search.filterCategory('beachfront')" data-cat="beachfront" class="filter-chip hotel-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-water" aria-hidden="true"></i> <span data-i18n="beachfront">Beachfront</span></button>
+          </div>
+          <div class="flex items-center gap-2 mt-3 flex-wrap">
+            <select id="hotelSortSelect" onchange="hotels.onSortChange(this.value)" class="field-box rounded-xl text-xs py-2 px-3" style="color:var(--text-primary)">
+              <option value="popular" data-i18n="sortPopular">Popular</option>
+              <option value="priceLow" data-i18n="sortPriceLowHigh">Price: Low to High</option>
+              <option value="priceHigh" data-i18n="sortPriceHighLow">Price: High to Low</option>
+              <option value="rating" data-i18n="sortTopRated">Top Rated</option>
+            </select>
+            <input id="hotelMinPriceInput" type="number" min="0" oninput="hotels.onPriceChange(this.value, document.getElementById('hotelMaxPriceInput').value)" data-i18n-placeholder="minPriceLabel" placeholder="Min Price" class="field-box rounded-xl text-xs py-2 px-3 w-24" style="color:var(--text-primary)">
+            <input id="hotelMaxPriceInput" type="number" min="0" oninput="hotels.onPriceChange(document.getElementById('hotelMinPriceInput').value, this.value)" data-i18n-placeholder="maxPriceLabel" placeholder="Max Price" class="field-box rounded-xl text-xs py-2 px-3 w-24" style="color:var(--text-primary)">
+            <select id="hotelMinRatingSelect" onchange="hotels.onMinRatingChange(this.value)" class="field-box rounded-xl text-xs py-2 px-3" style="color:var(--text-primary)">
+              <option value="0" data-i18n="anyRatingLabel">Any</option>
+              <option value="4">4.0+ ★</option>
+              <option value="4.5">4.5+ ★</option>
+            </select>
+            <button onclick="hotels.clearFilters()" class="text-xs font-semibold px-3 py-2 rounded-xl" style="color:var(--brand-violet)"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> <span data-i18n="clearFiltersBtn">Clear Filters</span></button>
+          </div>
+        </div>
+        <div class="px-5 pt-4 pb-28" id="hotelsList"></div>
+      </div>
+    </div>
+
+    <!-- Account Dashboard Sidebar (desktop only — persists across Bookings,
+         Profile, Settings and Notifications so those feel like one section
+         instead of four separate screens). Shown/positioned via CSS when
+         body has the "account-section" class, toggled in nav.go(). -->
+    <aside id="accountSidebar">
+      <div class="account-sidebar-user">
+        <div class="account-sidebar-avatar" id="sidebarProfileAvatar"></div>
+        <p class="account-sidebar-name" id="sidebarProfileName" data-i18n="guest">Guest</p>
+        <p class="account-sidebar-email" id="sidebarProfileEmail"></p>
+      </div>
+      <nav class="account-sidebar-nav">
+        <button onclick="nav.go('profile')" data-page="profile" class="account-sidebar-link"><i class="fa-solid fa-user w-5 text-center" aria-hidden="true"></i><span data-i18n="profileTitle">Profile</span></button>
+        <button onclick="nav.go('bookings')" data-page="bookings" class="account-sidebar-link"><i class="fa-solid fa-ticket w-5 text-center" aria-hidden="true"></i><span data-i18n="myBookings">My Bookings</span></button>
+        <button onclick="nav.go('notifications')" data-page="notifications" class="account-sidebar-link"><i class="fa-regular fa-bell w-5 text-center" aria-hidden="true"></i><span data-i18n="notifications">Notifications</span></button>
+        <button onclick="nav.go('settings')" data-page="settings" class="account-sidebar-link"><i class="fa-solid fa-gear w-5 text-center" aria-hidden="true"></i><span data-i18n="settingsTitle">Settings</span></button>
+      </nav>
+      <button onclick="auth.logout()" class="account-sidebar-logout"><i class="fa-solid fa-right-from-bracket w-5 text-center" aria-hidden="true"></i><span data-i18n="logout">Logout</span></button>
+    </aside>
+
+    <!-- About Us -->
+    <div id="aboutPage" class="page">
+      <div class="min-h-screen">
+        <div class="listing-hero hidden lg:block">
+          <div class="listing-hero-inner">
+            <p class="listing-eyebrow" data-i18n="ourStory">— OUR STORY</p>
+            <h1 class="listing-title" data-i18n="aboutDiscoverSharm">About Discover Sharm</h1>
+            <p class="listing-count" data-i18n="yourTrustedLocalGuideToHotels">Your trusted local guide to hotels, excursions, transfers and dining in Sharm El-Sheikh</p>
+          </div>
+        </div>
+        <div class="px-5 pt-6 pb-4 header-light lg:hidden">
+          <div class="flex items-center gap-3">
+            <button type="button" aria-label="Back" data-i18n-aria="ariaBack" data-back onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+            <div><p class="section-subtitle" data-i18n="ourStory">— OUR STORY</p><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)" data-i18n="footerAbout">About Us</h1></div>
+          </div>
+        </div>
+        <div class="static-page-body px-5 py-6 pb-28">
+          <p class="static-page-lead" data-i18n="discoverSharmWasBuiltForOne">Discover Sharm was built for one simple reason: booking a trip to the Red Sea should feel as easy and trustworthy as the destination itself deserves. We're a Sharm El-Sheikh–based team that lives and works in this city, and we put together the hotels, excursions, transfers and restaurants we'd actually recommend to a friend.</p>
+          <h3 data-i18n="whatWeDo">What We Do</h3>
+          <p data-i18n="weHandpickAndVetEveryExcursion">We handpick and vet every excursion operator, hotel partner, transfer provider and restaurant listed on our platform. Every booking made through Discover Sharm is backed by real local support — before, during and after your trip.</p>
+          <div class="about-values-grid">
+            <div class="about-value-card"><i class="fa-solid fa-shield-heart" aria-hidden="true"></i><h4 data-i18n="trustedPartners">Trusted Partners</h4><p data-i18n="everyListingIsVettedByOur">Every listing is vetted by our local team before it goes live.</p></div>
+            <div class="about-value-card"><i class="fa-solid fa-headset" aria-hidden="true"></i><h4 data-i18n="realSupport">Real Support</h4><p data-i18n="aLocalTeamYouCanActually">A local team you can actually reach, before and during your trip.</p></div>
+            <div class="about-value-card"><i class="fa-solid fa-tags" aria-hidden="true"></i><h4 data-i18n="fairPricing">Fair Pricing</h4><p data-i18n="transparentPricingWithNoHiddenFees">Transparent pricing with no hidden fees at checkout.</p></div>
+            <div class="about-value-card"><i class="fa-solid fa-map-location-dot" aria-hidden="true"></i><h4 data-i18n="localKnowledge">Local Knowledge</h4><p data-i18n="weLiveHereOurRecommendationsCome">We live here — our recommendations come from firsthand experience.</p></div>
+          </div>
+          <h3 data-i18n="getInTouch">Get in Touch</h3>
+          <p data-i18n="haveAQuestionAPartnershipIdea">Have a question, a partnership idea, or feedback on your trip? <a onclick="nav.go('contact')" class="static-page-link">Reach out to our team</a> — we'd love to hear from you.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Travel Journal -->
+    <div id="journalPage" class="page">
+      <div class="min-h-screen">
+        <div class="listing-hero hidden lg:block">
+          <div class="listing-hero-inner">
+            <p class="listing-eyebrow" data-i18n="storiesGuides">— STORIES &amp; GUIDES</p>
+            <h1 class="listing-title" data-i18n="footerJournal">Travel Journal</h1>
+            <p class="listing-count"><span id="journalCount">0</span> guides and stories from Sharm El-Sheikh</p>
+          </div>
+        </div>
+        <div class="px-5 pt-6 pb-4 header-light lg:hidden">
+          <div class="flex items-center gap-3">
+            <button type="button" aria-label="Back" data-i18n-aria="ariaBack" data-back onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+            <div><p class="section-subtitle" data-i18n="storiesGuides">— STORIES &amp; GUIDES</p><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)" data-i18n="footerJournal">Travel Journal</h1></div>
+          </div>
+        </div>
+        <div class="px-5 pt-4 pb-28" id="journalGrid"></div>
+      </div>
+    </div>
+
+    <!-- Contact -->
+    <div id="contactPage" class="page">
+      <div class="min-h-screen">
+        <div class="listing-hero hidden lg:block">
+          <div class="listing-hero-inner">
+            <p class="listing-eyebrow" data-i18n="getInTouch2">— GET IN TOUCH</p>
+            <h1 class="listing-title" data-i18n="contactUs">Contact Us</h1>
+            <p class="listing-count" data-i18n="questionsAboutABookingOrJust">Questions about a booking, or just want to say hi?</p>
+          </div>
+        </div>
+        <div class="px-5 pt-6 pb-4 header-light lg:hidden">
+          <div class="flex items-center gap-3">
+            <button type="button" aria-label="Back" data-i18n-aria="ariaBack" data-back onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+            <div><p class="section-subtitle" data-i18n="getInTouch2">— GET IN TOUCH</p><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)" data-i18n="contactUs">Contact Us</h1></div>
+          </div>
+        </div>
+        <div class="px-5 py-6 pb-28 contact-layout">
+          <div class="contact-info-col">
+            <a href="mailto:hello@discover-sharm.com" class="contact-info-card" data-i18n="emailhelloDiscoverSharmCom"><i class="fa-regular fa-envelope" aria-hidden="true"></i><div><p class="contact-info-label">Email</p><p class="contact-info-value">hello@discover-sharm.com</p></div></a>
+            <a href="#" class="contact-info-card" data-i18n="whatsappchatWithOurTeam"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i><div><p class="contact-info-label">WhatsApp</p><p class="contact-info-value">Chat with our team</p></div></a>
+            <div class="contact-info-card"><i class="fa-solid fa-location-dot" aria-hidden="true"></i><div><p class="contact-info-label" data-i18n="location">Location</p><p class="contact-info-value" data-i18n="sharmElSheikhSouthSinaiEgypt2">Sharm El-Sheikh, South Sinai, Egypt</p></div></div>
+          </div>
+          <form class="contact-form-col" onsubmit="submitContactForm(event)">
+            <input type="text" id="contactName" required placeholder="Your name" data-i18n-placeholder="phYourName" class="input-field w-full px-3 py-2.5 text-sm">
+            <input type="email" id="contactEmail" required placeholder="Your email" data-i18n-placeholder="phYourEmail" class="input-field w-full px-3 py-2.5 text-sm">
+            <textarea id="contactMessage" required rows="5" placeholder="How can we help?" data-i18n-placeholder="phHowCanWeHelp" class="input-field w-full px-3 py-2.5 text-sm"></textarea>
+            <button type="submit" class="btn-gold w-full py-3.5 rounded-2xl font-bold text-ink-900" data-i18n="sendMessage">Send Message</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Become a Partner -->
+    <div id="partnerPage" class="page">
+      <div class="min-h-screen">
+        <div class="listing-hero hidden lg:block">
+          <div class="listing-hero-inner">
+            <p class="listing-eyebrow" data-i18n="growWithUs">— GROW WITH US</p>
+            <h1 class="listing-title" data-i18n="footerPartner">Become a Partner</h1>
+            <p class="listing-count" data-i18n="listYourHotelExcursionOrTransfer">List your hotel, excursion, or transfer service on Discover Sharm</p>
+          </div>
+        </div>
+        <div class="px-5 pt-6 pb-4 header-light lg:hidden">
+          <div class="flex items-center gap-3">
+            <button type="button" aria-label="Back" data-i18n-aria="ariaBack" data-back onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+            <div><p class="section-subtitle" data-i18n="growWithUs">— GROW WITH US</p><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)" data-i18n="footerPartner">Become a Partner</h1></div>
+          </div>
+        </div>
+        <div class="static-page-body px-5 py-6 pb-28">
+          <p class="static-page-lead" data-i18n="whetherYouRunAHotelA">Whether you run a hotel, a trip or excursion company, or a transfer service in Sharm El-Sheikh, we'd love to feature you. Tell us about your business below and our partnerships team will follow up.</p>
+          <form class="partner-form" onsubmit="submitPartnerForm(event)">
+            <label class="text-[10px] tracking-widest text-violet-500 font-semibold" data-i18n="partnerType">PARTNER TYPE</label>
+            <div class="partner-type-row">
+              <label class="partner-type-chip"><input type="radio" name="partnerType" value="Hotel" checked><i class="fa-solid fa-hotel" aria-hidden="true"></i> Hotel</label>
+              <label class="partner-type-chip"><input type="radio" name="partnerType" value="Trip Supplier"><i class="fa-solid fa-umbrella-beach" aria-hidden="true"></i> Trip Supplier</label>
+              <label class="partner-type-chip"><input type="radio" name="partnerType" value="Transfer"><i class="fa-solid fa-shuttle-van" aria-hidden="true"></i> Transfer</label>
+            </div>
+            <input type="text" id="partnerBusinessName" required placeholder="Business name" data-i18n-placeholder="phBusinessName" class="input-field w-full px-3 py-2.5 text-sm">
+            <input type="text" id="partnerContactName" required placeholder="Contact person" data-i18n-placeholder="phContactPerson" class="input-field w-full px-3 py-2.5 text-sm">
+            <input type="tel" id="partnerPhone" required placeholder="Phone number" data-i18n-placeholder="phPhoneNumber" class="input-field w-full px-3 py-2.5 text-sm">
+            <input type="email" id="partnerEmail" required placeholder="Email" data-i18n-placeholder="phEmail" class="input-field w-full px-3 py-2.5 text-sm">
+            <label class="text-[10px] tracking-widest text-violet-500 font-semibold mt-2" data-i18n="supportingDocuments">SUPPORTING DOCUMENTS</label>
+            <p class="text-[11px]" style="color:var(--text-secondary)" data-i18n="uploadClearPhotosOrPdfsHelps">Upload clear photos or PDFs — helps us verify and onboard you faster.</p>
+            <div id="partnerDocSlots" class="partner-doc-grid"></div>
+            <textarea id="partnerMessage" rows="4" placeholder="Tell us about your business (optional)" data-i18n-placeholder="phTellUsAboutBusiness" class="input-field w-full px-3 py-2.5 text-sm"></textarea>
+            <button type="submit" class="btn-gold w-full py-3.5 rounded-2xl font-bold text-ink-900" data-i18n="submitApplication">Submit Application</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cancellation Policy -->
+    <div id="cancellationPolicyPage" class="page">
+      <div class="min-h-screen">
+        <div class="listing-hero hidden lg:block"><div class="listing-hero-inner"><p class="listing-eyebrow" data-i18n="policies">— POLICIES</p><h1 class="listing-title" data-i18n="footerCancellation">Cancellation Policy</h1></div></div>
+        <div class="px-5 pt-6 pb-4 header-light lg:hidden">
+          <div class="flex items-center gap-3"><button type="button" aria-label="Back" data-i18n-aria="ariaBack" data-back onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)" data-i18n="footerCancellation">Cancellation Policy</h1></div>
+        </div>
+        <div class="static-page-body px-5 py-6 pb-28">
+          <p class="static-page-updated" data-i18n="lastUpdatedSeptember2026">Last updated: September 2026</p>
+          <h3 data-i18n="standardCancellationTerms">Standard Cancellation Terms</h3>
+          <p data-i18n="cancellationTermsCanVarySlightlyBy">Cancellation terms can vary slightly by individual hotel, excursion or transfer listing — always check the specific policy shown on the booking page before you pay. Unless a listing states otherwise, the following standard terms apply:</p>
+          <ul>
+            <li data-i18n="cancellationsMadeMoreThan48Hours">Cancellations made more than 48 hours before the scheduled check-in, departure, or pickup time are eligible for a full refund.</li>
+            <li data-i18n="cancellationsMadeBetween2448Hours">Cancellations made between 24–48 hours before are eligible for a 50% refund.</li>
+            <li data-i18n="cancellationsMadeLessThan24Hours">Cancellations made less than 24 hours before, or no-shows, are non-refundable.</li>
+          </ul>
+          <h3 data-i18n="howToCancel">How to Cancel</h3>
+          <p data-i18n="youCanRequestACancellationFrom">You can request a cancellation from the "My Bookings" section of your account, or by contacting our support team directly with your booking reference.</p>
+          <h3 data-i18n="forceMajeure">Force Majeure</h3>
+          <p data-i18n="inCasesOfSevereWeatherSafety">In cases of severe weather, safety closures, or other circumstances outside our control, we'll work with you on rebooking or a full refund regardless of the standard window above.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Refund Policy -->
+    <div id="refundPolicyPage" class="page">
+      <div class="min-h-screen">
+        <div class="listing-hero hidden lg:block"><div class="listing-hero-inner"><p class="listing-eyebrow" data-i18n="policies">— POLICIES</p><h1 class="listing-title" data-i18n="footerRefund">Refund Policy</h1></div></div>
+        <div class="px-5 pt-6 pb-4 header-light lg:hidden">
+          <div class="flex items-center gap-3"><button type="button" aria-label="Back" data-i18n-aria="ariaBack" data-back onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)" data-i18n="footerRefund">Refund Policy</h1></div>
+        </div>
+        <div class="static-page-body px-5 py-6 pb-28">
+          <p class="static-page-updated" data-i18n="lastUpdatedSeptember2026">Last updated: September 2026</p>
+          <h3 data-i18n="eligibleRefunds">Eligible Refunds</h3>
+          <p data-i18n="refundsAreIssuedAccordingToThe">Refunds are issued according to the cancellation terms of your specific booking (see our <a onclick="nav.go('cancellationPolicy')" class="static-page-link">Cancellation Policy</a>), or in the event a listing is unable to fulfil a confirmed booking.</p>
+          <h3 data-i18n="processingTime">Processing Time</h3>
+          <p data-i18n="approvedRefundsAreProcessedBackTo">Approved refunds are processed back to your original payment method within 5–10 business days, depending on your bank or card issuer.</p>
+          <h3 data-i18n="nonRefundableItems">Non-Refundable Items</h3>
+          <p data-i18n="certainPromotionalOrDiscountedRatesMay">Certain promotional or discounted rates may be marked as non-refundable at the time of booking — this will always be clearly stated before you complete payment.</p>
+          <h3 data-i18n="questionsAboutARefund">Questions About a Refund</h3>
+          <p data-i18n="contactOurSupportTeamWithYour">Contact our support team with your booking reference and we'll look into it personally.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Terms of Service -->
+    <div id="termsPage" class="page">
+      <div class="min-h-screen">
+        <div class="listing-hero hidden lg:block"><div class="listing-hero-inner"><p class="listing-eyebrow" data-i18n="legal">— LEGAL</p><h1 class="listing-title" data-i18n="footerTerms">Terms of Service</h1></div></div>
+        <div class="px-5 pt-6 pb-4 header-light lg:hidden">
+          <div class="flex items-center gap-3"><button type="button" aria-label="Back" data-i18n-aria="ariaBack" data-back onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)" data-i18n="footerTerms">Terms of Service</h1></div>
+        </div>
+        <div class="static-page-body px-5 py-6 pb-28">
+          <p class="static-page-updated" data-i18n="lastUpdatedSeptember2026">Last updated: September 2026</p>
+          <h3 data-i18n="1AcceptanceOfTerms">1. Acceptance of Terms</h3>
+          <p data-i18n="byUsingDiscoverSharmToBrowse">By using Discover Sharm to browse, book or manage hotels, excursions, transfers or restaurant reservations, you agree to these Terms of Service.</p>
+          <h3 data-i18n="2Bookings">2. Bookings</h3>
+          <p data-i18n="discoverSharmActsAsABooking">Discover Sharm acts as a booking platform connecting you with independent hotels, excursion operators, transfer companies and restaurants. Each listing is responsible for delivering the service you book; we're here to make finding and booking it easy, and to support you if something goes wrong.</p>
+          <h3 data-i18n="3PricingPayment">3. Pricing &amp; Payment</h3>
+          <p data-i18n="pricesAreShownInEgyptianPounds">Prices are shown in Egyptian Pounds (EGP) and include applicable taxes and fees unless stated otherwise. Payment is processed securely at checkout via our payment partner.</p>
+          <h3 data-i18n="4UserAccounts">4. User Accounts</h3>
+          <p data-i18n="youreResponsibleForKeepingYourAccount">You're responsible for keeping your account credentials secure and for the accuracy of the information you provide when booking.</p>
+          <h3 data-i18n="5CancellationsRefunds">5. Cancellations &amp; Refunds</h3>
+          <p data-i18n="seeOurCancellationPolicyAndRefund">See our <a onclick="nav.go('cancellationPolicy')" class="static-page-link">Cancellation Policy</a> and <a onclick="nav.go('refundPolicy')" class="static-page-link">Refund Policy</a> for details.</p>
+          <h3 data-i18n="6LimitationOfLiability">6. Limitation of Liability</h3>
+          <p data-i18n="discoverSharmIsNotLiableFor">Discover Sharm is not liable for the acts or omissions of independent hotels, excursion operators, transfer companies or restaurants listed on the platform, beyond facilitating the booking and supporting resolution of issues in good faith.</p>
+          <h3 data-i18n="7ChangesToTheseTerms">7. Changes to These Terms</h3>
+          <p data-i18n="weMayUpdateTheseTermsFrom">We may update these terms from time to time; continued use of the platform after changes means you accept the updated terms.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Privacy Policy -->
+    <div id="privacyPage" class="page">
+      <div class="min-h-screen">
+        <div class="listing-hero hidden lg:block"><div class="listing-hero-inner"><p class="listing-eyebrow" data-i18n="legal">— LEGAL</p><h1 class="listing-title" data-i18n="footerPrivacy">Privacy Policy</h1></div></div>
+        <div class="px-5 pt-6 pb-4 header-light lg:hidden">
+          <div class="flex items-center gap-3"><button type="button" aria-label="Back" data-i18n-aria="ariaBack" data-back onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)" data-i18n="footerPrivacy">Privacy Policy</h1></div>
+        </div>
+        <div class="static-page-body px-5 py-6 pb-28">
+          <p class="static-page-updated" data-i18n="lastUpdatedSeptember2026">Last updated: September 2026</p>
+          <h3 data-i18n="informationWeCollect">Information We Collect</h3>
+          <p data-i18n="whenYouCreateAnAccountOr">When you create an account or make a booking, we collect your name, email, phone number, and booking details. We use secure third-party providers to process payments and never store full card numbers ourselves.</p>
+          <h3 data-i18n="howWeUseYourInformation">How We Use Your Information</h3>
+          <p data-i18n="weUseYourInformationToProcess">We use your information to process bookings, communicate with you about your trip, provide support, and — with your consent — send you occasional offers relevant to Sharm El-Sheikh travel.</p>
+          <h3 data-i18n="sharingWithPartners">Sharing With Partners</h3>
+          <p data-i18n="weShareOnlyTheBookingDetails">We share only the booking details necessary (name, contact info, dates) with the specific hotel, excursion operator, transfer company or restaurant you book with, so they can fulfil your reservation.</p>
+          <h3 data-i18n="dataSecurity">Data Security</h3>
+          <p data-i18n="weUseIndustryStandardSecurityPractices">We use industry-standard security practices to protect your data, including encrypted connections and secure authentication.</p>
+          <h3 data-i18n="yourRights">Your Rights</h3>
+          <p data-i18n="youCanReviewUpdateOrRequest">You can review, update or request deletion of your personal data at any time from your account settings, or by contacting our support team.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bookings Page -->
+    <div id="bookingsPage" class="page">
+      <div class="min-h-screen">
+        <div class="px-5 pt-6 pb-4">
+          <div class="text-center mb-6"><p class="section-subtitle" data-i18n="reservationsEyebrow">— RESERVATIONS</p><h1 class="text-2xl font-bold font-display" style="color:var(--text-primary)" data-i18n="myBookings">My Bookings</h1></div>
+          <div class="flex gap-2 field-box p-1.5 rounded-2xl">
+            <button onclick="bookings.switchTab('upcoming')" id="tabUpcoming" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-violet-500 to-violet-700 text-white text-sm font-bold shadow-lg" data-i18n="upcoming">Upcoming</button>
+            <button onclick="bookings.switchTab('history')" id="tabHistory" class="flex-1 py-3 rounded-xl text-sm font-medium" style="color:var(--text-secondary)" data-i18n="past">Past</button>
+          </div>
+        </div>
+        <div class="px-5 py-4 space-y-3 pb-28" id="bookingsList"></div>
+        <div id="emptyBookings" class="hidden text-center py-20 px-6">
+          <div class="w-28 h-28 mx-auto mb-6 field-box rounded-full flex items-center justify-center"><i class="fa-solid fa-ticket text-4xl text-violet-300" aria-hidden="true"></i></div>
+          <p class="font-display text-xl font-bold mb-2" style="color:var(--text-primary)" data-i18n="noBookingsYet">No bookings yet</p>
+          <p class="text-sm mb-6" style="color:var(--text-secondary)" data-i18n="startJourney">Start your luxury journey</p>
+          <button onclick="nav.go('excursions')" class="btn-gold px-8 py-3 rounded-2xl text-ink-900 font-bold text-sm ripple" data-i18n="browseHotels">Browse Excursions</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Page -->
+    <div id="profilePage" class="page">
+      <div class="min-h-screen pb-28">
+        <div class="relative rounded-[28px] dark-scene h-48 overflow-hidden">
+          <div class="stars-container"></div>
+          <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=90')] bg-cover bg-center opacity-25"></div>
+        </div>
+        <div class="relative -mt-20 flex flex-col items-center">
+          <div class="w-32 h-32 rounded-full p-1.5 bg-gradient-to-br from-gold-300 via-gold-400 to-gold-600 shadow-2xl relative">
+            <div class="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden border-4 border-white" id="profileAvatarWrap">
+              <span class="font-display text-5xl font-bold text-violet-600" id="profileAvatarLetter">A</span>
+            </div>
+            <div class="avatar-edit-btn" onclick="document.getElementById('avatarFileInput').click()"><i class="fa-solid fa-camera" aria-hidden="true"></i></div>
+          </div>
+          <h2 class="font-display text-2xl font-bold mt-4" style="color:var(--text-primary)" id="profileName">Guest</h2>
+          <p class="text-sm" style="color:var(--text-secondary)" id="profileEmail"></p>
+          <span id="profileTierBadge" class="hidden mt-3 px-4 py-1.5 bg-gold-400/15 border border-gold-400/40 rounded-full text-gold-600 text-xs font-bold flex items-center gap-1.5">
+            <i class="fa-solid fa-crown" aria-hidden="true"></i> <span id="profileTierText" data-i18n="sharmawyLevel1">Sharmawy Level 1</span>
+          </span>
+          <div id="sharmawyBenefitsCard" class="hidden mt-4 card rounded-2xl p-4 w-80 max-w-full"></div>
+        </div>
+        <div class="px-5 mt-8">
+          <div class="grid grid-cols-3 gap-3">
+            <div class="card rounded-2xl p-4 text-center"><p class="text-2xl font-bold text-violet-600 font-display" id="statBookings">0</p><p class="text-[10px] mt-1" style="color:var(--text-secondary)" data-i18n="bookingsStat">Bookings</p></div>
+            <div class="card rounded-2xl p-4 text-center"><p class="text-2xl font-bold text-violet-600 font-display" id="statFavorites">0</p><p class="text-[10px] mt-1" style="color:var(--text-secondary)" data-i18n="favoritesStat">Favorites</p></div>
+            <div class="card rounded-2xl p-4 text-center"><p class="text-2xl font-bold text-violet-600 font-display" id="statReviews">0</p><p class="text-[10px] mt-1" style="color:var(--text-secondary)" data-i18n="reviewsStat">Reviews</p></div>
+          </div>
+        </div>
+        <div class="px-5 mt-6 space-y-3">
+          <div class="card rounded-2xl p-4 flex items-center gap-4 cursor-pointer" onclick="nav.go('bookings')">
+            <div class="w-12 h-12 bg-violet-50 rounded-2xl flex items-center justify-center text-violet-600"><i class="fa-solid fa-ticket" aria-hidden="true"></i></div>
+            <span class="flex-1 font-medium" style="color:var(--text-primary)" data-i18n="myBookings">My Bookings</span><i class="fa-solid fa-chevron-left text-gray-300 text-xs" aria-hidden="true"></i>
+          </div>
+          <div class="card rounded-2xl p-4 flex items-center gap-4 cursor-pointer" onclick="nav.go('settings')">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-gray-500" style="background:var(--bg-field)"><i class="fa-solid fa-gear" aria-hidden="true"></i></div>
+            <span class="flex-1 font-medium" style="color:var(--text-primary)" data-i18n="settingsTitle">Settings</span><i class="fa-solid fa-chevron-left text-gray-300 text-xs" aria-hidden="true"></i>
+          </div>
+          <button onclick="auth.logout()" class="w-full card rounded-2xl p-4 flex items-center gap-4 text-red-500 mt-6">
+            <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center"><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i></div>
+            <span class="flex-1 font-medium text-right" data-i18n="logout">Logout</span>
+          </button>
+        </div>
+        <div class="text-center mt-8 pt-6 border-t" style="border-color:var(--border-card)">
+          <p class="font-display text-sm text-violet-500 italic" data-i18n="discoverSharm2">Discover Sharm</p>
+          <p class="text-[11px] text-gray-400 mt-1" data-i18n="luxuryTravelEst2024">Luxury travel, since 2024</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Page -->
+    <div id="settingsPage" class="page">
+      <div class="min-h-screen pb-28">
+        <div class="px-5 pt-6 pb-4 flex items-center gap-3 header-light">
+          <button type="button" aria-label="Back" data-i18n-aria="ariaBack" data-back onclick="nav.go('profile')" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+          <div><p class="section-subtitle" data-i18n="preferencesEyebrow">— PREFERENCES</p><h1 class="text-xl font-bold font-display" style="color:var(--text-primary)" data-i18n="settingsTitle">Settings</h1></div>
+        </div>
+        <div class="px-5 py-6 space-y-4">
+          <div class="card rounded-2xl p-4 space-y-5">
+            <div class="flex justify-between items-center">
+              <div class="flex items-center gap-3"><div class="w-10 h-10 bg-gold-400/15 rounded-xl flex items-center justify-center"><i class="fa-solid fa-coins text-gold-500" aria-hidden="true"></i></div><span class="text-sm font-medium" style="color:var(--text-primary)" data-i18n="currency">Currency</span></div>
+              <select id="currencySelect" onchange="changeCurrency(this.value)" class="rounded-xl px-3 py-2 text-sm outline-none"><option value="EGP">EGP (ج.م)</option></select>
+            </div>
+            <p id="currencyAvailabilityNote" class="text-[11px] hidden" style="color:var(--text-secondary)" data-i18n="currencyEgpOnly">Showing EGP — live rates unavailable</p>
+            <div class="flex justify-between items-center">
+              <div class="flex items-center gap-3"><div class="w-10 h-10 bg-violet-50 rounded-xl flex items-center justify-center"><i class="fa-solid fa-globe text-violet-600" aria-hidden="true"></i></div><span class="text-sm font-medium" style="color:var(--text-primary)" data-i18n="language">Language</span></div>
+              <select onchange="I18N.set(this.value)" class="lang-select rounded-xl px-3 py-2 text-sm outline-none" style="background:var(--bg-field); color:var(--text-primary); border:1px solid var(--border-field)">
+                <option value="en">English</option><option value="ar">العربية</option><option value="ru">Русский</option><option value="de">Deutsch</option><option value="it">Italiano</option><option value="tr">Türkçe</option>
+              </select>
+            </div>
+            <div class="flex justify-between items-center">
+              <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:var(--bg-field)"><i class="fa-solid fa-moon text-violet-500" aria-hidden="true"></i></div><span class="text-sm font-medium" style="color:var(--text-primary)" data-i18n="darkMode">Dark Mode</span></div>
+              <div class="theme-switch" id="themeSwitchSettings" onclick="THEME.toggle()"><div class="knob"><i class="fa-solid fa-moon" aria-hidden="true" style="font-size:9px;color:#0a0a0a"></i></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notifications Page -->
+    <div id="notificationsPage" class="page">
+      <div class="min-h-screen pb-28">
+        <div class="px-5 pt-6 pb-4 flex items-center gap-3 header-light">
+          <button type="button" aria-label="Back" data-i18n-aria="ariaBack" data-back onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+          <div class="flex-1"><p class="section-subtitle" data-i18n="updatesEyebrow">— UPDATES</p><h1 class="text-xl font-bold font-display" style="color:var(--text-primary)" data-i18n="notifications">Notifications</h1></div>
+          <button onclick="notifications.markAllRead()" class="text-[11px] font-semibold text-violet-500" data-i18n="markAllRead">Mark all as read</button>
+        </div>
+        <div class="px-5 py-6 space-y-3" id="notificationsList"></div>
+      </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <div class="flex items-center justify-around relative">
+        <button onclick="nav.go('excursions')" data-page="excursions" title="Excursions" aria-label="Excursions" class="nav-item flex items-center justify-center relative text-white"><i class="fa-solid fa-umbrella-beach text-[22px]" aria-hidden="true"></i></button>
+        <button onclick="nav.go('bookings')" data-page="bookings" title="My Bookings" aria-label="My Bookings" class="nav-item flex items-center justify-center relative text-white"><i class="fa-regular fa-calendar-check text-[22px]" aria-hidden="true"></i></button>
+        <button onclick="nav.go('home')" data-page="home" class="nav-item-home flex flex-col items-center justify-center flex-shrink-0">
+          <span class="nav-home-logo"><img src="https://blogger.googleusercontent.com/img/a/AVvXsEjJnB5c7R2uZzCNpzUtsow1OaJSWKAuybM2Wxux8wLk0EYV4TMA-xe1gIRXyrQ8Hw1dDVhgL94mMfLdMmB1HmsQXlI0vYYoJ83Z2o6Iu3r1UTxZxm7KbtD6jDQnZyVyInzRPr2dKnCqEdUuOW6QaVKtqC0fyVi7vJ65sWVJZSgiSRle3UXA3il3Qk6kdJwN=s150" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" alt="" class=" rounded-full object-cover" /></span>
+        </button>
+        <button onclick="nav.go('transfers')" data-page="transfers" title="Transfers" aria-label="Transfers" class="nav-item flex items-center justify-center relative text-white"><i class="fa-solid fa-shuttle-van text-[22px]" aria-hidden="true"></i></button>
+        <button onclick="nav.go('notifications')"  data-page="notifications" class="nav-item flex items-center justify-center relative text-white"><i class="fa-regular fa-bell" aria-hidden="true"></i><span class="notif-badge hidden absolute top-2.5 right-2.5 w-2 h-2 bg-gold-400 rounded-full"></span></button>
+         
+      </div>
+    </nav>
+
+  </div>
+
+  <script src="/data.js?v=12"></script>
+  <script src="/booking.js?v=12"></script>
+  <script src="/frontend.js?v=12"></script>
+</body>
+</html>

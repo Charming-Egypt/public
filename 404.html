@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Discover Sharm</title>
+  <script>
+    // Single Page Apps for GitHub Pages
+    // https://github.com/rafgraph/spa-github-pages
+    // GitHub Pages has no server-side rewrite support, so it serves this
+    // 404 page for any client-side route (e.g. /excursions/e1) on reload.
+    // This encodes the real path into a query string and redirects to
+    // index.html, which decodes it back (see the matching script there)
+    // so the app's own router can render the right screen.
+    var segmentCount = 0; // site lives at the domain root, not a repo subpath
+    var l = window.location;
+    l.replace(
+      l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+      l.pathname.split('/').slice(0, 1 + segmentCount).join('/') + '/?/' +
+      l.pathname.slice(1).split('/').slice(segmentCount).join('/').replace(/&/g, '~and~') +
+      (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+      l.hash
+    );
+  </script>
+</head>
+<body></body>
+</html>
