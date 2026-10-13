@@ -39,7 +39,7 @@
     window.FALLBACK_LOGO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23fcd34d'/%3E%3Cstop offset='50%25' stop-color='%23fbbf24'/%3E%3Cstop offset='100%25' stop-color='%23d97706'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='120' height='120' rx='28' fill='url(%23g)'/%3E%3Ctext x='60' y='68' text-anchor='middle' font-family='Georgia,serif' font-weight='700' font-size='42' fill='%23000000'%3EDS%3C/text%3E%3C/svg%3E";
   </script>
 
-  <link rel="stylesheet" href="/style.css?v=be5d6832" />
+  <link rel="stylesheet" href="/style.css?v=7ae663f2" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23fbbf24'/%3E%3Ctext x='32' y='43' text-anchor='middle' font-family='Georgia,serif' font-weight='700' font-size='25' fill='%23000'%3EDS%3C/text%3E%3C/svg%3E" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
@@ -416,33 +416,44 @@
   <!-- Main App -->
 
   <div id="mainApp" class="relative z-10" tabindex="-1">
-    <div id="homePage" class="page active">
-      <div class="hero-section dark-scene" id="heroSection">
+    <div id="homePage" class="page home-page">
+      <div class="hero-section dark-scene home-hero" id="heroSection">
         <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=90" class="hero-bg-img" id="heroBgImage" onerror="this.style.display='none'" alt="" />
         <div class="stars-container"></div>
         <div class="hero-overlay"></div>
-        <div class="hero-content relative z-10 pb-24 text-white">
-          <div class="px-5 pt-6 pb-4">
+        <div class="hero-content home-hero-content relative z-10 text-white">
+          <div class="home-hero-top">
             <div class="header-floating">
               <div class="flex items-center gap-3">
                 <button type="button" aria-label="Open menu" data-i18n-aria="ariaMenu" onclick="sidebar.open()" class="icon-btn w-11 h-11 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
                 <img src="https://blogger.googleusercontent.com/img/a/AVvXsEijXrWtde6tToaU9FtagWqPfjqA6WXHuyb4o-kQ208kWktjrv7N0nDGNdYbT2fl_mIDx4PsLwQ11GKYLYWhnA5n3ccOWGHIW1izBqqhLJhXhfeLFsCAa5pAgAfGvCx0opO6HJ_ZdNjRP3koAnLAEAdzWFbmj7KRiUAWxveqhw3pBPNhoFnBlVJvbwVGmdpQ=s1600" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="site-logo" alt="Discover Sharm" />
               </div>
-              <div>
-                <a href="/profile/" data-nl data-page="profile" title="Profile" aria-label="Profile" class="icon-btn w-11 h-11 rounded-xl flex items-center justify-center relative">
-          <span class="nav-avatar-circle" id="navProfileAvatar"></span>
-        </a></div>
-                 </div>
+              <a href="/profile/" data-nl data-page="profile" title="Profile" aria-label="Profile" class="icon-btn w-11 h-11 rounded-xl flex items-center justify-center relative">
+                <span class="nav-avatar-circle" id="navProfileAvatar"></span>
+              </a>
+            </div>
           </div>
-          <div class="px-6 pt-6 pb-4 text-center">
-            <p class="text-gold-400 text-xs font-semibold tracking-widest mb-2 hero-text-swap" id="heroEyebrowText" data-i18n="premiumStays"></p>
-            <h1 class="font-display text-3xl md:text-4xl font-bold mb-3 leading-tight hero-text-swap" id="heroTitleText" data-i18n="heroTitle"><br /><span class="italic text-gold-400">Perfect Stay</span></h1>
-            <p class="text-white/75 text-base hero-text-swap" id="heroSubtitleText" data-i18n="heroSubtitle"></p>
+          <div class="home-hero-copy">
+            <p class="home-hero-location"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> <span data-i18n="heroLocation">Sharm El-Sheikh · Red Sea</span></p>
+            <p class="home-hero-eyebrow hero-text-swap" id="heroEyebrowText" data-i18n="premiumStays"></p>
+            <h1 class="home-hero-title font-display hero-text-swap" id="heroTitleText" data-i18n="heroTitle"><span data-i18n="discoverWord">Discover</span><br /><span class="italic text-gold-400">Sharm</span></h1>
+            <p class="home-hero-subtitle hero-text-swap" id="heroSubtitleText" data-i18n="heroSubtitle"></p>
+            <div class="home-hero-actions">
+              <a href="/excursions/" data-nl class="home-hero-primary" id="heroExcursionsButton">
+                <span data-i18n="navExcursions">Excursions</span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+              </a>
+              <a href="/hotels/" data-nl class="home-hero-secondary" id="heroHotelsButton">
+                <i class="fa-solid fa-hotel" aria-hidden="true"></i><span data-i18n="navHotels">Hotels</span>
+              </a>
+            </div>
           </div>
+          <a class="home-hero-scroll" href="#homeExplore" aria-label="Explore Discover Sharm" data-i18n-aria="exploreHome">
+            <span></span><span class="home-hero-scroll-label" data-i18n="exploreLabel">Explore</span>
+          </a>
         </div>
       </div>
 
-      <div class="relative z-20 pt-6">
+      <div class="relative z-20 pt-6 home-content" id="homeExplore">
 
         <!-- Promo Slider (super-admin managed) -->
         <div id="promoSliderSection" class="mb-8 hidden">
@@ -455,21 +466,21 @@
         </div>
 
         <!-- Explore by Category -->
-        <div class="px-5 mb-8">
-          <div class="category-tile-grid">
-            <a href="/excursions/" data-nl class="category-tile">
+        <div class="px-5 mb-8 home-quick-links-wrap">
+          <div class="category-tile-grid home-quick-links">
+            <a href="/excursions/" data-nl class="category-tile home-quick-link">
               <div class="category-tile-icon"><i class="fa-solid fa-umbrella-beach" aria-hidden="true"></i></div>
               <span data-i18n="navExcursions">Excursions</span>
             </a>
-            <a href="/hotels/" data-nl id="categoryTileHotels" class="category-tile hidden">
+            <a href="/hotels/" data-nl id="categoryTileHotels" class="category-tile home-quick-link hidden">
               <div class="category-tile-icon"><i class="fa-solid fa-hotel" aria-hidden="true"></i></div>
               <span data-i18n="navHotels">Hotels</span>
             </a>
-            <a href="/transfers/" data-nl class="category-tile">
+            <a href="/transfers/" data-nl class="category-tile home-quick-link">
               <div class="category-tile-icon"><i class="fa-solid fa-shuttle-van" aria-hidden="true"></i></div>
               <span data-i18n="navTransfers">Transfers</span>
             </a>
-            <a href="/restaurants/" data-nl id="categoryTileRestaurants" class="category-tile">
+            <a href="/restaurants/" data-nl id="categoryTileRestaurants" class="category-tile home-quick-link">
               <div class="category-tile-icon"><i class="fa-solid fa-utensils" aria-hidden="true"></i></div>
               <span data-i18n="navRestaurants">Restaurants</span>
             </a>
@@ -663,7 +674,7 @@
   <script src="/data.js?v=5d5134f7"></script>
   
   <script src="/booking.js?v=9b2a2409"></script>
-  <script src="/frontend.js?v=5715710f"></script>
+  <script src="/frontend.js?v=511dbc60"></script>
   <script>// ==================== MULTI-PAGE GLUE ====================
 // Loaded last on every page. Three jobs:
 //   1. Item cards call showExcursionPage('id') etc. In the old SPA that painted
