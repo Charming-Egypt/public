@@ -72,7 +72,7 @@ const DETAIL_ROUTES = {
   hotels:       { path: '/hotels/view/',       list: 'hotels',      open: (id, o) => __renderers.showHotelPage(id, o),        enabled: () => SHOW_HOTELS }
 };
 
-// The original render functions (router.js swaps the public names for
+// The original render functions (page-navigation.js swaps the public names for
 // navigating wrappers; the detail shell calls these directly).
 const __renderers = {};
 

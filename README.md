@@ -21,7 +21,9 @@ npm run dev:live          # http://localhost:8080, /api/* proxied to the live ba
 npm run dev               # same, without a backend (catalog stays empty)
 ```
 
-Needs Node 18+. No `npm install` — there are no dependencies.
+Needs Node 18+. Run `npm install` once, then `npm run build` to regenerate the
+pages and compile Tailwind locally for production. Run `npm run dev` to serve
+the generated site at `http://localhost:8080`.
 
 ## Deploy
 
@@ -42,14 +44,14 @@ the folder to GitHub Pages (CNAME is already set), Cloudflare Pages, Netlify, S3
 | Change a page title / description  | `site.config.json` → `pages`, then `npm run build`                   |
 | Add a page                         | new `src/pages/<name>.html` + an entry in `site.config.json` + `ROUTES`/`PAGE_TITLES` in `frontend.js` |
 
-`npm run build` regenerates every page, `sitemap.xml`, `robots.txt` and the
-cache-busting hashes (`?v=…`) on CSS/JS. Run it after changing **any** `.css`/`.js`
-file too, so visitors get the new version.
+`npm run build` regenerates every page, `tailwind.generated.css`, `sitemap.xml`,
+`robots.txt` and the cache-busting hashes (`?v=…`) on CSS/JS. Run it after
+changing **any** `.css`/`.js` file too, so visitors get the new version.
 
 ## How it behaves
 
 - **Navigation** — menu items are real `<a href>` links (open in new tab, crawlable).
-  JS-built cards call `showExcursionPage(id)` etc.; `router.js` turns that into a
+  JS-built cards call `showExcursionPage(id)` etc.; `page-navigation.js` turns that into a
   link to the item's own page.
 - **Sign-in gate** — unchanged, but "Continue as guest" is remembered for the
   browser session, so you aren't asked again on every page.
@@ -65,8 +67,6 @@ file too, so visitors get the new version.
 - Detail pages (`…/view/?id=`) fill in from the live catalog after load, so search
   engines see the shell, not the item. Pre-rendering them needs the catalog at build
   time; say the word and the build script can fetch it.
-- Tailwind still loads from its CDN at runtime (as before). For production speed,
-  compile it once with the Tailwind CLI and replace the CDN `<script>` in `build.mjs`.
 
 ## Also in this release (UX polish v13)
 

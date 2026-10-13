@@ -40,5 +40,5 @@ Delete the "UX POLISH v13" block at the end of style.css to remove all CSS chang
 
 ## v14 — multi-page conversion
 See README.md. 17 screens → 19 real HTML files (+6 detail shells), `tools/build.mjs`,
-`tools/serve.mjs`, `router.js`, parallel + cached catalog loading, remembered guest
+`tools/serve.mjs`, `page-navigation.js`, parallel + cached catalog loading, remembered guest
 choice, sitemap/robots/canonical/OG tags, legacy-link redirect in `404.html`.
