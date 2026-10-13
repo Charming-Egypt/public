@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr" data-theme="dark">
+<html lang="en" dir="ltr" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -21,10 +21,9 @@
     (function () {
       try {
         var d = document.documentElement;
-        d.dataset.theme = localStorage.getItem('ds_theme') || 'dark';
+        d.dataset.theme = localStorage.getItem('ds_theme') || 'light';
         var l = localStorage.getItem('ds_lang') || 'en';
         d.lang = l; d.dir = l === 'ar' ? 'rtl' : 'ltr';
-        if (!localStorage.getItem('ds_auth_token') && !sessionStorage.getItem('ds_guest')) d.dataset.gate = 'auth';
       } catch (e) {}
     })();
     window.DS_CONFIG = {"SHOW_HOTELS":true,"SHOW_EXCURSIONS":true,"SHOW_TRANSFERS":true,"SHOW_RESTAURANTS":true,"SHOW_DESTINATIONS":true};
@@ -39,7 +38,7 @@
     window.FALLBACK_LOGO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23fcd34d'/%3E%3Cstop offset='50%25' stop-color='%23fbbf24'/%3E%3Cstop offset='100%25' stop-color='%23d97706'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='120' height='120' rx='28' fill='url(%23g)'/%3E%3Ctext x='60' y='68' text-anchor='middle' font-family='Georgia,serif' font-weight='700' font-size='42' fill='%23000000'%3EDS%3C/text%3E%3C/svg%3E";
   </script>
 
-  <link rel="stylesheet" href="/style.css?v=7ae663f2" />
+  <link rel="stylesheet" href="/style.css?v=98387438" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23fbbf24'/%3E%3Ctext x='32' y='43' text-anchor='middle' font-family='Georgia,serif' font-weight='700' font-size='25' fill='%23000'%3EDS%3C/text%3E%3C/svg%3E" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
@@ -434,10 +433,10 @@
             </div>
           </div>
           <div class="home-hero-copy">
-            <p class="home-hero-location"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> <span data-i18n="heroLocation">Sharm El-Sheikh · Red Sea</span></p>
-            <p class="home-hero-eyebrow hero-text-swap" id="heroEyebrowText" data-i18n="premiumStays"></p>
-            <h1 class="home-hero-title font-display hero-text-swap" id="heroTitleText" data-i18n="heroTitle"><span data-i18n="discoverWord">Discover</span><br /><span class="italic text-gold-400">Sharm</span></h1>
-            <p class="home-hero-subtitle hero-text-swap" id="heroSubtitleText" data-i18n="heroSubtitle"></p>
+            <p class="home-hero-location"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> <span data-i18n="homeHeroLocation">Sharm El-Sheikh · Red Sea</span></p>
+            <p class="home-hero-eyebrow hero-text-swap" id="heroEyebrowText" data-i18n="homeHeroEyebrow">A different kind of escape</p>
+            <h1 class="home-hero-title font-display hero-text-swap" id="heroTitleText" data-i18n="homeHeroTitle">Your Red Sea story<br /><span class="italic text-gold-400">starts here.</span></h1>
+            <p class="home-hero-subtitle hero-text-swap" id="heroSubtitleText" data-i18n="homeHeroSubtitle">Wake up by the water. Find the reef. Stay for the sunset.</p>
             <div class="home-hero-actions">
               <a href="/excursions/" data-nl class="home-hero-primary" id="heroExcursionsButton">
                 <span data-i18n="navExcursions">Excursions</span><i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
@@ -489,7 +488,7 @@
 
 
    <!-- Destinations Row -->
-        <div class="mb-8">
+        <div class="mb-8 home-content-section">
           <div class="px-5 flex items-center justify-between mb-4">
             <div><p class="section-subtitle" data-i18n="exploreEyebrow">— EXPLORE</p><h3 class="section-title" data-i18n="destinationsTitle">Popular Destinations</h3></div>
           </div>
@@ -498,7 +497,7 @@
 
         
         <!-- Featured Excursions Slider -->
-        <div class="px-5 mb-8">
+        <div class="px-5 mb-8 home-content-section">
           <div class="flex items-center justify-between mb-4">
             <div><p class="section-subtitle" data-i18n="thingsToDoEyebrow">— THINGS TO DO</p><h3 class="section-title" data-i18n="featuredExcursions">Featured Excursions</h3></div>
             <a href="/excursions/" data-nl class="text-violet-500 text-sm font-medium flex items-center gap-1" data-i18n="viewAll">View All <i class="fa-solid fa-arrow-left text-xs" aria-hidden="true"></i></a>
@@ -507,7 +506,7 @@
         </div>
 
         <!-- Featured Hotels -->
-        <div class="px-5 mb-8">
+        <div class="px-5 mb-8 home-content-section">
           <div class="flex items-center justify-between mb-4">
             <div><p class="section-subtitle" data-i18n="stayEyebrow">— WHERE TO STAY</p><h3 class="section-title" data-i18n="featuredHotelsTitle">Featured Hotels</h3></div>
             <a href="/hotels/" data-nl class="text-violet-500 text-sm font-medium flex items-center gap-1" data-i18n="viewAll">View All <i class="fa-solid fa-arrow-left text-xs" aria-hidden="true"></i></a>
@@ -516,7 +515,7 @@
         </div>
 
         <!-- Transfer promo banner -->
-        <div class="px-5 mb-8">
+        <div class="px-5 mb-8 home-content-section">
           <div id="transferPromoBanner" class="banner-creative rounded-[26px] relative overflow-hidden cursor-pointer" onclick="nav.go('transfers')" style="background-image:linear-gradient(120deg,rgba(10, 10, 10, .88),rgba(10, 10, 10, .35) 60%,rgba(10, 10, 10, .1)), url('https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1000&q=80')">
             <div class="relative z-10 p-6 lg:p-12 text-white max-w-[75%] lg:max-w-[50%]">
               <div class="inline-block bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-[10px] lg:text-xs font-bold mb-3 border border-white/20"><i class="fa-solid fa-shuttle-van text-orange-300 ml-1" aria-hidden="true"></i><span data-i18n="airportTransferBadge">AIRPORT TRANSFERS</span></div>
@@ -528,7 +527,7 @@
         </div>
 
         <!-- Restaurants Row -->
-        <div class="mb-8">
+        <div class="mb-8 home-content-section">
           <div class="px-5 flex items-center justify-between mb-4">
             <div><p class="section-subtitle" data-i18n="diningEyebrow">— EAT & DRINK</p><h3 class="section-title" data-i18n="restaurantsTitle">Restaurants & Cafes</h3></div>
             <a href="/restaurants/" data-nl class="text-violet-500 text-sm font-medium flex items-center gap-1" data-i18n="viewAll">View All <i class="fa-solid fa-arrow-left text-xs" aria-hidden="true"></i></a>
@@ -539,7 +538,7 @@
      
 
         <!-- Reviews Row -->
-        <div class="mb-8">
+        <div class="mb-8 home-content-section">
           <div class="px-5 flex items-center justify-between mb-4">
             <div><p class="section-subtitle" data-i18n="storiesEyebrow">— GUEST STORIES</p><h3 class="section-title" data-i18n="whatGuestsSay">What Our Guests Say</h3></div>
           </div>
@@ -547,7 +546,7 @@
         </div>
 
         <!-- Articles -->
-        <div class="px-5 mb-8">
+        <div class="px-5 mb-8 home-content-section">
           <div class="flex items-center justify-between mb-4">
             <div><p class="section-subtitle" data-i18n="journalEyebrow">— JOURNAL</p><h3 class="section-title" data-i18n="articlesTitle">Travel Guides & Tips</h3></div>
           </div>
@@ -671,10 +670,10 @@
   </div>
 
   <!-- Supabase not configured: running on the legacy API -->
-  <script src="/data.js?v=5d5134f7"></script>
+  <script src="/data.js?v=829251a2"></script>
   
   <script src="/booking.js?v=9b2a2409"></script>
-  <script src="/frontend.js?v=511dbc60"></script>
+  <script src="/frontend.js?v=25c90826"></script>
   <script>// ==================== MULTI-PAGE GLUE ====================
 // Loaded last on every page. Three jobs:
 //   1. Item cards call showExcursionPage('id') etc. In the old SPA that painted

@@ -27,7 +27,7 @@ const write = (p, s) => {
 const cfg = JSON.parse(read('site.config.json'));
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 
-write('style.css', `${read('src/style.css')}\n${read('tools/tailwind.generated.css')}`);
+write('style.css', `${read('tools/tailwind.generated.css')}\n${read('src/style.css')}`);
 
 // ---- cache-busting: short content hash per asset --------------------------
 const hash = (f) => crypto.createHash('sha1').update(fs.readFileSync(path.join(ROOT, f))).digest('hex').slice(0, 8);
@@ -78,7 +78,7 @@ function head({ title, description, canonicalPath, noindex }) {
     description,
   })}</script>` : '';
   return `<!DOCTYPE html>
-<html lang="en" dir="ltr" data-theme="dark">
+<html lang="en" dir="ltr" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -99,10 +99,9 @@ function head({ title, description, canonicalPath, noindex }) {
     (function () {
       try {
         var d = document.documentElement;
-        d.dataset.theme = localStorage.getItem('ds_theme') || 'dark';
+        d.dataset.theme = localStorage.getItem('ds_theme') || 'light';
         var l = localStorage.getItem('ds_lang') || 'en';
         d.lang = l; d.dir = l === 'ar' ? 'rtl' : 'ltr';
-        if (!localStorage.getItem('ds_auth_token') && !sessionStorage.getItem('ds_guest')) d.dataset.gate = 'auth';
       } catch (e) {}
     })();
     window.DS_CONFIG = ${JSON.stringify({

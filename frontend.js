@@ -1633,7 +1633,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.addEventListener('resize', applyDesktopLayout);
 
   if (typeof restoreUiState === 'function') restoreUiState();
-  if (auth.isLoggedIn() || sessionStorage.getItem('ds_guest')) { enterApp(); } else { nav.showAuth(); }
+  if (auth.isLoggedIn() || sessionStorage.getItem('ds_guest')) {
+    enterApp();
+  } else {
+    try { sessionStorage.setItem('ds_guest', '1'); } catch {}
+    enterApp();
+  }
   setTimeout(hideSplash, 3000);
 });
 

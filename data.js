@@ -301,7 +301,7 @@ function hideSplash() {
 
 // ==================== THEME ====================
 const THEME = {
-  get() { return localStorage.getItem('ds_theme') || 'dark'; },
+  get() { return localStorage.getItem('ds_theme') || 'light'; },
   set(t) {
     document.documentElement.setAttribute('data-theme', t);
     localStorage.setItem('ds_theme', t);
@@ -523,6 +523,14 @@ async function loadCatalogFromWorker() {
         return [f, typeof data.content === 'string' ? JSON.parse(data.content) : (data.content || data)];
       } catch (e) {
         console.warn(`Failed to load ${f}:`, e);
+        try {
+          const response = await fetch(`/data/${f}.json`);
+          if (!response.ok) throw new Error(`Bundled catalog returned ${response.status}`);
+          console.info(`Using bundled ${f} catalog because the live catalog endpoint is unavailable.`);
+          return [f, await response.json()];
+        } catch (fallbackError) {
+          console.error(`Could not load ${f} from the bundled catalog:`, fallbackError);
+        }
         return [f, null];
       }
     }));
