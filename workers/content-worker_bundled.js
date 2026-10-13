@@ -406,7 +406,12 @@ const STATIC_FILES = {
   'data.js': 'application/javascript; charset=utf-8',
   'frontend.js': 'application/javascript; charset=utf-8',
   'booking.js': 'application/javascript; charset=utf-8',
+  'page-navigation.js': 'application/javascript; charset=utf-8',
+  'supabase-api.js': 'application/javascript; charset=utf-8',
   'style.css': 'text/css; charset=utf-8',
+  'robots.txt': 'text/plain; charset=utf-8',
+  'sitemap.xml': 'application/xml; charset=utf-8',
+  '404.html': 'text/html; charset=utf-8',
   // Admin / owner dashboards (same repo, served by this same worker)
   'admin/index.html': 'text/html; charset=utf-8',
   'admin/admin.js': 'application/javascript; charset=utf-8',
@@ -417,6 +422,32 @@ const STATIC_FILES = {
   'console/console.css': 'text/css; charset=utf-8',
   'console/schemas.js': 'application/javascript; charset=utf-8',
 };
+
+const PUBLIC_PAGE_FILES = new Set([
+  'about/index.html',
+  'bookings/index.html',
+  'cancellation-policy/index.html',
+  'contact/index.html',
+  'destinations/view/index.html',
+  'excursions/index.html',
+  'excursions/view/index.html',
+  'hotels/index.html',
+  'hotels/view/index.html',
+  'index.html',
+  'journal/index.html',
+  'journal/view/index.html',
+  'notifications/index.html',
+  'partner/index.html',
+  'privacy/index.html',
+  'profile/index.html',
+  'refund-policy/index.html',
+  'restaurants/index.html',
+  'restaurants/view/index.html',
+  'settings/index.html',
+  'terms/index.html',
+  'transfers/index.html',
+  'transfers/view/index.html',
+]);
 
 // Content-Type by extension, for files not individually listed in STATIC_FILES
 // (e.g. every data/lang/*.json the site fetches at startup — see loadI18nDict
@@ -453,8 +484,14 @@ export default {
       let rel = path === BASE_PATH || path === BASE_PATH + '/' ? '/index.html' : path.slice(BASE_PATH.length);
       const fileName = rel.replace(/^\//, '') || 'index.html';
       const looksLikeRealFile = /\.[a-zA-Z0-9]+$/.test(fileName);
+      const pageFileName = looksLikeRealFile
+        ? fileName
+        : `${fileName.replace(/\/+$/, '') || ''}/index.html`.replace(/^\//, '');
       try {
-        if (STATIC_FILES[fileName] || STATIC_PREFIXES.some(p => fileName.startsWith(p))) return await serveStaticFile(fileName, env);
+        const resolvedFile = STATIC_FILES[fileName] || PUBLIC_PAGE_FILES.has(fileName) ? fileName
+          : STATIC_FILES[pageFileName] || PUBLIC_PAGE_FILES.has(pageFileName) ? pageFileName
+            : STATIC_PREFIXES.some(p => fileName.startsWith(p)) ? fileName : null;
+        if (resolvedFile) return await serveStaticFile(resolvedFile, env);
         if (looksLikeRealFile) return json({ error: 'Not found', path: fileName }, 404, request);
         return await serveStaticFile('index.html', env);
       } catch (e) { return json({ error: 'Site files not found in the repo', detail: e.message }, 500, request); }

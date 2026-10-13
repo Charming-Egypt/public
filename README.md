@@ -30,6 +30,9 @@ the generated site at `http://localhost:8080`.
 The generated pages are committed, so **no build step is needed**: upload / push
 the folder to GitHub Pages (CNAME is already set), Cloudflare Pages, Netlify, S3…
 `/api/*` must be routed to your Worker on the same origin, exactly as before.
+When serving the site through the Content Worker, update it with
+`workers/content-worker_bundled.js`; it explicitly allows the public page routes
+and static assets while keeping internal repository paths unavailable.
 
 `404.html` forwards old single-page-app links (`/excursions/dolphin-house`) to
 `/excursions/view/?id=dolphin-house`, so existing shared links keep working.
