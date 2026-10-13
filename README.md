@@ -44,9 +44,10 @@ the folder to GitHub Pages (CNAME is already set), Cloudflare Pages, Netlify, S3
 | Change a page title / description  | `site.config.json` → `pages`, then `npm run build`                   |
 | Add a page                         | new `src/pages/<name>.html` + an entry in `site.config.json` + `ROUTES`/`PAGE_TITLES` in `frontend.js` |
 
-`npm run build` regenerates every page, `tailwind.generated.css`, `sitemap.xml`,
-`robots.txt` and the cache-busting hashes (`?v=…`) on CSS/JS. Run it after
-changing **any** `.css`/`.js` file too, so visitors get the new version.
+`npm run build` compiles Tailwind into the served `style.css`, regenerates every
+page, `sitemap.xml`, `robots.txt` and the cache-busting hashes (`?v=…`) on CSS/JS.
+Edit the project stylesheet in `src/style.css`; the root `style.css` is generated.
+Run the build after changing **any** `.css`/`.js` file too, so visitors get the new version.
 
 ## How it behaves
 

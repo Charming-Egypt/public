@@ -39,8 +39,7 @@
     window.FALLBACK_LOGO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23fcd34d'/%3E%3Cstop offset='50%25' stop-color='%23fbbf24'/%3E%3Cstop offset='100%25' stop-color='%23d97706'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='120' height='120' rx='28' fill='url(%23g)'/%3E%3Ctext x='60' y='68' text-anchor='middle' font-family='Georgia,serif' font-weight='700' font-size='42' fill='%23000000'%3EDS%3C/text%3E%3C/svg%3E";
   </script>
 
-  <link rel="stylesheet" href="/style.css?v=0bbb251b" />
-  <link rel="stylesheet" href="/tailwind.generated.css?v=db24ca8c" />
+  <link rel="stylesheet" href="/style.css?v=be5d6832" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23fbbf24'/%3E%3Ctext x='32' y='43' text-anchor='middle' font-family='Georgia,serif' font-weight='700' font-size='25' fill='%23000'%3EDS%3C/text%3E%3C/svg%3E" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
@@ -419,6 +418,72 @@
   
   <script src="/booking.js?v=9b2a2409"></script>
   <script src="/frontend.js?v=5715710f"></script>
-  <script src="/page-navigation.js?v=81773495"></script>
+  <script>// ==================== MULTI-PAGE GLUE ====================
+// Loaded last on every page. Three jobs:
+//   1. Item cards call showExcursionPage('id') etc. In the old SPA that painted
+//      a screen in place. Now it navigates to the item's own page
+//      (/excursions/view/?id=…), where the original renderer runs.
+//   2. Closing a detail page goes back where the visitor came from.
+//   3. Keeps search choices alive across the page load between "search" on the
+//      home page and the results page.
+(function () {
+  const DETAIL = {
+    showExcursionPage:   ['excursions',   'closeExcursionPage'],
+    showTransferPage:    ['transfers',    'closeTransferPage'],
+    showRestaurantPage:  ['restaurants',  'closeRestaurantPage'],
+    showHotelPage:       ['hotels',       'closeHotelPage'],
+    showDestinationPage: ['destinations', 'closeDestinationPage'],
+    showArticlePage:     ['articles',     'closeArticlePage'],
+  };
+
+  for (const [fnName, [section, closeName]] of Object.entries(DETAIL)) {
+    const original = window[fnName];
+    if (typeof original !== 'function') continue;
+    __renderers[fnName] = original;
+
+    window[fnName] = function (id, opts = {}) {
+      if (opts.render) return original(id, opts);               // called by the detail shell
+      persistUiState();
+      location.assign(pathForDetail(section, id));
+    };
+
+    window[closeName] = function () {
+      const def = DETAIL_ROUTES[section];
+      const onDetailPage = document.body.dataset.detail === section;
+      if (!onDetailPage) { const p = document.querySelector('#mainApp .page.active'); if (p) p.remove(); return; }
+      let internal = false;
+      try { internal = !!document.referrer && new URL(document.referrer).origin === location.origin; } catch {}
+      if (internal && history.length > 1) history.back(); else location.assign(pathForPage(def.list));
+    };
+  }
+
+  // ---- UI state that must survive a page load ---------------------------------
+  const KEY = 'ds_ui_state_v1';
+  const STATE_KEYS = ['searchQuery', 'excursionSearchQuery', 'transferSearchQuery', 'currentFilter',
+    'currentExcursionFilter', 'activeSearchTab', 'guests', 'transferPax', 'transferDirection',
+    'excursionSortBy', 'hotelSortBy', 'transferSortBy'];
+  const SEARCH_KEYS = ['selectedCheckIn', 'selectedCheckOut', 'selectedCategory', 'activeTab'];
+
+  window.persistUiState = function () {
+    try {
+      const snap = { state: {}, search: {} };
+      STATE_KEYS.forEach(k => { if (k in state) snap.state[k] = state[k]; });
+      if (typeof search !== 'undefined') SEARCH_KEYS.forEach(k => { if (k in search) snap.search[k] = search[k]; });
+      sessionStorage.setItem(KEY, JSON.stringify(snap));
+    } catch {}
+  };
+
+  window.restoreUiState = function () {
+    try {
+      const snap = JSON.parse(sessionStorage.getItem(KEY) || 'null');
+      if (!snap) return;
+      Object.assign(state, snap.state || {});
+      if (typeof search !== 'undefined') Object.assign(search, snap.search || {});
+    } catch {}
+  };
+
+  window.addEventListener('pagehide', persistUiState);
+})();
+</script>
 </body>
 </html>

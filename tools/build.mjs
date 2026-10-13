@@ -27,9 +27,11 @@ const write = (p, s) => {
 const cfg = JSON.parse(read('site.config.json'));
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 
+write('style.css', `${read('src/style.css')}\n${read('tools/tailwind.generated.css')}`);
+
 // ---- cache-busting: short content hash per asset --------------------------
 const hash = (f) => crypto.createHash('sha1').update(fs.readFileSync(path.join(ROOT, f))).digest('hex').slice(0, 8);
-const V = Object.fromEntries(['style.css', 'tailwind.generated.css', 'data.js', 'supabase-api.js', 'booking.js', 'frontend.js', 'page-navigation.js'].map((f) => [f, hash(f)]));
+const V = Object.fromEntries(['style.css', 'data.js', 'supabase-api.js', 'booking.js', 'frontend.js'].map((f) => [f, hash(f)]));
 
 // ---- which sections are switched on? --------------------------------------
 const on = cfg.show;
@@ -42,6 +44,7 @@ const fallbackLogo = P('fallback-logo');
 const splash = P('splash');
 const chrome = P('chrome');
 const bottomNav = P('bottom-nav');
+const pageNavigation = read('page-navigation.js');
 
 // page key -> clean path (used to turn nav.go('x') buttons into real links)
 const pathOf = (key) => (cfg.pages[key] ? cfg.pages[key].path : null);
@@ -111,7 +114,6 @@ function head({ title, description, canonicalPath, noindex }) {
   ${fallbackLogo.trim()}
 
   <link rel="stylesheet" href="/style.css?v=${V['style.css']}" />
-  <link rel="stylesheet" href="/tailwind.generated.css?v=${V['tailwind.generated.css']}" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23fbbf24'/%3E%3Ctext x='32' y='43' text-anchor='middle' font-family='Georgia,serif' font-weight='700' font-size='25' fill='%23000'%3EDS%3C/text%3E%3C/svg%3E" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
@@ -134,7 +136,7 @@ const scripts = () => `
   ${useSupabase ? `<script src="/supabase-api.js?v=${V['supabase-api.js']}"></script>` : ''}
   <script src="/booking.js?v=${V['booking.js']}"></script>
   <script src="/frontend.js?v=${V['frontend.js']}"></script>
-  <script src="/page-navigation.js?v=${V['page-navigation.js']}"></script>
+  <script>${pageNavigation}</script>
 </body>
 </html>
 `;
