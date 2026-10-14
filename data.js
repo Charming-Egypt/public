@@ -551,7 +551,6 @@ function refreshCatalogUI() {
   if (document.getElementById('restaurantsRow')) restaurantsUi.renderRow();
   if (document.getElementById('reviewsRow')) reviewsHomeUi.render();
   if (document.getElementById('articlesRow')) articlesUi.render();
-  if (document.getElementById('promoSliderSection')) promoSliderUi.render();
 }
 
 // ==================== AUTH ====================
