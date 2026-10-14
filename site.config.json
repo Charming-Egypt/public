@@ -2,10 +2,10 @@
   "domain": "https://app.discover-sharm.com",
   "siteName": "Discover Sharm",
   "show": {
-    "hotels": true,
+    "hotels": false,
     "excursions": true,
     "transfers": true,
-    "restaurants": true,
+    "restaurants": flse,
     "destinations": true
   },
   "pages": {
