@@ -20,6 +20,16 @@
   --chrome-border: rgba(10, 10, 10, .08);
   --chrome-field-bg: rgba(10, 10, 10, .05);
   --hero-fade-mid: rgba(248, 247, 252, .56);
+  --brand-50: #fff7ed;
+  --brand-100: #ffedd5;
+  --brand-400: #fb923c;
+  --brand-500: #f97316;
+  --brand-600: #c2410c;
+  --brand-700: #9a3412;
+  --gold-400: #fbbf24;
+  --gold-500: #f59e0b;
+  --shadow-soft: 0 18px 44px -20px rgba(15, 23, 42, .28);
+  --shadow-card: 0 22px 52px -28px rgba(15, 23, 42, .35);
 }
 
 html[data-theme="dark"] {
@@ -51,7 +61,9 @@ html[data-theme="dark"] {
 }
 
 body {
-  background: var(--bg-body);
+  background:
+    radial-gradient(circle at top, rgba(251, 191, 36, 0.08), transparent 28%),
+    var(--bg-body);
   color: var(--text-primary);
   overflow-x: hidden;
   min-height: 100vh;
@@ -781,19 +793,20 @@ body:has(#transferDetailPage.active) .bottom-nav {
 /* Mobile: compact horizontal row (image left, details right) — easy to
    scan a list of hotels without much scrolling. */
 .hotel-card {
-  background: var(--bg-card);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.92));
   border: 1px solid var(--border-card);
-  border-radius: 20px;
+  border-radius: 24px;
   overflow: hidden;
   transition: all .35s cubic-bezier(.16, 1, .3, 1);
-  box-shadow: 0 8px 24px -14px rgba(0, 0, 0, .15);
+  box-shadow: var(--shadow-soft);
   display: flex;
   gap: 0;
 }
 
 .hotel-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 18px 40px -16px rgba(0, 0, 0, .25);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card);
+  border-color: rgba(249, 115, 22, .22);
 }
 
 .hotel-card-img-wrap {
@@ -807,15 +820,28 @@ body:has(#transferDetailPage.active) .bottom-nav {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform .6s ease;
+}
+
+.hotel-card:hover .hotel-card-img {
+  transform: scale(1.04);
 }
 
 .hotel-card-body {
   flex: 1;
   min-width: 0;
-  padding: 12px;
+  padding: 14px 14px 12px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  gap: 10px;
+}
+
+.hotel-card-body h3 {
+  font-size: 1.05rem;
+  line-height: 1.3;
+  letter-spacing: -.02em;
+  font-weight: 800;
 }
 
 .hotel-card-amenities {
@@ -826,11 +852,16 @@ body:has(#transferDetailPage.active) .bottom-nav {
   overflow: hidden;
 }
 
+.hotel-card-amenities span {
+  background: rgba(249, 115, 22, 0.08);
+  color: var(--text-primary);
+  border: 1px solid rgba(249, 115, 22, 0.12);
+}
+
 @media (min-width: 1024px) {
-  /* Desktop: full-width image on top, larger vertical grid card — matches
-     the same treatment as excursion/restaurant cards on wide screens. */
   .hotel-card {
     flex-direction: column;
+    border-radius: 26px;
   }
 
   .hotel-card-img-wrap {
@@ -1725,13 +1756,91 @@ body:has(#transferDetailPage.active) .bottom-nav {
   }
 }
 
-/* Mobile: unchanged single-column flow with a fixed bottom price bar. */
+/* ---------- Premium detail-page polish ---------- */
 .detail-sidebar {
   display: none;
 }
 
 .photo-grid {
   display: none;
+}
+
+.detail-main {
+  background: linear-gradient(180deg, rgba(22, 22, 28, .96), rgba(10, 10, 14, .98));
+  border: 1px solid rgba(255, 255, 255, .06);
+  box-shadow: 0 28px 70px -38px rgba(0, 0, 0, .68);
+}
+
+.detail-main .card {
+  background: rgba(255, 255, 255, .02);
+  border-color: rgba(255, 255, 255, .06);
+}
+
+.detail-main .card:hover {
+  box-shadow: 0 18px 40px -22px rgba(0, 0, 0, .32);
+}
+
+.detail-main .rating-summary-block {
+  gap: 18px;
+}
+
+.detail-main .rating-summary-number {
+  color: #f8d77d;
+  background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 38%, #d97706 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.detail-main .rating-summary-count,
+.detail-main .rating-bar-row {
+  letter-spacing: .01em;
+}
+
+.detail-main .rating-bar-track {
+  background: rgba(255, 255, 255, .06);
+}
+
+.room-option-card {
+  background: rgba(255, 255, 255, .02);
+  border: 1px solid rgba(255, 255, 255, .06);
+  transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+}
+
+.room-option-card.room-selected {
+  border-color: rgba(251, 191, 36, .8);
+  background: linear-gradient(180deg, rgba(251, 191, 36, .08), rgba(251, 191, 36, .02));
+  box-shadow: inset 0 0 0 1px rgba(251, 191, 36, .12), 0 16px 32px -20px rgba(251, 191, 36, .4);
+}
+
+.room-option-card.room-selected .room-select-check {
+  background: linear-gradient(135deg, #fbbf24, #d97706);
+  color: #0a0a0a;
+  border-color: transparent;
+}
+
+.detail-mobile-bar {
+  background: rgba(10, 10, 14, .85) !important;
+  border-color: rgba(255, 255, 255, .08) !important;
+  backdrop-filter: blur(18px);
+  box-shadow: 0 -16px 36px -22px rgba(0, 0, 0, .65);
+}
+
+.detail-mobile-bar .detail-book-btn {
+  box-shadow: 0 14px 30px -12px rgba(245, 158, 11, .5);
+}
+
+@media (max-width: 1023px) {
+  .detail-main {
+    margin-top: -18px;
+    border-radius: 24px 24px 0 0;
+    padding: 20px 16px 92px !important;
+    border-bottom: none;
+  }
+
+  .detail-main .card {
+    border-radius: 18px;
+  }
 }
 
 @media (min-width: 1024px) {
@@ -1883,11 +1992,11 @@ body:has(#transferDetailPage.active) .bottom-nav {
   .detail-sidebar-card {
     position: sticky;
     top: 104px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-card);
+    background: linear-gradient(180deg, rgba(24, 24, 30, .98), rgba(14, 14, 18, .98));
+    border: 1px solid rgba(255, 255, 255, .06);
     border-radius: 20px;
     padding: 24px;
-    box-shadow: 0 20px 50px -20px rgba(10, 10, 10, .25);
+    box-shadow: 0 24px 60px -28px rgba(0, 0, 0, .64);
   }
 
   .detail-mobile-bar {
@@ -2095,8 +2204,11 @@ body:has(#transferDetailPage.active) .bottom-nav {
 
 /* ---------- Listing Page Header (Excursions/Transfers/Restaurants/Hotels) ---------- */
 .listing-hero {
+  background:
+    radial-gradient(circle at top right, rgba(251, 191, 36, 0.14), transparent 26%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0));
   border-bottom: 1px solid var(--border-card);
-  padding: 48px 40px 32px;
+  padding: 52px 20px 28px;
 }
 
 .listing-hero-inner {
@@ -2105,25 +2217,35 @@ body:has(#transferDetailPage.active) .bottom-nav {
 }
 
 .listing-eyebrow {
-  color: #d97706;
+  color: var(--brand-500);
   font-size: 12px;
-  font-weight: 700;
-  letter-spacing: .1em;
-  margin-bottom: 8px;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
 }
 
 .listing-title {
   font-family: 'Playfair Display', Georgia, serif;
   font-weight: 700;
-  font-size: 40px;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  line-height: .98;
+  letter-spacing: -.05em;
   color: var(--text-primary);
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .listing-count {
   font-size: 14px;
   color: var(--text-secondary);
   max-width: 600px;
+  letter-spacing: .01em;
+}
+
+@media (min-width: 1024px) {
+  .listing-hero {
+    padding: 56px 40px 34px;
+  }
 }
 
 /* ---------- Static Content Pages (About/Terms/Privacy/Policies/Partner) ---------- */
@@ -2423,18 +2545,19 @@ body:has(#transferDetailPage.active) .bottom-nav {
 .restaurant-card {
   flex-shrink: 0;
   width: 210px;
-  border-radius: 20px;
+  border-radius: 24px;
   overflow: hidden;
   cursor: pointer;
-  background: var(--bg-card);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.94));
   border: 1px solid var(--border-field);
-  box-shadow: 0 6px 18px -8px rgba(0, 0, 0, .15);
-  transition: transform .3s cubic-bezier(.16, 1, .3, 1), box-shadow .3s ease;
+  box-shadow: var(--shadow-soft);
+  transition: transform .3s cubic-bezier(.16, 1, .3, 1), box-shadow .3s ease, border-color .3s ease;
 }
 
 .restaurant-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 32px -12px rgba(0, 0, 0, .25);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card);
+  border-color: rgba(251, 191, 36, .45);
 }
 
 @media (min-width: 1024px) {
@@ -2539,13 +2662,49 @@ body:has(#transferDetailPage.active) .bottom-nav {
   background: var(--bg-card);
   color: var(--text-secondary);
   cursor: pointer;
+  box-shadow: 0 6px 18px -14px rgba(15, 23, 42, .2);
+}
+
+.filter-chip:hover {
+  border-color: rgba(249, 115, 22, .42);
+  color: var(--text-primary);
 }
 
 .filter-chip.active {
-  background: linear-gradient(135deg, var(--brand-600), var(--brand-700));
+  background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
   border-color: transparent;
   color: #fff;
-  box-shadow: 0 6px 18px -6px rgba(0, 0, 0, .5);
+  box-shadow: 0 16px 26px -16px rgba(194, 65, 12, .8);
+}
+
+.section-title {
+  font-size: clamp(1.7rem, 2.7vw, 2.5rem);
+  font-weight: 700;
+  font-family: 'Playfair Display', serif;
+  color: var(--text-primary);
+  letter-spacing: -.04em;
+  margin-bottom: .4rem;
+}
+
+.section-subtitle {
+  color: var(--brand-500);
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+  margin-bottom: .3rem;
+  display: inline-flex;
+  align-items: center;
+  gap: .5em;
+  text-transform: uppercase;
+}
+.section-subtitle::before {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: .9;
 }
 
 /* ---------- Stars ---------- */
@@ -2580,34 +2739,6 @@ body:has(#transferDetailPage.active) .bottom-nav {
 
 .horizontal-scroll::-webkit-scrollbar {
   display: none;
-}
-
-/* ---------- Section Titles ---------- */
-.section-title {
-  font-size: 1.35rem;
-  font-weight: 700;
-  font-family: 'Playfair Display', serif;
-  color: var(--text-primary);
-  margin-bottom: .3rem;
-}
-
-.section-subtitle {
-  color: #f97316;
-  font-size: .72rem;
-  font-weight: 700;
-  letter-spacing: .04em;
-  margin-bottom: .35rem;
-  display: inline-flex;
-  align-items: center;
-  gap: .5em;
-}
-.section-subtitle::before {
-  content: '';
-  display: inline-block;
-  width: 13px;
-  height: 2px;
-  border-radius: 1px;
-  background: currentColor;
 }
 
 /* ---------- Step Indicator ---------- */
