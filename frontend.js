@@ -604,18 +604,23 @@ const search = {
     if (tab === 'hotels' && !SHOW_HOTELS) tab = 'excursions';
     if (tab === 'excursions' && !SHOW_EXCURSIONS) tab = 'hotels';
     if (!SHOW_HOTELS && !SHOW_EXCURSIONS) {
-      document.getElementById('searchTabsContainer').style.display = 'none';
-      document.getElementById('hotelSearchForm').style.display = 'none';
-      document.getElementById('excursionSearchForm').style.display = 'none';
+      const tabsContainer = document.getElementById('searchTabsContainer');
+      if (tabsContainer) tabsContainer.style.display = 'none';
+      const hotelForm = document.getElementById('hotelSearchForm');
+      if (hotelForm) hotelForm.style.display = 'none';
+      const excursionForm = document.getElementById('excursionSearchForm');
+      if (excursionForm) excursionForm.style.display = 'none';
       return;
     }
     this.activeTab = tab;
 
     const tabsContainer = document.getElementById('searchTabsContainer');
-    tabsContainer.style.display = (SHOW_HOTELS && SHOW_EXCURSIONS) ? 'flex' : 'none';
+    if (tabsContainer) tabsContainer.style.display = (SHOW_HOTELS && SHOW_EXCURSIONS) ? 'flex' : 'none';
 
-    document.getElementById('hotelSearchForm').style.display = (tab === 'hotels' && SHOW_HOTELS) ? 'block' : 'none';
-    document.getElementById('excursionSearchForm').style.display = (tab === 'excursions' && SHOW_EXCURSIONS) ? 'block' : 'none';
+    const hotelForm = document.getElementById('hotelSearchForm');
+    const excursionForm = document.getElementById('excursionSearchForm');
+    if (hotelForm) hotelForm.style.display = (tab === 'hotels' && SHOW_HOTELS) ? 'block' : 'none';
+    if (excursionForm) excursionForm.style.display = (tab === 'excursions' && SHOW_EXCURSIONS) ? 'block' : 'none';
 
     const hotelBtn = document.getElementById('searchTabHotels');
     const excursionBtn = document.getElementById('searchTabExcursions');
@@ -631,38 +636,47 @@ const search = {
 updateHeroContent(tab) {
     const heroData = {
       hotels: {
-        eyebrow: '',
-        title: '',
-        subtitle: ''
+      eyebrow: 'Luxury Red Sea stays',
+      title: 'Plan your perfect<br><span class="italic text-gold-400">Sharm escape</span>',
+      subtitle: 'Beachfront resorts, private transfers, and unforgettable sunsets on your next getaway.'
       },
       excursions: {
-        eyebrow: '',
-        title: '',
-        subtitle: ''
+      eyebrow: 'Memorable adventures',
+      title: 'Dive, sail and explore<br><span class="italic text-gold-400">the Red Sea</span>',
+      subtitle: 'Curated reef tours, desert escapes, and day trips designed for easy, exciting travel.'
       }
     };
     const data = heroData[tab] || heroData.hotels;
-    document.getElementById('heroEyebrowText').innerHTML = data.eyebrow;
-    document.getElementById('heroTitleText').innerHTML = data.title;
-    document.getElementById('heroSubtitleText').textContent = data.subtitle;
-    startHeroBackgroundRotation(tab);
-  },
+  const eyebrow = document.getElementById('heroEyebrowText');
+  const title = document.getElementById('heroTitleText');
+  const subtitle = document.getElementById('heroSubtitleText');
+  if (eyebrow) eyebrow.innerHTML = data.eyebrow;
+  if (title) title.innerHTML = data.title;
+  if (subtitle) subtitle.textContent = data.subtitle;
+  startHeroBackgroundRotation(tab);
+},
 
 
 
   openGuestDropdown() {
-    document.getElementById('searchGuestDropdown').style.display = 'flex';
+    const dropdown = document.getElementById('searchGuestDropdown');
+    if (!dropdown) return;
+    dropdown.style.display = 'flex';
   },
   closeGuestDropdown() {
+    const dropdown = document.getElementById('searchGuestDropdown');
+    if (dropdown) dropdown.style.display = 'none';
     if (!allChildAgesSelected()) { toast(t('errSelectChildAges'), 'error'); return; }
-    document.getElementById('searchGuestDropdown').style.display = 'none';
     this.updateGuestDisplay();
   },
   openCategoryDropdown() {
-    document.getElementById('searchCategoryDropdown').style.display = 'flex';
+    const dropdown = document.getElementById('searchCategoryDropdown');
+    if (!dropdown) return;
+    dropdown.style.display = 'flex';
   },
   closeCategoryDropdown() {
-    document.getElementById('searchCategoryDropdown').style.display = 'none';
+    const dropdown = document.getElementById('searchCategoryDropdown');
+    if (dropdown) dropdown.style.display = 'none';
   },
   setCategory(category) {
     this.selectedCategory = category;
