@@ -717,7 +717,7 @@ body:has(#transferDetailPage.active) .bottom-nav {
   border-radius: 50%;
   cursor: pointer;
   background: linear-gradient(150deg, #fdba74, #f97316 55%, #c2410c);
-  box-shadow: 0 10px 26px -4px rgba(249, 115, 22, .65), 0 0 0 5px #0a0a0a;
+  box-shadow: var(--bg-card);
   transition: transform .25s cubic-bezier(.16, 1, .3, 1);
 }
 
@@ -1877,8 +1877,8 @@ body:has(#transferDetailPage.active) .bottom-nav {
 }
 
 .detail-mobile-bar {
-  background: rgba(10, 10, 14, .85) !important;
-  border-color: rgba(255, 255, 255, .08) !important;
+  background: var(--bg-card);
+  border-color: var(--bg-card);
   backdrop-filter: blur(18px);
   box-shadow: 0 -16px 36px -22px rgba(0, 0, 0, .65);
 }
