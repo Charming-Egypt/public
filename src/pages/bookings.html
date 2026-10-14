@@ -1,0 +1,18 @@
+    <div id="bookingsPage" class="page">
+      <div class="min-h-screen">
+        <div class="px-5 pt-6 pb-4">
+          <div class="text-center mb-6"><p class="section-subtitle" data-i18n="reservationsEyebrow">— RESERVATIONS</p><h1 class="text-2xl font-bold font-display" style="color:var(--text-primary)" data-i18n="myBookings">My Bookings</h1></div>
+          <div class="flex gap-2 field-box p-1.5 rounded-2xl">
+            <button onclick="bookings.switchTab('upcoming')" id="tabUpcoming" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-violet-500 to-violet-700 text-white text-sm font-bold shadow-lg" data-i18n="upcoming">Upcoming</button>
+            <button onclick="bookings.switchTab('history')" id="tabHistory" class="flex-1 py-3 rounded-xl text-sm font-medium" style="color:var(--text-secondary)" data-i18n="past">Past</button>
+          </div>
+        </div>
+        <div class="px-5 py-4 space-y-3 pb-28" id="bookingsList"></div>
+        <div id="emptyBookings" class="hidden text-center py-20 px-6">
+          <div class="w-28 h-28 mx-auto mb-6 field-box rounded-full flex items-center justify-center"><i class="fa-solid fa-ticket text-4xl text-violet-300" aria-hidden="true"></i></div>
+          <p class="font-display text-xl font-bold mb-2" style="color:var(--text-primary)" data-i18n="noBookingsYet">No bookings yet</p>
+          <p class="text-sm mb-6" style="color:var(--text-secondary)" data-i18n="startJourney">Start your luxury journey</p>
+          <button onclick="nav.go('excursions')" class="btn-gold px-8 py-3 rounded-2xl text-ink-900 font-bold text-sm ripple" data-i18n="browseHotels">Browse Excursions</button>
+        </div>
+      </div>
+    </div>
