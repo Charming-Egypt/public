@@ -406,6 +406,8 @@ const STATIC_FILES = {
   'data.js': 'application/javascript; charset=utf-8',
   'frontend.js': 'application/javascript; charset=utf-8',
   'booking.js': 'application/javascript; charset=utf-8',
+  'router.js': 'application/javascript; charset=utf-8',
+  'favicon.ico': 'image/png',
   'style.css': 'text/css; charset=utf-8',
   // Admin / owner dashboards (same repo, served by this same worker)
   'admin/index.html': 'text/html; charset=utf-8',
