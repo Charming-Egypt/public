@@ -19,6 +19,16 @@
   --chrome-shadow: 0 22px 50px -28px rgba(60, 39, 19, .28);
   --chrome-border: rgba(90, 72, 52, .12);
   --chrome-field-bg: rgba(44, 35, 28, .04);
+  --search-shell-bg: rgba(255, 250, 245, 0.88);
+  --search-tab-bg: rgba(92, 70, 54, 0.04);
+  --search-field-bg: linear-gradient(180deg, rgba(255,255,255,0.82), rgba(249,244,238,0.9));
+  --search-field-border: rgba(126, 96, 69, 0.14);
+  --search-popover-bg: rgba(255, 253, 251, 0.96);
+  --search-option-bg: rgba(86,64,49,0.03);
+  --search-option-border: rgba(120, 94, 70, 0.12);
+  --search-count-btn-bg: rgba(251, 191, 36, 0.08);
+  --search-count-btn-border: rgba(120, 94, 70, 0.14);
+  --search-placeholder: rgba(27, 23, 20, 0.55);
   --hero-fade-mid: rgba(245, 238, 232, .7);
   --brand-50: #fff7ed;
   --brand-100: #ffedd5;
@@ -48,6 +58,16 @@ html[data-theme="dark"] {
   --chrome-shadow: 0 24px 52px -30px rgba(0, 0, 0, .48);
   --chrome-border: rgba(255, 255, 255, .08);
   --chrome-field-bg: rgba(255, 255, 255, .02);
+  --search-shell-bg: rgba(18, 15, 12, 0.86);
+  --search-tab-bg: rgba(255, 255, 255, 0.03);
+  --search-field-bg: linear-gradient(180deg, rgba(26, 22, 20, 0.96), rgba(18, 15, 12, 0.96));
+  --search-field-border: rgba(255,255,255,0.08);
+  --search-popover-bg: rgba(23, 20, 17, 0.96);
+  --search-option-bg: rgba(255,255,255,0.03);
+  --search-option-border: rgba(255,255,255,0.08);
+  --search-count-btn-bg: rgba(251, 191, 36, 0.12);
+  --search-count-btn-border: rgba(255,255,255,0.1);
+  --search-placeholder: rgba(245, 239, 232, 0.52);
   --hero-fade-mid: rgba(17, 17, 17, .66);
 }
 
@@ -223,7 +243,7 @@ body {
   position: relative;
   width: min(100%, 1040px);
   margin: 0 auto;
-  background: rgba(255, 250, 245, 0.88);
+  background: var(--search-shell-bg);
   border: 1px solid rgba(182, 146, 92, 0.24);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -237,7 +257,7 @@ body {
   gap: 0.5rem;
   padding: 0.3rem;
   margin-bottom: 0.8rem;
-  background: rgba(92, 70, 54, 0.04);
+  background: var(--search-tab-bg);
   border: 1px solid rgba(128, 98, 72, 0.12);
   border-radius: 16px;
 }
@@ -279,11 +299,11 @@ body {
   gap: 0.7rem;
   min-height: 66px;
   padding: 0.8rem 0.9rem;
-  background: linear-gradient(180deg, rgba(255,255,255,0.82), rgba(249,244,238,0.9));
-  border: 1px solid rgba(126, 96, 69, 0.14);
+  background: var(--search-field-bg);
+  border: 1px solid var(--search-field-border);
   border-radius: 18px;
   color: var(--text-primary);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.16);
 }
 
 .search-field i {
@@ -330,7 +350,7 @@ body {
 }
 
 .search-field .field-value::placeholder {
-  color: rgba(27, 23, 20, 0.55);
+  color: var(--search-placeholder);
 }
 
 .search-field .field-select {
@@ -393,7 +413,7 @@ body {
   flex-direction: column;
   gap: 0.25rem;
   margin-top: 0.85rem;
-  background: rgba(255, 253, 251, 0.96);
+  background: var(--search-popover-bg);
   border: 1px solid rgba(120, 94, 70, 0.12);
   border-radius: 20px;
   padding: 0.9rem;
@@ -429,8 +449,8 @@ body {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  border: 1px solid rgba(120, 94, 70, 0.14);
-  background: rgba(251, 191, 36, 0.08);
+  border: 1px solid var(--search-count-btn-border);
+  background: var(--search-count-btn-bg);
   color: var(--text-primary);
   font-size: 1.1rem;
   line-height: 1;
@@ -470,8 +490,8 @@ body {
   text-align: left;
   padding: 0.75rem 0.8rem;
   border-radius: 12px;
-  background: rgba(86, 64, 49, 0.03);
-  border: 1px solid rgba(120, 94, 70, 0.12);
+  background: var(--search-option-bg);
+  border: 1px solid var(--search-option-border);
   color: var(--text-primary);
   font-weight: 600;
   cursor: pointer;
