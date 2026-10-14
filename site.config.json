@@ -1,0 +1,163 @@
+{
+  "domain": "https://app.discover-sharm.com",
+  "siteName": "Discover Sharm",
+  "show": {
+    "hotels": true,
+    "excursions": true,
+    "transfers": true,
+    "restaurants": true,
+    "destinations": true
+  },
+  "pages": {
+    "home": {
+      "path": "/",
+      "title": "Discover Sharm — Luxury Travel",
+      "description": "Handpicked excursions, private transfers and unforgettable experiences in Sharm El-Sheikh. Book in minutes.",
+      "nav": "home"
+    },
+    "excursions": {
+      "path": "/excursions/",
+      "title": "Excursions in Sharm El-Sheikh — Discover Sharm",
+      "description": "Snorkeling, desert safaris, Ras Mohammed and more. Compare and book the best excursions in Sharm El-Sheikh.",
+      "nav": "excursions"
+    },
+    "transfers": {
+      "path": "/transfers/",
+      "title": "Airport Transfers — Discover Sharm",
+      "description": "Private airport transfers in Sharm El-Sheikh with fixed prices and professional drivers.",
+      "nav": "transfers"
+    },
+    "restaurants": {
+      "path": "/restaurants/",
+      "title": "Restaurants — Discover Sharm",
+      "description": "Where to eat in Sharm El-Sheikh: seafood, Egyptian and international restaurants.",
+      "nav": "restaurants"
+    },
+    "hotels": {
+      "path": "/hotels/",
+      "title": "Hotels — Discover Sharm",
+      "description": "Hotels and resorts in Sharm El-Sheikh, from Naama Bay to Sharks Bay.",
+      "nav": "hotels"
+    },
+    "about": {
+      "path": "/about/",
+      "title": "About Us — Discover Sharm",
+      "description": "Who we are and why travelers trust Discover Sharm.",
+      "nav": "about"
+    },
+    "journal": {
+      "path": "/journal/",
+      "title": "Travel Journal — Discover Sharm",
+      "description": "Guides, tips and stories for your trip to Sharm El-Sheikh.",
+      "nav": "journal"
+    },
+    "contact": {
+      "path": "/contact/",
+      "title": "Contact Us — Discover Sharm",
+      "description": "Get in touch with the Discover Sharm team.",
+      "nav": "contact"
+    },
+    "partner": {
+      "path": "/partner/",
+      "title": "Become a Partner — Discover Sharm",
+      "description": "List your hotel, tour or transfer service on Discover Sharm.",
+      "nav": "partner"
+    },
+    "cancellationPolicy": {
+      "path": "/cancellation-policy/",
+      "title": "Cancellation Policy — Discover Sharm",
+      "description": "How cancellations work for bookings made through Discover Sharm.",
+      "nav": "cancellationPolicy"
+    },
+    "refundPolicy": {
+      "path": "/refund-policy/",
+      "title": "Refund Policy — Discover Sharm",
+      "description": "When and how refunds are issued.",
+      "nav": "refundPolicy"
+    },
+    "terms": {
+      "path": "/terms/",
+      "title": "Terms of Service — Discover Sharm",
+      "description": "The terms that apply when you use Discover Sharm.",
+      "nav": "terms"
+    },
+    "privacy": {
+      "path": "/privacy/",
+      "title": "Privacy Policy — Discover Sharm",
+      "description": "How Discover Sharm collects, uses and protects your data.",
+      "nav": "privacy"
+    },
+    "bookings": {
+      "path": "/bookings/",
+      "title": "My Bookings — Discover Sharm",
+      "description": "Your upcoming and past bookings.",
+      "nav": "bookings",
+      "noindex": true
+    },
+    "profile": {
+      "path": "/profile/",
+      "title": "My Profile — Discover Sharm",
+      "description": "Your Discover Sharm account.",
+      "nav": "profile",
+      "noindex": true
+    },
+    "settings": {
+      "path": "/settings/",
+      "title": "Settings — Discover Sharm",
+      "description": "Language, currency and theme.",
+      "nav": "settings",
+      "noindex": true
+    },
+    "notifications": {
+      "path": "/notifications/",
+      "title": "Notifications — Discover Sharm",
+      "description": "Your latest updates.",
+      "nav": "notifications",
+      "noindex": true
+    }
+  },
+  "details": {
+    "excursions": {
+      "path": "/excursions/view/",
+      "title": "Excursion — Discover Sharm",
+      "nav": "excursions",
+      "list": "excursions"
+    },
+    "transfers": {
+      "path": "/transfers/view/",
+      "title": "Transfer — Discover Sharm",
+      "nav": "transfers",
+      "list": "transfers"
+    },
+    "restaurants": {
+      "path": "/restaurants/view/",
+      "title": "Restaurant — Discover Sharm",
+      "nav": "restaurants",
+      "list": "restaurants"
+    },
+    "hotels": {
+      "path": "/hotels/view/",
+      "title": "Hotel — Discover Sharm",
+      "nav": "hotels",
+      "list": "hotels"
+    },
+    "destinations": {
+      "path": "/destinations/view/",
+      "title": "Destination — Discover Sharm",
+      "nav": "home",
+      "list": "home"
+    },
+    "articles": {
+      "path": "/journal/view/",
+      "title": "Article — Discover Sharm",
+      "nav": "journal",
+      "list": "journal"
+    }
+  },
+  "supabase": {
+    "url": "",
+    "anonKey": "",
+    "googleClientId": "",
+    "paymentsBase": ""
+  }
+}
