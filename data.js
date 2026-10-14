@@ -55,8 +55,8 @@ const state = {
   userStats: { completedBookings: 0, totalSpent: 0 },
 };
 
-const CATALOG = { hotels: [], excursions: [], transfers: [], destinations: [], restaurants: [], reviews: [], articles: [], promoSlides: [] };
-const CATALOG_RAW = { hotels: [], excursions: [], transfers: [], destinations: [], restaurants: [], reviews: [], articles: [], promoSlides: [] };
+const CATALOG = { hotels: [], excursions: [], transfers: [], destinations: [], restaurants: [], reviews: [], articles: [] };
+const CATALOG_RAW = { hotels: [], excursions: [], transfers: [], destinations: [], restaurants: [], reviews: [], articles: [] };
 
 // ==================== MULTILANG FIELDS ====================
 const MULTILANG_FIELDS = [
@@ -494,12 +494,11 @@ function localizeCatalog(lang) {
   CATALOG.restaurants = CATALOG_RAW.restaurants.map(item => localizeItem(item, lang));
   CATALOG.reviews = CATALOG_RAW.reviews.map(item => localizeItem(item, lang));
   CATALOG.articles = CATALOG_RAW.articles.map(item => localizeItem(item, lang));
-  CATALOG.promoSlides = CATALOG_RAW.promoSlides.map(item => localizeItem(item, lang));
 }
 
 // ==================== CATALOG LOADING ====================
 async function loadCatalogFromWorker() {
-  const files = ['hotels', 'excursions', 'transfers', 'destinations', 'restaurants', 'reviews', 'articles', 'promoSlides'];
+  const files = ['hotels', 'excursions', 'transfers', 'destinations', 'restaurants', 'reviews', 'articles'];
   const CACHE_KEY = 'ds_catalog_v1', CACHE_TTL = 10 * 60 * 1000;
 
   // Every page is now its own HTML file, so the catalog is requested on each
