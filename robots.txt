@@ -1,6 +1,0 @@
-User-agent: *
-Disallow: /admin/
-Disallow: /console/
-Disallow: /owner/
-Disallow: /design-system/
-Sitemap: https://app.discover-sharm.com/sitemap.xml
