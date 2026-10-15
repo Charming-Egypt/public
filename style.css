@@ -588,7 +588,7 @@ body {
 
 /* ---------- Cards ---------- */
 .card {
-  background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(250,246,241,.96));
+  background: var(--bg-card);
   border: 1px solid var(--border-card);
   border-radius: 20px;
   box-shadow: 0 14px 36px -22px rgba(46, 31, 23, .25);
