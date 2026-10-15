@@ -5,7 +5,7 @@
     "hotels": false,
     "excursions": true,
     "transfers": true,
-    "restaurants": flse,
+    "restaurants": false,
     "destinations": true
   },
   "pages": {
