@@ -951,7 +951,6 @@ const ui = {
       <div onclick="showHotelPage('${h.id}')" class="hotel-card cursor-pointer">
         <div class="hotel-card-img-wrap">
           <img alt="" src="${img}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="hotel-card-img hover:scale-105 transition-transform duration-500">
-          ${h.bestseller ? `<div class="absolute top-2 right-2 badge-bestseller text-[8px] font-black px-2 py-0.5 rounded-md"><i class="fa-solid fa-crown"></i></div>` : ''}
           ${h.category ? `<span class="absolute top-2 left-2 bg-violet-600/90 text-white text-[9px] font-bold px-2 py-0.5 rounded-md">${hotels.categoryLabel(h.category)}</span>` : ''}
           <div class="absolute bottom-2 right-2 rating-pill px-1.5 py-0.5 rounded-md flex items-center gap-1"><i class="fa-solid fa-star text-gold-400 text-[8px]"></i><span class="text-[9px] font-bold text-gold-400">${h.rating}</span></div>
         </div>
@@ -959,10 +958,11 @@ const ui = {
           <div>
             <div class="flex items-start justify-between mb-1">
               <h3 class="font-display font-bold text-sm md:text-base line-clamp-2">${h.name}</h3>
+              ${h.bestseller ? `<div class="absolute top-2 right-2 badge-bestseller text-[8px] font-black px-2 py-0.5 rounded-md"><i class="fa-solid fa-crown"></i></div>` : ''}
              </div>
             <p class="text-[10px] mb-1.5"><i class="fa-solid fa-location-dot text-violet-500 text-[8px]"></i> ${(h.location || '').split(',')[0]}</p>
           </div>
-          <div class="grid items-center justify-between">
+          <div class="flex items-center justify-between">
             <div class="hotel-card-amenities">${(h.amenities || []).slice(0, 2).map(a => `<span class="px-1.5 py-0.5 rounded" style="background:var(--bg-field)">${a}</span>`).join('')}</div>
             <div class="text-left flex-shrink-0"><p class="text-base md:text-lg font-bold text-violet-500 font-display">${utils.formatPrice(perNight)}</p><p class="text-[8px]">${isEstimate ? t('estimatedPerNight') : '/ ' + t('nightLabel')}</p></div>
           </div>
