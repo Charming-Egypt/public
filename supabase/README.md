@@ -8,7 +8,7 @@
 1. أنشئي مشروع Supabase.
 2. **Authentication → Providers → Email**: سيبي **Confirm email = ON**. ده شرط أمان: صلاحية "مالك" بتتفعّل بس بعد تأكيد الإيميل.
 3. **Authentication → Providers → Google**: فعّليه وحطي Client ID / Secret. نفس الـ Client ID حطيه في `site.config.json`.
-4. **Authentication → URL Configuration**: Site URL = `https://app.discover-sharm.com`.
+4. **Authentication → URL Configuration**: Site URL = `https://www.discover-sharm.com`, and add ALL THREE to **Redirect URLs**: `https://www.discover-sharm.com/**`, `https://app.discover-sharm.com/**`, `https://admin.discover-sharm.com/**` (confirmation e-mails return to the site the person signed up on; the admin password-reset link returns to the admin site).
 5. **Authentication → Rate limits + CAPTCHA**: فعّلي Turnstile/hCaptcha (حماية من الحسابات الوهمية).
 6. **Database → Extensions**: فعّلي `pg_cron` (التنظيف الليلي).
 

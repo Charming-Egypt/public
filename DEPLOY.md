@@ -1,37 +1,46 @@
-# خطوات التشغيل (Go-live) — بالترتيب
+# خطوات التشغيل — التلات مواقع
 
-> الموقع بيفضل على النظام القديم طول ما `supabase.url` فاضي في `site.config.json`. اشتغلي على **مشروع تجريبي** الأول.
+> التوصية: **Cloudflare Pages** لكل موقع (بتدعم `_headers` و `_redirects` اللي الـ build بيطلّعهم). GitHub Pages شغّال كمان (فيه `CNAME`) بس مابيقرأش الـ headers ولا الـ redirects.
 
-## 1) قاعدة البيانات
-1. أنشئي مشروع Supabase، واعملي إعدادات Auth زي `supabase/README.md` (تأكيد الإيميل **ON**، Google، CAPTCHA، pg_cron).
-2. شغّلي الـ 7 migrations بالترتيب ثم `seed.sql` ثم `tests/rls_tests.sql` (لازم كله PASS).
-3. أول سوبر أدمن: سجّلي حساب عادي وأكدي الإيميل، وبعدين:
-   `update public.profiles set role = 'super_admin' where email = 'you@example.com';`
-4. `supabase functions deploy admin-create-user`
+## 1) قاعدة البيانات و Worker الدفع (مرة واحدة)
+نفس الخطوات القديمة: الـ 7 migrations → `seed.sql` → `tests/rls_tests.sql` → أول سوبر أدمن → `supabase functions deploy admin-create-user` → نشر `workers/payments-worker.js` على `pay.discover-sharm.com`.
 
-## 2) Worker الدفع
-1. عدّلي `workers/wrangler.payments.toml` (SUPABASE_URL، anon key، Kashier merchant id، SITE_URL، MAIL_FROM).
-2. الأسرار: `npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY | KASHIER_API_KEY | KASHIER_SECRET_KEY | RESEND_API_KEY -c workers/wrangler.payments.toml`
-3. `npx wrangler deploy -c workers/wrangler.payments.toml` وخليه على دومين زي `pay.discover-sharm.com`.
-4. في Kashier: Webhook URL = `https://pay.discover-sharm.com/api/kashier/webhook`.
-5. جرّبي بـ `KASHIER_MODE = "test"` وكروت الاختبار قبل ما تحوّلي لـ live.
+## 2) إعدادات Supabase الجديدة بسبب التقسيم ⚠️
+1. **Authentication → URL Configuration**
+   - Site URL: `https://www.discover-sharm.com`
+   - Redirect URLs (التلاتة): `https://www.discover-sharm.com/**` ، `https://app.discover-sharm.com/**` ، `https://admin.discover-sharm.com/**`
+2. **Google Sign-In** (Google Cloud Console → OAuth client): ضيفي في *Authorized JavaScript origins* الدومينين `https://www.discover-sharm.com` و `https://app.discover-sharm.com`.
+3. **Worker الدفع**: `ALLOWED_ORIGINS` فيه www و app بالفعل. الأدمن مابيكلّمش الـ Worker، فمتضيفوش.
+4. `workers/wrangler.payments.toml` → `SITE_URL` (رابط الفاوتشر في الإيميل) سيبيه `https://app.discover-sharm.com` أو غيّريه لـ www — صفحة `/voucher/` موجودة على الاتنين ومابتتحوّلش.
 
-## 3) الموقع
-1. `site.config.json` → `supabase`: `url`, `anonKey` (public), `googleClientId`, `paymentsBase` (= دومين الـ Worker).
-2. `npm run build` ثم ارفعي الفولدر كله (GitHub Pages / Cloudflare Pages…). `CNAME` موجود.
-3. (اختياري) نقل البيانات القديمة:
-   - المستخدمين: أداة `supabase-community/firebase-to-supabase`.
-   - الحجوزات: `node tools/import-firebase-bookings.mjs firebase-export.json > supabase/import-bookings.sql` ثم شغّليه.
+## 3) الإعدادات والـ build
+`site.config.json` → `supabase`: `url` و `anonKey` (عامّين) و `googleClientId` و `paymentsBase` (= `https://pay.discover-sharm.com`).
+> لازم Supabase يكون مفعّل: التلات مواقع على دومينات مختلفة، فالـ API القديم (`/api/*` على نفس الدومين) مابقاش متاح. (`apiBase` في الإعدادات لو لسه محتاجة Worker قديم على دومين تاني، للموقعين العامين بس.)
 
-## 4) تجربة قبل الإطلاق (10 دقايق)
-- سجّلي كعميل → احجزي رحلة → ادفعي بكارت اختبار → تأكدي إن الحجز ظهر في "حجوزاتي" وجه إيميل التأكيد وفتح الفاوتشر.
-- من لوحة الأدمن: أنشئي أونر → سجّلي دخوله في `/owner/ex.html` → أضيفي رحلة (تظهر "بانتظار المراجعة") → انشريها من الأدمن.
-- كعميل احجزي الرحلة دي، وبعد تاريخها سجّلي "تم" من لوحة الأونر → تأكدي إن الأرباح ظهرت → اطلبي سحب → اعتمديه من الأدمن.
-
-## الرجوع للنظام القديم (Rollback)
-امسحي `supabase.url` من `site.config.json`، `npm run build`، وارفعي. الـ Workers القديمة في `legacy/workers/`.
-
-## الاختبارات الآلية (من غير إنترنت)
+```bash
+npm run build
 ```
-node workers/tests/payments.test.mjs      # Worker الدفع على Supabase/Kashier تجريبيين
-```
+
+## 4) النشر — ثلاث مشاريع منفصلة
+| المشروع | فولدر الرفع | الدومين |
+|---|---|---|
+| discover-sharm-www   | `dist/www`   | `www.discover-sharm.com` (وحوّلي الـ apex `discover-sharm.com` → www) |
+| discover-sharm-app   | `dist/app`   | `app.discover-sharm.com` |
+| discover-sharm-admin | `dist/admin` | `admin.discover-sharm.com` |
+
+Cloudflare Pages: Create project → Direct Upload (أو GitHub مع Build command `npm run build` و Output directory `dist/www` / `dist/app` / `dist/admin`).
+
+**مهم:** الكوكيز المشتركة مضبوطة على `.discover-sharm.com`، فالموقعين العامين لازم يبقوا تحت نفس الدومين الأب (وهما كده). على `localhost` الكوكيز بتشتغل لكل منفذ لوحده — عادي للتجربة.
+
+**اختياري موصى بيه للأدمن:** Cloudflare Zero Trust → Access، سياسة على `admin.discover-sharm.com` (إيميلات الفريق بس) — طبقة حماية قبل شاشة تسجيل الدخول نفسها.
+
+## 5) تجربة قبل الإطلاق (10 دقايق)
+1. من الموبايل افتحي `www.discover-sharm.com/excursions/` → لازم يتحوّل لـ `app.discover-sharm.com/excursions/`.
+2. من الكمبيوتر افتحي `app.discover-sharm.com` → يتحوّل لـ www.
+3. سجّلي دخول على app، وبعدين افتحي `?view=www` من نفس الجهاز → لازم تلاقيكي داخلة من غير ما تسجّلي تاني، واللغة/الثيم زي ما هما.
+4. احجزي رحلة بكارت اختبار على app → تظهر في "حجوزاتي" على www.
+5. `admin.discover-sharm.com` → سوبر أدمن → أنشئي أونر → سجّلي دخوله من `/owner/ex.html`.
+6. `www.discover-sharm.com/admin` → لازم يحوّل لـ admin.
+
+## الرجوع للنظام القديم
+مش بنفس البساطة زي قبل لأن المواقع اتفصلت؛ الـ Workers القديمة لسه في `legacy/` للتوثيق. احتفظي بنسخة المشروع الأصلي (`public-main-fixed.zip`) لحد ما تتأكدي إن كل حاجة ماشية.

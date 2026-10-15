@@ -2,8 +2,10 @@
 /**
  * Local dev server (zero dependencies).
  *
- *   node tools/serve.mjs                       → http://localhost:8080
- *   node tools/serve.mjs --api https://app.discover-sharm.com
+ *   node tools/serve.mjs --site www            → http://localhost:8080  (serves dist/www;  build first: npm run build)
+ *   node tools/serve.mjs --site app  --port 8082
+ *   node tools/serve.mjs --site admin --port 8083
+ *   node tools/serve.mjs --site www --api https://your-legacy-backend   (only for the old non-Supabase mode)
  *
  * - Clean URLs: /excursions → /excursions/ → excursions/index.html
  * - Unknown paths get 404.html (same behaviour as GitHub Pages, so the
@@ -15,9 +17,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
 const arg = (k, d) => { const i = args.indexOf(k); return i > -1 ? args[i + 1] : d; };
+const SITE = arg('--site', 'www');
+const ROOT = path.join(path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'), 'dist', SITE);
+if (!fs.existsSync(ROOT)) { console.error(`dist/${SITE} not found — run: npm run build`); process.exit(1); }
 const PORT = Number(arg('--port', process.env.PORT || 8080));
 const API = (arg('--api', process.env.DS_API || '') || '').replace(/\/$/, '');
 
@@ -48,4 +52,4 @@ http.createServer(async (req, res) => {
   }
   if (fs.existsSync(file) && fs.statSync(file).isFile()) return send(res, 200, fs.readFileSync(file), TYPES[path.extname(file)] || 'application/octet-stream');
   send(res, 404, fs.readFileSync(path.join(ROOT, '404.html')));
-}).listen(PORT, () => console.log(`Discover Sharm → http://localhost:${PORT}${API ? `   (API → ${API})` : '   (no --api: catalog will be empty)'}`));
+}).listen(PORT, () => console.log(`Discover Sharm [${SITE}] → http://localhost:${PORT}${API ? `   (API → ${API})` : '   (no --api: catalog will be empty)'}`));

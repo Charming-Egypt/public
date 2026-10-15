@@ -47,3 +47,11 @@ choice, sitemap/robots/canonical/OG tags, legacy-link redirect in `404.html`.
 Database (accounts, owners, properties, bookings, finance) + RLS + indexes; site adapter; payments Worker port
 (3-D Secure `status` override fixed along the way); admin/owner consoles on Supabase; e-mail + printable voucher;
 Firebase booking importer; owner listings now start as "pending review" and a super admin publishes them.
+
+## v16 — bug-fix pass
+- Home hero: removed the leftover (dead, English-only, hotel-first) search card; hero copy now matches the enabled sections in all 6 languages; hero background rotation restarted (it was only wired to the removed card) and no longer runs on pages without a hero.
+- Tailwind compiled locally (`tailwind.css`) instead of the runtime CDN script: no flash of unstyled content, no CDN dependency, no `tailwind is not defined` risk.
+- `build.mjs` removes pages of switched-off sections so stale hotels/restaurants pages are not left behind; committed pages were regenerated (they were out of sync with `site.config.json`).
+- Side drawer is opaque (page text bled through); guests see "Log In" instead of "Logout".
+- Partner form: document slot labels showed `undefined`; partner-type chips, "Upload", review counts, "No reviews yet", "Could not load reviews", "No notifications yet", "Guest", "Included" and excursion category badges are now translated (10 new keys × 6 languages).
+- "Browse Hotels" empty-state button on My Bookings now reads "Browse Excursions"; Favorites stat hidden when hotels are off.

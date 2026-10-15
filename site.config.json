@@ -1,11 +1,25 @@
 {
-  "domain": "https://app.discover-sharm.com",
   "siteName": "Discover Sharm",
+  "sites": {
+    "www": {
+      "domain": "https://www.discover-sharm.com",
+      "role": "desktop"
+    },
+    "app": {
+      "domain": "https://app.discover-sharm.com",
+      "role": "mobile"
+    },
+    "admin": {
+      "domain": "https://admin.discover-sharm.com",
+      "role": "staff"
+    }
+  },
+  "apiBase": "",
   "show": {
-    "hotels": true,
+    "hotels": false,
     "excursions": true,
     "transfers": true,
-    "restaurants": true,
+    "restaurants": false,
     "destinations": true
   },
   "pages": {

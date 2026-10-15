@@ -1,102 +1,62 @@
-# Discover Sharm — multi-page site
-
-Every screen is its own HTML file with its own URL. No client-side router, no
-`pushState`, no 404 redirect trick. Works on any static host as-is.
+# Discover Sharm — تلات مواقع من مشروع واحد
 
 ```
-/                       home
-/excursions/            list            /excursions/view/?id=e1    detail
-/transfers/             list            /transfers/view/?id=t1     detail
-/journal/               list            /journal/view/?id=a1       article
-/destinations/view/?id=d1               /about/ /contact/ /partner/
-/cancellation-policy/ /refund-policy/ /terms/ /privacy/
-/bookings/ /profile/ /settings/ /notifications/      (account, noindex)
-/admin/  /console/  /owner/                          (unchanged)
+www.discover-sharm.com    ← الكمبيوتر والشاشات الكبيرة      (dist/www)
+app.discover-sharm.com    ← الموبايل والتابلت، تصميم تطبيق   (dist/app)
+admin.discover-sharm.com  ← السوبر أدمن + لوحات الأونرز      (dist/admin)
 ```
 
-## Run it
+التلات بيتبنوا من نفس الكود (`npm run build`) وبيتشاركوا نفس قاعدة بيانات Supabase ونفس Worker الدفع، فهم **نظام واحد** حتى لو كل موقع على دومين لوحده.
 
-```bash
-npm run dev:live          # http://localhost:8080, /api/* proxied to the live backend
-npm run dev               # same, without a backend (catalog stays empty)
-```
+## إيه اللي بيربطهم ببعض
 
-Needs Node 18+. No `npm install` — there are no dependencies.
-
-## Deploy
-
-The generated pages are committed, so **no build step is needed**: upload / push
-the folder to GitHub Pages (CNAME is already set), Cloudflare Pages, Netlify, S3…
-`/api/*` must be routed to your Worker on the same origin, exactly as before.
-
-`404.html` forwards old single-page-app links (`/excursions/dolphin-house`) to
-`/excursions/view/?id=dolphin-house`, so existing shared links keep working.
-
-## Change things
-
-| I want to…                         | Do this                                                              |
-|------------------------------------|----------------------------------------------------------------------|
-| Turn a section (hotels, restaurants, …) on or off | `site.config.json` → `show`, then `npm run build` (all on by default) |
-| Edit a page's content              | `src/pages/<name>.html`, then `npm run build`                        |
-| Edit header, menu, modals, footer  | `src/partials/chrome.html` / `bottom-nav.html`, then `npm run build` |
-| Change a page title / description  | `site.config.json` → `pages`, then `npm run build`                   |
-| Add a page                         | new `src/pages/<name>.html` + an entry in `site.config.json` + `ROUTES`/`PAGE_TITLES` in `frontend.js` |
-
-`npm run build` regenerates every page, `sitemap.xml`, `robots.txt` and the
-cache-busting hashes (`?v=…`) on CSS/JS. Run it after changing **any** `.css`/`.js`
-file too, so visitors get the new version.
-
-## How it behaves
-
-- **Navigation** — menu items are real `<a href>` links (open in new tab, crawlable).
-  JS-built cards call `showExcursionPage(id)` etc.; `router.js` turns that into a
-  link to the item's own page.
-- **Sign-in gate** — unchanged, but "Continue as guest" is remembered for the
-  browser session, so you aren't asked again on every page.
-- **Splash** — only on the first home-page visit of a session.
-- **Catalog** — the 8 catalog files now load in parallel and are cached for the
-  session, so page-to-page jumps are instant; fresh data is fetched in the background.
-- **Search** — choices made on the home page carry over to the results page.
-- **Checkout / booking steps** are still in-page overlays (they are a single
-  transaction, not separate destinations). Closing one returns to its page.
-
-## Known limits
-
-- Detail pages (`…/view/?id=`) fill in from the live catalog after load, so search
-  engines see the shell, not the item. Pre-rendering them needs the catalog at build
-  time; say the word and the build script can fetch it.
-- Tailwind still loads from its CDN at runtime (as before). For production speed,
-  compile it once with the Tailwind CLI and replace the CDN `<script>` in `build.mjs`.
-
-## Also in this release (UX polish v13)
-
-See `docs/UX-POLISH-CHANGELOG.md` and the live token reference at `/design-system/`.
-
-## Architecture (Supabase edition)
-
-```
-Browser ── static pages (this repo) ──► Supabase  (Auth · Postgres + RLS · Storage · Edge Function)
-   │                                         ▲
-   └── payments / e-mail ──► Payments Worker ┘  (holds the Kashier secret + the service-role key)
-```
-
-| Piece | Where |
+| الحاجة | بتتم إزاي |
 |---|---|
-| Accounts, roles (customer / owner / super admin), properties, bookings, finance | `supabase/migrations/` (7 files) + `supabase/seed.sql` |
-| Site ⇄ database | `supabase-api.js` |
-| Admin + owner consoles ⇄ database | `console/supabase-console.js` + `supabase/functions/admin-create-user` |
-| Payments, webhooks, confirmation e-mail | `workers/payments-worker.js` |
-| Printable voucher | `/voucher/` (generated when Supabase is on) |
-| Old Firebase/GitHub workers (rollback only) | `legacy/` |
+| **توجيه تلقائي حسب الجهاز** | `shared/ds-site.js`: لو حد فتح www من موبايل/تابلت يتحوّل لنفس الصفحة على app، والعكس للكمبيوتر. المسار والـ query بيتحفظوا. محركات البحث (Googlebot…) مش بتتحوّل. |
+| **تسجيل دخول واحد** (www ⇄ app) | `shared/ds-bridge.js`: جلسة Supabase متخزنة في كوكيز على `.discover-sharm.com` (متقسمة لأجزاء). تدخل من موقع تلاقيك داخل في التاني. |
+| **اللغة / الثيم / العملة / "كمّل كضيف"** | نفس الـ bridge بينقلهم بين www و app. |
+| **كانونيكال / SEO** | صفحات app فيها `canonical` لنظيرتها على www، وصفحات www فيها `rel=alternate` للموبايل (الإعداد اللي Google بيوصي بيه للـ URLs المنفصلة). الـ sitemap على www بس. |
+| **الأدمن معزول عن قصد** | `admin` مابيحمّلش الـ bridge ومابيشاركش كوكيز مع الموقعين العامين: جلسة الموظفين مش بتتعرّض لأي XSS محتمل في الموقع العام. |
 
-**Go-live steps: `DEPLOY.md`.  Database details: `supabase/README.md`.**  Until `supabase.url` / `anonKey` are filled in
-`site.config.json`, the site keeps running on the legacy API.
+اختيار يدوي: `?view=www` أو `?view=app` في أي رابط بيثبّت الاختيار سنة (كوكي `ds_view`). مفيد لو حد عايز نسخة الكمبيوتر من الموبايل.
 
-## Tests
+## الفرق بين www و app
+
+- **www**: نفس الصفحات بتصميم الديسكتوب، من غير شريط التنقل السفلي ولا السبلاش.
+- **app**: تصميم التطبيق على كل المقاسات (شريط سفلي + هيدر التطبيق + سبلاش). الـ build بيطفّي قواعد CSS الخاصة بالديسكتوب (≥1024px) للموقع ده، فالتابلت في الوضع الأفقي بياخد تصميم التطبيق (متسنتر لحد 860px).
+- **admin**: `/` = السوبر أدمن، `/owner/` = اختيار لوحة الأونر (`/owner/ex.html` رحلات، `/owner/hotel.html` فنادق، `/owner/transfer.html` انتقالات). noindex كامل + headers أمان.
+
+الروابط القديمة `/admin` و `/owner/*` على www/app بتتحوّل 301 للأدمن الجديد (ملف `_redirects`).
+
+## الأوامر
 
 ```bash
-node workers/tests/payments.test.mjs   # payments Worker vs mock Supabase + Kashier (37 checks)
-# in the Supabase SQL editor, on a staging project:  supabase/tests/rls_tests.sql   (security + accounting rules)
+npm run build            # التلات مواقع  → dist/www  dist/app  dist/admin
+npm run build:www        # واحد بس (build:app / build:admin)
+npm run dev:www          # http://localhost:8081   (dev:app → 8082 ، dev:admin → 8083)
+npm run test:payments    # 37 فحص لـ Worker الدفع
 ```
 
-Also in this release (UX polish v13): see `docs/UX-POLISH-CHANGELOG.md` and the live token reference at `/design-system/`.
+محتاج Node 18+ ومفيش dependencies. **شغّل `npm run build` بعد أي تعديل** في `src/` أو `shared/` أو `console/` أو `site.config.json`.
+
+## هيكل المصدر
+
+```
+site.config.json     دومينات المواقع + الصفحات + أي قسم شغال/مقفول + مفاتيح Supabase العامة
+src/                 صفحات وأجزاء HTML المشتركة بين www و app
+shared/              CSS/JS المشترك + ds-bridge.js + ds-site.js + site-www.css + site-app.css
+console/  admin-src/ كود الأدمن واللوحات (بيتبني في dist/admin)
+supabase/  workers/  قاعدة البيانات (migrations + RLS) و Worker الدفع
+dist/                الناتج الجاهز — كل فولدر يترفع لوحده
+```
+
+| عايز… | اعمل |
+|---|---|
+| تقفل/تفتح قسم (فنادق، مطاعم…) | `site.config.json` → `show` ثم build |
+| تغيّر محتوى صفحة | `src/pages/<name>.html` ثم build |
+| تغيّر الهيدر/المنيو/المودالز | `src/partials/chrome.html` / `bottom-nav.html` ثم build |
+| تغيّر شكل الديسكتوب فقط | `shared/site-www.css` |
+| تغيّر شكل التطبيق فقط | `shared/site-app.css` |
+| تغيّر الدومينات | `site.config.json` → `sites` |
+
+التشغيل بالتفصيل: **`DEPLOY.md`**. قاعدة البيانات: `supabase/README.md`.

@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex, nofollow" />
+<script src="/ds-bridge.js"></script>
 <title>Voucher — Discover Sharm</title>
 <style>
   :root { --ink:#111; --muted:#666; --line:#e5e5e5; --brand:#c2410c; }
@@ -36,7 +37,7 @@
   const say = (t) => { state.hidden = false; state.textContent = t; $('#sheet').hidden = true; };
   const cfg = window.DS_SUPABASE, id = new URLSearchParams(location.search).get('id');
   if (!cfg || !window.supabase || !id) return say('Voucher not available · الفاوتشر غير متاح');
-  const sb = window.supabase.createClient(cfg.url, cfg.anonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false, storageKey: 'ds_sb_session' } });
+  const sb = window.supabase.createClient(cfg.url, cfg.anonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false, storageKey: 'ds_sb_session', ...(window.DS_SESSION_STORAGE ? { storage: window.DS_SESSION_STORAGE } : {}) } });
   const { data: { session } } = await sb.auth.getSession();
   if (!session) { say('Please sign in on the site first, then open this link again. · سجّل دخول من الموقع الأول وبعدين افتح اللينك تاني.'); const a = document.createElement('a'); a.className = 'btn'; a.href = '/'; a.textContent = 'Sign in · تسجيل الدخول'; a.style.display = 'inline-block'; a.style.marginTop = '16px'; state.append(document.createElement('br'), a); return; }
   const { data, error } = await sb.rpc('list_my_bookings', { p_limit: 500 });
