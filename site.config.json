@@ -16,10 +16,10 @@
   },
   "apiBase": "",
   "show": {
-    "hotels": false,
+    "hotels": true,
     "excursions": true,
     "transfers": true,
-    "restaurants": false,
+    "restaurants": true,
     "destinations": true
   },
   "pages": {
