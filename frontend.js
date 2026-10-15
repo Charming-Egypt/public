@@ -958,7 +958,7 @@ const ui = {
           <div>
             <div class="flex items-start justify-between mb-1">
               <h3 class="font-display font-bold text-sm md:text-base line-clamp-2">${h.name}</h3>
-              ${h.bestseller ? `<div class="absolute top-2 right-2 badge-bestseller text-[8px] font-black px-2 py-0.5 rounded-md"><i class="fa-solid fa-crown"></i></div>` : ''}
+              ${h.bestseller ? `<div class=" top-2 right-2 badge-bestseller text-[8px] font-black px-2 py-0.5 rounded-md"><i class="fa-solid fa-crown"></i></div>` : ''}
              </div>
             <p class="text-[10px] mb-1.5"><i class="fa-solid fa-location-dot text-violet-500 text-[8px]"></i> ${(h.location || '').split(',')[0]}</p>
           </div>
