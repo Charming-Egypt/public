@@ -171,7 +171,7 @@
   "supabase": {
     "url": "https://alvnmmjcnqqayxckqxts.supabase.co",
     "anonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsdm5tbWpjbnFxYXl4Y2txeHRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4MDEwMzAsImV4cCI6MjEwNzM3NzAzMH0._t_4lpxLG1f9zh6_J9pAhHLSJB7X5vpwU8m8BzqA6qA",
-    "googleClientId": "",
+    "googleClientId": "553596553877-alt6p8pnfpib68ag8bqukjlqupa60k1j.apps.googleusercontent.com",
     "paymentsBase": ""
   }
 }
