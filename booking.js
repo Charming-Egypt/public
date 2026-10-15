@@ -613,7 +613,7 @@ function showHotelPage(hotelId, opts = {}) {
                   </div>
                   <div class="flex items-center justify-between">
                     <p class="font-display font-bold text-violet-500 text-lg">${utils.formatPrice(r.price)}<span class="text-[10px]"> /Night</span></p>
-                    <span class="text-[10px] font-bold text-violet-500"><i class="fa-solid fa-circle-check"></i> Selected</span>
+                    <span class="text-[10px] font-bold text-violet-500"><i class="fa-solid fa-circle-check text-amber-500"></i> Selected</span>
                   </div>
                 </div>
               </div>`).join('')}
