@@ -1132,7 +1132,7 @@ const notifications = {
     if (!this.list.length) { list.innerHTML = '<p class="text-center py-10">No notifications yet</p>'; return; }
     list.innerHTML = this.list.map(n => `
       <div class="card rounded-xl p-3.5 flex items-start gap-3">
-        <div class="w-10 h-10 bg-violet-50 rounded-xl flex items-center justify-center"><i class="fa-solid ${n.icon || 'fa-bell'}"></i></div>
+        <div class="w-10 h-10 bg-violet-50 rounded-xl flex items-center justify-center"><i class="fa-solid ${n.icon || 'fa-bell'} text-amber-500"></i></div>
         <div class="flex-1"><h3 class="font-semibold text-sm">${n.title}</h3><p class="text-xs">${n.msg}</p><p class="text-[9px] text-gray-400">${new Date(n.createdAt).toLocaleString()}</p></div>
       </div>`).join('');
   },
