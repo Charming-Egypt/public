@@ -92,6 +92,16 @@
         return item;
       });
     }
+    if (file === 'reviews.json') {   // home page testimonials = REAL customer reviews (4★+ with a written comment); the static file is only a fallback while there are none
+      try {
+        const rows = await run(sb.from('reviews').select('id, name, rating, comment, created_at, properties!inner(name, kind, status)')
+          .eq('status', 'published').eq('properties.status', 'published').gte('rating', 4).not('comment', 'is', null)
+          .order('created_at', { ascending: false }).limit(40));
+        const real = rows.filter(r => String(r.comment || '').trim().length >= 25).slice(0, 20)
+          .map(r => ({ id: r.id, name: (r.name || '').trim() || 'Guest', rating: r.rating, text: String(r.comment).trim(), itemName: r.properties.name || '', section: r.properties.kind }));
+        if (real.length) return real;
+      } catch (e) { /* fall through to the static file */ }
+    }
     if (CONTENT_FILES[file]) {   // editorial content is static JSON (data/*.json), not a table
       const r = await fetch(`/data/${file}${window.DS_DATA_V ? '?v=' + window.DS_DATA_V : ''}`);
       if (!r.ok) throw fail('Unknown catalog file', { status: 404 });

@@ -143,6 +143,7 @@ async function compressImage(file) {
   if (out.length > IMG_MAX_CHARS * 1.3) throw new Error('الصورة كبيرة جدًا حتى بعد الضغط');
   return out;
 }
+DS.LANGS = LANGS; DS.LN = LN; DS.compressImage = compressImage;   // shared with editor.js
 DS.safeSrc = u => /^(https?:\/\/|\/|data:image\/)/i.test(u || '') ? u : '';
 const drawThumbs = w => { $('.thumbs', w).innerHTML = w._v.map((u, i) => `<div class="th"><img src="${esc(DS.safeSrc(u))}" alt=""><button type="button" data-rmimg="${i}" title="حذف">×</button>${w.dataset.t === 'imgs' && i ? `<button type="button" class="st" data-first="${i}" title="اجعلها الرئيسية">★</button>` : ''}</div>`).join('') || '<span class="muted">مفيش صور</span>'; };
 const initImgs = root => root.querySelectorAll('.fld[data-vid]').forEach(w => { if (!w._v) { w._v = IMGV[w.dataset.vid] || []; drawThumbs(w); } });
@@ -231,6 +232,7 @@ async function enter() {
   document.addEventListener('mouseover', e => { const b = e.target.closest('#nav button'); const t = T(); if (!b) { t.classList.remove('on'); return; } t.textContent = b.dataset.tip; const r = b.getBoundingClientRect(), rtl = getComputedStyle(document.body).direction === 'rtl'; t.style.top = (r.top + r.height / 2 - t.offsetHeight / 2) + 'px'; t.style.left = (rtl ? r.left - 12 - t.offsetWidth : r.right + 12) + 'px'; t.classList.add('on'); });
   document.addEventListener('mouseleave', () => tip && tip.classList.remove('on')); document.addEventListener('scroll', () => tip && tip.classList.remove('on'), true); })();
 async function show(i) {
+  $('#app').classList.remove('app-ed'); window.onbeforeunload = null;
   [...$('#nav').children].forEach((b, j) => b.classList.toggle('on', i === j));
   $('#ptitle').textContent = VIEWS[i].label; document.body.classList.remove('nav-open'); window.scrollTo(0, 0);
   const gs = $('#gs'); if (gs) gs.value = '';
@@ -451,13 +453,10 @@ DS.ownerPanel = (c) => {
         DS.table([{ h: '', f: i => DS.thumb(i.image || (i.images || [])[0]) }, { h: 'الاسم', f: i => `<b>${esc(tr(c.title_of(i)))}</b><div class="muted">${esc(i.id)}${i.status && i.status !== 'published' ? ` <span class="badge b-amber">${({ draft: 'مسودة', pending_review: 'بانتظار مراجعة الإدارة' })[i.status] || esc(i.status)}</span>` : ''}</div>` }, { h: 'السعر', f: i => DS.money(i.price) + ' EGP' },
           { h: 'التقييم', f: i => i.rating ? '★ ' + Number(i.rating).toFixed(1) : '—' },
           { h: '', f: i => `<button class="btn ghost sm" data-e="${esc(i.id)}">تعديل</button> <button class="btn ghost sm" data-d="${esc(i.id)}">حذف</button>` }], list, { empty: `لسه مضفتش ${c.itemsLabel}` });
-      const edit = (it) => {
-        const form = DS.form(c.schema, it || {});
-        DS.modal({ title: it ? 'تعديل' : c.addLabel, body: form, wide: true, actions: [{ t: 'حفظ', fn: async (mb) => {
-          const body = DS.collect(form, c.schema);
-          await DS.api(it ? '/items/' + encodeURIComponent(it.id) : '/items', { method: it ? 'PUT' : 'POST', body });
-          DS.toast('اتحفظ'); me.itemCount++; setTimeout(DS.reload, 100);
-        } }] });
+      const TYPE = { trips: 'excursion', hotels: 'hotel', transfers: 'transfer' }[c.key];
+      const edit = (it) => {   // full-page editor (editor.js) — replaces the old pop-up form
+        DS.itemEditor(m, { type: TYPE, item: it || {}, onBack: () => DS.reload(),
+          save: async body => { await DS.api(it ? '/items/' + encodeURIComponent(it.id) : '/items', { method: it ? 'PUT' : 'POST', body }); if (!it) me.itemCount++; } });
       };
       $('#add').onclick = () => edit(null);
       m.onclick = async e => {

@@ -84,7 +84,29 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', roleLabel: 'س
         (list.length ? `<div class="igrid">${list.map(i => { const cv = DS.safeSrc(i.image || (i.images || [])[0]); return `<div class="ic"><div class="cv">${cv ? `<img src="${esc(cv)}" loading="lazy" alt="">` : DS.ic('layers')}${owned ? `<span class="badge ${i.owner ? 'b-blue' : 'b-gray'}">${i.owner ? rname(rs, i.owner) : 'بدون مالك'}</span>` : ''}${i.status && i.status !== 'published' ? `<span class="badge b-amber" style="inset-inline-end:8px;inset-inline-start:auto">${STL[i.status] || esc(i.status)}</span>` : ''}</div>
           <div class="bd"><b>${esc(nameOf(i))}</b><span class="muted">${esc(i.id)}${i.price != null ? ' · ' + money(i.price) + ' EGP' : ''}${i.rating ? ' · ★ ' + Number(i.rating).toFixed(1) : ''}</span></div>
           <div class="ft"><button class="btn ghost sm" data-e="${esc(i.id)}">تعديل</button><button class="btn ghost sm" data-d="${esc(i.id)}">حذف</button></div></div>`; }).join('')}</div>` : '<div class="empty">مفيش عناصر</div>');
+      const EDITOR = ['excursion', 'hotel', 'transfer'];
       const edit = (it) => {
+        const ownList = rs.filter(r => r.role === OWNER_ROLE[type]);
+        if (EDITOR.includes(type)) {   // full-page editor with the admin-only controls in the side column
+          let sideEl;
+          DS.itemEditor(m, { type, item: it || {}, onBack: draw,
+            extra: [{ k: 'rating', l: 'التقييم (0-5)', kind: 'num' }, { k: 'reviews', l: 'عدد التقييمات', kind: 'num' }].concat(type === 'hotel' ? [{ k: 'bestseller', l: 'الأكثر طلبًا', kind: 'bool' }] : []),
+            side: (el) => {
+              sideEl = el; const st = (it ? it.status : 'published');
+              el.insertAdjacentHTML('beforeend', `<div class="edc side-c"><h4>النشر والملكية</h4>
+                <div class="edf-in" style="margin-bottom:12px"><label class="edl">حالة النشر</label><div class="wrapi"><select class="edi" id="ps">${Object.entries(STL).map(([k, v]) => `<option value="${k}" ${st === k ? 'selected' : ''}>${v}</option>`).join('')}</select></div><div class="edh">المسودة والمؤرشف مش بيظهروا للعملاء.</div></div>
+                <div class="edf-in"><label class="edl">المالك (اختياري)</label><div class="wrapi"><select class="edi" id="ow"><option value="">— بدون —</option>${ownList.map(r => `<option value="${r.uid}" ${it && it.owner === r.uid ? 'selected' : ''}>${esc(r.name || r.email)}</option>`).join('')}</select></div></div>
+                ${type === 'hotel' ? '<label class="sw" style="margin-top:12px"><input type="checkbox" id="fc"><span>تجاوز حد عدد الفنادق للمالك</span></label>' : ''}</div>`);
+            },
+            save: async o => {
+              const out = { ...(it || {}), ...o };
+              const ow = sideEl.querySelector('#ow').value; if (ow) out.owner = ow; else delete out.owner;
+              out.status = sideEl.querySelector('#ps').value;
+              const force = sideEl.querySelector('#fc') && sideEl.querySelector('#fc').checked ? '?force=1' : '';
+              await api('/items/' + type + (it ? '/' + encodeURIComponent(it.id) : '') + force, { method: it ? 'PUT' : 'POST', body: out });
+            } });
+          return;
+        }
         const b = document.createElement('div'), owners = rs.filter(r => r.role === OWNER_ROLE[type]), f = DS.form(schema, it || {});
         b.innerHTML = owned ? `<div class="card" style="background:var(--soft)"><div class="fld"><label>المالك (الأونر المسؤول عن العنصر)</label><select id="ow"><option value="">— بدون —</option>${owners.map(r => `<option value="${r.uid}" ${it && it.owner === r.uid ? 'selected' : ''}>${esc(r.name || r.email)}</option>`).join('')}</select></div>` + (type === 'hotel' ? '<label class="sw"><input type="checkbox" id="fc"><span>تجاوز حد الفندقين لهذا الأونر</span></label>' : '') + '</div>' : '';
         if (PROP_TYPES.includes(type)) { const st = document.createElement('div'); st.className = 'fld'; st.innerHTML = `<label>حالة النشر</label><select id="ps">${Object.entries(STL).map(([k, v]) => `<option value="${k}" ${(it ? it.status : 'published') === k ? 'selected' : ''}>${v}</option>`).join('')}</select><small>المنشور بس هو اللي بيظهر في الموقع. عناصر الأونرز بتوصل "بانتظار المراجعة" لحد ما تنشرها.</small>`; b.appendChild(st); }

@@ -295,7 +295,7 @@ function buildAdmin() {
   const site = 'admin', out = mk(site), domain = SITES.admin;
   fs.rmSync(outRoot(site), { recursive: true, force: true });
 
-  const files = ['console.css', 'console.js', 'schemas.js', 'supabase-console.js'];
+  const files = ['console.css', 'console.js', 'editor.js', 'schemas.js', 'supabase-console.js'];
   const V = {};
   for (const f of files) { const b = fs.readFileSync(path.join(ROOT, 'console', f)); out.write(`console/${f}`, b); V[f] = sha(b); }
   const adminJs = fs.readFileSync(path.join(ROOT, 'admin-src', 'admin.js')); out.write('admin.js', adminJs); V['admin.js'] = sha(adminJs);
@@ -312,7 +312,7 @@ ${useSupabase ? `document.write('<script src="${SUPABASE_JS}"><\\/script>');` : 
       .replace('href="../console/console.css"', `href="/console/console.css?v=${V['console.css']}"`)
       .replace('src="../console/supabase-config.js"', `src="/console/supabase-config.js?v=${V['supabase-config.js']}"`)
       .replace('src="../console/supabase-console.js"', `src="/console/supabase-console.js?v=${V['supabase-console.js']}"`)
-      .replace('src="../console/console.js"', `src="/console/console.js?v=${V['console.js']}"`)
+      .replace('src="../console/console.js"', `src="/console/console.js?v=${V['console.js']}"></script>\n<script src="/console/editor.js?v=${V['editor.js']}"`)
       .replace('src="../console/schemas.js"', `src="/console/schemas.js?v=${V['schemas.js']}"`)
       .replace('src="admin.js"', `src="/admin.js?v=${V['admin.js']}"`);
     out.write(outRel, h);
