@@ -4107,6 +4107,7 @@ html[data-gate="auth"] #mainApp { visibility: hidden; }
   #transferSearchForm .ds-cells { grid-template-columns: 1fr; }
   .ds-cells > .ds-cell:not(:last-child), .ds-cells > .ds-cell-wrap:not(:last-child) { border-inline-end: 1px solid #262626; }
   [data-theme="light"] .ds-cells > .ds-cell:not(:last-child), [data-theme="light"] .ds-cells > .ds-cell-wrap:not(:last-child) { border-inline-end-color: #ececec; }
+  .ds-submit { width: 100;}
 }
 
 /* category picker: a centred popup on desktop, a bottom sheet on phones/tablets */
