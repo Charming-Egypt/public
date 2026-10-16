@@ -193,7 +193,7 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--accent);box
 /* ---------- content cards ---------- */
 .tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}.tools input[type=search]{max-width:320px;border-radius:999px}
 .igrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}.ic{background:var(--card);border:1px solid var(--glass-b);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);display:flex;flex-direction:column}
-.ic .cv{height:150px;background:var(--soft) center/cover;position:relative;display:grid;place-items:center;color:var(--muted)}.ic .cv .badge{position:absolute;top:10px;inset-inline-start:10px}
+.ic .cv{height:150px;background:var(--soft) center/cover;position:relative;place-items:center;color:var(--muted)}.ic .cv .badge{position:absolute;top:10px;inset-inline-start:10px}
 .ic .bd{padding:14px;flex:1;display:flex;flex-direction:column;gap:6px}.ic .bd b{font-size:15px;line-height:1.35}.ic .ft{display:flex;gap:8px;padding:0 14px 14px}.ic .ft .btn{flex:1}
 /* ---------- reviews ---------- */
 .rv-sum{display:grid;grid-template-columns:200px 1fr;gap:24px;align-items:center}@media(max-width:640px){.rv-sum{grid-template-columns:1fr}}
