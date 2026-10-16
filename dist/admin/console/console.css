@@ -20,11 +20,9 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{-webkit-text-size-adjust:100%}
 body{font-family:'Cairo','Inter',system-ui,sans-serif;color:var(--ink);font-size:14px;line-height:1.55;min-height:100dvh;transition:background .25s}
-[data-theme=dark] body{background:
-  radial-gradient(52% 46% at 6% 52%,rgba(226,184,134,.60),transparent 62%),
-  radial-gradient(40% 36% at 96% 8%,rgba(150,112,86,.50),transparent 62%),
-  radial-gradient(60% 50% at 50% 108%,rgba(60,40,30,.9),transparent 70%),
-  linear-gradient(160deg,#54402f 0%,#2a1f18 52%,#140f0c 100%);background-attachment:fixed}
+[data-theme=dark] body{    background-image: url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfwUHs8YDzAARwFpFeSh7ICcI1xSj-U25UJal06rSvIA&s=10);
+    background-repeat: no-repeat;
+    background-size: cover;background-attachment:fixed}
 button,input,select,textarea{font:inherit;color:inherit}.hide{display:none!important}
 svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
 
