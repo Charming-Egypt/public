@@ -55,3 +55,10 @@ Firebase booking importer; owner listings now start as "pending review" and a su
 - Side drawer is opaque (page text bled through); guests see "Log In" instead of "Logout".
 - Partner form: document slot labels showed `undefined`; partner-type chips, "Upload", review counts, "No reviews yet", "Could not load reviews", "No notifications yet", "Guest", "Included" and excursion category badges are now translated (10 new keys × 6 languages).
 - "Browse Hotels" empty-state button on My Bookings now reads "Browse Excursions"; Favorites stat hidden when hotels are off.
+
+
+## v17 — three sites, static content, search, new consoles
+- Split into www (desktop) / app (phones+tablets) / admin; shared login + prefs between www and app (`ds-bridge.js`), device routing (`ds-site.js`).
+- Destinations, journal articles, site reviews and promo slides are plain JSON (`shared/data/*.json`), not database rows; admin content tabs and the JSON file editor were removed.
+- Home search card restored and extended: Hotels / Excursions / Transfers tabs (only enabled sections show), dates in the user's language, category picker, free-text transfer search, 6 languages.
+- Admin / owner consoles redesigned: dark "Admin V7" glass look (default) and light "Tour" look; floating rail with tooltips, greeting header with live page filter, right panel with calendar + next bookings, floating bottom bar on phones.

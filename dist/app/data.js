@@ -499,7 +499,8 @@ function localizeCatalog(lang) {
 // ==================== CATALOG LOADING ====================
 async function loadCatalogFromWorker() {
   const files = ['hotels', 'excursions', 'transfers', 'destinations', 'restaurants', 'reviews', 'articles'];
-  const CACHE_KEY = 'ds_catalog_v1', CACHE_TTL = 10 * 60 * 1000;
+  const STATIC_FILES = ['destinations', 'articles', 'reviews'];   // served from /data/*.json (edit them in the repo, then build + push)
+  const CACHE_KEY = 'ds_catalog_v2', CACHE_TTL = 10 * 60 * 1000;
 
   // Every page is now its own HTML file, so the catalog is requested on each
   // navigation. A short session cache makes page-to-page jumps instant; fresh
@@ -518,6 +519,11 @@ async function loadCatalogFromWorker() {
   const fetchAll = async () => {
     const results = await Promise.all(files.map(async (f) => {
       try {
+        if (STATIC_FILES.includes(f)) {   // editorial content: plain JSON files shipped with the site (data/*.json), not the database
+          const r = await fetch(`/data/${f}.json${window.DS_DATA_V ? '?v=' + window.DS_DATA_V : ''}`);
+          if (!r.ok) throw new Error(`${f}.json: HTTP ${r.status}`);
+          return [f, await r.json()];
+        }
         const data = await apiFetch(`/api/file?file=${f}.json`, {}, true);
         return [f, typeof data.content === 'string' ? JSON.parse(data.content) : (data.content || data)];
       } catch (e) {
@@ -540,6 +546,7 @@ async function loadCatalogFromWorker() {
 }
 
 function refreshCatalogUI() {
+  try { if (document.getElementById('searchCard')) search.refreshLabels(); } catch (e) { /* frontend.js not ready yet */ }
   if (document.getElementById('hotelsList')) hotels.render();
   if (document.getElementById('excursionsList')) excursionsUi.render();
   if (document.getElementById('transfersList')) transfersUi.render();

@@ -600,63 +600,42 @@ const search = {
   selectedCheckOut: null,
   selectedCategory: 'all',
 
+  // Tabs follow the enabled sections: hotels / excursions / transfers.
+  _tabs() {
+    return {
+      hotels:     { btn: 'searchTabHotels',     form: 'hotelSearchForm',     on: SHOW_HOTELS },
+      excursions: { btn: 'searchTabExcursions', form: 'excursionSearchForm', on: SHOW_EXCURSIONS },
+      transfers:  { btn: 'searchTabTransfers',  form: 'transferSearchForm',  on: SHOW_TRANSFERS },
+    };
+  },
   switchTab(tab) {
-    if (tab === 'hotels' && !SHOW_HOTELS) tab = 'excursions';
-    if (tab === 'excursions' && !SHOW_EXCURSIONS) tab = 'hotels';
-    if (!SHOW_HOTELS && !SHOW_EXCURSIONS) {
-      const tabsContainer = document.getElementById('searchTabsContainer');
-      if (tabsContainer) tabsContainer.style.display = 'none';
-      const hotelForm = document.getElementById('hotelSearchForm');
-      if (hotelForm) hotelForm.style.display = 'none';
-      const excursionForm = document.getElementById('excursionSearchForm');
-      if (excursionForm) excursionForm.style.display = 'none';
-      return;
-    }
+    const card = document.getElementById('searchCard');
+    if (!card) return;                                   // only the home page has the card
+    const defs = this._tabs();
+    const enabled = Object.keys(defs).filter(k => defs[k].on);
+    if (!enabled.length) { card.style.display = 'none'; return; }
+    card.style.display = '';
+    if (!enabled.includes(tab)) tab = enabled[0];
+    const changed = this.activeTab !== tab;
     this.activeTab = tab;
 
     const tabsContainer = document.getElementById('searchTabsContainer');
-    if (tabsContainer) tabsContainer.style.display = (SHOW_HOTELS && SHOW_EXCURSIONS) ? 'flex' : 'none';
-
-    const hotelForm = document.getElementById('hotelSearchForm');
-    const excursionForm = document.getElementById('excursionSearchForm');
-    if (hotelForm) hotelForm.style.display = (tab === 'hotels' && SHOW_HOTELS) ? 'block' : 'none';
-    if (excursionForm) excursionForm.style.display = (tab === 'excursions' && SHOW_EXCURSIONS) ? 'block' : 'none';
-
-    const hotelBtn = document.getElementById('searchTabHotels');
-    const excursionBtn = document.getElementById('searchTabExcursions');
-    if (hotelBtn) hotelBtn.classList.toggle('active', tab === 'hotels');
-    if (excursionBtn) excursionBtn.classList.toggle('active', tab === 'excursions');
-
-    this.updateHeroContent(tab);
-    this.updateDateDisplays();
+    if (tabsContainer) tabsContainer.style.display = enabled.length > 1 ? 'flex' : 'none';
+    for (const [k, d] of Object.entries(defs)) {
+      const btn = document.getElementById(d.btn), form = document.getElementById(d.form);
+      if (btn) { btn.style.display = d.on ? '' : 'none'; btn.classList.toggle('active', k === tab); btn.setAttribute('aria-selected', k === tab ? 'true' : 'false'); }
+      if (form) form.style.display = (d.on && k === tab) ? 'block' : 'none';
+    }
+    this.closeCategoryDropdown();
+    this.refreshLabels();
+    if (changed || !heroBgInterval) startHeroBackgroundRotation(tab === 'transfers' ? 'excursions' : tab);   // the hero headline stays translated; only the photos follow the tab
   },
-
-
-
-updateHeroContent(tab) {
-    const heroData = {
-      hotels: {
-      eyebrow: 'Luxury Red Sea stays',
-      title: 'Plan your perfect<br><span class="italic text-gold-400">Sharm escape</span>',
-      subtitle: 'Beachfront resorts, private transfers, and unforgettable sunsets on your next getaway.'
-      },
-      excursions: {
-      eyebrow: 'Memorable adventures',
-      title: 'Dive, sail and explore<br><span class="italic text-gold-400">the Red Sea</span>',
-      subtitle: 'Curated reef tours, desert escapes, and day trips designed for easy, exciting travel.'
-      }
-    };
-    const data = heroData[tab] || heroData.hotels;
-  const eyebrow = document.getElementById('heroEyebrowText');
-  const title = document.getElementById('heroTitleText');
-  const subtitle = document.getElementById('heroSubtitleText');
-  if (eyebrow) eyebrow.innerHTML = data.eyebrow;
-  if (title) title.innerHTML = data.title;
-  if (subtitle) subtitle.textContent = data.subtitle;
-  startHeroBackgroundRotation(tab);
-},
-
-
+  // Re-paint every dynamic label (called after language / data changes).
+  refreshLabels() {
+    this.updateDateDisplays();
+    this.updateGuestDisplay();
+    this.setCategory(this.selectedCategory || 'all');
+  },
 
   openGuestDropdown() {
     const dropdown = document.getElementById('searchGuestDropdown');
@@ -705,8 +684,8 @@ updateHeroContent(tab) {
     const co = toDate(this.selectedCheckOut);
     const fmt = (d) => {
       if (!d) return '';
-      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      return `${d.getDate()} ${months[d.getMonth()]}`;
+      try { return d.toLocaleDateString(I18N.get() || 'en', { day: 'numeric', month: 'short' }); }
+      catch (e) { return `${d.getDate()}/${d.getMonth() + 1}`; }
     };
     const checkinDisplay = document.getElementById('checkinDisplay');
     const checkoutDisplay = document.getElementById('checkoutDisplay');
@@ -742,6 +721,10 @@ updateHeroContent(tab) {
         return;
       }
       nav.go('hotels');
+    } else if (this.activeTab === 'transfers') {
+      const q = (document.getElementById('homeTransferQuery')?.value || '').trim();
+      state.transferSearchQuery = q.toLowerCase();
+      nav.go('transfers');
     } else {
       this.applyExcursionSearch();
     }
@@ -769,13 +752,8 @@ updateHeroContent(tab) {
     this.selectedCheckIn = utils.isoLocal(tomorrow);
     this.selectedCheckOut = utils.isoLocal(dayAfter);
     this.selectedCategory = 'all';
-    this.activeTab = SHOW_HOTELS ? 'hotels' : 'excursions';
-    // The homepage search card (tabs/date fields/category picker) has been
-    // removed — updateDateDisplays/updateGuestDisplay are still called from
-    // the real booking-flow guest/date pickers elsewhere and stay null-safe,
-    // but switchTab() specifically drove that removed card's DOM and must not
-    // run anymore.
-    startHeroBackgroundRotation(this.activeTab);
+    this.activeTab = this.activeTab && this._tabs()[this.activeTab]?.on ? this.activeTab : (SHOW_HOTELS ? 'hotels' : SHOW_EXCURSIONS ? 'excursions' : 'transfers');
+    this.switchTab(this.activeTab);
   }
 };
 
@@ -1613,6 +1591,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.addEventListener('resize', applyDesktopLayout);
 
   if (typeof restoreUiState === 'function') restoreUiState();
+  search.switchTab(search.activeTab);   // card follows what restoreUiState brought back (dates, category, tab)
   if (auth.isLoggedIn() || sessionStorage.getItem('ds_guest')) { enterApp(); } else { nav.showAuth(); }
   setTimeout(hideSplash, 3000);
 });
@@ -1638,3 +1617,9 @@ window.closeArticlePage = closeArticlePage;
 window.startTransferBooking = startTransferBooking;
 window.startExcursionBooking = startExcursionBooking;
 window.startBooking = startBooking;
+
+
+// close the home search category list when tapping elsewhere
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('#searchCategoryDropdown') && !e.target.closest('[onclick*="openCategoryDropdown"]')) search.closeCategoryDropdown();
+});

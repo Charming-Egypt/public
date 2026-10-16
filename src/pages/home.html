@@ -22,6 +22,52 @@
             <p class="text-white/75 text-base md:text-lg max-w-xl mx-auto text-balance hero-text-swap" id="heroSubtitleText" data-i18n="heroSubtitle">Beachfront resorts, private transfers, and unforgettable sunsets on your next getaway.</p>
           </div>
 
+          <!-- ============ SEARCH CARD (hotels / excursions / transfers — tabs follow the enabled sections) ============ -->
+          <div class="ds-search" id="searchCard">
+            <div class="ds-search-tabs" id="searchTabsContainer" role="tablist">
+              <button type="button" role="tab" id="searchTabHotels" class="ds-search-tab" onclick="search.switchTab('hotels')"><i class="fa-solid fa-hotel" aria-hidden="true"></i><span data-i18n="navHotels">Hotels</span></button>
+              <button type="button" role="tab" id="searchTabExcursions" class="ds-search-tab" onclick="search.switchTab('excursions')"><i class="fa-solid fa-umbrella-beach" aria-hidden="true"></i><span data-i18n="navExcursions">Excursions</span></button>
+              <button type="button" role="tab" id="searchTabTransfers" class="ds-search-tab" onclick="search.switchTab('transfers')"><i class="fa-solid fa-shuttle-van" aria-hidden="true"></i><span data-i18n="navTransfers">Airport Transfers</span></button>
+            </div>
+
+            <div class="ds-search-card">
+              <!-- Hotels: dates + guests -->
+              <div id="hotelSearchForm" class="ds-form" style="display:none">
+                <div class="ds-cells">
+                  <button type="button" class="ds-cell" data-date-field="searchCheckIn"><span class="ds-label" data-i18n="checkinLabelCaps">CHECK-IN</span><span class="ds-value" id="checkinDisplay">Select date</span></button>
+                  <button type="button" class="ds-cell" data-date-field="searchCheckOut"><span class="ds-label" data-i18n="checkoutLabelCaps">CHECK-OUT</span><span class="ds-value" id="checkoutDisplay">Select date</span></button>
+                  <button type="button" class="ds-cell ds-cell-wide" onclick="openGuestsModal()"><span class="ds-label" data-i18n="guestsLabelCaps">GUESTS</span><span class="ds-value" id="guestsDisplay">2 Adults, 1 Room</span></button>
+                </div>
+                <button type="button" class="ds-submit" onclick="search.performSearch()"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><span data-i18n="checkAvailabilityBtn">Check Availability</span></button>
+              </div>
+
+              <!-- Excursions: date + category -->
+              <div id="excursionSearchForm" class="ds-form" style="display:none">
+                <div class="ds-cells">
+                  <button type="button" class="ds-cell" data-date-field="excursionDate"><span class="ds-label" data-i18n="excursionDateLabelCaps">EXCURSION DATE</span><span class="ds-value" id="excursionDateDisplay">Select date</span></button>
+                  <div class="ds-cell-wrap">
+                    <button type="button" class="ds-cell" onclick="search.openCategoryDropdown()" aria-haspopup="listbox"><span class="ds-label" data-i18n="categoryLabelCaps">CATEGORY</span><span class="ds-value" id="excursionCategoryDisplay">All Categories</span></button>
+                    <div id="searchCategoryDropdown" class="ds-pop" style="display:none" role="listbox">
+                      <button type="button" class="ds-category-btn active" data-category="all" onclick="search.setCategory('all'); search.closeCategoryDropdown()" data-i18n="allCategories">All Categories</button>
+                      <button type="button" class="ds-category-btn" data-category="Diving" onclick="search.setCategory('Diving'); search.closeCategoryDropdown()" data-i18n="divingSnorkeling">Diving &amp; Snorkeling</button>
+                      <button type="button" class="ds-category-btn" data-category="Desert Safari" onclick="search.setCategory('Desert Safari'); search.closeCategoryDropdown()" data-i18n="desertSafari">Desert Safari</button>
+                      <button type="button" class="ds-category-btn" data-category="City Tour" onclick="search.setCategory('City Tour'); search.closeCategoryDropdown()" data-i18n="cityTour">City Tour</button>
+                    </div>
+                  </div>
+                </div>
+                <button type="button" class="ds-submit" onclick="search.performSearch()"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><span data-i18n="searchExcursions">Search Excursions</span></button>
+              </div>
+
+              <!-- Transfers: free-text route / hotel / area -->
+              <div id="transferSearchForm" class="ds-form" style="display:none">
+                <div class="ds-cells">
+                  <label class="ds-cell ds-cell-wide ds-cell-input"><span class="ds-label" data-i18n="pickupDropoffLabel">Pickup/Drop-off</span><input type="text" id="homeTransferQuery" class="ds-value ds-input" data-i18n-placeholder="searchTransfersPlaceholder" placeholder="Search transfers..." autocomplete="off" onkeydown="if(event.key==='Enter'){search.performSearch()}" /></label>
+                </div>
+                <button type="button" class="ds-submit" onclick="search.performSearch()"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><span data-i18n="searchTransfers">Find My Ride</span></button>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
 

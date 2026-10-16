@@ -36,6 +36,8 @@ const sbc = { ...(cfg.supabase || {}),
   ...(process.env.DS_PAYMENTS_BASE ? { paymentsBase: process.env.DS_PAYMENTS_BASE } : {}) };
 const useSupabase = !!(sbc.url && sbc.anonKey);
 const SUPABASE_JS = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js';   // pinned
+// content hash of the editorial JSON (destinations / articles / reviews / promoSlides): cache-busts /data/*.json when you edit them
+const DATA_V = (() => { const h = crypto.createHash('sha1'); for (const f of ['destinations', 'articles', 'reviews', 'promoSlides']) h.update(fs.readFileSync(path.join(ROOT, 'shared', 'data', f + '.json'))); return h.digest('hex').slice(0, 8); })();
 const apiBase = (process.env.DS_API_BASE ?? cfg.apiBase ?? '').replace(/\/$/, '');
 
 // ---- small fs helpers --------------------------------------------------------------------------------------------------
@@ -133,6 +135,7 @@ function buildPublic(site) {
     window.DS_SITE = ${JSON.stringify(site)};
     window.DS_SITES = ${JSON.stringify({ www: SITES.www, app: SITES.app })};
     window.DS_API_BASE = ${JSON.stringify(apiBase)};
+    window.DS_DATA_V = ${JSON.stringify(DATA_V)};
   </script>
   <script src="/ds-site.js?v=${V['ds-site.js']}"></script>
   <script>

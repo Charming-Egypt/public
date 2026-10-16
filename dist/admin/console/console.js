@@ -11,7 +11,7 @@ DS.money = n => Number(n || 0).toLocaleString('en-US');
 DS.dt = iso => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleDateString('en-GB') + ' ' + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }); };
 
 // ---------- icons ----------
-const IC = { home: 'M3 10.5 12 3l9 7.5V21H3zM9 21v-6h6v6', cal: 'M8 2v4M16 2v4M3 9h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z', wallet: 'M3 7a2 2 0 0 1 2-2h13v4M3 7v11a2 2 0 0 0 2 2h15V9H5a2 2 0 0 1-2-2zM16 14h.01',
+const IC = { search: 'M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3', refresh: 'M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5', chevl: 'M15 18l-6-6 6-6', chevr: 'M9 18l6-6-6-6', home: 'M3 10.5 12 3l9 7.5V21H3zM9 21v-6h6v6', cal: 'M8 2v4M16 2v4M3 9h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z', wallet: 'M3 7a2 2 0 0 1 2-2h13v4M3 7v11a2 2 0 0 0 2 2h15V9H5a2 2 0 0 1-2-2zM16 14h.01',
   users: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75', box: 'M21 8 12 3 3 8v8l9 5 9-5zM3 8l9 5 9-5M12 13v8', star: 'M12 3l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.8 6.2 20.9l1.1-6.5L2.6 9.8l6.5-.9z',
   shield: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z', layers: 'M12 3 2 8l10 5 10-5zM2 13l10 5 10-5', code: 'M8 8l-5 4 5 4M16 8l5 4-5 4M14 4l-4 16', mail: 'M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zM3 7l9 6 9-6',
   brief: 'M3 8h18v12H3zM8 8V5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v3', list: 'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01', menu: 'M4 6h16M4 12h16M4 18h16', sun: 'M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4',
@@ -216,23 +216,55 @@ function logout(msg) {
 async function enter() {
   try { ME = await DS.api('/me'); } catch (e) { if (TOKEN) logout(e.message); return; }
   $('#login').classList.add('hide'); $('#app').classList.remove('hide');
-  const nm = ME.name || ME.email || '؟'; $('#who').textContent = nm; $('#av').textContent = nm.trim()[0].toUpperCase(); $('#rl').textContent = CFG.roleLabel || '';
+  const nm = ME.name || ME.email || '؟', first = String(nm).trim().split(/\s+/)[0];
+  document.querySelectorAll('.who').forEach(e => e.textContent = nm); document.querySelectorAll('.av').forEach(e => e.textContent = nm.trim()[0].toUpperCase()); document.querySelectorAll('.rl').forEach(e => e.textContent = CFG.roleLabel || '');
+  const em = $('#pem'); if (em) em.textContent = ME.email || '';
+  $('#greet').textContent = (new Date().getHours() < 12 ? 'صباح الخير، ' : 'مساء الخير، ') + first + ' 👋';
   VIEWS = typeof CFG.views === 'function' ? CFG.views(ME) : CFG.views;
-  $('#nav').innerHTML = VIEWS.map((v, i) => `<button data-i="${i}">${DS.ic(v.icon || 'home')}<span>${v.label}</span></button>`).join('');
-  show(0);
+  $('#nav').innerHTML = VIEWS.map((v, i) => `<button data-i="${i}" title="${esc(v.label)}" aria-label="${esc(v.label)}">${DS.ic(v.icon || 'home')}<span>${v.label}</span></button>`).join('');
+  show(0); DS.side();
 }
 async function show(i) {
   [...$('#nav').children].forEach((b, j) => b.classList.toggle('on', i === j));
   $('#ptitle').textContent = VIEWS[i].label; document.body.classList.remove('nav-open'); window.scrollTo(0, 0);
+  const gs = $('#gs'); if (gs) gs.value = '';
   const m = $('#main'); m.onclick = null; m.innerHTML = '<div class="stats"><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div></div><div class="skel" style="height:260px"></div>';
   try { await VIEWS[i].render(m); } catch (e) { m.innerHTML = `<div class="err">${esc(e.message)}</div>`; }
 }
+// ---- right panel: profile, month calendar (days with bookings are dotted), next bookings ----
+DS.side = async () => {
+  const box = $('#rightp'); if (!box) return;
+  let list = []; try { list = (await DS.api('/bookings')).bookings || []; } catch (e) { /* the panel just stays empty */ }
+  const DEAD = ['cancelled', 'canceled', 'failed', 'refunded', 'rejected', 'expired'];
+  const when = b => String(b.checkin || b.date || '').slice(0, 10);
+  const live = list.filter(b => when(b) && !DEAD.includes(String(b.status || '').toLowerCase()));
+  const byDay = new Set(live.map(when)), today = new Date(), iso = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'), t0 = iso(today);
+  let y = today.getFullYear(), mo = today.getMonth();
+  const MN = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'], DN = ['س', 'ح', 'ن', 'ث', 'ر', 'خ', 'ج'];   // week starts Saturday
+  const upcoming = live.filter(b => when(b) >= t0).sort((a, b) => when(a).localeCompare(when(b))).slice(0, 4);
+  const bk = VIEWS.findIndex(v => v.icon === 'cal');
+  const cal = () => {
+    const first = new Date(y, mo, 1), lead = (first.getDay() + 1) % 7, days = new Date(y, mo + 1, 0).getDate(); let c = '';
+    for (let k = 0; k < lead; k++) c += '<span class="o"></span>';
+    for (let d = 1; d <= days; d++) { const k = y + '-' + String(mo + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0'); c += `<span class="${k === t0 ? 't ' : ''}${byDay.has(k) ? 'b' : ''}">${d}</span>`; }
+    return `<div class="ch"><button data-m="1" aria-label="الشهر اللي بعده">${DS.ic('chevr')}</button><b>${MN[mo]} ${y}</b><button data-m="-1" aria-label="الشهر اللي قبله">${DS.ic('chevl')}</button></div><div class="cg">${DN.map(x => `<i>${x}</i>`).join('')}${c}</div>`;
+  };
+  box.innerHTML = `<div class="pc"><span class="av">${esc((ME.name || ME.email || '؟').trim()[0].toUpperCase())}</span><div><b>${esc(ME.name || ME.email || '')}</b><small>${esc(CFG.roleLabel || '')}${ME.email ? ' · ' + esc(ME.email) : ''}</small></div></div>
+    <div class="pmini"><div><b>${live.length}</b><span>حجوزات نشطة</span></div><div><b>${upcoming.length ? upcoming.length : 0}</b><span>قادمة</span></div><div><b>${list.length}</b><span>الإجمالي</span></div></div>
+    <div class="cal" id="cal">${cal()}</div>
+    <div class="upt"><span>أقرب الحجوزات</span>${bk >= 0 ? '<a data-all="1">عرض الكل</a>' : ''}</div>
+    <div class="upl">${upcoming.length ? upcoming.map(b => `<div class="upr" data-all="1"><span class="ic2">${DS.ic('cal')}</span><div><b>${esc(bItem(b))}</b><small>${esc(b.name || b.email || '')}</small></div><em>${esc(when(b).slice(5).replace('-', '/'))}</em></div>`).join('') : '<div class="upe">مفيش حجوزات قادمة</div>'}</div>`;
+  box.onclick = e => {
+    const m = e.target.closest('[data-m]'); if (m) { mo += +m.dataset.m; if (mo > 11) { mo = 0; y++; } if (mo < 0) { mo = 11; y--; } $('#cal').innerHTML = cal(); return; }
+    if (e.target.closest('[data-all]') && bk >= 0) show(bk);
+  };
+};
 DS.reload = () => { const i = [...$('#nav').children].findIndex(b => b.classList.contains('on')); show(Math.max(0, i)); };
 DS.go = label => { const i = VIEWS.findIndex(v => v.label === label); if (i >= 0) show(i); };
-const theme = t => { document.documentElement.dataset.theme = t; try { localStorage.setItem('ds_theme', t); } catch {} const b = $('#th'); if (b) b.innerHTML = DS.ic(t === 'dark' ? 'sun' : 'moon'); };
+const theme = t => { document.documentElement.dataset.theme = t; try { localStorage.setItem('ds_theme', t); } catch {} document.querySelectorAll('.th-btn').forEach(b => { b.innerHTML = DS.ic(t === 'dark' ? 'sun' : 'moon'); b.title = t === 'dark' ? 'الوضع الفاتح' : 'الوضع الغامق'; }); };
 DS.start = (cfg) => {
   CFG = cfg; document.title = cfg.title;
-  let th = 'light'; try { th = localStorage.getItem('ds_theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); } catch {}
+  let th = 'dark'; try { th = localStorage.getItem('ds_theme') || 'dark'; } catch {}   // dark = Admin V7 look (default), light = Tour look
   document.documentElement.dataset.theme = th;
   document.body.innerHTML = `
   <div id="login"><div class="lbrand"><div><div class="brand"><span class="lg">DS</span><b>Discover<span>Sharm</span></b></div><h1 style="margin-top:38px">${esc(cfg.title)}</h1><p>لوحة تحكم متكاملة لإدارة الحجوزات والأرباح والمحتوى — بشكل آمن وسريع من أي جهاز.</p></div>
@@ -241,12 +273,19 @@ DS.start = (cfg) => {
     <div class="fld"><label>البريد الإلكتروني</label><input id="em" type="email" autocomplete="username" required></div>
     <div class="fld"><label>كلمة المرور</label><input id="pw" type="password" autocomplete="current-password" required></div>
     <button class="btn" style="width:100%;padding:13px" id="lb">دخول</button></form></div></div>
-  <div id="app" class="hide"><aside class="side"><div class="brand"><span class="lg">DS</span><div><b>Discover<span>Sharm</span></b><small>${esc(cfg.title)}</small></div></div><nav id="nav"></nav>
-    <div class="sfoot"><span class="av" id="av"></span><div><b id="who"></b><small id="rl"></small></div><button id="out" title="خروج">${DS.ic('out')}</button></div></aside>
-    <div class="content"><header class="top"><button class="ib" id="burger">${DS.ic('menu')}</button><h1 id="ptitle"></h1><button class="ib" id="th"></button></header><main id="main"></main></div></div><div id="scrim"></div><div id="toast"></div>`;
+  <div id="app" class="hide"><aside class="side"><div class="brand"><span class="lg">DS</span></div><nav id="nav" aria-label="القائمة"></nav>
+    <div class="sfoot"><button class="th-btn" title="الوضع"></button><button id="out" title="خروج">${DS.ic('out')}</button><span class="av" title=""></span></div></aside>
+    <div class="content"><header class="top"><div class="greet"><h1 id="greet"></h1><p id="ptitle"></p></div>
+      <label class="sbox">${DS.ic('search')}<input id="gs" type="search" placeholder="ابحث في الصفحة..." autocomplete="off"></label>
+      <button class="ib" id="rf" title="تحديث">${DS.ic('refresh')}</button><button class="ib th-btn mob" id="th2"></button><button class="ib mob" id="out2" title="خروج">${DS.ic('out')}</button></header><main id="main"></main></div>
+    <aside class="rightp" id="rightp"></aside></div><div id="scrim"></div><div id="toast"></div>`;
   theme(th);
-  $('#th').onclick = () => theme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
-  $('#burger').onclick = () => document.body.classList.add('nav-open'); $('#scrim').onclick = () => document.body.classList.remove('nav-open');
+  document.querySelectorAll('.th-btn').forEach(b => b.onclick = () => theme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'));
+  $('#rf').onclick = () => { DS.reload(); DS.side(); };
+  $('#gs').oninput = e => {   // live filter of whatever the current page lists (table rows, content cards, review cards)
+    const q = e.target.value.trim().toLowerCase();
+    document.querySelectorAll('#main tbody tr, #main .igrid .ic, #main .rvgrid .rv-card, #main .upl .upr').forEach(el => { el.style.display = !q || el.textContent.toLowerCase().includes(q) ? '' : 'none'; });
+  };
   $('#lf').onsubmit = async e => {
     e.preventDefault(); const b = $('#lb'); b.disabled = true; $('#lerr').classList.add('hide');
     try {
@@ -258,7 +297,7 @@ DS.start = (cfg) => {
     } catch (er) { $('#lerr').textContent = er.message; $('#lerr').classList.remove('hide'); }
     b.disabled = false;
   };
-  $('#out').onclick = () => logout();
+  $('#out').onclick = () => logout(); $('#out2').onclick = () => logout();
   $('#nav').onclick = e => { const b = e.target.closest('button'); if (b) show(+b.dataset.i); };
   if (window.DSX) { DSX.session().then(ok => { if (ok) { TOKEN = 'sb'; enter(); } }); return; }
   try { const s = JSON.parse(localStorage.getItem(sk()) || 'null'); if (s && tokenExp(s.t) > Date.now() + 60000) { TOKEN = s.t; enter(); } } catch {}

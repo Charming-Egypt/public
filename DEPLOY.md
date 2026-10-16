@@ -44,3 +44,25 @@ Cloudflare Pages: Create project → Direct Upload (أو GitHub مع Build comma
 
 ## الرجوع للنظام القديم
 مش بنفس البساطة زي قبل لأن المواقع اتفصلت؛ الـ Workers القديمة لسه في `legacy/` للتوثيق. احتفظي بنسخة المشروع الأصلي (`public-main-fixed.zip`) لحد ما تتأكدي إن كل حاجة ماشية.
+
+
+---
+
+## المحتوى الثابت (JSON) — الوجهات والمقالات والتقييمات
+`destinations.json` و `articles.json` و `reviews.json` (تقييمات الصفحة الرئيسية) و `promoSlides.json` بقوا ملفات ثابتة في **`shared/data/`**، مش في Supabase.
+للتعديل: افتحي الملف في VS Code ← عدّلي ← `npm run build` ← `git push`. رقم نسخة تلقائي (`DS_DATA_V`) بيتغيّر مع كل تعديل فالمتصفحات بتجيب الجديد على طول.
+اتشالوا من لوحة الأدمن: تابات الوجهات/المقالات/التقييمات/الشرائح وصفحة "الملفات". اللي لسه في Supabase: الفنادق والرحلات والترانسفير والمطاعم (محتاجة أسعار وحجوزات وأونرز) وتقييمات العملاء على كل عنصر.
+
+## `DS_PAYMENTS_BASE` / `paymentsBase` — منين أجيبه؟
+هو **رابط الـ Worker بتاع الدفع** بعد ما تنشريه على Cloudflare (مش حاجة بتتولّد من Supabase):
+```bash
+cd workers
+npx wrangler login
+npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY -c wrangler.payments.toml     # + KASHIER_API_KEY و KASHIER_SECRET_KEY (و RESEND_API_KEY اختياري)
+npx wrangler deploy -c wrangler.payments.toml
+```
+1. **أسرع حاجة:** في آخر الأمر wrangler بيطبع الرابط، شكله `https://discover-sharm-payments.<حسابك>.workers.dev` ← ده هو `paymentsBase` (بدون `/` في الآخر).
+2. **الأحسن للإنتاج:** Cloudflare → Workers & Pages ← `discover-sharm-payments` ← Settings ← Domains & Routes ← Add ← Custom domain: `pay.discover-sharm.com`. وقتها `paymentsBase` = `https://pay.discover-sharm.com`.
+3. حطّيه في `site.config.json` ← `supabase.paymentsBase`، أو كـ Environment variable باسم `DS_PAYMENTS_BASE` في مشروعي Cloudflare Pages بتوع www و app (الأدمن مش محتاجه).
+4. تأكدي إن `SUPABASE_URL` و `SUPABASE_ANON_KEY` و `KASHIER_*` متظبطين في `[vars]` بتاع `wrangler.payments.toml`، وإن `ALLOWED_ORIGINS` فيه www و app.
+5. اختبار: افتحي `<paymentsBase>/health` (أو أي endpoint عام موجود في الـ Worker) — لو رجّع رد يبقى شغال.

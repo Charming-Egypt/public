@@ -92,9 +92,10 @@
         return item;
       });
     }
-    if (CONTENT_FILES[file]) {
-      const rows = await run(sb.from('site_content').select('data').eq('kind', CONTENT_FILES[file]).eq('published', true).order('sort_order'));
-      return rows.map(r => r.data);
+    if (CONTENT_FILES[file]) {   // editorial content is static JSON (data/*.json), not a table
+      const r = await fetch(`/data/${file}${window.DS_DATA_V ? '?v=' + window.DS_DATA_V : ''}`);
+      if (!r.ok) throw fail('Unknown catalog file', { status: 404 });
+      return await r.json();
     }
     throw fail('Unknown catalog file', { status: 404 });
   }

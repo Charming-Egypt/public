@@ -3,6 +3,7 @@
 const { esc, tr, money, dt, badge, PAY, table, modal, form, collect, api, toast, thumb } = DS;
 const ROLE_L = { super_admin: 'سوبر أدمن', trips_owner: 'مكتب رحلات', hotels_owner: 'مالك فنادق', transfers_owner: 'ترانسفير' };
 const ROLE_OPTS = Object.entries(ROLE_L).filter(([k]) => k !== 'super_admin');
+const STATIC_TYPES = ['destination', 'article', 'review', 'promoSlide'];   // now plain JSON in the repo (shared/data/*.json), no longer managed here
 const TYPES = { hotel: 'الفنادق', excursion: 'الرحلات', transfer: 'الترانسفير', destination: 'الوجهات', restaurant: 'المطاعم', article: 'المقالات', review: 'تقييمات الموقع', promoSlide: 'شرائح الصفحة الرئيسية' };
 const OWNER_ROLE = { hotel: 'hotels_owner', excursion: 'trips_owner', transfer: 'transfers_owner' };
 const STL = { draft: 'مسودة', pending_review: 'بانتظار المراجعة', published: 'منشور', archived: 'مؤرشف' };
@@ -78,7 +79,7 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', roleLabel: 'س
     const draw = async () => {
       const d = await api('/items/' + type), owned = !!OWNER_ROLE[type], schema = DS.SCH_ADMIN[type], items = d.items;
       const list = items.filter(i => !q || (nameOf(i) + ' ' + i.id).toLowerCase().includes(q.toLowerCase()));
-      m.innerHTML = `<h2 class="pt">المحتوى <span class="muted">${items.length}</span></h2><div class="chips">${Object.entries(TYPES).map(([k, v]) => `<span class="chip ${k === type ? 'on' : ''}" data-t="${k}">${v}</span>`).join('')}</div>
+      m.innerHTML = `<h2 class="pt">المحتوى <span class="muted">${items.length}</span></h2><div class="chips">${Object.entries(TYPES).filter(([k]) => !STATIC_TYPES.includes(k)).map(([k, v]) => `<span class="chip ${k === type ? 'on' : ''}" data-t="${k}">${v}</span>`).join('')}</div>
         <div class="tools"><input type="search" id="qs" placeholder="بحث بالاسم..." value="${esc(q)}"><button class="btn" id="add">${DS.ic('plus')} إضافة</button></div>` +
         (list.length ? `<div class="igrid">${list.map(i => { const cv = DS.safeSrc(i.image || (i.images || [])[0]); return `<div class="ic"><div class="cv">${cv ? `<img src="${esc(cv)}" loading="lazy" alt="">` : DS.ic('layers')}${owned ? `<span class="badge ${i.owner ? 'b-blue' : 'b-gray'}">${i.owner ? rname(rs, i.owner) : 'بدون مالك'}</span>` : ''}${i.status && i.status !== 'published' ? `<span class="badge b-amber" style="inset-inline-end:8px;inset-inline-start:auto">${STL[i.status] || esc(i.status)}</span>` : ''}</div>
           <div class="bd"><b>${esc(nameOf(i))}</b><span class="muted">${esc(i.id)}${i.price != null ? ' · ' + money(i.price) + ' EGP' : ''}${i.rating ? ' · ★ ' + Number(i.rating).toFixed(1) : ''}</span></div>
@@ -209,18 +210,6 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', roleLabel: 'س
   // ================= reviews (site-style cards + replies) =================
   { label: 'التقييمات', icon: 'star', render: DS.reviewsView({ admin: true }) },
   // ================= raw files =================
-  { label: 'الملفات', icon: 'code', render: async m => {
-    const files = (await api('/files')).files; let cur = files[0];
-    const load = async () => {
-      const d = await api('/file?file=' + encodeURIComponent(cur));
-      m.innerHTML = `<h2 class="pt">محرر الملفات (JSON)</h2><div class="card"><div class="fld"><label>الملف</label><select id="fs">${files.map(f => `<option ${f === cur ? 'selected' : ''}>${esc(f)}</option>`).join('')}</select></div>
-        <textarea id="ft" dir="ltr" style="min-height:420px;font-family:monospace;font-size:12px"></textarea><div class="row" style="margin-top:10px"><button class="btn" id="sv">حفظ الملف</button><span class="muted">ملفات lang/ هي نصوص واجهة الموقع بكل اللغات.</span></div></div>`;
-      m.querySelector('#ft').value = JSON.stringify(JSON.parse(d.content), null, 2);
-      m.querySelector('#fs').onchange = e => { cur = e.target.value; load(); };
-      m.querySelector('#sv').onclick = async () => { try { await api('/file', { method: 'PUT', body: { file: cur, content: m.querySelector('#ft').value, sha: d.sha } }); toast('اتحفظ'); load(); } catch (e) { toast(e.message, true); } };
-    };
-    await load();
-  } },
   // ================= audit + maintenance =================
   { label: 'السجل', icon: 'list', render: async m => {
     const l = (await api('/audit?limit=150')).log;
