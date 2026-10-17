@@ -1,2 +1,0 @@
-/* www.discover-sharm.com — desktop site: the bottom tab bar belongs to the app site only. */
-[data-site="www"] .bottom-nav { display: none !important; }
