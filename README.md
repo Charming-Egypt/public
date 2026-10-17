@@ -42,12 +42,12 @@ npm run dev:www          # http://localhost:8081   (dev:app → 8082 ، dev:admi
 npm run test:payments    # 37 فحص لـ Worker الدفع
 ```
 
-محتاج Node 18+ ومفيش dependencies. **شغّل `npm run build` بعد أي تعديل** في `src/` أو `shared/` أو `console/` أو `site.config.json`.
+محتاج Node 18+ ومفيش dependencies. **شغّل `npm run build` بعد أي تعديل** في `src/` أو `shared/` أو `console/` أو `site.config.json`. الإعدادات السرّية/الخاصة (Supabase، جوجل، الدفع، الترجمة) متغيرات بيئة: على Cloudflare في إعدادات المشروع، ومحليًا في ملف `.env` (انسخي `.env.example`).
 
 ## هيكل المصدر
 
 ```
-site.config.json     دومينات المواقع + الصفحات + أي قسم شغال/مقفول + مفاتيح Supabase العامة
+site.config.json     دومينات المواقع + الصفحات + أي قسم شغال/مقفول (من غير أي مفاتيح)
 src/                 صفحات وأجزاء HTML المشتركة بين www و app
 shared/              CSS/JS المشترك + ds-bridge.js + ds-site.js + site-www.css + site-app.css
 console/  admin-src/ كود الأدمن واللوحات (بيتبني في dist/admin)

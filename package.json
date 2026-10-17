@@ -12,7 +12,8 @@
     "dev:admin": "node tools/serve.mjs --site admin --port 8083",
     "seed": "node tools/make-seed.mjs",
     "test:payments": "node workers/tests/payments.test.mjs",
-    "import:bookings": "node tools/import-firebase-bookings.mjs"
+    "import:bookings": "node tools/import-firebase-bookings.mjs",
+    "test:translate": "node workers/tests/translate.test.mjs"
   },
   "engines": {
     "node": ">=18"

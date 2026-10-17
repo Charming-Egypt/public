@@ -105,7 +105,8 @@ DS.itemEditor = (host, o) => {
   D.gallery = (Array.isArray(item.images) && item.images.length ? item.images : (item.image ? [item.image] : [])).slice();
   if (o.type === 'hotel') (D.rooms || (D.rooms = [])).forEach(r => { r.childPricingTiers = r.childPricingTiers || []; });
   if (o.type === 'excursion') D.itinerary = D.itinerary || [];
-  let cur = 'ar', dirty = false, open = new Set([0]), mon = new Date(), anchor = null, rangeMode = false;
+  const hasAr = String(tr((item[spec.nameKey] || {}).ar) || '').trim(), hasEn = String(((item[spec.nameKey] || {}).en) || '').trim();
+  let cur = (!hasAr && hasEn) ? 'en' : 'ar', dirty = false, open = new Set([0]), mon = new Date(), anchor = null, rangeMode = false;
   const isNew = !o.item || !o.item.id;
   const fillLangs = k => LANGS.filter(l => String((D[k] || {})[l] || '').trim());
 
@@ -121,7 +122,7 @@ DS.itemEditor = (host, o) => {
                   : `<input class="edi" dir="${dir}" data-path="${path}" data-ty="i18n" ${f.max ? `maxlength="${f.max}"` : ''} value="${esc(v)}" placeholder="${esc(ph)}">${cnt}`;
   }
   const K = {
-    i18n: f => `<div class="edf-in">${lab(f)}<div class="wrapi">${i18nInput(f.k, f, D[f.k])}</div>${(!(D[f.k] || {})[cur] && fb(f.k)) ? `<div class="edh alt">${LN[LANGS.find(l => (D[f.k] || {})[l])]}: ${esc(fb(f.k))}</div>` : ''}${help(f)}</div>`,
+    i18n: f => `<div class="edf-in">${lab(f)}<div class="wrapi">${i18nInput(f.k, f, D[f.k])}</div>${help(f)}</div>`,
     num: f => `<div class="edf-in">${lab(f)}<div class="wrapi num">${f.prefix ? `<span class="fx">${f.prefix}</span>` : ''}<input class="edi" type="number" inputmode="decimal" min="0" step="any" data-path="${f.k}" data-ty="num" value="${D[f.k] ?? ''}" placeholder="${f.ph || ''}">${f.suffix ? `<span class="fx">${f.suffix}</span>` : ''}</div>${help(f)}</div>`,
     stepper: f => `<div class="edf-in">${lab(f)}<div class="stepper"><button type="button" data-act="step" data-k="${f.k}" data-d="-1" aria-label="أقل">−</button><input class="edi" type="number" data-path="${f.k}" data-ty="num" min="${f.min || 0}" max="${f.max || 999}" value="${D[f.k] ?? ''}"><button type="button" data-act="step" data-k="${f.k}" data-d="1" aria-label="أكتر">+</button></div>${help(f)}</div>`,
     chips: f => `<div class="edf-in">${lab(f)}<div class="cchips">${f.opts.map(([v, l, ic]) => `<button type="button" class="cc ${D[f.k] === v ? 'on' : ''}" data-act="cat" data-k="${f.k}" data-v="${esc(v)}"><span>${ic || ''}</span>${esc(l)}</button>`).join('')}</div></div>`,
@@ -187,15 +188,16 @@ DS.itemEditor = (host, o) => {
       <div class="edc side-c"><h4>اكتمال الصفحة <b class="pc2" id="pct">${pct}%</b></h4><div class="pbar"><i id="pbar" style="width:${pct}%"></i></div><ul class="ck" id="ck">${r.map(([l, ok]) => `<li class="${ok ? 'ok' : ''}">${l}</li>`).join('')}</ul></div>
       <div id="sidex"></div>`;
   };
-  const refreshScore = () => { const { r, pct } = score(); $('#pct', host).textContent = pct + '%'; $('#pbar', host).style.width = pct + '%'; $('#ck', host).innerHTML = r.map(([l, ok]) => `<li class="${ok ? 'ok' : ''}">${l}</li>`).join(''); const dots = $('#langs', host); if (dots) dots.innerHTML = langBtns(); };
-  const langBtns = () => { const done = fillLangs(spec.nameKey); return LANGS.map(l => `<button type="button" class="lb ${l === cur ? 'on' : ''}" data-act="lang" data-l="${l}" title="${LN[l]}">${SH[l]}${done.includes(l) ? '<i></i>' : ''}</button>`).join(''); };
+  const refreshScore = () => { const { r, pct } = score(); $('#pct', host).textContent = pct + '%'; $('#pbar', host).style.width = pct + '%'; $('#ck', host).innerHTML = r.map(([l, ok]) => `<li class="${ok ? 'ok' : ''}">${l}</li>`).join(''); };
+  const langBtns = () => [['ar', 'العربية'], ['en', 'English']].map(([l, n]) => `<button type="button" class="lb ${l === cur ? 'on' : ''}" data-act="lang" data-l="${l}">${n}</button>`).join('');
 
   // ---------- page ----------
   host.innerHTML = `<div class="ed"><div class="edbar"><button type="button" class="ib" data-act="back" aria-label="رجوع">→</button><div class="ett"><h2>${isNew ? 'إضافة ' + spec.title + ' جديد' : 'تعديل: ' + esc(tr(item[spec.nameKey]) || item.id)}</h2><span class="edh" id="dirty">${isNew ? 'لسه ما اتحفظش' : 'كل التعديلات محفوظة'}</span></div>
-    <div class="lsw"><small>لغة المحتوى</small><div id="langs">${langBtns()}</div></div>
+    <div class="lsw"><small>لغة الإدخال</small><div id="langs">${langBtns()}</div></div>
     <button type="button" class="btn ghost" data-act="back">إلغاء</button><button type="button" class="btn" id="saveb" data-act="save">حفظ ${isNew ? 'ونشر' : 'التعديلات'}</button></div>
-    <div class="edgrid"><div class="edmain" id="edmain">${sections()}</div><aside class="edside" id="edside">${sideHtml()}</aside></div></div>`;
+    <div class="edgrid"><div class="edmain" id="edmain"><div class="edc tbanner"><span class="si">🌐</span><div><b>اكتبي بلغة واحدة بس</b><p>اختاري <b>العربية</b> أو <b>English</b> من فوق وأدخلي كل البيانات بيها. عند الحفظ بتتترجم تلقائيًا لباقي لغات الموقع: <span id="tl"></span>.</p></div></div>${sections()}</div><aside class="edside" id="edside">${sideHtml()}</aside></div></div>`;
   const root = $('.ed', host), main = $('#edmain', host);
+  const tlabel = () => { $('#tl', host).textContent = LANGS.filter(l => l !== cur).map(l => LN[l]).join('، '); }; tlabel();
   if (o.side) o.side($('#sidex', host), D);                                           // admin extras (owner, status…)
   if (o.extra) $('#sidex', host).insertAdjacentHTML('afterbegin', `<div class="edc side-c"><h4>إعدادات الإدارة</h4>${o.extra.map(x => x.kind === 'bool' ? `<label class="sw" style="margin-bottom:10px"><input type="checkbox" data-path="${x.k}" data-ty="bool" ${D[x.k] ? 'checked' : ''}><span>${esc(x.l)}</span></label>` : `<div class="edf-in" style="margin-bottom:10px"><label class="edl">${esc(x.l)}</label><div class="wrapi num"><input class="edi" type="number" step="any" min="0" data-path="${x.k}" data-ty="num" value="${D[x.k] ?? ''}"></div></div>`).join('')}</div>`);
 
@@ -221,10 +223,10 @@ DS.itemEditor = (host, o) => {
     if (/^rooms\.\d+\.(type|price|guests|size)/.test(path)) { const i = path.split('.')[1], rh = $(`.room:nth-child(${+i + 1}) .rh div`, root); if (rh) { const r = D.rooms[i]; rh.innerHTML = `<b>${esc(tr(r.type) || 'غرفة جديدة')}</b><small>${r.price ? Number(r.price).toLocaleString('en') + ' EGP / ليلة' : 'لم يُحدد السعر'}${r.guests ? ` · ${r.guests} ضيف` : ''}${r.size ? ` · ${esc(r.size)}` : ''}</small>`; } }
   });
   root.addEventListener('keydown', e => {
-    if (e.target.classList.contains('tin') && (e.key === 'Enter' || e.key === ',' || e.key === '،')) { e.preventDefault(); addTag(e.target.dataset.tk, e.target.value); }
+    if (e.target.classList.contains('tin') && (e.key === 'Enter' || e.key === ',' || e.key === '،')) { e.preventDefault(); const el = e.target, v = el.value; el.value = ''; addTag(el.dataset.tk, v); }
     if (e.key === 'Enter' && e.target.classList.contains('ur')) { e.preventDefault(); $('[data-act=gadd]', root).click(); }
   });
-  root.addEventListener('focusout', e => { if (e.target.classList.contains('tin') && e.target.value.trim()) addTag(e.target.dataset.tk, e.target.value); });
+  root.addEventListener('focusout', e => { const el = e.target; if (el.classList && el.classList.contains('tin') && el.value.trim()) { const v = el.value; el.value = ''; addTag(el.dataset.tk, v); } });
   function addTag(k, v) { v = String(v).trim().replace(/[,،]+$/, ''); if (!v) return; const ob = D[k] || (D[k] = {}); const a = ob[cur] || (ob[cur] = []); if (!a.includes(v)) a.push(v); markDirty(); redraw(k); $(`.edf[data-f="${k}"] .tin`, root)?.focus(); refreshScore(); }
   root.addEventListener('change', async e => {
     const t = e.target;
@@ -242,9 +244,45 @@ DS.itemEditor = (host, o) => {
     if (e.dataTransfer.files && e.dataTransfer.files.length) { upload([...e.dataTransfer.files].filter(f => /^image\//.test(f.type))); return; }
     const to = e.target.closest('.gi'); if (to != null && dragI != null) { const j = +to.dataset.i; D.gallery.splice(j, 0, D.gallery.splice(dragI, 1)[0]); dragI = null; markDirty(); redraw('gallery'); refreshScore(); }
   });
+  // ---------- auto-translation: every translatable value -> all site languages ----------
+  const filled = v => Array.isArray(v) ? v.some(x => String(x || '').trim()) : !!String(v || '').trim();
+  function holders(out) {
+    const hs = [];
+    for (const f of spec.sections.flatMap(x => x.f)) if (f.kind === 'i18n' || f.kind === 'tags') hs.push({ o: out, k: f.k, path: f.k, list: f.kind === 'tags' });
+    (out.itinerary || []).forEach((r, i) => ['title', 'description'].forEach(k => hs.push({ o: r, k, path: `itinerary.${i}.${k}`, list: false })));
+    (out.rooms || []).forEach((r, i) => ['type', 'beds', 'description'].forEach(k => hs.push({ o: r, k, path: `rooms.${i}.${k}`, list: false })));
+    return hs.filter(h => h.o[h.k] && typeof h.o[h.k] === 'object' && Object.values(h.o[h.k]).some(filled));
+  }
+  async function translateAll(out, progress) {
+    const jobs = {}, plan = [];                                      // jobs[lang] = Set(texts); plan = what to write back afterwards
+    for (const h of holders(out)) {
+      const v = h.o[h.k], orig = getP(item, h.path) || {};
+      const sl = filled(v[cur]) ? cur : ['ar', 'en', ...LANGS].find(l => filled(v[l]));                // the language this value was typed in
+      const src = h.list ? (v[sl] || []).map(x => String(x).trim()).filter(Boolean) : String(v[sl]).trim();
+      const same = JSON.stringify(orig[sl] ?? null) === JSON.stringify(h.list ? src : src);
+      for (const L of LANGS) {
+        if (L === sl) continue;
+        const have = h.list ? (v[L] || []).length === src.length && src.length : filled(v[L]);
+        if (have && same) continue;                                  // unchanged and already translated -> keep (saves quota, keeps manual fixes)
+        (jobs[L] ||= new Set()); (h.list ? src : [src]).forEach(t => jobs[L].add(t));
+        plan.push({ h, L, src, sl });
+      }
+      if (h.list) v[sl] = src;
+    }
+    const langs = Object.keys(jobs); if (!langs.length) return;
+    const maps = {}; let done = 0;
+    await Promise.all(langs.map(async L => {
+      const bySrc = {};                                              // a text can come from different source languages -> translate per source language
+      for (const t of jobs[L]) { const sl = plan.find(p => p.L === L && (p.h.list ? p.src.includes(t) : p.src === t)).sl; (bySrc[sl] ||= []).push(t); }
+      maps[L] = {};
+      for (const [sl, texts] of Object.entries(bySrc)) { const r = await DS.translate(sl, L, texts); texts.forEach((t, i) => { maps[L][t] = r[i]; }); }
+      progress(`${++done}/${langs.length}`);
+    }));
+    for (const { h, L, src } of plan) h.o[h.k][L] = h.list ? src.map(t => maps[L][t]) : maps[L][src];
+  }
   const A = {
     back: () => { if (dirty && !confirm('فيه تعديلات ما اتحفظتش. تخرجي من غير حفظ؟')) return; window.onbeforeunload = null; o.onBack(); },
-    lang: b => { cur = b.dataset.l; $$('#langs .lb', host).forEach(x => x.classList.toggle('on', x.dataset.l === cur)); redrawAll(); },
+    lang: b => { cur = b.dataset.l; $$('#langs .lb', host).forEach(x => x.classList.toggle('on', x.dataset.l === cur)); tlabel(); redrawAll(); },
     cat: b => { D[b.dataset.k] = b.dataset.v; markDirty(); redraw(b.dataset.k); refreshScore(); },
     step: b => { const k = b.dataset.k; D[k] = Math.max(1, (Number(D[k]) || 0) + Number(b.dataset.d)); markDirty(); redraw(k); refreshScore(); },
     pick: b => $('input[type=file]', b).click(),
@@ -280,7 +318,7 @@ DS.itemEditor = (host, o) => {
       for (const [k, v] of Object.entries(out)) if (v && typeof v === 'object' && !Array.isArray(v)) { for (const l of Object.keys(v)) if (Array.isArray(v[l]) ? !v[l].length : !String(v[l] ?? '').trim()) delete v[l]; }
       if (out.rooms) out.rooms.forEach(r => { for (const k of ['type', 'beds', 'description']) { r[k] = r[k] || {}; for (const l of Object.keys(r[k])) if (!String(r[k][l]).trim()) delete r[k][l]; } });
       const miss = [];
-      if (!hasText(out[spec.nameKey])) miss.push(['الاسم', 'basic']);
+      if (!hasText(out[spec.nameKey])) miss.push(['الاسم', 'basic']);   // (any language: translation fills the rest)
       if (!(out.price > 0)) miss.push(['السعر', null]);
       if (!out.image) miss.push(['صورة الغلاف', 'photos']);
       if (!hasText(out.description)) miss.push(['النبذة القصيرة', 'desc']);
@@ -288,8 +326,13 @@ DS.itemEditor = (host, o) => {
       if (o.type === 'transfer' && !(out.capacity > 0)) miss.push(['عدد الركاب', 'basic']);
       if (o.type === 'hotel' && (out.rooms || []).some(r => !hasText(r.type) || !(r.price > 0))) miss.push(['اسم وسعر كل غرفة', 'rooms']);
       if (miss.length) { DS.toast('ناقص: ' + miss.map(x => x[0]).join('، '), true); const t = miss.find(x => x[1]); (t ? $('#sec-' + t[1], host) : $('#edside', host))?.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
-      b.disabled = true; const old = b.textContent; b.textContent = 'جاري الحفظ…';
-      try { if (o.beforeSave) await o.beforeSave(out, host); await o.save(out); dirty = false; window.onbeforeunload = null; DS.toast('تم الحفظ ✓'); o.onDone ? o.onDone(out) : o.onBack(); }
+      b.disabled = true; const old = b.textContent;
+      try {
+        b.textContent = 'جاري الترجمة…';
+        try { await translateAll(out, (n) => { b.textContent = `جاري الترجمة… (${n})`; }); }
+        catch (e) { if (!confirm('الترجمة التلقائية فشلت: ' + (e.message || e) + '\n\nتحفظي النص بلغته الأصلية بس؟ (باقي اللغات هتفضل ناقصة)')) { b.disabled = false; b.textContent = old; return; } }
+        b.textContent = 'جاري الحفظ…';
+        if (o.beforeSave) await o.beforeSave(out, host); await o.save(out); dirty = false; window.onbeforeunload = null; DS.toast('تم الحفظ ✓'); o.onDone ? o.onDone(out) : o.onBack(); }
       catch (e) { DS.toast(e.message || 'تعذّر الحفظ', true); b.disabled = false; b.textContent = old; }
     },
   };

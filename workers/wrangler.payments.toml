@@ -10,7 +10,7 @@ name = "discover-sharm-payments"
 main = "payments-worker.js"
 compatibility_date = "2026-01-01"
 
-# Serve it on your own domain, e.g. pay.discover-sharm.com  (then put https://pay.discover-sharm.com in site.config.json → supabase.paymentsBase)
+# Serve it on your own domain, e.g. pay.discover-sharm.com  (then put https://pay.discover-sharm.com as the DS_PAYMENTS_BASE variable on the www + app Cloudflare Pages projects)
 # routes = [{ pattern = "pay.discover-sharm.com/*", zone_name = "discover-sharm.com" }]
 
 [vars]

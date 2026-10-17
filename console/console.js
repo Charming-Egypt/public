@@ -144,6 +144,20 @@ async function compressImage(file) {
   return out;
 }
 DS.LANGS = LANGS; DS.LN = LN; DS.compressImage = compressImage;   // shared with editor.js
+// Auto-translation (translate-worker.js). texts: string[] in `source` -> string[] in `target`, same order.
+DS.translate = async (source, target, texts) => {
+  const base = (window.DS_SUPABASE && window.DS_SUPABASE.translateBase) || '';
+  if (!base) throw new Error('الترجمة التلقائية غير مفعّلة (translateBase مش متضبط)');
+  const token = window.DS_ACCESS_TOKEN ? await window.DS_ACCESS_TOKEN() : TOKEN;
+  const out = [];
+  for (let i = 0; i < texts.length; i += 40) {
+    const r = await fetch(base + '/translate', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify({ source, target, texts: texts.slice(i, i + 40) }) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.error || 'فشلت الترجمة (' + r.status + ')');
+    out.push(...j.translations);
+  }
+  return out;
+};
 DS.safeSrc = u => /^(https?:\/\/|\/|data:image\/)/i.test(u || '') ? u : '';
 const drawThumbs = w => { $('.thumbs', w).innerHTML = w._v.map((u, i) => `<div class="th"><img src="${esc(DS.safeSrc(u))}" alt=""><button type="button" data-rmimg="${i}" title="حذف">×</button>${w.dataset.t === 'imgs' && i ? `<button type="button" class="st" data-first="${i}" title="اجعلها الرئيسية">★</button>` : ''}</div>`).join('') || '<span class="muted">مفيش صور</span>'; };
 const initImgs = root => root.querySelectorAll('.fld[data-vid]').forEach(w => { if (!w._v) { w._v = IMGV[w.dataset.vid] || []; drawThumbs(w); } });

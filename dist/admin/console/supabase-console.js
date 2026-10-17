@@ -14,6 +14,7 @@
     auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false, storageKey: 'ds_sb_session' },
   });
 
+  window.DS_ACCESS_TOKEN = async () => (await sb.auth.getSession()).data.session?.access_token || '';   // used by DS.translate (console.js)
   const KIND_OF_SCOPE = { trips: 'excursion', excursion: 'excursion', hotel: 'hotel', hotels: 'hotel', transfer: 'transfer', transfers: 'transfer', restaurant: 'restaurant', restaurants: 'restaurant' };   // owner pages pass CFG.key = trips | hotels | transfers
   const ROLE_OF_KIND = { hotel: 'hotels_owner', excursion: 'trips_owner', transfer: 'transfers_owner', restaurant: 'restaurants_owner' };
   const SITE_KIND = { destination: 'destination', article: 'article', review: 'testimonial', promoSlide: 'promo_slide' };

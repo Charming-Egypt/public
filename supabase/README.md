@@ -7,7 +7,7 @@
 
 1. أنشئي مشروع Supabase.
 2. **Authentication → Providers → Email**: سيبي **Confirm email = ON**. ده شرط أمان: صلاحية "مالك" بتتفعّل بس بعد تأكيد الإيميل.
-3. **Authentication → Providers → Google**: فعّليه وحطي Client ID / Secret. نفس الـ Client ID حطيه في `site.config.json`.
+3. **Authentication → Providers → Google**: فعّليه وحطي Client ID / Secret. نفس الـ Client ID حطيه كمتغير `DS_GOOGLE_CLIENT_ID` في مشروعي www و app على Cloudflare Pages.
 4. **Authentication → URL Configuration**: Site URL = `https://www.discover-sharm.com`, and add ALL THREE to **Redirect URLs**: `https://www.discover-sharm.com/**`, `https://app.discover-sharm.com/**`, `https://admin.discover-sharm.com/**` (confirmation e-mails return to the site the person signed up on; the admin password-reset link returns to the admin site).
 5. **Authentication → Rate limits + CAPTCHA**: فعّلي Turnstile/hCaptcha (حماية من الحسابات الوهمية).
 6. **Database → Extensions**: فعّلي `pg_cron` (التنظيف الليلي).
@@ -44,13 +44,14 @@ update public.profiles set role = 'super_admin' where email = 'you@example.com';
 
 ## 4) ربط الموقع
 
-في `site.config.json`:
+متغيرات بيئة على Cloudflare Pages (Settings ← Variables and Secrets) — مش في الكود:
 
-```json
-"supabase": { "url": "https://xxxx.supabase.co", "anonKey": "<anon public key>", "googleClientId": "…", "paymentsBase": "" }
-```
+| المتغير | الاسم |
+|---|---|
+| Project URL | `DS_SUPABASE_URL` |
+| anon public key | `DS_SUPABASE_ANON_KEY` |
 
-ثم `npm run build`. لو `url`/`anonKey` فاضيين الموقع بيكمّل على الـ API القديم (آمن للتجربة).
+ثم Redeploy. لو فاضيين الموقع بيتبني من غير Supabase (للتجربة بس).
 **ممنوع** تحطي `service_role key` في الموقع أو الريبو — بيتحط بس كسر في Worker الدفع.
 
 ## الأدوار

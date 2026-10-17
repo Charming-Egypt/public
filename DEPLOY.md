@@ -13,8 +13,24 @@
 3. **Worker الدفع**: `ALLOWED_ORIGINS` فيه www و app بالفعل. الأدمن مابيكلّمش الـ Worker، فمتضيفوش.
 4. `workers/wrangler.payments.toml` → `SITE_URL` (رابط الفاوتشر في الإيميل) سيبيه `https://app.discover-sharm.com` أو غيّريه لـ www — صفحة `/voucher/` موجودة على الاتنين ومابتتحوّلش.
 
+## المتغيرات على Cloudflare Pages (بدل site.config.json)
+Workers & Pages ← المشروع ← **Settings ← Variables and Secrets ← Add** (للـ Production، وللـ Preview لو بتستخدميه). بعد أي تغيير اعملي **Retry deployment** عشان الـ build ياخدها.
+
+| المتغير | www | app | admin | القيمة |
+|---|:-:|:-:|:-:|---|
+| `DS_SUPABASE_URL` | ✅ | ✅ | ✅ | Project URL من Supabase |
+| `DS_SUPABASE_ANON_KEY` | ✅ | ✅ | ✅ | anon public key |
+| `DS_GOOGLE_CLIENT_ID` | ✅ | ✅ | | Google OAuth Client ID |
+| `DS_PAYMENTS_BASE` | ✅ | ✅ | | رابط Worker الدفع (بدون `/` في الآخر) |
+| `DS_TRANSLATE_BASE` | | | ✅ | رابط Worker الترجمة |
+
+- **لازم الـ build يتعمل على Cloudflare** (Build command `npm run build:www` / `:app` / `:admin` والـ output `dist/www` / `dist/app` / `dist/admin`)، لأن المتغيرات بتتحقن وقت الـ build. فولدر `dist` مش في الـ repo (`.gitignore`) — ماترفعيهوش.
+- الـ build بيطبع تحذير أصفر لو متغير ناقص (مثلًا الدفع أو جوجل أو الترجمة)، وده في Build log بتاع Cloudflare.
+- محليًا (VS Code): انسخي `.env.example` لـ `.env` واملي القيم، وبعدين `npm run build`. الملف ده في `.gitignore` ومش بيترفع.
+- القيم دي (anon key وغيرها) بتبان في كود المتصفح لأي حد بالضرورة؛ أما `service_role` ومفاتيح Kashier فبتتحط **أسرار في الـ Workers بس** (`wrangler secret put`)، ماتحطيهاش هنا أبدًا.
+
 ## 3) الإعدادات والـ build
-`site.config.json` → `supabase`: `url` و `anonKey` (عامّين) و `googleClientId` و `paymentsBase` (= `https://pay.discover-sharm.com`).
+**مفيش أي مفتاح أو رابط بيتكتب في الكود.** كل الإعدادات متغيرات بيئة على Cloudflare Pages (القسم الجاي).
 > لازم Supabase يكون مفعّل: التلات مواقع على دومينات مختلفة، فالـ API القديم (`/api/*` على نفس الدومين) مابقاش متاح. (`apiBase` في الإعدادات لو لسه محتاجة Worker قديم على دومين تاني، للموقعين العامين بس.)
 
 ```bash
@@ -63,6 +79,26 @@ npx wrangler deploy -c wrangler.payments.toml
 ```
 1. **أسرع حاجة:** في آخر الأمر wrangler بيطبع الرابط، شكله `https://discover-sharm-payments.<حسابك>.workers.dev` ← ده هو `paymentsBase` (بدون `/` في الآخر).
 2. **الأحسن للإنتاج:** Cloudflare → Workers & Pages ← `discover-sharm-payments` ← Settings ← Domains & Routes ← Add ← Custom domain: `pay.discover-sharm.com`. وقتها `paymentsBase` = `https://pay.discover-sharm.com`.
-3. حطّيه في `site.config.json` ← `supabase.paymentsBase`، أو كـ Environment variable باسم `DS_PAYMENTS_BASE` في مشروعي Cloudflare Pages بتوع www و app (الأدمن مش محتاجه).
+3. حطّيه كمتغير `DS_PAYMENTS_BASE` في مشروعي Cloudflare Pages بتوع www و app (الأدمن مش محتاجه) — بدون `/` في الآخر.
 4. تأكدي إن `SUPABASE_URL` و `SUPABASE_ANON_KEY` و `KASHIER_*` متظبطين في `[vars]` بتاع `wrangler.payments.toml`، وإن `ALLOWED_ORIGINS` فيه www و app.
 5. اختبار: افتحي `<paymentsBase>/health` (أو أي endpoint عام موجود في الـ Worker) — لو رجّع رد يبقى شغال.
+
+
+---
+
+## الترجمة التلقائية (إدخال بلغة واحدة)
+الأونر/الأدمن بيكتب بالعربي **أو** الإنجليزي (بيختار من فوق في صفحة الإضافة)، وعند الحفظ بيتترجم كل النص (الأسماء، الأوصاف، المميزات، برنامج اليوم، الغرف…) لباقي اللغات: AR / EN / RU / DE / IT / TR، بما فيهم اللغة التانية من العربي/الإنجليزي.
+- التعديل بيترجم **اللي اتغيّر بس**؛ النص اللي ما اتغيّرش وترجمته موجودة بيتسايب زي ما هو.
+- لو الترجمة فشلت بيسأل: تحفظ بلغتك الأصلية بس؟ (والموقع بيرجع للعربي/الإنجليزي للغات الناقصة).
+
+### التفعيل (مرة واحدة) — Worker على Cloudflare Workers AI (من غير مفاتيح)
+```bash
+cd workers
+# افتحي wrangler.translate.toml وحطي SUPABASE_URL و SUPABASE_ANON_KEY (نفس بتوع الدفع)
+npx wrangler deploy -c wrangler.translate.toml
+```
+1. أول ما ينشر هيطبع رابط `https://discover-sharm-translate.<حسابك>.workers.dev` (أو اربطيه بدومين `translate.discover-sharm.com` من Cloudflare).
+2. حطيه كمتغير `DS_TRANSLATE_BASE` في مشروع الأدمن على Cloudflare Pages، ثم Redeploy.
+3. `ALLOWED_ORIGINS` في الـ toml لازم يبقى `https://admin.discover-sharm.com`.
+4. الـ Worker مقفول على الموظفين بس (سوبر أدمن أو أونر)، مش مترجم عام. اختبار: `npm run test:translate`.
+> Workers AI عنده حصة مجانية يومية؛ راجعي تسعير Cloudflare لو الاستخدام كبير. جودة الترجمة الآلية كويسة للأوصاف العامة لكن راجعي الأسماء المهمة بنفسك.

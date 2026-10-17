@@ -35,7 +35,7 @@
         if (!signedIn && !sessionStorage.getItem('ds_guest')) d.dataset.gate = 'auth';
       } catch (e) {}
     })();
-    window.DS_CONFIG = {"SHOW_HOTELS":true,"SHOW_EXCURSIONS":true,"SHOW_TRANSFERS":true,"SHOW_RESTAURANTS":true,"SHOW_DESTINATIONS":true};
+    window.DS_CONFIG = {"SHOW_HOTELS":false,"SHOW_EXCURSIONS":true,"SHOW_TRANSFERS":true,"SHOW_RESTAURANTS":true,"SHOW_DESTINATIONS":true};
   </script>
   <script>
     // Defined inline, first thing in <head>, on purpose: the logo <img> tags
@@ -47,7 +47,7 @@
     window.FALLBACK_LOGO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23fcd34d'/%3E%3Cstop offset='50%25' stop-color='%23fbbf24'/%3E%3Cstop offset='100%25' stop-color='%23d97706'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='120' height='120' rx='28' fill='url(%23g)'/%3E%3Ctext x='60' y='68' text-anchor='middle' font-family='Georgia,serif' font-weight='700' font-size='42' fill='%23000000'%3EDS%3C/text%3E%3C/svg%3E";
   </script>
 
-  <link rel="stylesheet" href="/style.css?v=a5d67a4b" />
+  <link rel="stylesheet" href="/style.css?v=02829950" />
   <link rel="stylesheet" href="/tailwind.css?v=cdce45ea" />
   <link rel="stylesheet" href="/site.css?v=8c613b67" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap" rel="stylesheet" />
@@ -387,7 +387,7 @@
       </a>
       <div class="flex items-center gap-8 text-sm font-semibold">
         <a href="/excursions/" data-nl data-page="excursions" class="nav-item drawer-link text-white" data-i18n="navExcursions">Excursions</a>
-        <a href="/hotels/" data-nl data-page="hotels" id="desktopHotelsLink" class="nav-item text-white hidden" data-i18n="navHotels">Hotels</a>
+        <button onclick="nav.go('hotels')" data-page="hotels" id="desktopHotelsLink" class="nav-item text-white hidden" data-i18n="navHotels">Hotels</button>
         <a href="/transfers/" data-nl data-page="transfers" class="nav-item drawer-link text-white" data-i18n="navTransfers">Transfers</a>
         <a href="/restaurants/" data-nl data-page="restaurants" class="nav-item drawer-link text-white" data-i18n="navRestaurants">Restaurants</a>
         <a href="/bookings/" data-nl data-page="bookings" class="nav-item text-white" data-i18n="myBookings">My Bookings</a>
@@ -449,10 +449,9 @@
 
   </div>
 
-  <script>window.DS_SUPABASE = {"url":"https://alvnmmjcnqqayxckqxts.supabase.co","anonKey":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsdm5tbWpjbnFxYXl4Y2txeHRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4MDEwMzAsImV4cCI6MjEwNzM3NzAzMH0._t_4lpxLG1f9zh6_J9pAhHLSJB7X5vpwU8m8BzqA6qA","googleClientId":"","paymentsBase":""};</script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+  <!-- Supabase not configured: running on the legacy API -->
   <script src="/data.js?v=9e7e8fa7"></script>
-  <script src="/supabase-api.js?v=da6e8c01"></script>
+  
   <script src="/booking.js?v=9e0ac044"></script>
   <script src="/frontend.js?v=4b39a613"></script>
   <script src="/router.js?v=3b74bef0"></script>
