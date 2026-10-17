@@ -1,0 +1,65 @@
+    <div id="hotelsPage" class="page">
+      <div class="min-h-screen">
+        <div class="listing-hero hidden lg:block">
+          <div class="listing-hero-inner">
+            <p class="listing-eyebrow" data-i18n="stayEyebrow">— WHERE TO STAY</p>
+            <h1 class="listing-title" data-i18n="hotelsTitle">Hotels</h1>
+            <p class="listing-count"><span id="hotelsCount">0</span> hotels along the Red Sea</p>
+          </div>
+        </div>
+        <div class="px-5 pt-6 pb-4 header-light">
+          <div class="flex items-center gap-3 mb-2 lg:hidden">
+            <button type="button" aria-label="Back" data-i18n-aria="ariaBack" data-back onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+            <div><p class="section-subtitle" data-i18n="stayEyebrow">— WHERE TO STAY</p><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)" data-i18n="hotelsTitle">Hotels</h1></div>
+          </div>
+          <div class="relative mb-3">
+            <i class="fa-solid fa-magnifying-glass absolute top-1/2 -translate-y-1/2" aria-hidden="true" style="inset-inline-start:14px; color:var(--text-secondary)"></i>
+            <input id="hotelSearchInput" type="text" oninput="hotels.onSearchInput(this.value)" data-i18n-placeholder="searchHotels" placeholder="Search Hotels" class="w-full field-box rounded-xl text-sm py-3" style="padding-inline-start:40px; padding-inline-end:12px; color:var(--text-primary)">
+          </div>
+          <div class="horizontal-scroll !px-0 listing-filter-row">
+            <button onclick="search.filterCategory('all')" data-cat="all" class="filter-chip hotel-chip active flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-layer-group" aria-hidden="true"></i> <span data-i18n="all">All</span></button>
+            <button onclick="search.filterCategory('budget')" data-cat="budget" class="filter-chip hotel-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-coins" aria-hidden="true"></i> <span data-i18n="budget">Budget</span></button>
+            <button onclick="search.filterCategory('luxury')" data-cat="luxury" class="filter-chip hotel-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-gem" aria-hidden="true"></i> <span data-i18n="luxury">Luxury</span></button>
+            <button onclick="search.filterCategory('family')" data-cat="family" class="filter-chip hotel-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-people-roof" aria-hidden="true"></i> <span data-i18n="family">Family</span></button>
+            <button onclick="search.filterCategory('resort')" data-cat="resort" class="filter-chip hotel-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-umbrella-beach" aria-hidden="true"></i> <span data-i18n="resort">Resort</span></button>
+            <button onclick="search.filterCategory('beachfront')" data-cat="beachfront" class="filter-chip hotel-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-water" aria-hidden="true"></i> <span data-i18n="beachfront">Beachfront</span></button>
+          </div>
+          <div class="flex items-center gap-2 mt-3 flex-wrap">
+            <select id="hotelSortSelect" onchange="hotels.onSortChange(this.value)" class="field-box rounded-xl text-xs py-2 px-3" style="color:var(--text-primary)">
+              <option value="popular" data-i18n="sortPopular">Popular</option>
+              <option value="priceLow" data-i18n="sortPriceLowHigh">Price: Low to High</option>
+              <option value="priceHigh" data-i18n="sortPriceHighLow">Price: High to Low</option>
+              <option value="rating" data-i18n="sortTopRated">Top Rated</option>
+            </select>
+            <input id="hotelMinPriceInput" type="number" min="0" oninput="hotels.onPriceChange(this.value, document.getElementById('hotelMaxPriceInput').value)" data-i18n-placeholder="minPriceLabel" placeholder="Min Price" class="field-box rounded-xl text-xs py-2 px-3 w-24" style="color:var(--text-primary)">
+            <input id="hotelMaxPriceInput" type="number" min="0" oninput="hotels.onPriceChange(document.getElementById('hotelMinPriceInput').value, this.value)" data-i18n-placeholder="maxPriceLabel" placeholder="Max Price" class="field-box rounded-xl text-xs py-2 px-3 w-24" style="color:var(--text-primary)">
+            <select id="hotelMinRatingSelect" onchange="hotels.onMinRatingChange(this.value)" class="field-box rounded-xl text-xs py-2 px-3" style="color:var(--text-primary)">
+              <option value="0" data-i18n="anyRatingLabel">Any</option>
+              <option value="4">4.0+ ★</option>
+              <option value="4.5">4.5+ ★</option>
+            </select>
+            <button onclick="hotels.clearFilters()" class="text-xs font-semibold px-3 py-2 rounded-xl" style="color:var(--brand-violet)"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> <span data-i18n="clearFiltersBtn">Clear Filters</span></button>
+          </div>
+        </div>
+        <div class="px-5 pt-4 pb-28" id="hotelsList"></div>
+      </div>
+    </div>
+
+    <!-- Account Dashboard Sidebar (desktop only — persists across Bookings,
+         Profile, Settings and Notifications so those feel like one section
+         instead of four separate screens). Shown/positioned via CSS when
+         body has the "account-section" class, toggled in nav.go(). -->
+    <aside id="accountSidebar">
+      <div class="account-sidebar-user">
+        <div class="account-sidebar-avatar" id="sidebarProfileAvatar"></div>
+        <p class="account-sidebar-name" id="sidebarProfileName" data-i18n="guest">Guest</p>
+        <p class="account-sidebar-email" id="sidebarProfileEmail"></p>
+      </div>
+      <nav class="account-sidebar-nav">
+        <button onclick="nav.go('profile')" data-page="profile" class="account-sidebar-link"><i class="fa-solid fa-user w-5 text-center" aria-hidden="true"></i><span data-i18n="profileTitle">Profile</span></button>
+        <button onclick="nav.go('bookings')" data-page="bookings" class="account-sidebar-link"><i class="fa-solid fa-ticket w-5 text-center" aria-hidden="true"></i><span data-i18n="myBookings">My Bookings</span></button>
+        <button onclick="nav.go('notifications')" data-page="notifications" class="account-sidebar-link"><i class="fa-regular fa-bell w-5 text-center" aria-hidden="true"></i><span data-i18n="notifications">Notifications</span></button>
+        <button onclick="nav.go('settings')" data-page="settings" class="account-sidebar-link"><i class="fa-solid fa-gear w-5 text-center" aria-hidden="true"></i><span data-i18n="settingsTitle">Settings</span></button>
+      </nav>
+      <button onclick="auth.logout()" class="account-sidebar-logout"><i class="fa-solid fa-right-from-bracket w-5 text-center" aria-hidden="true"></i><span data-i18n="logout">Logout</span></button>
+    </aside>
