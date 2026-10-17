@@ -1,0 +1,25 @@
+[
+  {
+    "id": "t1",
+    "vehicleType": { "en": "Tourist H1", "ar": "سيارة سياحية H1", "ru": "Туристический H1", "de": "Touristen-H1", "it": "H1 Turistico", "tr": "Turistik H1" },
+    "capacity": 7,
+    "price": 950,
+    "image": "https://blogger.googleusercontent.com/img/a/AVvXsEiUwTLBdqMxpuUPy_kCFuLE3Fk7c_HFqjhvIqC9dwrUB5UZA2UV9RjKQmbJQrbWthwYbo0aanXcddeCBEHRDbmu3iwXPduKjT5rmHUaMNxYMuRsE8ffpGhXpuqYaaTyxxMDuM_cSIilU-IH0vPJuTWYEjKR_rUU-t_lw2hbHbyDkU_76JsxdfhBtItu2DGp=s1446",
+    "description": {
+      "en": "Air-conditioned tourist-class Hyundai H1 for airport pickup or drop-off — comfortable for up to 7 passengers with luggage.",
+      "ar": "سيارة هيونداي H1 سياحية مكيّفة لاستقبال أو توصيل المطار — تتسع لـ٧ ركاب مع الأمتعة براحة.",
+      "ru": "Кондиционируемый туристический Hyundai H1 для встречи или трансфера в аэропорт — комфортно для 7 пассажиров с багажом.",
+      "de": "Klimatisierter Touristen-Hyundai H1 für Flughafenabholung oder -transfer — komfortabel für bis zu 7 Passagiere mit Gepäck.",
+      "it": "Hyundai H1 turistico climatizzato per ritiro o trasferimento in aeroporto — comodo per 7 passeggeri con bagagli.",
+      "tr": "Havalimanı karşılama veya bırakma için klimalı turistik Hyundai H1 — bagajlı 7 yolcu için konforlu."
+    },
+    "features": {
+      "en": ["Tourist-class Hyundai H1", "Air-conditioned", "Meet & greet at arrivals", "Free waiting time", "Bottled water", "Professional licensed driver"],
+      "ar": ["سيارة هيونداي H1 سياحية", "مكيّفة الهواء", "استقبال عند الوصول", "وقت انتظار مجاني", "مياه معبأة", "سائق محترف مرخّص"],
+      "ru": ["Туристический Hyundai H1", "С кондиционером", "Встреча в зале прилета", "Бесплатное время ожидания", "Питьевая вода", "Профессиональный лицензированный водитель"],
+      "de": ["Touristen-Hyundai H1", "Klimatisiert", "Empfang bei Ankunft", "Kostenlose Wartezeit", "Wasserflasche", "Professioneller lizenzierter Fahrer"],
+      "it": ["Hyundai H1 turistico", "Climatizzato", "Accoglienza all'arrivo", "Tempo di attesa gratuito", "Acqua in bottiglia", "Autista professionista con licenza"],
+      "tr": ["Turistik Hyundai H1", "Klimalı", "Varışta karşılama", "Ücretsiz bekleme süresi", "Şişe su", "Profesyonel lisanslı şoför"]
+    }
+  }
+]

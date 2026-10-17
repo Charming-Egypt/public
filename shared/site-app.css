@@ -1,0 +1,11 @@
+/* app.discover-sharm.com — phone + tablet site.
+   The build switches OFF every "desktop" (min-width:1024px+) rule in style.css / tailwind.css for this site,
+   so tablets in landscape keep the app layout (bottom tab bar, sticky app header) instead of the desktop one.
+   On wide tablets the app column is centred so it does not stretch edge to edge. */
+@media (min-width: 900px) {
+  [data-site="app"] #mainApp { max-width: 860px; margin-inline: auto; }
+  [data-site="app"] .bottom-nav {
+    left: 50% !important; right: auto !important; width: 100% !important; max-width: 860px;
+    transform: translateX(-50%);
+  }
+}
