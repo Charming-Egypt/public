@@ -20,9 +20,9 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{-webkit-text-size-adjust:100%}
 body{font-family:'Cairo','Inter',system-ui,sans-serif;color:var(--ink);font-size:14px;line-height:1.55;min-height:100dvh;transition:background .25s}
-[data-theme=dark] body{ background-image: url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfwUHs8YDzAARwFpFeSh7ICcI1xSj-U25UJal06rSvIA&s=10);
+[data-theme=dark] body{    background-image: url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfwUHs8YDzAARwFpFeSh7ICcI1xSj-U25UJal06rSvIA&s=10);
     background-repeat: no-repeat;
-    background-size: cover; background-attachment:fixed}
+    background-size: cover;background-attachment:fixed}
 button,input,select,textarea{font:inherit;color:inherit}.hide{display:none!important}
 svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
 
