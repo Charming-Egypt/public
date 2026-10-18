@@ -52,7 +52,7 @@ aside.side{position:sticky;top:20px;height:calc(100dvh - 40px);display:flex;flex
 .brand b,.brand small{display:none}
 #login .brand{justify-content:flex-start;gap:11px}
 #login .brand b{display:block;color:#fff;font-size:16px;line-height:1.2}#login .brand b+small{display:none}
-nav#nav{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 8px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.28) transparent;-webkit-mask-image:linear-gradient(transparent 0,#000 14px,#000 calc(100% - 14px),transparent 100%);mask-image:linear-gradient(transparent 0,#000 14px,#000 calc(100% - 14px),transparent 100%)}
+nav#nav{min-height:0;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 8px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.28) transparent;-webkit-mask-image:linear-gradient(transparent 0,#000 14px,#000 calc(100% - 14px),transparent 100%);mask-image:linear-gradient(transparent 0,#000 14px,#000 calc(100% - 14px),transparent 100%)}
 nav#nav::-webkit-scrollbar{width:5px}nav#nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.28);border-radius:5px}
 #tip{position:fixed;z-index:80;padding:6px 12px;border-radius:10px;font-size:12px;font-weight:700;background:rgba(20,16,14,.96);color:#fff;border:1px solid rgba(255,255,255,.14);white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .12s}#tip.on{opacity:1}
 [data-theme=dark] nav#nav{background:var(--glass);border:1px solid var(--glass-b);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-radius:28px}
