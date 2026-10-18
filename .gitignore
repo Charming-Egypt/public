@@ -1,4 +1,0 @@
-.env
-node_modules/
-supabase/.temp/
-.DS_Store
