@@ -1,5 +1,5 @@
 .env
 node_modules/
-dist/
+
 supabase/.temp/
 .DS_Store
