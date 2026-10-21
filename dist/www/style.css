@@ -4812,7 +4812,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   /* ---------- whole-site desktop look ---------- */
   #sideDrawer:not(.open) { box-shadow: none !important; }
   :root:not([data-theme="dark"]) { --bg-body: #f8f6f2; --bg-field: #f1ede6; --border-card: #e9e3da; --border-field: #e2dbd0; }
-  html[data-theme] .listing-hero { background: transparent !important; border: 0; padding: 108px 0 0; }
+  html[data-theme] .listing-hero { background: transparent !important; border: 0; padding: 15 0 0; }
   .listing-hero-inner { max-width: none; padding: 0 var(--dx-gutter); }
   .listing-eyebrow { color: var(--dx-muted); letter-spacing: .34em; font-size: 11px; }
   .listing-title { font-family: var(--dx-serif); font-weight: 500; font-size: clamp(2.2rem, 3.2vw, 3rem); line-height: 1.08; letter-spacing: -.02em; margin-bottom: 6px; }
