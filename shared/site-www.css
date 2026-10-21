@@ -1,2 +1,297 @@
 /* www.discover-sharm.com — desktop site: the bottom tab bar belongs to the app site only. */
 [data-site="www"] .bottom-nav { display: none !important; }
+
+@media (min-width: 1024px) {
+  [data-site="www"] #desktopNav {
+    height: 88px;
+    padding-inline: clamp(32px, 5vw, 80px);
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+
+  [data-site="www"] #desktopNav > div:first-child {
+    gap: clamp(24px, 3vw, 48px);
+  }
+
+  [data-site="www"] #desktopNav > div:first-child > button:first-child {
+    display: none;
+  }
+
+  [data-site="www"] #desktopNav .desktop-nav-logo,
+  [data-site="www"] #desktopNav .icon-btn {
+    filter: none;
+  }
+
+  [data-site="www"] #desktopNav > div:first-child > div:last-child {
+    gap: 4px;
+    padding: 7px;
+    border: 1px solid rgba(255, 255, 255, .65);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .76);
+    box-shadow: 0 12px 40px rgba(26, 39, 43, .12);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+  }
+
+  [data-site="www"] #desktopNav > div:first-child > div:last-child .nav-item {
+    padding: 11px 17px;
+    border-radius: 999px;
+    color: #283a3d !important;
+    transition: background .2s ease, color .2s ease;
+  }
+
+  [data-site="www"] #desktopNav > div:first-child > div:last-child .nav-item:hover,
+  [data-site="www"] #desktopNav > div:first-child > div:last-child .nav-item.active {
+    background: #173b49;
+    color: #fff !important;
+  }
+
+  [data-site="www"] #desktopNav.scrolled {
+    background: rgba(248, 247, 243, .9);
+    border-bottom: 1px solid rgba(34, 48, 48, .08);
+    box-shadow: 0 8px 30px rgba(26, 39, 43, .08);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+  }
+
+  [data-site="www"] #desktopNav .icon-btn {
+    color: #23383c !important;
+    background: rgba(255, 255, 255, .78);
+    border: 1px solid rgba(255, 255, 255, .65);
+    border-radius: 50%;
+  }
+
+  [data-site="www"] #desktopNav.scrolled .icon-btn {
+    background: #fff;
+  }
+
+  [data-site="www"] #heroSection {
+    height: clamp(680px, 90vh, 830px);
+    min-height: 680px;
+    border-radius: 0 0 38px 38px;
+    isolation: isolate;
+  }
+
+  [data-site="www"] #heroSection .hero-bg-img {
+    object-position: center 56%;
+  }
+
+  [data-site="www"] #heroSection .hero-overlay {
+    background:
+      linear-gradient(90deg, rgba(250, 247, 239, .94) 0%, rgba(250, 247, 239, .8) 34%, rgba(250, 247, 239, .18) 72%, rgba(18, 35, 40, .08) 100%),
+      linear-gradient(0deg, var(--bg-body) 0%, transparent 30%);
+  }
+
+  [data-site="www"] #heroSection .hero-content {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    padding: 145px clamp(36px, 7vw, 112px) 48px !important;
+    color: #1c2b2d;
+  }
+
+  [data-site="www"] #heroSection .hero-content > .px-5.pt-6.pb-4 {
+    display: none;
+  }
+
+  [data-site="www"] #heroSection .hero-content > .px-6.pt-6 {
+    width: min(100%, 760px);
+    margin-block: auto 30px;
+    margin-inline: 0 auto;
+    padding: 0 !important;
+    text-align: start;
+  }
+
+  [data-site="www"] #heroEyebrowText {
+    color: #8a622b !important;
+    letter-spacing: .3em;
+    font-size: .72rem;
+  }
+
+  [data-site="www"] #heroTitleText {
+    color: #182729 !important;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(3.8rem, 6.2vw, 6.4rem);
+    font-weight: 500;
+    letter-spacing: -.045em;
+    line-height: .98;
+    text-shadow: none;
+  }
+
+  [data-site="www"] #heroTitleText span {
+    color: #896334 !important;
+    background: none;
+    -webkit-text-fill-color: currentColor;
+  }
+
+  [data-site="www"] #heroSubtitleText {
+    max-width: 530px;
+    margin-inline: 0 auto;
+    color: #314144 !important;
+    font-size: 1.05rem;
+    line-height: 1.7;
+  }
+
+  [data-site="www"] #searchCard {
+    width: min(100%, 1180px);
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  [data-site="www"] #searchTabsContainer {
+    justify-content: flex-start;
+    gap: 8px;
+    margin: 0 0 10px 18px;
+  }
+
+  [data-site="www"] .ds-search-tab {
+    padding: 10px 17px;
+    border-color: rgba(255, 255, 255, .7);
+    background: rgba(255, 255, 255, .76);
+    color: #344549;
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+  }
+
+  [data-site="www"] .ds-search-tab.active {
+    border-color: #173b49;
+    background: #173b49;
+    box-shadow: 0 8px 22px rgba(23, 59, 73, .22);
+    color: #fff;
+  }
+
+  [data-site="www"] .ds-search-card {
+    overflow: visible;
+    border: 1px solid rgba(255, 255, 255, .8) !important;
+    border-radius: 30px !important;
+    background: rgba(255, 255, 255, .94) !important;
+    box-shadow: 0 24px 70px rgba(24, 39, 42, .2) !important;
+    color: #26383a;
+    -webkit-backdrop-filter: blur(22px);
+    backdrop-filter: blur(22px);
+  }
+
+  [data-site="www"] .ds-form[style*="display: block"] {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 190px;
+    align-items: center;
+  }
+
+  [data-site="www"] .ds-cells {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  [data-site="www"] .ds-cell,
+  [data-site="www"] .ds-cell-wrap {
+    min-height: 82px;
+    border-color: rgba(35, 56, 60, .12) !important;
+  }
+
+  [data-site="www"] .ds-cell:not(:last-child),
+  [data-site="www"] .ds-cell-wrap:not(:last-child) {
+    border-inline-end: 1px solid rgba(35, 56, 60, .12) !important;
+  }
+
+  [data-site="www"] .ds-label {
+    color: #798588;
+  }
+
+  [data-site="www"] .ds-value {
+    color: #243638 !important;
+  }
+
+  [data-site="www"] .ds-submit {
+    width: auto;
+    min-height: 58px;
+    margin: 10px;
+    border-radius: 999px !important;
+    background: #173b49;
+    box-shadow: none !important;
+    font-size: .95rem;
+  }
+
+  [data-site="www"] #homePage > [class~="relative"][class~="z-20"][class~="pt-6"] {
+    padding-top: 0;
+  }
+
+  [data-site="www"] #homePage > [class~="relative"][class~="z-20"][class~="pt-6"] > div:has(.category-tile-grid) {
+    position: relative;
+    z-index: 22;
+    max-width: 1240px;
+    margin: -44px auto 48px;
+    padding-inline: 28px;
+  }
+
+  [data-site="www"] #homePage > [class~="relative"][class~="z-20"][class~="pt-6"] > div:has(.category-tile-grid) .category-tile-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    padding: 16px;
+    border: 1px solid rgba(255, 255, 255, .85);
+    border-radius: 28px;
+    background: rgba(255, 255, 255, .94);
+    box-shadow: 0 18px 55px rgba(24, 39, 42, .12);
+  }
+
+  [data-site="www"] #homePage > [class~="relative"][class~="z-20"][class~="pt-6"] > div:has(.category-tile-grid) .category-tile {
+    min-width: 0;
+    padding: 14px 18px;
+    border: 0;
+    border-radius: 18px;
+    background: transparent;
+  }
+
+  [data-site="www"] #homePage > [class~="relative"][class~="z-20"][class~="pt-6"] > div:has(.category-tile-grid) .category-tile:hover {
+    background: #f6f3ec;
+    box-shadow: none;
+  }
+
+  [data-site="www"] #homePage > [class~="relative"][class~="z-20"][class~="pt-6"] > div:has(.category-tile-grid) .category-tile-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #f2eadb;
+    color: #765629;
+    font-size: 18px;
+  }
+
+  [data-site="www"] #homePage > [class~="relative"][class~="z-20"][class~="pt-6"] > div:has(#destinationsRow) {
+    max-width: 1320px;
+    margin-inline: auto;
+    padding-inline: 36px;
+  }
+
+  [data-site="www"] #homePage > [class~="relative"][class~="z-20"][class~="pt-6"] > div:has(#destinationsRow) .horizontal-scroll {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    overflow: visible;
+  }
+
+  [data-site="www"] #homePage > [class~="relative"][class~="z-20"][class~="pt-6"] > div:has(#destinationsRow) .destination-card {
+    width: auto;
+    height: 250px;
+    border-radius: 24px;
+    box-shadow: 0 18px 44px rgba(24, 39, 42, .14);
+  }
+
+  [data-site="www"] #homePage > [class~="relative"][class~="z-20"][class~="pt-6"] > div:has(#destinationsRow) .destination-card img {
+    transition: transform .6s cubic-bezier(.16, 1, .3, 1);
+  }
+
+  [data-site="www"] #homePage > [class~="relative"][class~="z-20"][class~="pt-6"] > div:has(#destinationsRow) .destination-card:hover img {
+    transform: scale(1.05);
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1200px) {
+  [data-site="www"] #desktopNav > div:first-child > div:last-child .nav-item {
+    padding-inline: 11px;
+    font-size: .82rem;
+  }
+
+  [data-site="www"] #desktopNav > div:first-child {
+    gap: 20px;
+  }
+}
