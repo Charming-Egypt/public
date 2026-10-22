@@ -1,7 +1,7 @@
 {
   "id": "/",
   "name": "Discover Sharm",
-  "short_name": "Discover Sharm",
+  "short_name": "Discover",
   "lang": "en",
   "description": "Handpicked excursions, private transfers and unforgettable experiences in Sharm El-Sheikh. Book in minutes.",
   "start_url": "/?utm_source=pwa",
