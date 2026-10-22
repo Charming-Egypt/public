@@ -1,0 +1,5 @@
+# Staff consoles moved to their own site (Cloudflare Pages / Netlify syntax)
+/admin      https://admin.discover-sharm.com/        301
+/admin/*    https://admin.discover-sharm.com/        301
+/owner/*    https://admin.discover-sharm.com/owner/:splat  301
+/console/*  https://admin.discover-sharm.com/        301
