@@ -15,6 +15,18 @@
   });
 
   window.DS_ACCESS_TOKEN = async () => (await sb.auth.getSession()).data.session?.access_token || '';   // used by DS.translate (console.js)
+  // Items (hotels, excursions, transfers, restaurants, journal) are saved as JSON files in the private GitHub data repo by the content Worker
+  // (cfg.contentBase). The Worker re-checks who is calling; the browser never sees a GitHub token. Without contentBase: the old database path below.
+  const CB = String(cfg.contentBase || '').replace(/\/+$/, '');
+  async function content(method, path, body) {
+    const tok = (await sb.auth.getSession()).data.session?.access_token;
+    if (!tok) throw Object.assign(new Error('الجلسة انتهت — سجّل دخول تاني'), { status: 401 });
+    let r; try { r = await fetch(CB + path, { method, headers: { Authorization: 'Bearer ' + tok, 'Content-Type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body) }); }
+    catch { throw Object.assign(new Error('تعذّر الوصول لخدمة المحتوى — جرّب تاني'), { status: 503 }); }
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw Object.assign(new Error(AR[j.code] || j.error || 'فشل الطلب'), { status: r.status });
+    return j;
+  }
   const KIND_OF_SCOPE = { trips: 'excursion', excursion: 'excursion', hotel: 'hotel', hotels: 'hotel', transfer: 'transfer', transfers: 'transfer', restaurant: 'restaurant', restaurants: 'restaurant' };   // owner pages pass CFG.key = trips | hotels | transfers
   const ROLE_OF_KIND = { hotel: 'hotels_owner', excursion: 'trips_owner', transfer: 'transfers_owner', restaurant: 'restaurants_owner' };
   const SITE_KIND = { destination: 'destination', article: 'article', review: 'testimonial', promoSlide: 'promo_slide' };
@@ -123,6 +135,7 @@
       return { uid: who.id, name: who.display_name, email: who.email, role: ROLE_OF_KIND[kind], maxItems: who.max_items ?? (kind === 'hotel' ? 2 : null), itemCount: count || 0, hasReviews: true };
     }
 
+    if (a === 'upload' && method === 'POST' && CB) return content('POST', '/upload', { image: body.image, cat: window.DS_UPLOAD_CAT || kind || 'excursion' });
     if (a === 'upload' && method === 'POST') {
       const blob = await (await fetch(body.image)).blob();
       const key = `${who.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${blob.type === 'image/png' ? 'png' : blob.type === 'image/webp' ? 'webp' : 'jpg'}`;
@@ -182,6 +195,13 @@
         if (method === 'DELETE') { await run(sb.from('restaurant_branches').delete().eq('id', bid)); return { success: true }; }
       }
       // ===== owner items =====
+      if (a === 'items' && CB) {
+        if (!b && method === 'GET') return content('GET', '/items/' + kind);
+        if (!b && method === 'POST') return content('POST', '/items/' + kind, body);
+        const cid = encodeURIComponent(decodeURIComponent(b));
+        if (method === 'PUT') return content('PUT', '/items/' + kind + '/' + cid, body);
+        if (method === 'DELETE') return content('DELETE', '/items/' + kind + '/' + cid);
+      }
       if (a === 'items') {
         if (!b && method === 'GET') {
           const rows = await run(sb.from('properties').select('id, status, data, rating_avg, rating_count').eq('owner_id', who.id).eq('kind', kind).neq('status', 'archived').order('created_at', { ascending: false }));
@@ -254,6 +274,12 @@
 
       if (a === 'items') {
         const type = b, id = c ? decodeURIComponent(c) : null;
+        if (CB && (PROPERTY_TYPES.includes(type) || type === 'journal')) {
+          const cid = id ? encodeURIComponent(id) : '';
+          if (!id) return method === 'GET' ? content('GET', '/items/' + type) : content('POST', '/items/' + type, body);
+          if (d === 'publish' || d === 'unpublish') return content('POST', '/items/' + type + '/' + cid + '/' + d, body);
+          return content(method, '/items/' + type + '/' + cid, method === 'PUT' ? body : undefined);
+        }
         if (PROPERTY_TYPES.includes(type)) {
           if (!id && method === 'GET') {
             const rows = await run(sb.from('properties').select('id, status, owner_id, data, rating_avg, rating_count').eq('kind', type).order('sort_order').order('created_at').limit(1000));

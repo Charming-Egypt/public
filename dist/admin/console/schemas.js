@@ -23,6 +23,7 @@ A.destination = [L('name', 'اسم الوجهة'), L('tagline', 'الشعار'),
 A.restaurant = [L('name', 'اسم المطعم'), L('cuisine', 'نوع المطبخ'), N('priceLevel', 'مستوى السعر (1-4)'), N('rating', 'التقييم'), N('reviews', 'عدد التقييمات'), { k: 'image', l: 'الصورة الرئيسية', t: 'img' }, { k: 'images', l: 'معرض الصور', t: 'imgs' },
   L('description', 'وصف قصير', true), L('fullDescription', 'الوصف الكامل', true), L('location', 'المنطقة'), T('address_full', 'العنوان بالتفصيل'), L('openHours', 'مواعيد العمل'), T('phone', 'التليفون'), coords, T('google_maps_url', 'رابط جوجل ماب')];
 A.article = [L('title', 'عنوان المقال'), L('excerpt', 'مقتطف', true), L('content', 'المحتوى', true), { k: 'image', l: 'الصورة', t: 'img' }, T('author', 'الكاتب'), N('readTimeMinutes', 'وقت القراءة (دقيقة)')];
+A.journal = A.article;   // journal posts are items in the GitHub data repo (api/journal/{id}.json) with the same fields as the old articles
 A.review = [T('name', 'اسم صاحب التقييم'), N('rating', 'التقييم (1-5)'), T('section', 'القسم', ['hotel', 'excursion', 'restaurant']), L('itemName', 'اسم العنصر'), { k: 'image', l: 'صورة', t: 'img' }, L('text', 'نص التقييم', true)];
 // Homepage promo slider — the "limited spots / star of the day / trip stars" badges
 // are fixed UI chrome (translated once, shown on every slide), not per-slide fields.

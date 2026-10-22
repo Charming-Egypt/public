@@ -4,10 +4,10 @@ const { esc, tr, money, dt, badge, PAY, table, modal, form, collect, api, toast,
 const ROLE_L = { super_admin: 'سوبر أدمن', trips_owner: 'مكتب رحلات', hotels_owner: 'مالك فنادق', restaurants_owner: 'مالك مطعم / كافيه', transfers_owner: 'ترانسفير' };
 const ROLE_OPTS = Object.entries(ROLE_L).filter(([k]) => k !== 'super_admin');
 const STATIC_TYPES = ['destination', 'article', 'review', 'promoSlide'];   // now plain JSON in the repo (shared/data/*.json), no longer managed here
-const TYPES = { hotel: 'الفنادق', excursion: 'الرحلات', transfer: 'الترانسفير', destination: 'الوجهات', restaurant: 'المطاعم', article: 'المقالات', review: 'تقييمات الموقع', promoSlide: 'شرائح الصفحة الرئيسية' };
+const TYPES = { hotel: 'الفنادق', excursion: 'الرحلات', transfer: 'الترانسفير', destination: 'الوجهات', restaurant: 'المطاعم', article: 'المقالات', review: 'تقييمات الموقع', promoSlide: 'شرائح الصفحة الرئيسية', journal: 'التدوينات' };
 const OWNER_ROLE = { hotel: 'hotels_owner', excursion: 'trips_owner', transfer: 'transfers_owner', restaurant: 'restaurants_owner' };
 const STL = { draft: 'مسودة', pending_review: 'بانتظار المراجعة', published: 'منشور', archived: 'مؤرشف' };
-const PROP_TYPES = ['hotel', 'excursion', 'transfer', 'restaurant'];
+const PROP_TYPES = ['hotel', 'excursion', 'transfer', 'restaurant', 'journal'];   // items stored as JSON files in the private GitHub data repo (via the content Worker)
 const nameOf = i => tr(i.name || i.title || i.vehicleType || i.itemName) || i.id;
 const rname = (roles, id) => { const r = roles.find(x => x.uid === id); return r ? esc(r.name || r.email) : (id ? '<span class="muted">' + esc(id.slice(0, 8)) + '…</span>' : '<span class="muted">—</span>'); };
 const roles = async () => (await api('/roles')).roles;
@@ -77,13 +77,14 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', roleLabel: 'س
   { label: 'المحتوى', icon: 'layers', render: async m => {
     let type = 'hotel', q = '', rs = await roles();
     const draw = async () => {
+      window.DS_UPLOAD_CAT = type;   // photos go to api/<category>/img/ in the data repo
       const d = await api('/items/' + type), owned = !!OWNER_ROLE[type], schema = DS.SCH_ADMIN[type], items = d.items;
       const list = items.filter(i => !q || (nameOf(i) + ' ' + i.id).toLowerCase().includes(q.toLowerCase()));
       m.innerHTML = `<h2 class="pt">المحتوى <span class="muted">${items.length}</span></h2><div class="chips">${Object.entries(TYPES).filter(([k]) => !STATIC_TYPES.includes(k)).map(([k, v]) => `<span class="chip ${k === type ? 'on' : ''}" data-t="${k}">${v}</span>`).join('')}</div>
         <div class="tools"><input type="search" id="qs" placeholder="بحث بالاسم..." value="${esc(q)}"><button class="btn" id="add">${DS.ic('plus')} إضافة</button></div>` +
-        (list.length ? `<div class="igrid">${list.map(i => { const cv = DS.safeSrc(i.image || (i.images || [])[0]); return `<div class="ic"><div class="cv">${cv ? `<img src="${esc(cv)}" loading="lazy" alt="">` : DS.ic('layers')}${owned ? `<span class="badge ${i.owner ? 'b-blue' : 'b-gray'}">${i.owner ? rname(rs, i.owner) : 'بدون مالك'}</span>` : ''}${i.status && i.status !== 'published' ? `<span class="badge b-amber" style="inset-inline-end:8px;inset-inline-start:auto">${STL[i.status] || esc(i.status)}</span>` : ''}</div>
+        (list.length ? `<div class="igrid">${list.map(i => { const cv = DS.safeSrc(i.image || (i.images || [])[0]); return `<div class="ic"><div class="cv">${cv ? `<img src="${esc(cv)}" loading="lazy" alt="">` : DS.ic('layers')}${owned ? `<span class="badge ${i.owner ? 'b-blue' : 'b-gray'}">${i.owner ? rname(rs, i.owner) : 'بدون مالك'}</span>` : ''}${i.status && i.status !== 'published' ? `<span class="badge b-amber" style="inset-inline-end:8px;inset-inline-start:auto">${STL[i.status] || esc(i.status)}</span>` : ''}${i.pendingEdit ? `<span class="badge b-amber" style="inset-inline-end:8px;inset-inline-start:auto;top:34px">تعديل بانتظار الموافقة</span>` : ''}</div>
           <div class="bd"><b>${esc(nameOf(i))}</b><span class="muted">${esc(i.id)}${i.price != null ? ' · ' + money(i.price) + ' EGP' : ''}${i.rating ? ' · ★ ' + Number(i.rating).toFixed(1) : ''}</span></div>
-          <div class="ft"><button class="btn ghost sm" data-e="${esc(i.id)}">تعديل</button><button class="btn ghost sm" data-d="${esc(i.id)}">حذف</button></div></div>`; }).join('')}</div>` : '<div class="empty">مفيش عناصر</div>');
+          <div class="ft">${PROP_TYPES.includes(type) && (i.status !== 'published' || i.pendingEdit) ? `<button class="btn sm" data-pub="${esc(i.id)}">${i.pendingEdit ? 'اعتماد التعديل' : 'نشر'}</button>` : ''}<button class="btn ghost sm" data-e="${esc(i.id)}">تعديل</button><button class="btn ghost sm" data-d="${esc(i.id)}">حذف</button></div></div>`; }).join('')}</div>` : '<div class="empty">مفيش عناصر</div>');
       const EDITOR = ['excursion', 'hotel', 'transfer', 'restaurant'];
       const edit = (it) => {
         const ownList = rs.filter(r => r.role === OWNER_ROLE[type]);
@@ -92,7 +93,7 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', roleLabel: 'س
           DS.itemEditor(m, { type, item: it || {}, onBack: draw,
             extra: [{ k: 'rating', l: 'التقييم (0-5)', kind: 'num' }, { k: 'reviews', l: 'عدد التقييمات', kind: 'num' }].concat(type === 'hotel' ? [{ k: 'bestseller', l: 'الأكثر طلبًا', kind: 'bool' }] : []),
             side: (el) => {
-              sideEl = el; const st = (it ? it.status : 'published');
+              sideEl = el; const st = (it ? it.status : 'draft');
               el.insertAdjacentHTML('beforeend', `<div class="edc side-c"><h4>النشر والملكية</h4>
                 <div class="edf-in" style="margin-bottom:12px"><label class="edl">حالة النشر</label><div class="wrapi"><select class="edi" id="ps">${Object.entries(STL).map(([k, v]) => `<option value="${k}" ${st === k ? 'selected' : ''}>${v}</option>`).join('')}</select></div><div class="edh">المسودة والمؤرشف مش بيظهروا للعملاء.</div></div>
                 <div class="edf-in"><label class="edl">المالك (اختياري)</label><div class="wrapi"><select class="edi" id="ow"><option value="">— بدون —</option>${ownList.map(r => `<option value="${r.uid}" ${it && it.owner === r.uid ? 'selected' : ''}>${esc(r.name || r.email)}</option>`).join('')}</select></div></div>
@@ -109,7 +110,7 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', roleLabel: 'س
         }
         const b = document.createElement('div'), owners = rs.filter(r => r.role === OWNER_ROLE[type]), f = DS.form(schema, it || {});
         b.innerHTML = owned ? `<div class="card" style="background:var(--soft)"><div class="fld"><label>المالك (الأونر المسؤول عن العنصر)</label><select id="ow"><option value="">— بدون —</option>${owners.map(r => `<option value="${r.uid}" ${it && it.owner === r.uid ? 'selected' : ''}>${esc(r.name || r.email)}</option>`).join('')}</select></div>` + (type === 'hotel' ? '<label class="sw"><input type="checkbox" id="fc"><span>تجاوز حد الفندقين لهذا الأونر</span></label>' : '') + '</div>' : '';
-        if (PROP_TYPES.includes(type)) { const st = document.createElement('div'); st.className = 'fld'; st.innerHTML = `<label>حالة النشر</label><select id="ps">${Object.entries(STL).map(([k, v]) => `<option value="${k}" ${(it ? it.status : 'published') === k ? 'selected' : ''}>${v}</option>`).join('')}</select><small>المنشور بس هو اللي بيظهر في الموقع. عناصر الأونرز بتوصل "بانتظار المراجعة" لحد ما تنشرها.</small>`; b.appendChild(st); }
+        if (PROP_TYPES.includes(type)) { const st = document.createElement('div'); st.className = 'fld'; st.innerHTML = `<label>حالة النشر</label><select id="ps">${Object.entries(STL).map(([k, v]) => `<option value="${k}" ${(it ? it.status : 'draft') === k ? 'selected' : ''}>${v}</option>`).join('')}</select><small>المنشور بس هو اللي بيظهر في الموقع. عناصر الأونرز بتوصل "بانتظار المراجعة" لحد ما تنشرها.</small>`; b.appendChild(st); }
         b.appendChild(f);
         modal({ title: it ? 'تعديل: ' + nameOf(it) : 'إضافة جديد', body: b, wide: true, actions: [{ t: 'حفظ', fn: async () => {
           const o = { ...(it || {}), ...collect(f, schema) };
@@ -124,6 +125,8 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', roleLabel: 'س
       m.querySelector('#qs').oninput = e => { q = e.target.value; const p = e.target.selectionStart; draw().then(() => { const i = m.querySelector('#qs'); i.focus(); i.setSelectionRange(p, p); }); };
       m.onclick = async e => {
         const c = e.target.closest('[data-t]'); if (c) { type = c.dataset.t; q = ''; return draw(); }
+        const pub = e.target.closest('[data-pub]');
+        if (pub) { try { await api('/items/' + type + '/' + encodeURIComponent(pub.dataset.pub) + '/publish', { method: 'POST', body: {} }); toast('اتنشر ✓'); draw(); } catch (er) { toast(er.message, true); } return; }
         const ed = e.target.closest('[data-e]'), de = e.target.closest('[data-d]');
         if (ed) edit(items.find(i => i.id === ed.dataset.e));
         if (de && confirm('حذف نهائي؟')) { try { await api('/items/' + type + '/' + encodeURIComponent(de.dataset.d), { method: 'DELETE' }); draw(); } catch (er) { toast(er.message, true); } }

@@ -4,7 +4,7 @@
  *  - versioned assets (?v=hash): cache first · catalog JSON & fonts/CDN: stale-while-revalidate · photos: cache first (bounded)
  *  - API, Supabase, auth, payments and every non-GET request are never touched
  */
-const VERSION = '3555a0c4';
+const VERSION = 'cff68d2a';
 const SHELL = 'ds-shell-' + VERSION;
 const RUNTIME = 'ds-runtime-v1';
 const IMAGES = 'ds-images-v1';
@@ -29,8 +29,8 @@ const PRECACHE = [
   "/icons/apple-touch-icon.png",
   "/style.css?v=1b3284ef",
   "/tailwind.css?v=ffd6f9de",
-  "/data.js?v=d69a0397",
-  "/supabase-api.js?v=fe707c44",
+  "/data.js?v=d6628c98",
+  "/supabase-api.js?v=4184b1e2",
   "/booking.js?v=43155b3b",
   "/frontend.js?v=618cc7ca",
   "/router.js?v=daa495e0",

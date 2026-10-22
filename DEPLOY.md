@@ -52,6 +52,48 @@ Cloudflare Pages: Create project → Direct Upload (أو GitHub مع Build comma
 
 **اختياري موصى بيه للأدمن:** Cloudflare Zero Trust → Access، سياسة على `admin.discover-sharm.com` (إيميلات الفريق بس) — طبقة حماية قبل شاشة تسجيل الدخول نفسها.
 
+## 🔒 HTTPS والـ Security headers (توصيات فحص الأمان)
+الـ build بيكتب في `_headers` لكل موقع: `Strict-Transport-Security` (سنة) و `Content-Security-Policy` (`script-src` و `object-src 'none'` و `base-uri 'self'` و `frame-src`...). الـ CSP بتتبني تلقائي من متغيرات `DS_SUPABASE_URL` و `DS_PAYMENTS_BASE` و `DS_TRANSLATE_BASE`، فأي Worker جديد تضيفه اتأكد إنه مضاف هناك (دالة `csp()` في `tools/build.mjs`).
+
+**تحويل HTTP → HTTPS (من لوحة Cloudflare، مش من الكود):** اختار دومين `discover-sharm.com` ← **SSL/TLS ← Edge Certificates ← Always Use HTTPS = On**. كمان تأكد إن **SSL/TLS ← Overview** على *Full (strict)*. ده بيغطي www و app و admin والـ apex مرة واحدة (الـ `_redirects` ما بيعرفش يفرّق http من https). فيه كمان سكريبت صغير في أول `<head>` بيحوّل لـ https لو الصفحة اتفتحت على http (احتياطي).
+لو الموقع على GitHub Pages: Settings ← Pages ← **Enforce HTTPS**.
+
+> الـ CSP فيها `'unsafe-inline'` في `script-src` لأن الصفحات لسه فيها `onclick=""` وسكريبتات inline. دي بتغطي توصيات الفحص (script-src/object-src/base-uri/frame-src موجودين) بس الحماية من XSS الكاملة محتاجة نقل الـ inline handlers لملفات `.js` وبعدين شيل `'unsafe-inline'`.
+> بعد النشر: افتح الموقع وجرّب (تسجيل دخول Google، حجز، دفع بكارت 3DS، صور، خرايط) والـ Console لازم يبقى من غير أخطاء `Refused to ...`. لو ظهر خطأ، الرسالة بتقول أنهي دومين ناقص وتضيفه في `csp()`.
+
+## 🗂️ المحتوى في GitHub برايفت (فنادق · رحلات · ترانسفير · مطاعم · تدوينات)
+
+**الفكرة:** كل عنصر ملف `api/<الفئة>/{id}.json` في **ريبو برايفت منفصل للداتا**، وكل فئة ليها ملف فهرس (`api/hotels/hotels.json` …) فيه **المنشور بس** — الموقع بيقرا منه. الداتا بيس بيحتفظ بـ id العنصر و id المالك والحالة وحقول السعر اللي الحجز بيتحقق منها. التوكن مخزّن كـ Secret في Cloudflare وبيستخدمه Worker واحد (`discover-sharm-content`) — المتصفح عمره ما بيشوفه.
+
+```
+api/hotels/{id}.json         العنصر   { id, ownerId, published:false|true, ...الحقول }
+api/hotels/{id}.draft.json   تعديل الأونر على عنصر منشور (مستني موافقتك)
+api/hotels/hotels.json       الفهرس العام: { updatedAt, items:[المنشور بس] }
+api/hotels/img/{hash}.jpg    الصور
+(نفس الشكل: excursions · transfers · restaurants · journal)
+```
+- **أونر/أدمن يضيف عنصر** ← الملف بيتكتب بـ `published:false` ومش بيظهر في الفهرس.
+- **السوبر أدمن يضغط "نشر"** (أو يختار "منشور" ويحفظ) ← `published:true` + العنصر بيتضاف للفهرس + حالته في الداتا بيس `published` + نسخة السعر في الداتا بيس بتتحدّث.
+- **أونر يعدّل عنصر منشور** ← بيتحفظ كـ `{id}.draft.json` والنسخة المنشورة والسعر **ما بيتغيروش** لحد ما الأدمن يضغط **اعتماد التعديل**.
+- كل تغيير بيتسجّل كـ commit في ريبو الداتا باسم/ID صاحبه = سجل مراجعة مجاني.
+
+### خطوات التفعيل (مرة واحدة، بالترتيب)
+1. **ريبو الداتا:** أنشئ ريبو **Private** جديد (مثلًا `discover-sharm-data`) فيه branch `main`. (مش نفس ريبو الكود، عشان كل commit نشر ما يشغّلش builds للمواقع.)
+2. **Token:** GitHub ← Settings ← Developer settings ← *Fine-grained personal access tokens* ← Repository access = **ريبو الداتا بس** ← Contents = **Read and write**.
+3. **Supabase:** شغّل بالترتيب في SQL Editor: `20261022001000_journal_kind.sql` ثم `20261022001100_github_content.sql`. (بعد التانية المتصفح مابقاش يقدر يكتب في جدول `properties` — الكتابة من الـ Worker بس.)
+4. **انقل الداتا الحالية:**
+   ```bash
+   SUPABASE_URL=https://xxx.supabase.co SUPABASE_SERVICE_ROLE_KEY=... npm run export:content -- api-export
+   ```
+   انسخ فولدر `api-export/api` لريبو الداتا واعمل commit + push، وشغّل `api-export/journal-seed.sql` في Supabase (بيسجّل التدوينات الحالية).
+5. **انشر الـ Worker:** `cd workers && npx wrangler secret put GITHUB_TOKEN -c wrangler.content.toml` و `npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY -c wrangler.content.toml` ثم `npx wrangler deploy -c wrangler.content.toml`، وظبط المتغيرات (جدول "Worker المحتوى" في `VARIABLES.md`) وأضف الدومين `content.discover-sharm.com`.
+6. **متغير Pages:** `DS_CONTENT_BASE=https://content.discover-sharm.com` في مشاريع www و app و admin ← **Retry deployment**.
+7. **جرّب:** افتح `https://content.discover-sharm.com/catalog/hotels.json` (لازم يرجّع الفنادق) ← ادخل الأدمن وأضف فندق (لازم يظهر ملف `{id}.json` في الريبو بـ `published:false`) ← انشره ← يظهر في `hotels.json` وعلى الموقع (خلال ~دقيقة بسبب الـ cache).
+
+> **أمان الانتقال:** لحد ما تنقل الداتا (خطوة 4) الـ Worker بيرجّع نسخة الداتا بيس تلقائيًا (`"fallback": true`) فالموقع مش بيفضى. ولحد ما تضبط `DS_CONTENT_BASE` كل حاجة شغالة زي الأول.
+> **التدوينات:** السوبر أدمن بيضيفها من تبويب "التدوينات" في الأدمن. الأونر يقدر يضيف تدوينة لو أضفتي `journal` لصلاحياته (`profiles.owner_kinds`)، بس لسه مفيش صفحة تدوينات في لوحة الأونر.
+> **حدود:** الصور المرفوعة قبل كده فضلت على Supabase Storage (روابطها بتشتغل). الصور الجديدة بتتحفظ في `api/<الفئة>/img/` وبتتقدّم عن طريق الـ Worker (حد أقصى 900KB للصورة بعد الضغط).
+
 ## 5) تجربة قبل الإطلاق (10 دقايق)
 1. من الموبايل افتح `www.discover-sharm.com/excursions/` → لازم يتحوّل لـ `app.discover-sharm.com/excursions/`.
 2. من الكمبيوتر افتح `app.discover-sharm.com` → يتحوّل لـ www.

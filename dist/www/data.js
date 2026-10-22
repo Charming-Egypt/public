@@ -522,7 +522,8 @@ function localizeCatalog(lang) {
 // ==================== CATALOG LOADING ====================
 async function loadCatalogFromWorker() {
   const files = ['hotels', 'excursions', 'transfers', 'destinations', 'restaurants', 'reviews', 'articles'];
-  const STATIC_FILES = ['destinations', 'articles'].concat(window.DS_SUPABASE ? [] : ['reviews']);   // reviews: real customer reviews when Supabase is on (supabase-api.js), static JSON otherwise   // served from /data/*.json (edit them in the repo, then build + push)
+  const viaContent = !!(window.DS_SUPABASE && window.DS_SUPABASE.contentBase);   // journal posts come from the GitHub-backed content Worker (supabase-api.js falls back to the static file)
+  const STATIC_FILES = ['destinations'].concat(viaContent ? [] : ['articles']).concat(window.DS_SUPABASE ? [] : ['reviews']);   // reviews: real customer reviews when Supabase is on (supabase-api.js), static JSON otherwise   // served from /data/*.json (edit them in the repo, then build + push)
   const CACHE_KEY = 'ds_catalog_v3', CACHE_TTL = 10 * 60 * 1000;
 
   // Every page is now its own HTML file, so the catalog is requested on each

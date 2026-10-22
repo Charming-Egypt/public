@@ -41,9 +41,44 @@ const env = (k) => (process.env[k] || '').trim();
 // "translate.discover-sharm.com" (no scheme) used to become a RELATIVE url in the browser -> 404. Always make it absolute, no trailing slash.
 const url = (v) => { v = String(v || '').trim().replace(/\/+$/, ''); return v && !/^https?:\/\//i.test(v) ? 'https://' + v : v; };
 const sbc = { url: url(env('DS_SUPABASE_URL')), anonKey: env('DS_SUPABASE_ANON_KEY'), googleClientId: env('DS_GOOGLE_CLIENT_ID'),
-  paymentsBase: url(env('DS_PAYMENTS_BASE')), translateBase: url(env('DS_TRANSLATE_BASE')) };
+  paymentsBase: url(env('DS_PAYMENTS_BASE')), translateBase: url(env('DS_TRANSLATE_BASE')), contentBase: url(env('DS_CONTENT_BASE')) };
 const useSupabase = !!(sbc.url && sbc.anonKey);
 const SUPABASE_JS = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js';   // pinned
+
+// ---- Security headers (written into each site's _headers) -------------------------------------------------------------
+// HSTS: browsers refuse plain HTTP for a year once they have seen this over HTTPS. (Add `; preload` only after submitting to hstspreload.org.)
+const HSTS = 'max-age=31536000; includeSubDomains';
+const originOf = (u) => { try { return new URL(u).origin; } catch { return ''; } };
+const wsOf = (u) => { try { const x = new URL(u); return 'wss://' + x.host; } catch { return ''; } };
+// Content-Security-Policy. The pages still use inline <script> blocks and onclick="" handlers, so script-src needs 'unsafe-inline'
+// until those are moved into .js files (then drop it and the policy becomes a real XSS barrier). What it already does today:
+// limits <script src> to our own files + the 3 known script hosts, blocks <object>/<embed>, pins <base>, forbids framing by other sites,
+// and upgrades any stray http:// subresource.
+function csp(site) {
+  const uniq = (a) => [...new Set(a.filter(Boolean))].join(' ');
+  if (site === 'admin') {
+    return [
+      "default-src 'self'",
+      `script-src ${uniq(["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net'])}`,
+      `style-src ${uniq(["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'])}`,
+      "font-src 'self' data: https://fonts.gstatic.com",
+      "img-src 'self' data: blob: https:",
+      `connect-src ${uniq(["'self'", originOf(sbc.url), wsOf(sbc.url), originOf(sbc.translateBase), originOf(sbc.contentBase)])}`,
+      "frame-src 'none'", "object-src 'none'", "base-uri 'self'", "form-action 'self'", "frame-ancestors 'none'", 'upgrade-insecure-requests',
+    ].join('; ');
+  }
+  return [
+    "default-src 'self'",
+    `script-src ${uniq(["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net', 'https://accounts.google.com'])}`,
+    `style-src ${uniq(["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com', 'https://accounts.google.com'])}`,
+    "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com",
+    "img-src 'self' data: blob: https:",
+    `connect-src ${uniq(["'self'", originOf(sbc.url), wsOf(sbc.url), originOf(sbc.paymentsBase), originOf(sbc.contentBase), 'https://open.er-api.com', 'https://accounts.google.com'])}`,
+    // https: (not a short list) because the card-verification (3-D Secure) frame can land on the issuing bank's own domain
+    "frame-src https:", "object-src 'none'", "base-uri 'self'", "frame-ancestors 'self'",
+    "worker-src 'self'", "manifest-src 'self'", 'upgrade-insecure-requests',
+  ].join('; ');
+}
 // content hash of the editorial JSON (destinations / articles / reviews / promoSlides): cache-busts /data/*.json when you edit them
 const DATA_V = (() => { const h = crypto.createHash('sha1'); for (const f of ['destinations', 'articles', 'reviews', 'promoSlides']) h.update(fs.readFileSync(path.join(ROOT, 'shared', 'data', f + '.json'))); return h.digest('hex').slice(0, 8); })();
 // contact + social links come from Cloudflare Pages variables (not from the admin settings)
@@ -131,6 +166,7 @@ function buildPublic(site) {
 <html lang="en" dir="ltr" data-theme="dark" data-site="${site}">
 <head>
   <meta charset="UTF-8" />
+  <script>if(location.protocol==='http:'&&!/^(localhost|127\.|\[::1\]|.*\.local$)/.test(location.hostname))location.replace('https:'+location.href.slice(5));</script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>${esc(title)}</title>
   <meta name="description" content="${esc(description)}" />
@@ -193,7 +229,7 @@ function buildPublic(site) {
   };
 
   const scripts = () => `
-  ${useSupabase ? `<script>window.DS_SUPABASE = ${JSON.stringify({ url: sbc.url, anonKey: sbc.anonKey, googleClientId: sbc.googleClientId || '', paymentsBase: sbc.paymentsBase || '' })};</script>
+  ${useSupabase ? `<script>window.DS_SUPABASE = ${JSON.stringify({ url: sbc.url, anonKey: sbc.anonKey, googleClientId: sbc.googleClientId || '', paymentsBase: sbc.paymentsBase || '', contentBase: sbc.contentBase || '' })};</script>
   <script src="${SUPABASE_JS}"></script>` : '<!-- Supabase not configured: running on the legacy API -->'}
   <script src="/data.js?v=${V['data.js']}"></script>
   ${useSupabase ? `<script src="/supabase-api.js?v=${V['supabase-api.js']}"></script>` : ''}
@@ -329,6 +365,8 @@ ${linkify(bottomNav)}
   ].join('\n'));
   out.write('_headers', [
     '/*',
+    `  Strict-Transport-Security: ${HSTS}`,
+    `  Content-Security-Policy: ${csp(site)}`,
     '  X-Content-Type-Options: nosniff',
     '  Referrer-Policy: strict-origin-when-cross-origin',
     '  Permissions-Policy: camera=(), microphone=(), geolocation=(self), payment=(self)',
@@ -364,7 +402,7 @@ function buildAdmin() {
   const adminJs = fs.readFileSync(path.join(ROOT, 'admin-src', 'admin.js')); out.write('admin.js', adminJs); V['admin.js'] = sha(adminJs);
 
   const sbCfg = `// GENERATED by tools/build.mjs from site.config.json — public values only.
-window.DS_SUPABASE = ${useSupabase ? JSON.stringify({ url: sbc.url, anonKey: sbc.anonKey, translateBase: (sbc.translateBase || '').replace(/\/$/, '') }) : 'null'};
+window.DS_SUPABASE = ${useSupabase ? JSON.stringify({ url: sbc.url, anonKey: sbc.anonKey, translateBase: (sbc.translateBase || '').replace(/\/$/, ''), contentBase: (sbc.contentBase || '').replace(/\/$/, '') }) : 'null'};
 ${useSupabase ? `document.write('<script src="${SUPABASE_JS}"><\\/script>');` : ''}
 `;
   out.write('console/supabase-config.js', sbCfg); V['supabase-config.js'] = sha(sbCfg);
@@ -398,6 +436,8 @@ ${useSupabase ? `document.write('<script src="${SUPABASE_JS}"><\\/script>');` : 
   out.write('.nojekyll', '');
   out.write('_headers', [
     '/*',
+    `  Strict-Transport-Security: ${HSTS}`,
+    `  Content-Security-Policy: ${csp('admin')}`,
     '  X-Robots-Tag: noindex, nofollow, noarchive',
     '  X-Frame-Options: DENY',
     '  X-Content-Type-Options: nosniff',
@@ -419,6 +459,7 @@ const warn = [];
 if (!useSupabase) warn.push('DS_SUPABASE_URL / DS_SUPABASE_ANON_KEY are not set — building WITHOUT Supabase (sign-in, bookings and catalog will not work).');
 if (targets.some(t => t !== 'admin') && useSupabase && !sbc.paymentsBase) warn.push('DS_PAYMENTS_BASE is not set — online payment is disabled.');
 if (targets.some(t => t !== 'admin') && useSupabase && !sbc.googleClientId) warn.push('DS_GOOGLE_CLIENT_ID is not set — "Continue with Google" is hidden.');
+if (useSupabase && !sbc.contentBase) warn.push('DS_CONTENT_BASE is not set — items are read from / saved to the database (old behaviour), NOT the GitHub data repo.');
 if (targets.includes('admin') && useSupabase && !sbc.translateBase) warn.push('DS_TRANSLATE_BASE is not set — the consoles cannot auto-translate on save.');
 for (const t of targets) (t === 'admin' ? buildAdmin : buildPublic)(t);
 for (const w of warn) console.warn('\x1b[33m⚠ ' + w + '\x1b[0m');

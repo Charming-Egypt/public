@@ -126,11 +126,30 @@
   const PROPERTY_FILES = { 'hotels.json': 'hotel', 'excursions.json': 'excursion', 'transfers.json': 'transfer', 'restaurants.json': 'restaurant' };
   const CONTENT_FILES = { 'destinations.json': 'destination', 'articles.json': 'article', 'promoSlides.json': 'promo_slide', 'reviews.json': 'testimonial' };
 
+  // Items live as JSON files in the private GitHub data repo; the content Worker serves the published ones (cfg.contentBase).
+  // Without cfg.contentBase the pages keep reading the database copy (old behaviour).
+  async function contentCatalog(name) {
+    const r = await fetch(`${cfg.contentBase}/catalog/${name}.json`);
+    if (!r.ok) throw fail('Catalog unavailable', { status: r.status });
+    return await r.json();   // { updatedAt, items: [...] }
+  }
+
   async function readCatalog(file) {
     if (PROPERTY_FILES[file]) {
       const isRest = PROPERTY_FILES[file] === 'restaurant';
-      const rows = await run(sb.from('properties').select('id, data, rating_avg, rating_count')
-        .eq('kind', PROPERTY_FILES[file]).eq('status', 'published').order('sort_order').order('created_at'));
+      let rows;
+      if (cfg.contentBase) {
+        // the item content comes from GitHub (via the Worker); ratings are live numbers from customer reviews in the database
+        const [cat, meta] = await Promise.all([
+          contentCatalog(file.replace('.json', '')),
+          run(sb.from('properties').select('id, rating_avg, rating_count').eq('kind', PROPERTY_FILES[file]).eq('status', 'published')).catch(() => []),
+        ]);
+        const m = new Map(meta.map(x => [x.id, x]));
+        rows = (cat.items || []).map(item => ({ id: item.id, data: { ...item }, rating_avg: (m.get(item.id) || {}).rating_avg || 0, rating_count: (m.get(item.id) || {}).rating_count || 0 }));
+      } else {
+        rows = await run(sb.from('properties').select('id, data, rating_avg, rating_count')
+          .eq('kind', PROPERTY_FILES[file]).eq('status', 'published').order('sort_order').order('created_at'));
+      }
       let branches = {};   // restaurants: only branches the super admin approved are public (RLS enforces it too)
       if (isRest && rows.length) {
         try {
@@ -153,6 +172,12 @@
         const real = rows.filter(r => String(r.comment || '').trim().length >= 25).slice(0, 20)
           .map(r => ({ id: r.id, name: (r.name || '').trim() || 'Guest', rating: r.rating, text: String(r.comment).trim(), itemName: r.properties.name || '', section: r.properties.kind }));
         if (real.length) return real;
+      } catch (e) { /* fall through to the static file */ }
+    }
+    if (file === 'articles.json' && cfg.contentBase) {   // journal posts: GitHub-backed; until the first post is exported, the static file keeps the section alive
+      try {
+        const j = await contentCatalog('journal');
+        if (!(j.fallback && !(j.items || []).length)) return j.items || [];
       } catch (e) { /* fall through to the static file */ }
     }
     if (CONTENT_FILES[file]) {   // editorial content is static JSON (data/*.json), not a table

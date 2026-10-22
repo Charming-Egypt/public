@@ -19,3 +19,10 @@ browser poll arriving together can never confirm the same booking twice or send 
 `https://<your worker domain>/api/kashier/webhook`.
 
 **Tests** (no network, no accounts needed): `node workers/tests/payments.test.mjs`
+
+
+# Content Worker (`content-worker.js`)
+
+Reads and writes the items (hotels, excursions, transfers, restaurants, journal) as JSON files in the **private GitHub data repo** — see `DEPLOY.md` ("المحتوى في GitHub برايفت") for the file layout and the publish flow.
+Public: `GET /catalog/<category>.json`, `GET /img/<category>/<file>`. Staff (Supabase token): `/items/<category>[/<id>[/publish|unpublish]]`, `POST /upload`.
+Setup: `wrangler.content.toml` · **Tests** (no network, GitHub + Supabase faked): `npm run test:content`.

@@ -97,12 +97,14 @@ select public.t_expect_error($q$update public.bookings set total = 1 where id = 
 
 -- owner ------------------------------------------------------------------------------------------------
 select public.t_as_user('00000000-0000-0000-0000-0000000000b1');
-insert into public.properties (id, kind, owner_id, status, data) values ('t_own_1', 'excursion', '00000000-0000-0000-0000-0000000000b1', 'draft', '{"name":{"en":"Owner trip"},"price":500}');
-select public.t_expect_true(exists (select 1 from public.properties where id = 't_own_1'), 'owner can add a draft listing of an allowed kind');
-select public.t_expect_error($q$insert into public.properties (id, kind, owner_id, status, data) values ('t_own_2', 'excursion', '00000000-0000-0000-0000-0000000000b1', 'published', '{"name":{"en":"x"}}')$q$, 'owner can not publish by themselves');
-select public.t_expect_error($q$insert into public.properties (id, kind, owner_id, status, data) values ('t_own_3', 'hotel', '00000000-0000-0000-0000-0000000000b1', 'draft', '{"name":{"en":"x"}}')$q$, 'owner can not add a kind they were not approved for');
-select public.t_expect_error($q$insert into public.properties (id, kind, owner_id, status, data) values ('t_own_4', 'excursion', '00000000-0000-0000-0000-0000000000c1', 'draft', '{"name":{"en":"x"}}')$q$, 'owner can not create a listing for someone else');
+-- Items are written by the content Worker (service role) only: the browser role has no insert/update/delete on properties any more.
+select public.t_expect_error($q$insert into public.properties (id, kind, owner_id, status, data) values ('t_own_x', 'excursion', '00000000-0000-0000-0000-0000000000b1', 'draft', '{"name":{"en":"x"}}')$q$, 'owner can not insert a listing from the browser (the Worker does it)');
+reset role;
+insert into public.properties (id, kind, owner_id, status, data) values ('t_own_1', 'excursion', '00000000-0000-0000-0000-0000000000b1', 'draft', '{"name":{"en":"Owner trip"},"price":500}');   -- what the Worker does
+select public.t_as_user('00000000-0000-0000-0000-0000000000b1');
+select public.t_expect_true(exists (select 1 from public.properties where id = 't_own_1'), 'owner sees their own draft listing');
 select public.t_expect_error($q$update public.properties set status = 'published' where id = 't_own_1'$q$, 'owner can not change status directly');
+select public.t_expect_error($q$update public.properties set data = '{"price":1}' where id = 't_own_1'$q$, 'owner can not edit the price the booking code checks');
 select public.t_expect_error($q$update public.properties set owner_id = null where id = 't_own_1'$q$, 'owner can not change ownership');
 select public.t_expect_true((select count(*) = 1 from public.bookings), 'owner sees the paid booking on their own listing (and nothing else)');
 select public.t_expect_error($q$select public.owner_update_booking('T-OK-1', 'done')$q$, 'owner can not book earnings before the service date');
@@ -120,15 +122,18 @@ select public.t_expect_true(public.request_payout((public.owner_balance() ->> 'a
 select public.t_expect_error($q$select public.request_payout(1)$q$, 'only one open payout request at a time');
 select public.t_expect_true((public.owner_balance() ->> 'available')::numeric = 0, 'the requested amount is reserved');
 select public.t_expect_true((select count(*) = 0 from public.properties where owner_id is distinct from '00000000-0000-0000-0000-0000000000b1' and status <> 'published'), 'owner sees no one else''s drafts');
-select public.submit_property_for_review('t_own_1');
+select public.t_expect_error($q$select public.submit_property_for_review('t_own_1')$q$, 'review submission goes through the Worker now');
 select public.t_expect_error($q$select public.admin_set_property_status('t_own_1', 'published')$q$, 'owner can not call admin functions');
 
 -- super admin ------------------------------------------------------------------------------------------------
 select public.t_as_user('00000000-0000-0000-0000-0000000000a1');
 select public.t_expect_true((select count(*) >= 4 from public.profiles), 'super admin sees all profiles');
 select public.t_expect_true((select count(*) >= 1 from public.bookings where id = 'T-OK-1'), 'super admin sees all bookings');
-select public.admin_set_property_status('t_own_1', 'published');
-select public.t_expect_true((select status = 'published' from public.properties where id = 't_own_1'), 'super admin publishes the owner''s listing');
+select public.t_expect_error($q$select public.admin_set_property_status('t_own_1', 'published')$q$, 'even the super admin changes status through the Worker (GitHub file + DB together)');
+reset role;
+update public.properties set status = 'published' where id = 't_own_1';   -- what the Worker does on publish
+select public.t_as_user('00000000-0000-0000-0000-0000000000a1');
+select public.t_expect_true((select status = 'published' from public.properties where id = 't_own_1'), 'a published listing is visible to the super admin');
 select public.t_expect_error($q$select public.admin_set_user_role('00000000-0000-0000-0000-0000000000a1', 'user')$q$, 'super admin can not demote themselves');
 select public.admin_set_user_role('00000000-0000-0000-0000-0000000000c2', 'owner', '{transfer}');
 select public.t_expect_true((select jsonb_typeof(public.admin_stats()) = 'object'), 'super admin reads stats');
