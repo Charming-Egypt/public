@@ -43,7 +43,7 @@
   filter: drop-shadow(0 -8px 14px rgba(0,0,0,.16));
 }
 [data-site="app"] .bottom-nav::before {
-  content: ""; position: absolute; inset: 0; z-index: -1; background: var(--ap-nav);
+  content: ""; position: absolute; inset: 0; z-index: -1; background: var(--bg-body);
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 110' preserveAspectRatio='none'%3E%3Cpath d='M0 110V38Q0 10 28 10H60C110 10 149 20 149 44A46 46 0 0 0 241 44C241 20 280 10 330 10H362Q390 10 390 38V110Z'/%3E%3C/svg%3E") center top / 100% 100% no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 110' preserveAspectRatio='none'%3E%3Cpath d='M0 110V38Q0 10 28 10H60C110 10 149 20 149 44A46 46 0 0 0 241 44C241 20 280 10 330 10H362Q390 10 390 38V110Z'/%3E%3C/svg%3E") center top / 100% 100% no-repeat;
 }
 [data-site="app"] .bottom-nav > div { height: var(--ap-nav-h); align-items: flex-end; justify-content: space-around; padding: 0 6px 12px; }
