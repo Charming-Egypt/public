@@ -251,7 +251,9 @@
       if ('countryCode' in src) patch.country_code = String(src.countryCode || '').slice(0, 8);
       if (src.photoURL) {
         if (/^data:image\//.test(src.photoURL)) {            // avatars live in Storage, not in the table row
-          const blob = await (await fetch(src.photoURL)).blob();
+          const [, mime, b64] = src.photoURL.match(/^data:(image\/[^;]+);base64,(.+)$/);
+          const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+          const blob = new Blob([bytes], { type: mime });
           const ext = blob.type === 'image/png' ? 'png' : blob.type === 'image/webp' ? 'webp' : 'jpg';
           const key = `${session.user.id}/avatar.${ext}`;
           await run(sb.storage.from('avatars').upload(key, blob, { upsert: true, contentType: blob.type, cacheControl: '3600' }));
