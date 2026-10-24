@@ -1046,7 +1046,7 @@ function showExcursionPage(excursionId, opts = {}) {
       ${detailHero({ images: imgs, icon: 'fa-water', back: 'closeExcursionPage()', cls: 'detail-gallery', badge: x.category ? `<span class="dh-badge">${E(excursionsUi.categoryLabel(x.category))}</span>` : '' })}
       ${renderPhotoGrid(imgs.length ? imgs : [PLACEHOLDER_IMG])}
       <div class="detail-layout">
-        <div class="detail-main relative -mt-6 rounded-t-[28px] p-5 rd-main ex-main" style="background:var(--bg-card)">
+        <div class="detail-main relative -mt-6 p-5 rd-main ex-main" style="background:var(--bg-card)">
           <header class="rd-head">
             <h1 class="rd-title">${E(x.title)}</h1>
             ${hasRating(x) ? `<div class="rd-rating">${utils.renderStars(x.rating)}<b>${ratingNum(x)}</b>${reviewsN(x) ? `<span>(${reviewsN(x)} ${t('reviewsCountSuffix')})</span>` : ''}</div>` : ''}
@@ -1459,7 +1459,7 @@ function showRestaurantPage(id, opts = {}) {
       ${detailHero({ images: imgs, icon: isCafe ? 'fa-mug-hot' : 'fa-utensils', back: 'closeRestaurantPage()', cls: 'detail-gallery rd-hero' })}
       ${renderPhotoGrid(gallery)}
       <div class="detail-layout">
-        <div class="detail-main relative -mt-6 rounded-t-[28px] p-5 rd-main" style="background:var(--bg-card)">
+        <div class="detail-main relative -mt-6 p-5 rd-main" style="background:var(--bg-card)">
           <header class="rd-head">
             <div class="rd-badges">
               <span class="rd-badge">${isCafe ? '<i class="fa-solid fa-mug-hot"></i>' : '<i class="fa-solid fa-utensils"></i>'}${E(r.cuisine || t(isCafe ? 'cafeCategoryLabel' : 'restaurantCategoryLabel', ''))}</span>
