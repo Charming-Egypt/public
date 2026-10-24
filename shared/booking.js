@@ -645,7 +645,7 @@ function renderBookingConfirmation(b) {
           <p class="text-white/60 text-sm">${t('paymentReceivedMsg')}</p>
         </div>
       </div>
-      <div class="relative z-10 rounded-t-[28px] mt-4 p-5" style="background:var(--bg-card)">
+      <div class="relative z-10 mt-4 p-5" style="background:var(--bg-card)">
         <div class="card rounded-2xl p-3 flex gap-3 mb-4">
           <img alt="" src="${b.image}" class="w-16 h-16 rounded-xl object-cover" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
           <div><h3 class="font-display font-bold">${b.hotelName || b.title || b.vehicleType}</h3><p class="text-[10px]">${b.roomType || b.category || ''}</p></div>
@@ -702,7 +702,7 @@ function showHotelPage(hotelId, opts = {}) {
       </div>
       ${renderPhotoGrid(h.images || [h.image])}
       <div class="detail-layout">
-        <div class="detail-main relative -mt-6 rounded-t-[28px] p-5 space-y-6 pb-32" style="background:var(--bg-card)">
+        <div class="detail-main relative -mt-6 p-5 space-y-6 pb-32" style="background:var(--bg-card)">
         <div>
           <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold">— ${(h.category || '').toUpperCase()} HOTEL</p>
           <h2 class="font-display text-2xl font-bold mb-1 leading-tight">${h.name}</h2>
@@ -1046,7 +1046,7 @@ function showExcursionPage(excursionId, opts = {}) {
       ${detailHero({ images: imgs, icon: 'fa-water', back: 'closeExcursionPage()', cls: 'detail-gallery', badge: x.category ? `<span class="dh-badge">${E(excursionsUi.categoryLabel(x.category))}</span>` : '' })}
       ${renderPhotoGrid(imgs.length ? imgs : [PLACEHOLDER_IMG])}
       <div class="detail-layout">
-        <div class="detail-main relative -mt-6 rounded-t-[28px] p-5 rd-main ex-main" style="background:var(--bg-card)">
+        <div class="detail-main relative -mt-6 p-5 rd-main ex-main" style="background:var(--bg-card)">
           <header class="rd-head">
             <h1 class="rd-title">${E(x.title)}</h1>
             ${hasRating(x) ? `<div class="rd-rating">${utils.renderStars(x.rating)}<b>${ratingNum(x)}</b>${reviewsN(x) ? `<span>(${reviewsN(x)} ${t('reviewsCountSuffix')})</span>` : ''}</div>` : ''}
@@ -1459,7 +1459,7 @@ function showRestaurantPage(id, opts = {}) {
       ${detailHero({ images: imgs, icon: isCafe ? 'fa-mug-hot' : 'fa-utensils', back: 'closeRestaurantPage()', cls: 'detail-gallery rd-hero' })}
       ${renderPhotoGrid(gallery)}
       <div class="detail-layout">
-        <div class="detail-main relative -mt-6 rounded-t-[28px] p-5 rd-main" style="background:var(--bg-card)">
+        <div class="detail-main relative -mt-6 p-5 rd-main" style="background:var(--bg-card)">
           <header class="rd-head">
             <div class="rd-badges">
               <span class="rd-badge">${isCafe ? '<i class="fa-solid fa-mug-hot"></i>' : '<i class="fa-solid fa-utensils"></i>'}${E(r.cuisine || t(isCafe ? 'cafeCategoryLabel' : 'restaurantCategoryLabel', ''))}</span>
@@ -1643,7 +1643,7 @@ function showArticlePage(id, opts = {}) {
       </div>
       ${grid}
       <div class="detail-layout">
-        <div class="detail-main relative -mt-6 rounded-t-[28px] p-5 space-y-6 pb-32" style="background:var(--bg-card)">
+        <div class="detail-main relative -mt-6 p-5 space-y-6 pb-32" style="background:var(--bg-card)">
           <div>
             <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold">— ${t('journalEyebrow')}</p>
             <h1 class="font-display text-2xl font-bold mb-2 leading-tight">${a.title}</h1>
@@ -1688,7 +1688,7 @@ function showBookingDetails(bookingId) {
           </div>
         </div>
       </div>
-      <div class="relative -mt-4 rounded-t-[28px] p-5" style="background:var(--bg-card)">
+      <div class="relative -mt-4 p-5" style="background:var(--bg-card)">
         ${bookingDetailBody(b)}
         ${b.type !== 'transfer' ? (b.reviewed ? `<div class="text-center text-xs py-2 mb-2"><i class="fa-solid fa-circle-check text-green-500"></i> ${t('alreadyReviewedMsg')}</div>` : (!isUpcoming ? `<button onclick="reviews.openModal('${b.type}','${b.hotelId || b.excursionId}', '${b.id}')" class="w-full py-3.5 rounded-2xl font-bold border border-violet-400/40 text-violet-500 mb-2"><i class="fa-solid fa-pen"></i> ${t('writeReviewBtn')}</button>` : '')) : ''}
         ${b.status === 'completed' ? `<button onclick="downloadVoucher('${b.id}', this)" class="btn-outline-violet w-full py-4 rounded-2xl font-bold mt-2"><i class="fa-solid fa-file-pdf"></i> ${voucherLabels().dl}</button><button onclick="resendVoucher('${b.id}')" class="w-full py-3 text-xs font-bold opacity-70">${voucherLabels().em}</button>` : ''}
