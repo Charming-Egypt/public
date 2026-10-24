@@ -1,0 +1,32 @@
+name: Unzip Uploaded Archive
+
+on:
+  push:
+    paths:
+      - '**.zip' # سيتم تفعيل هذه العملية فقط عند رفع ملف بصيغة zip
+
+jobs:
+  unzip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract zip files
+        run: |
+          # ابحث عن أي ملف zip مرفوع حديثاً وفك ضغطه
+          for file in *.zip; do
+            if [ -f "$file" ]; then
+              echo "Extracting $file..."
+              unzip -o "$file"
+              # احذف ملف الـ zip الأصلي بعد فك ضغطه حتى لا يبقي حجماً زائداً بالمستودع
+              rm "$file"
+            fi
+          done
+
+      - name: Commit and push unzipped files
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+          git add .
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-unzip uploaded zip file" && git push)
