@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="dark" data-site="app">
+<head>
+  <meta charset="UTF-8" />
+  <script>if(location.protocol==='http:'&&!/^(localhost|127.|[::1]|.*.local$)/.test(location.hostname))location.replace('https:'+location.href.slice(5));</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Notifications — Discover Sharm</title>
+  <meta name="description" content="Your latest updates." />
+  <link rel="canonical" href="https://www.discover-sharm.com/notifications/" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Discover Sharm" />
+  <meta property="og:title" content="Notifications — Discover Sharm" />
+  <meta property="og:description" content="Your latest updates." />
+  <meta property="og:url" content="https://www.discover-sharm.com/notifications/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="theme-color" content="#0d0d0f" />
+  <meta name="application-name" content="Discover Sharm" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Discover Sharm" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="format-detection" content="telephone=no" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+
+  <script src="/ds-bridge.js?v=1ddb6335"></script>
+  <script>
+    window.DS_SITE = "app";
+    window.DS_SITES = {"www":"https://www.discover-sharm.com","app":"https://app.discover-sharm.com"};
+    window.DS_API_BASE = "";
+    window.DS_DATA_V = "5cb562dd";
+  </script>
+  <script src="/ds-site.js?v=39bc7b81"></script>
+  <script>
+    // Runs before first paint: theme + language (no flash), and the sign-in gate.
+    // A login or "continue as guest" made on the OTHER site counts here too (see ds-bridge.js).
+    (function () {
+      try {
+        var d = document.documentElement;
+        d.dataset.theme = localStorage.getItem('ds_theme') || 'dark';
+        var l = localStorage.getItem('ds_lang') || 'en';
+        d.lang = l; d.dir = l === 'ar' ? 'rtl' : 'ltr';
+        var signedIn = localStorage.getItem('ds_auth_token') || (window.DS_HAS_SESSION && DS_HAS_SESSION());
+        if (!signedIn && !sessionStorage.getItem('ds_guest')) d.dataset.gate = 'auth';
+      } catch (e) {}
+    })();
+    window.DS_CONFIG = {"SHOW_HOTELS":false,"SHOW_EXCURSIONS":true,"SHOW_TRANSFERS":true,"SHOW_RESTAURANTS":true,"SHOW_DESTINATIONS":true,"SHOW_JOURNAL":true,"CONTACT":{"phone":"","whatsapp":"","email":"","facebook":"","instagram":"","tiktok":"","youtube":""},"VAPID":""};
+  </script>
+  <script>
+    // Defined inline, first thing in <head>, on purpose: the logo <img> tags
+    // below start loading as soon as the parser reaches them in <body>, which
+    // is long before data.js (loaded at the very end of the page) runs. If
+    // FALLBACK_LOGO were only defined in data.js, a failed logo load before
+    // that point would throw "FALLBACK_LOGO is not defined" instead of
+    // showing the fallback image.
+    window.FALLBACK_LOGO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23fcd34d'/%3E%3Cstop offset='50%25' stop-color='%23fbbf24'/%3E%3Cstop offset='100%25' stop-color='%23d97706'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='120' height='120' rx='28' fill='url(%23g)'/%3E%3Ctext x='60' y='68' text-anchor='middle' font-family='Georgia,serif' font-weight='700' font-size='42' fill='%23000000'%3EDS%3C/text%3E%3C/svg%3E";
+  </script>
+
+  <link rel="stylesheet" href="/style.css?v=085d0d30" />
+  <link rel="stylesheet" href="/tailwind.css?v=ffd6f9de" />
+  <link rel="stylesheet" href="/site.css?v=e4665fd9" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body data-route="notifications">
+  <a href="#mainApp" class="skip-link" data-i18n="skipToContent">Skip to content</a>
+  <div id="toastContainer" role="status" aria-live="polite" aria-atomic="false" class="fixed top-4 left-1/2 -translate-x-1/2 z-[200] space-y-2 pointer-events-none w-[90%] max-w-md"></div>
+
+  <!-- Photo Lightbox (opened from the desktop photo grid) -->
+  <div id="photoLightbox" class="hidden lightbox-overlay" onclick="if(event.target===this) closeLightbox()">
+    <button type="button" aria-label="Close" data-i18n-aria="ariaClose" onclick="closeLightbox()" class="lightbox-close"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+    <button type="button" aria-label="Previous" data-i18n-aria="ariaPrev" onclick="lightboxStep(-1)" class="lightbox-arrow lightbox-arrow-prev"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
+    <img id="lightboxImage" class="lightbox-img" src="" alt="">
+    <button type="button" aria-label="Next" data-i18n-aria="ariaNext" onclick="lightboxStep(1)" class="lightbox-arrow lightbox-arrow-next"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
+    <div id="lightboxCounter" class="lightbox-counter">1 / 1</div>
+  </div>
+
+  <div id="authPage" class="fixed inset-0 z-[95] hidden dark-scene overflow-y-auto">
+    <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1600&q=80')] bg-cover bg-center opacity-20"></div>
+    <div class="stars-container"></div>
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+
+    <div class="relative z-10 min-h-full flex flex-col lg:flex-row lg:items-stretch">
+
+      <!-- ============ DESKTOP DESIGN — brand panel (lg and up only) ============ -->
+      <div class="hidden lg:flex lg:w-1/2 xl:w-3/5 flex-col justify-center px-16 xl:px-24 py-14 relative overflow-hidden border-r" style="border-color:#262626; background-image:linear-gradient(160deg, rgba(10, 10, 10, .88) 0%, rgba(5, 5, 5, .80) 55%, rgba(0, 0, 0, .92) 100%), url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1600&q=85'); background-size:cover; background-position:center;">
+        <div class="relative z-10 max-w-lg">
+          <div class="w-16 h-16 mb-8 bg-gradient-to-br from-gold-300 via-gold-400 to-gold-600 rounded-2xl flex items-center justify-center shadow-2xl">
+            <i class="fa-solid fa-compass text-2xl text-ink-900" aria-hidden="true"></i>
+          </div>
+          <p class="text-gold-400 text-sm font-semibold tracking-wide mb-3" data-i18n="tagline">Luxury travel</p>
+          <h2 class="font-display text-4xl xl:text-5xl font-bold text-white leading-tight mb-5" data-i18n="authBrandTitle">Your Sharm El Sheikh journey starts here</h2>
+          <p class="text-white/50 text-base mb-10" data-i18n="authBrandSubtitle">Handpicked hotels, private excursions, and seamless transfers — all in one place.</p>
+          <ul class="space-y-4">
+            <li class="flex items-center gap-3 text-white/70 text-sm">
+              <span class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/5 border" style="border-color:#262626;"><i class="fa-solid fa-hotel text-gold-400" aria-hidden="true"></i></span>
+              <span data-i18n="authFeatureHotels">Handpicked hotels & resorts</span>
+            </li>
+            <li class="flex items-center gap-3 text-white/70 text-sm">
+              <span class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/5 border" style="border-color:#262626;"><i class="fa-solid fa-umbrella-beach text-gold-400" aria-hidden="true"></i></span>
+              <span data-i18n="authFeatureExcursions">Private excursions & tours</span>
+            </li>
+            <li class="flex items-center gap-3 text-white/70 text-sm">
+              <span class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/5 border" style="border-color:#262626;"><i class="fa-solid fa-headset text-gold-400" aria-hidden="true"></i></span>
+              <span data-i18n="authFeatureSupport">24/7 support in your language</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ============ Form panel — full-bleed on mobile, right column on desktop ============ -->
+      <div class="w-full lg:w-1/2 xl:w-2/5 flex flex-col justify-center px-5 py-10 lg:px-14 lg:py-10">
+        <div class="w-full lg:max-w-md lg:mx-auto">
+          <div class="text-center mb-6 lg:hidden">
+            <div class="w-14 h-14 mx-auto mb-3 bg-gradient-to-br from-gold-300 via-gold-400 to-gold-600 rounded-2xl flex items-center justify-center shadow-2xl"><i class="fa-solid fa-compass text-xl text-ink-900" aria-hidden="true"></i></div>
+          </div>
+          <div class="mb-6 text-center lg:text-start">
+            <h1 class="font-display text-2xl font-bold text-white" id="authTitle" data-i18n="welcomeBack">Welcome Back</h1>
+            <p class="text-white/50 text-sm mt-1" id="authSubtitle" data-i18n="authSubtitle">Sign in to manage your bookings</p>
+          </div>
+
+          <div class="auth-card">
+            <!-- Log in / Sign up switch -->
+            <div class="auth-tabs" role="tablist">
+              <button type="button" role="tab" id="authTabLogin" class="auth-tab is-active" aria-selected="true" onclick="switchAuthMode('login')" data-i18n="loginBtn">Log In</button>
+              <button type="button" role="tab" id="authTabSignup" class="auth-tab" aria-selected="false" onclick="switchAuthMode('signup')" data-i18n="signupBtn">Sign Up</button>
+            </div>
+
+            <!-- Sign-up progress (3 steps) -->
+            <div id="authProgress" class="auth-progress hidden" aria-live="polite">
+              <div class="auth-progress-top">
+                <span id="authStepCount" class="auth-progress-count">1 / 3</span>
+                <span id="authStepName" class="auth-progress-name"></span>
+              </div>
+              <div class="auth-progress-bar"><span id="authProgressFill"></span></div>
+              <ol class="auth-steps">
+                <li class="auth-step-dot is-active" data-dot="1"><span><i class="fa-solid fa-check" aria-hidden="true"></i><b>1</b></span><em data-i18n="authStepAccount">Account</em></li>
+                <li class="auth-step-dot" data-dot="2"><span><i class="fa-solid fa-check" aria-hidden="true"></i><b>2</b></span><em data-i18n="authStepDetails">Your details</em></li>
+                <li class="auth-step-dot" data-dot="3"><span><i class="fa-solid fa-check" aria-hidden="true"></i><b>3</b></span><em data-i18n="authStepConfirm">Confirm</em></li>
+              </ol>
+            </div>
+
+            <!-- Google (login, and step 1 of sign-up) -->
+            <div id="authSocial">
+              <!-- Google's own rendered button is mounted here by initGoogleSignInButton() —
+                   far more reliable across browsers than a custom button driving One Tap. -->
+              <div id="googleSignInBtn" class="w-full flex justify-center" style="min-height:44px;"></div>
+              <div class="auth-divider"><span data-i18n="orDivider">OR</span></div>
+            </div>
+
+            <form id="authForm" novalidate>
+
+              <!-- STEP 1 (and the whole log-in form): email + password -->
+              <section class="auth-pane is-active" data-pane="1">
+                <div class="auth-field">
+                  <label for="authEmail" data-i18n="email">EMAIL ADDRESS</label>
+                  <div class="auth-input">
+                    <i class="fa-regular fa-envelope auth-input-icon" aria-hidden="true"></i>
+                    <input type="email" id="authEmail" maxlength="254" placeholder="you@example.com" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" />
+                  </div>
+                  <p class="auth-err" id="errEmail" role="alert"></p>
+                </div>
+                <div class="auth-field">
+                  <label for="authPassword" data-i18n="password">PASSWORD</label>
+                  <div class="auth-input">
+                    <i class="fa-solid fa-lock auth-input-icon" aria-hidden="true"></i>
+                    <input type="password" id="authPassword" minlength="6" placeholder="••••••••" autocomplete="current-password" />
+                    <button type="button" class="auth-eye" onclick="toggleAuthPassword(this)" aria-label="Show password" data-i18n-aria="authShowPassword"><i class="fa-regular fa-eye" aria-hidden="true"></i></button>
+                  </div>
+                  <p class="auth-err" id="errPassword" role="alert"></p>
+                  <div class="auth-strength signup-only" id="authStrength" aria-hidden="true">
+                    <span></span><span></span><span></span><span></span>
+                    <em id="authStrengthLabel"></em>
+                  </div>
+                  <p class="auth-hint signup-only" data-i18n="authPasswordHint">At least 6 characters. A mix of letters and numbers is stronger.</p>
+                </div>
+                <div class="login-only text-end -mt-1 mb-1">
+                  <a href="javascript:void(0)" onclick="authForgotPassword()" class="text-gold-400 text-xs font-semibold" data-i18n="authForgot">Forgot password?</a>
+                </div>
+              </section>
+
+              <!-- STEP 2: personal details -->
+              <section class="auth-pane" data-pane="2">
+                <div class="auth-field">
+                  <label for="authName" data-i18n="fullNameLabel">FULL NAME</label>
+                  <div class="auth-input">
+                    <i class="fa-regular fa-user auth-input-icon" aria-hidden="true"></i>
+                    <input type="text" id="authName" maxlength="60" autocomplete="name" />
+                  </div>
+                  <p class="auth-err" id="errName" role="alert"></p>
+                </div>
+                <div class="auth-field">
+                  <label for="authPhone" data-i18n="phoneNumber">PHONE NUMBER</label>
+                  <div class="auth-phone">
+                    <select id="authCountryCode" aria-label="Country code" data-i18n-aria="countryCode"></select>
+                    <div class="auth-input">
+                      <i class="fa-solid fa-phone auth-input-icon" aria-hidden="true"></i>
+                      <input type="tel" id="authPhone" placeholder="1xx xxx xxxx" maxlength="20" autocomplete="tel-national" inputmode="tel" />
+                    </div>
+                  </div>
+                  <p class="auth-err" id="errPhone" role="alert"></p>
+                  <p class="auth-hint" data-i18n="authPhoneHint">We only use it to reach you about your bookings.</p>
+                </div>
+              </section>
+
+              <!-- STEP 3: review + terms -->
+              <section class="auth-pane" data-pane="3">
+                <div class="auth-review">
+                  <div class="auth-review-row">
+                    <span class="auth-review-ico"><i class="fa-regular fa-user" aria-hidden="true"></i></span>
+                    <div><small data-i18n="fullNameLabel">FULL NAME</small><b id="revName"></b></div>
+                    <button type="button" onclick="authGoStep(2)" class="auth-edit" data-i18n="authEdit">Edit</button>
+                  </div>
+                  <div class="auth-review-row">
+                    <span class="auth-review-ico"><i class="fa-regular fa-envelope" aria-hidden="true"></i></span>
+                    <div><small data-i18n="email">EMAIL ADDRESS</small><b id="revEmail" dir="ltr"></b></div>
+                    <button type="button" onclick="authGoStep(1)" class="auth-edit" data-i18n="authEdit">Edit</button>
+                  </div>
+                  <div class="auth-review-row">
+                    <span class="auth-review-ico"><i class="fa-solid fa-phone" aria-hidden="true"></i></span>
+                    <div><small data-i18n="phoneNumber">PHONE NUMBER</small><b id="revPhone" dir="ltr"></b></div>
+                    <button type="button" onclick="authGoStep(2)" class="auth-edit" data-i18n="authEdit">Edit</button>
+                  </div>
+                </div>
+                <label class="auth-check">
+                  <input type="checkbox" id="authTerms" />
+                  <span class="auth-check-box"><i class="fa-solid fa-check" aria-hidden="true"></i></span>
+                  <span><span data-i18n="authAgreePrefix">I agree to the</span> <a href="/terms/" target="_blank" rel="noopener" data-i18n="authTermsLink">Terms</a> <span data-i18n="authAnd">and</span> <a href="/privacy/" target="_blank" rel="noopener" data-i18n="authPrivacyLink">Privacy Policy</a></span>
+                </label>
+                <p class="auth-err" id="errTerms" role="alert"></p>
+              </section>
+
+              <div class="auth-actions">
+                <button type="button" id="authBackBtn" class="auth-back hidden" onclick="authBack()"><i class="fa-solid fa-arrow-left rtl-flip" aria-hidden="true"></i><span data-i18n="backBtn">Back</span></button>
+                <button type="submit" id="authSubmitBtn" class="btn-gold auth-submit" data-i18n="loginBtn">Log In</button>
+              </div>
+            </form>
+
+            <p class="text-center text-white/50 text-xs mt-5">
+              <span id="authSwitchText" data-i18n="noAccount">Don't have an account?</span>
+              <a href="javascript:void(0)" onclick="switchAuthMode(authMode === 'login' ? 'signup' : 'login')" id="authSwitchLink" class="text-gold-400 font-semibold" data-i18n="signupBtn">Sign Up</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MODALS ============ -->
+  <!-- Kashier 3D Secure — small in-page modal, not a redirect. The customer
+       stays on this URL the entire time; only the bank's OTP challenge
+       (which no gateway can skip) appears inside this iframe. -->
+  <div id="kashier3dsModal" class="fixed inset-0 z-[999] hidden items-center justify-center p-4" style="background:rgba(0,0,0,.85);">
+    <div class="relative w-full max-w-md rounded-2xl overflow-hidden shadow-2xl" style="height:min(600px,92vh); background:#0a0a0a; border:1px solid #262626;">
+      <button type="button" aria-label="Close" data-i18n-aria="ariaClose" onclick="closeKashier3ds(false)" class="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      <iframe id="kashier3dsFrame" class="w-full h-full border-0" src="" title="Card verification" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <!-- Guests Modal -->
+  <div id="guestsModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="font-display text-xl font-bold" style="color:var(--text-primary)" data-i18n="guestsRooms">Guests & Rooms</h3>
+        <button type="button" aria-label="Close" data-i18n-aria="ariaClose" onclick="closeGuestsModal()" class="w-10 h-10 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      </div>
+      <div class="space-y-6">
+        <div class="flex items-center justify-between">
+          <div><p class="font-semibold text-sm" style="color:var(--text-primary)" data-i18n="adults">Adults</p><p class="text-xs" style="color:var(--text-secondary)" data-i18n="age13">Age 13+</p></div>
+          <div class="flex items-center gap-3"><button class="counter-btn" onclick="adjustGuestCount('adults', -1)">-</button><span id="adultsCount" class="text-xl font-bold w-8 text-center" style="color:var(--text-primary)">2</span><button class="counter-btn" onclick="adjustGuestCount('adults', 1)">+</button></div>
+        </div>
+        <div class="flex items-center justify-between">
+          <div><p class="font-semibold text-sm" style="color:var(--text-primary)" data-i18n="children">Children</p><p class="text-xs" style="color:var(--text-secondary)" data-i18n="childrenAgeHint">Tell us each child's age for accurate pricing</p></div>
+          <div class="flex items-center gap-3"><button class="counter-btn" onclick="adjustGuestCount('children', -1)">-</button><span id="childrenCount" class="text-xl font-bold w-8 text-center" style="color:var(--text-primary)">0</span><button class="counter-btn" onclick="adjustGuestCount('children', 1)">+</button></div>
+        </div>
+        <!-- One age <select> per child, injected/removed live by renderChildAgeInputs() as the
+             counter above changes. Pricing (computeRoomPricing) reads state.guests.childAges,
+             so this list is the actual source of truth for child fees, not just the count. -->
+        <div id="childAgesList" class="space-y-2"></div>
+        <div class="flex items-center justify-between">
+          <div><p class="font-semibold text-sm" style="color:var(--text-primary)" data-i18n="infants">Infants</p><p class="text-xs" style="color:var(--text-secondary)" data-i18n="under2FreeNoSeatBed">Under 2 · free, no seat/bed</p></div>
+          <div class="flex items-center gap-3"><button class="counter-btn" onclick="adjustGuestCount('infants', -1)">-</button><span id="infantsCount" class="text-xl font-bold w-8 text-center" style="color:var(--text-primary)">0</span><button class="counter-btn" onclick="adjustGuestCount('infants', 1)">+</button></div>
+        </div>
+        <div class="flex items-center justify-between border-t pt-4" style="border-color:var(--border-card)">
+          <div><p class="font-semibold text-sm" style="color:var(--text-primary)" data-i18n="rooms">Rooms</p><p class="text-xs" style="color:var(--text-secondary)" data-i18n="max5Rooms">Max 5 rooms</p></div>
+          <div class="flex items-center gap-3"><button class="counter-btn" onclick="adjustGuestCount('rooms', -1)">-</button><span id="roomsCount" class="text-xl font-bold w-8 text-center" style="color:var(--text-primary)">1</span><button class="counter-btn" onclick="adjustGuestCount('rooms', 1)">+</button></div>
+        </div>
+      </div>
+      <button onclick="applyGuests()" class="btn-gold w-full py-4 rounded-2xl font-bold text-ink-900 mt-6" data-i18n="apply">Apply</button>
+    </div>
+  </div>
+
+  <!-- Datepicker Modal (موحد للبحث والحجز) — one connected calendar handles
+       both check-in and check-out without closing in between; see the
+       `datepicker` object in frontend.js. -->
+  <div id="datepickerModal" class="modal-overlay hidden" style="z-index: 99999;">
+    <div class="modal-content" style="max-width:340px;">
+      <div class="flex items-center justify-between mb-2">
+        <button type="button" aria-label="Next" data-i18n-aria="ariaNext" onclick="datepicker.changeMonth(1)" class="w-9 h-9 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-chevron-right text-xs" aria-hidden="true"></i></button>
+        <h3 id="dpMonthLabel" class="font-display font-bold text-base" style="color:var(--text-primary)"></h3>
+        <button type="button" aria-label="Previous" data-i18n-aria="ariaPrev" onclick="datepicker.changeMonth(-1)" class="w-9 h-9 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-chevron-left text-xs" aria-hidden="true"></i></button>
+      </div>
+      <p id="dpStatus" class="text-center text-xs font-semibold mb-3" style="color:#f59e0b; min-height:16px;"></p>
+      <div id="dpPresets" class="flex gap-2 mb-3" style="display:none;">
+        <button type="button" onclick="datepicker.applyPreset(1)" class="flex-1 py-2 rounded-xl text-[11px] font-semibold field-box" style="color:var(--text-primary)" data-i18n="dpOneNight">1 Night</button>
+        <button type="button" onclick="datepicker.applyPreset(2)" class="flex-1 py-2 rounded-xl text-[11px] font-semibold field-box" style="color:var(--text-primary)" data-i18n="dpWeekend">Weekend</button>
+        <button type="button" onclick="datepicker.applyPreset(7)" class="flex-1 py-2 rounded-xl text-[11px] font-semibold field-box" style="color:var(--text-primary)" data-i18n="dpWeek">1 Week</button>
+      </div>
+      <div class="dp-grid mb-1 text-center" id="dpWeekdays"></div>
+      <div class="dp-grid" id="dpGrid"></div>
+      <button onclick="datepicker.close()" class="w-full mt-5 py-3 rounded-2xl text-sm font-semibold field-box" style="color:var(--text-primary)" data-i18n="close">Close</button>
+    </div>
+  </div>
+
+  <!-- Room preview modal -->
+  <div id="roomPreviewModal" class="modal-overlay hidden" onclick="if (event.target === this) closeRoomPreview()">
+    <div class="modal-content" style="max-width:380px; padding:0; overflow:hidden;">
+      <div id="roomPreviewContent"></div>
+    </div>
+  </div>
+
+  <!-- Write a review modal -->
+  <div id="reviewModal" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width:380px;">
+      <div class="flex justify-between items-center mb-5">
+        <h3 class="font-display text-lg font-bold" style="color:var(--text-primary)" data-i18n="writeReview">Write a Review</h3>
+        <button type="button" aria-label="Close" data-i18n-aria="ariaClose" onclick="reviews.closeModal()" class="w-9 h-9 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      </div>
+      <p class="text-xs mb-4 leading-relaxed" style="color:var(--text-secondary)" data-i18n="reviewVerifyNote">To keep reviews genuine, enter the Booking ID from your confirmation to verify you stayed / booked with us.</p>
+      <form onsubmit="reviews.submit(event)" class="space-y-4">
+        <div>
+          <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="bookingIdLabel">BOOKING ID</label>
+          <input type="text" id="reviewBookingId" required maxlength="20" placeholder="DS-XXXXXX" class="input-field w-full px-3 py-2.5 text-sm uppercase" style="color:var(--text-primary)" />
+        </div>
+        <div>
+          <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="yourRating">YOUR RATING</label>
+          <div class="star-input flex gap-2" id="reviewStarInput">
+            <i class="fa-solid fa-star" aria-hidden="true" data-star="1" onclick="reviews.setStars(1)"></i>
+            <i class="fa-solid fa-star" aria-hidden="true" data-star="2" onclick="reviews.setStars(2)"></i>
+            <i class="fa-solid fa-star" aria-hidden="true" data-star="3" onclick="reviews.setStars(3)"></i>
+            <i class="fa-solid fa-star" aria-hidden="true" data-star="4" onclick="reviews.setStars(4)"></i>
+            <i class="fa-solid fa-star" aria-hidden="true" data-star="5" onclick="reviews.setStars(5)"></i>
+          </div>
+        </div>
+        <div>
+          <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="yourName">YOUR NAME</label>
+          <input type="text" id="reviewName" required maxlength="60" class="input-field w-full px-3 py-2.5 text-sm" style="color:var(--text-primary)" />
+        </div>
+        <div>
+          <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="nationality">NATIONALITY</label>
+          <select id="reviewNationality" required class="input-field w-full px-3 py-2.5 text-sm" style="color:var(--text-primary)"></select>
+        </div>
+        <div>
+          <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="yourReview">YOUR REVIEW</label>
+          <textarea id="reviewComment" rows="3" required maxlength="1000" class="input-field w-full px-3 py-2.5 text-sm" style="color:var(--text-primary)"></textarea>
+        </div>
+        <div>
+          <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="photosOptional">PHOTOS (OPTIONAL)</label>
+          <input type="file" id="reviewImages" accept="image/*" multiple class="hidden" onchange="reviews.addImages(this.files)" />
+          <div class="review-photo-picker" id="reviewImagePreview">
+            <button type="button" onclick="document.getElementById('reviewImages').click()" class="review-photo-add" data-i18n="add"><i class="fa-solid fa-camera" aria-hidden="true"></i><span>Add</span></button>
+          </div>
+        </div>
+        <button type="submit" class="btn-violet w-full py-3.5 rounded-2xl font-bold" data-i18n="submitReview">Submit Review</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Flight passengers modal -->
+  <div id="flightPaxModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="font-display text-xl font-bold" style="color:var(--text-primary)" data-i18n="passengersClass">Passengers & Class</h3>
+        <button type="button" aria-label="Close" data-i18n-aria="ariaClose" onclick="flightSearch.closePaxModal()" class="w-10 h-10 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      </div>
+      <div class="space-y-6">
+        <div class="flex items-center justify-between">
+          <div><p class="font-semibold text-sm" style="color:var(--text-primary)" data-i18n="adults">Adults</p><p class="text-xs" style="color:var(--text-secondary)" data-i18n="age12">Age 12+</p></div>
+          <div class="flex items-center gap-3"><button class="counter-btn" onclick="flightSearch.adjust('adults',-1)">-</button><span id="fpAdults" class="text-xl font-bold w-8 text-center" style="color:var(--text-primary)">1</span><button class="counter-btn" onclick="flightSearch.adjust('adults',1)">+</button></div>
+        </div>
+        <div class="flex items-center justify-between">
+          <div><p class="font-semibold text-sm" style="color:var(--text-primary)" data-i18n="children">Children</p><p class="text-xs" style="color:var(--text-secondary)" data-i18n="age211">Age 2-11</p></div>
+          <div class="flex items-center gap-3"><button class="counter-btn" onclick="flightSearch.adjust('children',-1)">-</button><span id="fpChildren" class="text-xl font-bold w-8 text-center" style="color:var(--text-primary)">0</span><button class="counter-btn" onclick="flightSearch.adjust('children',1)">+</button></div>
+        </div>
+        <div class="flex items-center justify-between">
+          <div><p class="font-semibold text-sm" style="color:var(--text-primary)" data-i18n="infants">Infants</p><p class="text-xs" style="color:var(--text-secondary)" data-i18n="under2">Under 2</p></div>
+          <div class="flex items-center gap-3"><button class="counter-btn" onclick="flightSearch.adjust('infants',-1)">-</button><span id="fpInfants" class="text-xl font-bold w-8 text-center" style="color:var(--text-primary)">0</span><button class="counter-btn" onclick="flightSearch.adjust('infants',1)">+</button></div>
+        </div>
+        <div>
+          <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="cabinClass">CABIN CLASS</label>
+          <select id="fpCabin" class="input-field w-full px-3 py-2.5 text-sm" style="color:var(--text-primary)"><option>Economy</option><option>Business</option><option>First</option></select>
+        </div>
+      </div>
+      <button onclick="flightSearch.applyPax()" class="btn-gold w-full py-4 rounded-2xl font-bold text-ink-900 mt-6" data-i18n="apply">Apply</button>
+    </div>
+  </div>
+
+  <input type="file" id="avatarFileInput" accept="image/*" class="hidden" onchange="profileAvatar.handleFile(event)" />
+
+  <!-- Side Drawer -->
+  <div id="sideDrawerOverlay" onclick="sidebar.close()"></div>
+  <div id="sideDrawer">
+    <div class="p-5 flex flex-col h-full">
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-2">
+          <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjJnB5c7R2uZzCNpzUtsow1OaJSWKAuybM2Wxux8wLk0EYV4TMA-xe1gIRXyrQ8Hw1dDVhgL94mMfLdMmB1HmsQXlI0vYYoJ83Z2o6Iu3r1UTxZxm7KbtD6jDQnZyVyInzRPr2dKnCqEdUuOW6QaVKtqC0fyVi7vJ65sWVJZSgiSRle3UXA3il3Qk6kdJwN=s150" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-8 w-8 rounded-lg" alt="logo" />
+          <span class="font-display font-bold text-white text-sm" data-i18n="discoverSharm2">Discover Sharm</span>
+        </div>
+        <button type="button" aria-label="Close" data-i18n-aria="ariaClose" onclick="sidebar.close()" class="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-white/70"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      </div>
+      <div id="drawerUserBox" class="flex items-center gap-3 mb-6 p-3 rounded-2xl cursor-pointer" style="background:var(--chrome-field-bg)" onclick="nav.go('profile'); sidebar.close()">
+        <div class="w-11 h-11 rounded-full bg-gradient-to-br from-gold-300 to-gold-600 flex items-center justify-center font-display font-bold text-ink-900 overflow-hidden" id="drawerAvatar">A</div>
+        <div class="min-w-0 flex-1">
+          <div class="flex items-center gap-2">
+            <p class="text-white text-sm font-semibold truncate" id="drawerName" >Guest</p>
+            <span id="drawerTierBadge" class="hidden ml-2 text-base" title="Sharmawy Level"></span>
+          </div>
+          <p class="text-white/40 text-[11px] truncate" id="drawerEmail"></p>
+        </div>
+        <i class="fa-solid fa-chevron-left text-white/30 text-xs" aria-hidden="true"></i>
+      </div>
+      <div class="space-y-1 flex-1 overflow-y-auto">
+        <div class="drawer-link" onclick="nav.go('home'); sidebar.close()"><i class="fa-solid fa-house w-5 text-center" aria-hidden="true"></i><span data-i18n="navHome">Home</span></div>
+        <div class="drawer-link hidden" id="drawerHotelsLink" onclick="nav.go('hotels'); sidebar.close()"><i class="fa-solid fa-hotel w-5 text-center" aria-hidden="true"></i><span data-i18n="navHotels">Hotels</span></div>
+        <div class="drawer-link" onclick="nav.go('excursions'); sidebar.close()"><i class="fa-solid fa-umbrella-beach w-5 text-center" aria-hidden="true"></i><span data-i18n="navExcursions">Excursions</span></div>
+        <div class="drawer-link" onclick="nav.go('transfers'); sidebar.close()"><i class="fa-solid fa-shuttle-van w-5 text-center" aria-hidden="true"></i><span data-i18n="navTransfers">Airport Transfers</span></div>
+        <div class="drawer-link" onclick="nav.go('restaurants'); sidebar.close()"><i class="fa-solid fa-utensils w-5 text-center" aria-hidden="true"></i><span data-i18n="navRestaurants">Restaurants & Cafes</span></div>
+        <div class="drawer-link" onclick="nav.go('bookings'); sidebar.close()"><i class="fa-regular fa-calendar-check w-5 text-center" aria-hidden="true"></i><span data-i18n="navBookings">My Bookings</span></div>
+        <div class="drawer-link hidden" id="drawerFavoritesLink" onclick="nav.go('favorites'); sidebar.close()"><i class="fa-regular fa-heart w-5 text-center" aria-hidden="true"></i><span data-i18n="navFavorites">Favorites</span></div>
+        <div class="drawer-link" onclick="nav.go('settings'); sidebar.close()"><i class="fa-solid fa-gear w-5 text-center" aria-hidden="true"></i><span data-i18n="settingsTitle">Settings</span></div>
+      </div>
+      <div class="pt-4 border-t border-white/10 space-y-4">
+        <div class="flex items-center justify-between">
+          <span class="text-white/60 text-xs font-semibold" data-i18n="darkMode">Dark Mode</span>
+          <div class="theme-switch" id="themeSwitchDrawer" onclick="THEME.toggle()"><div class="knob"><i class="fa-solid fa-moon" aria-hidden="true" style="font-size:9px;color:#0a0a0a"></i></div></div>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-white/60 text-xs font-semibold" data-i18n="language">Language</span>
+          <select onchange="I18N.set(this.value)" class="lang-select rounded-xl px-3 py-2 text-xs outline-none" style="background:var(--chrome-field-bg); color:var(--chrome-text); border:1px solid var(--chrome-border)">
+            <option value="en">English</option><option value="ar">العربية</option><option value="ru">Русский</option><option value="de">Deutsch</option><option value="it">Italiano</option><option value="tr">Türkçe</option>
+          </select>
+        </div>
+        <button id="drawerAuthBtn" onclick="auth.logout()" class="w-full py-3 rounded-2xl text-red-400 text-sm font-semibold border border-red-400/20 flex items-center justify-center gap-2"><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i><span id="drawerAuthLabel" data-i18n="logout">Logout</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sticky Header -->
+  <div class="sticky-home-header" id="stickyHomeHeader">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <button type="button" aria-label="Open menu" data-i18n-aria="ariaMenu" onclick="sidebar.open()" class="icon-btn w-10 h-10 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
+        <img src="https://blogger.googleusercontent.com/img/a/AVvXsEijXrWtde6tToaU9FtagWqPfjqA6WXHuyb4o-kQ208kWktjrv7N0nDGNdYbT2fl_mIDx4PsLwQ11GKYLYWhnA5n3ccOWGHIW1izBqqhLJhXhfeLFsCAa5pAgAfGvCx0opO6HJ_ZdNjRP3koAnLAEAdzWFbmj7KRiUAWxveqhw3pBPNhoFnBlVJvbwVGmdpQ=s1600" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="sticky-header-logo" alt="Discover Sharm" />
+      </div>
+      <a href="/profile/" data-nl data-page="profile" class="nav-item icon-btn w-11 h-11 rounded-xl flex items-center justify-center">
+        <span class="nav-avatar-circle" id="snavProfileAvatar"></span>
+      </a>
+      </div>
+  </div>
+
+  <!-- Desktop Navigation (1024px and up — the bottom tab bar is mobile-only,
+       so without this, Bookings/Profile/Settings/Notifications had no way
+       to be reached on a desktop browser). Transparent over the hero by
+       default, like the mobile header-floating; gets a solid background
+       once scrolled (".scrolled", toggled in frontend.js) or on any page
+       that isn't the hero-bearing home page. -->
+  <nav id="desktopNav" class="hidden lg:flex fixed top-0 inset-x-0 z-50 items-center justify-between h-20 px-10">
+    <div class="dn-left flex items-center gap-4">
+      <a href="/" data-nl class="dn-logo flex items-center gap-2 flex-shrink-0" aria-label="Home">
+        <img src="https://blogger.googleusercontent.com/img/a/AVvXsEijXrWtde6tToaU9FtagWqPfjqA6WXHuyb4o-kQ208kWktjrv7N0nDGNdYbT2fl_mIDx4PsLwQ11GKYLYWhnA5n3ccOWGHIW1izBqqhLJhXhfeLFsCAa5pAgAfGvCx0opO6HJ_ZdNjRP3koAnLAEAdzWFbmj7KRiUAWxveqhw3pBPNhoFnBlVJvbwVGmdpQ=s1600" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-9 w-auto desktop-nav-logo" alt="Discover Sharm" />
+      </a>
+    </div>
+    <div class="dn-pill flex items-center text-sm font-semibold">
+      <a href="/" data-nl data-page="home" class="nav-item dn-link" data-i18n="navHome">Home</a>
+      <a href="/excursions/" data-nl data-page="excursions" class="nav-item dn-link drawer-link" data-i18n="navExcursions">Excursions</a>
+      <a href="/hotels/" data-nl data-page="hotels" id="desktopHotelsLink" class="nav-item dn-link hidden" data-i18n="navHotels">Hotels</a>
+      <a href="/transfers/" data-nl data-page="transfers" class="nav-item dn-link drawer-link" data-i18n="navTransfers">Transfers</a>
+      <a href="/restaurants/" data-nl data-page="restaurants" class="nav-item dn-link drawer-link" data-i18n="navRestaurants">Restaurants</a>
+      <a href="/bookings/" data-nl data-page="bookings" class="nav-item dn-link" data-i18n="myBookings">My Bookings</a>
+    </div>
+    <div class="dn-right flex items-center gap-2">
+      <button type="button" aria-label="Open menu" data-i18n-aria="ariaMenu" onclick="sidebar.open()" class="dn-round"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
+      <a href="/notifications/" data-nl data-page="notifications" class="nav-item dn-round flex items-center justify-center relative"><i class="fa-regular fa-bell" aria-hidden="true"></i><span class="notif-badge hidden absolute top-2 right-2 w-2 h-2 bg-gold-400 rounded-full"></span></a>
+      <a href="/settings/" data-nl aria-label="Settings" data-i18n-aria="ariaSettings" data-page="settings" class="nav-item dn-round flex items-center justify-center"><i class="fa-solid fa-gear" aria-hidden="true"></i></a>
+      <a href="/profile/" data-nl data-page="profile" class="nav-item dn-round dn-avatar flex items-center justify-center">
+        <span class="nav-avatar-circle" id="navProfileAvatarDesktop"></span>
+      </a>
+      <a href="/excursions/" data-nl class="dn-cta"><span data-i18n="bookJourney">Book a journey</span></a>
+    </div>
+  </nav>
+
+  <!-- Main App -->
+
+  <div id="mainApp" class="relative z-10" tabindex="-1">
+    <div id="notificationsPage" class="page active">
+      <div class="min-h-screen pb-28">
+        <div class="px-5 pt-6 pb-4 flex items-center gap-3 header-light">
+          <button type="button" aria-label="Back" data-i18n-aria="ariaBack" data-back onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+          <div class="flex-1"><p class="section-subtitle" data-i18n="updatesEyebrow">— UPDATES</p><h1 class="text-xl font-bold font-display" style="color:var(--text-primary)" data-i18n="notifications">Notifications</h1></div>
+          <button onclick="notifications.markAllRead()" class="text-[11px] font-semibold text-violet-500" data-i18n="markAllRead">Mark all as read</button>
+        </div>
+        <div class="px-5 py-6 space-y-3" id="notificationsList"></div>
+      </div>
+    </div>
+
+<!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <div class="flex items-center justify-around relative">
+        <a href="/excursions/" data-nl data-page="excursions" title="Excursions" aria-label="Excursions" class="nav-item flex items-center justify-center relative text-white"><i class="fa-solid fa-umbrella-beach text-[22px]" aria-hidden="true"></i></a>
+        <a href="/bookings/" data-nl data-page="bookings" title="My Bookings" aria-label="My Bookings" class="nav-item flex items-center justify-center relative text-white"><i class="fa-regular fa-calendar-check text-[22px]" aria-hidden="true"></i></a>
+        <a href="/" data-nl data-page="home" class="nav-item-home flex flex-col items-center justify-center flex-shrink-0">
+          <span class="nav-home-logo"><img src="https://blogger.googleusercontent.com/img/a/AVvXsEjJnB5c7R2uZzCNpzUtsow1OaJSWKAuybM2Wxux8wLk0EYV4TMA-xe1gIRXyrQ8Hw1dDVhgL94mMfLdMmB1HmsQXlI0vYYoJ83Z2o6Iu3r1UTxZxm7KbtD6jDQnZyVyInzRPr2dKnCqEdUuOW6QaVKtqC0fyVi7vJ65sWVJZSgiSRle3UXA3il3Qk6kdJwN=s150" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" alt="" class=" rounded-full object-cover" /></span>
+        </a>
+        <a href="/transfers/" data-nl data-page="transfers" title="Transfers" aria-label="Transfers" class="nav-item flex items-center justify-center relative text-white"><i class="fa-solid fa-shuttle-van text-[22px]" aria-hidden="true"></i></a>
+        <a href="/notifications/" data-nl  data-page="notifications" title="Notifications" aria-label="Notifications" class="nav-item flex items-center justify-center relative text-white"><i class="fa-regular fa-bell text-[22px]" aria-hidden="true"></i><span class="notif-badge hidden absolute top-2.5 right-2.5 w-2 h-2 bg-gold-400 rounded-full"></span></a>
+         
+      </div>
+    </nav>
+
+  </div>
+
+  <!-- Supabase not configured: running on the legacy API -->
+  <script src="/data.js?v=1e792408"></script>
+  
+  <script src="/booking.js?v=99651b08"></script>
+  <script src="/frontend.js?v=ea774f3c"></script>
+  <script src="/router.js?v=daa495e0"></script>
+  <script src="/pwa.js?v=bf19051b"></script>
+</body>
+</html>
