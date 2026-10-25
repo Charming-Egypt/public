@@ -689,7 +689,7 @@ function showHotelPage(hotelId, opts = {}) {
     <button onclick="startBooking('${h.id}', 0)" class="btn-gold w-full py-3.5 rounded-2xl font-bold text-ink-900 detail-book-btn">${t('bookNowBtn')}</button>
     <p class="detail-sidebar-note"><i class="fa-solid fa-location-dot"></i> ${h.location}</p>`;
   page.innerHTML = `
-    <div class="min-h-screen pb-28" style="background:var(--bg-card)">
+    <div class="min-h-screen" style="background:var(--bg-card)">
       <div class="relative h-80 detail-gallery">
         <div id="hotelGallery" class="gallery-track w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth" style="scrollbar-width:none" onscroll="onGalleryScroll(this)">
           ${(h.images || [h.image]).map((img, i) => `<img alt="" src="${getImageUrl(img)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%" onclick="openLightbox(${i})">`).join('')}
@@ -1042,7 +1042,7 @@ function showExcursionPage(excursionId, opts = {}) {
   ].filter(Boolean);
 
   page.innerHTML = `
-    <div class="min-h-screen pb-28 rd ex" style="background:var(--bg-card)">
+    <div class="min-h-screen rd ex" style="background:var(--bg-card)">
       ${detailHero({ images: imgs, icon: 'fa-water', back: 'closeExcursionPage()', cls: 'detail-gallery', badge: x.category ? `<span class="dh-badge">${E(excursionsUi.categoryLabel(x.category))}</span>` : '' })}
       ${renderPhotoGrid(imgs.length ? imgs : [PLACEHOLDER_IMG])}
       <div class="detail-layout">
