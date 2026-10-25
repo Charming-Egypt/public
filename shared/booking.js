@@ -1643,7 +1643,7 @@ function showArticlePage(id, opts = {}) {
       </div>
       ${grid}
       <div class="detail-layout">
-        <div class="detail-main relative -mt-6 rounded-t-[28px] p-5 space-y-6 pb-32" style="background:var(--bg-card)">
+        <div class="detail-main relative -mt-6 rounded-t-[28px] p-5 space-y-6 art-main" style="background:var(--bg-card)">
           <div>
             <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold">— ${t('journalEyebrow')}</p>
             <h1 class="font-display text-2xl font-bold mb-2 leading-tight">${a.title}</h1>

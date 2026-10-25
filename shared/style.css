@@ -5092,3 +5092,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .ex-facts { grid-template-columns: repeat(3, 1fr); } .ex-fact-wide { grid-column: auto; }
   .ex-inc { grid-template-columns: 1fr 1fr; }
 }
+
+@media (max-width: 1023px) {
+  .rd-main.detail-main, .art-main.detail-main { box-shadow: none; border: 0; background: var(--bg-card); padding-bottom: 40px !important; }
+}
