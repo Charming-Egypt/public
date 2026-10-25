@@ -69,14 +69,24 @@
 [data-site="app"] .bottom-nav .nav-home-logo img { width: 70%; height: 70%; object-fit: contain; pointer-events: none; }
 
 /* ---------- home: banner hero + floating search card ---------- */
-[data-site="app"] #heroSection { height: auto; min-height: 0; background: transparent; overflow: visible; padding-bottom: 0; padding-top: 0; margin-top: 0; }
+[data-site="app"] #heroSection { --hdr: calc(62px + env(safe-area-inset-top, 0px)); --hero-h: 312px; height: auto; min-height: 0; background: transparent; overflow: visible; padding-bottom: 0; }
 [data-site="app"] #heroSection .stars-container { display: none; }
-[data-site="app"] #heroSection .hero-bg-img, [data-site="app"] #heroSection .hero-overlay { inset: 0 0 auto 0; width: 100%; height: calc(340px + var(--sat)); border-radius: 0 0 36px 36px; }
-[data-site="app"] #heroSection .hero-overlay { background: linear-gradient(180deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,.08) 40%, rgba(0,0,0,.72) 100%) !important; }
+/* لون احتياطي لو الصورة اتأخرت أو فشلت */
+[data-site="app"] #heroSection::before { content: ""; position: absolute; inset: var(--hdr) 12px auto 12px; height: var(--hero-h); border-radius: 28px; background: linear-gradient(160deg, #0f3b5c, #071a2a); }
+[data-site="app"] #heroSection .hero-bg-img, [data-site="app"] #heroSection .hero-overlay { inset: var(--hdr) 12px auto 12px; width: calc(100% - 24px); height: var(--hero-h); border-radius: 28px; }
+[data-site="app"] #heroSection .hero-overlay { background: linear-gradient(180deg, rgba(0,0,0,.28) 0%, rgba(0,0,0,.05) 38%, rgba(0,0,0,.74) 100%) !important; }
 [data-site="app"] #heroSection .hero-content { padding: 0 !important; color: #fff; }
-[data-site="app"] #heroSection .hero-content > div:first-child { padding: calc(14px + var(--sat)) 20px 0 !important; height: calc(70px + var(--sat)); }
-[data-site="app"] #heroSection .header-floating { background: none; border: 0; box-shadow: none; padding: 0; }
-[data-site="app"] #heroSection .hero-content > div:nth-child(2) { height: 270px; display: flex; flex-direction: column; justify-content: flex-end; text-align: start; padding: 0 28px 38px !important; }
+[data-site="app"] #heroSection .hero-content > div:first-child { height: var(--hdr); padding: env(safe-area-inset-top, 0px) 16px 0 !important; display: flex; align-items: center; color: var(--text-primary); }
+[data-site="app"] #heroSection .header-floating { width: 100%; background: none; border: 0; box-shadow: none; padding: 0; }
+[data-site="app"] #heroSection .hero-content > div:first-child .icon-btn { width: 44px; height: 44px; border-radius: 50% !important; background: var(--bg-card) !important; border: 1px solid var(--ap-line) !important; color: var(--text-primary) !important; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
+[data-site="app"] #heroSection .site-logo { filter: none; }
+:root[data-site="app"]:not([data-theme="dark"]) #heroSection .site-logo { filter: brightness(0); }
+[data-site="app"] #heroSection .hero-content > div:nth-child(2) { height: var(--hero-h); margin: 0 12px; display: flex; flex-direction: column; justify-content: flex-end; text-align: start; padding: 0 22px 58px !important; }
+
+
+
+
+
 [data-site="app"] #heroEyebrowText { color: rgba(255,255,255,.8) !important; letter-spacing: .22em; font-size: 10.5px; margin-bottom: 8px; }
 [data-site="app"] #heroTitleText { font-family: 'Inter', sans-serif !important; font-size: 2rem; font-weight: 800; line-height: 1.08; letter-spacing: -.02em; margin-bottom: 8px; }
 [data-site="app"] #heroTitleText * { font-family: 'Inter', sans-serif !important; }
