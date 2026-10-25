@@ -15,6 +15,9 @@
    button, banner hero, rounded cards, accent pills).  Scoped to the app
    site only; the www / admin builds never load this file.
    ========================================================================== */
+/* status-bar height (notch / Dynamic Island) — 0 in a normal browser tab, >0 only in the installed PWA */
+:root[data-site="app"] { --sat: env(safe-area-inset-top, 0px); }
+
 [data-site="app"] {
   --ap-accent: #f97316; --ap-accent-2: #fb923c;
   --gold-400: #f97316; --gold-500: #ea580c; --brand-50: #fff7ed; --brand-100: #ffedd5; --brand-400: #fb923c; --brand-500: #f97316; --brand-600: #ea580c; --brand-700: #c2410c; --search-count-btn-bg: #fff7ed;
@@ -66,16 +69,12 @@
 [data-site="app"] .bottom-nav .nav-home-logo img { width: 70%; height: 70%; object-fit: contain; pointer-events: none; }
 
 /* ---------- home: banner hero + floating search card ---------- */
-[data-site="app"] #heroSection { height: auto; min-height: 0; background: transparent; overflow: visible; padding-bottom: 0; 
-  padding-top: env(safe-area-inset-top, 0px);
-  margin-top: calc(-1 * env(safe-area-inset-top, 0px));
-
-}
+[data-site="app"] #heroSection { height: auto; min-height: 0; background: transparent; overflow: visible; padding-bottom: 0; padding-top: 0; margin-top: 0; }
 [data-site="app"] #heroSection .stars-container { display: none; }
-[data-site="app"] #heroSection .hero-bg-img, [data-site="app"] #heroSection .hero-overlay { inset: 0 0 auto 0; width: 100%; height: 340px; border-radius: 0 0 36px 36px; }
-[data-site="app"] #heroSection .hero-overlay { background: linear-gradient(180deg, rgba(0,0,0,.42) 0%, rgba(0,0,0,.08) 40%, rgba(0,0,0,.72) 100%) !important; }
+[data-site="app"] #heroSection .hero-bg-img, [data-site="app"] #heroSection .hero-overlay { inset: 0 0 auto 0; width: 100%; height: calc(340px + var(--sat)); border-radius: 0 0 36px 36px; }
+[data-site="app"] #heroSection .hero-overlay { background: linear-gradient(180deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,.08) 40%, rgba(0,0,0,.72) 100%) !important; }
 [data-site="app"] #heroSection .hero-content { padding: 0 !important; color: #fff; }
-[data-site="app"] #heroSection .hero-content > div:first-child { padding: calc(14px + env(safe-area-inset-top, 0px)) 20px 0 !important; height: 70px; }
+[data-site="app"] #heroSection .hero-content > div:first-child { padding: calc(14px + var(--sat)) 20px 0 !important; height: calc(70px + var(--sat)); }
 [data-site="app"] #heroSection .header-floating { background: none; border: 0; box-shadow: none; padding: 0; }
 [data-site="app"] #heroSection .hero-content > div:nth-child(2) { height: 270px; display: flex; flex-direction: column; justify-content: flex-end; text-align: start; padding: 0 28px 38px !important; }
 [data-site="app"] #heroEyebrowText { color: rgba(255,255,255,.8) !important; letter-spacing: .22em; font-size: 10.5px; margin-bottom: 8px; }
@@ -201,3 +200,22 @@
 html.is-pwa body { overscroll-behavior-y: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 html.is-pwa input, html.is-pwa textarea, html.is-pwa [contenteditable] { -webkit-user-select: text; user-select: text; }
 html.is-pwa #pwaInstallRow { display: none !important; }
+
+/* ==========================================================================
+   HERO UNDER THE STATUS BAR  (installed PWA — iOS "black-translucent" + viewport-fit=cover)
+   The picture runs to the very top of the screen, behind the clock / battery;
+   the buttons sit just under the status bar.  --sat = env(safe-area-inset-top).
+   ========================================================================== */
+/* every detail hero (hotel / article / transfer = .h-80 gallery, trip / restaurant / destination = .dh) grows by the
+   status-bar height, so the visible picture keeps its size and only extends upward */
+[data-site="app"] .detail-gallery { height: calc(20rem + var(--sat)); }
+[data-site="app"] .dh.detail-gallery, [data-site="app"] .dh { height: calc(340px + var(--sat)); }
+/* back / share / favourite buttons: below the status bar */
+[data-site="app"] .ds-detail-back,
+[data-site="app"] .detail-gallery > .absolute.top-4 { top: calc(var(--sat) + 12px) !important; }
+[data-site="app"] .detail-gallery > .absolute.top-4.left-1\/2 { top: calc(var(--sat) + 16px) !important; }
+/* dark scrim at the top of the picture so the white clock / battery stay readable on bright photos */
+[data-site="app"] .dh-shade { background: linear-gradient(180deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,0) calc(var(--sat) + 90px), rgba(0,0,0,0) 52%, rgba(0,0,0,.55) 100%); }
+[data-site="app"] .detail-gallery::after { content: ''; position: absolute; inset: 0 0 auto 0; height: calc(var(--sat) + 80px); background: linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,0)); pointer-events: none; z-index: 1; }
+/* installed app only: thin fixed scrim behind the status bar so the white clock is legible over ANY page (also light theme) */
+html.is-pwa[data-site="app"] body::before { content: ''; position: fixed; inset: 0 0 auto 0; height: var(--sat); background: linear-gradient(180deg, rgba(0,0,0,.4), rgba(0,0,0,0)); z-index: 9980; pointer-events: none; }
