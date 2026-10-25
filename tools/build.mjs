@@ -288,7 +288,7 @@ ${linkify(bottomNav)}
       id: '/', name: cfg.siteName, short_name: 'Discover', lang: 'en',
       description: cfg.pages.home?.description || 'Excursions, transfers and dining in Sharm El-Sheikh.',
       start_url: '/?utm_source=pwa', scope: '/', display: 'fullscreen', display_override: ['fullscreen', 'minimal-ui'],
-      orientation: 'portrait', background_color: '#0d0d0f', theme_color: '#0d0d0f', categories: ['travel', 'lifestyle'],
+      orientation: 'portrait', background_color: '#000000', theme_color: '#000000', categories: ['travel', 'lifestyle'],
       icons: [
         { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
         { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
