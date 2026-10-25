@@ -287,7 +287,7 @@ ${linkify(bottomNav)}
     out.write('manifest.webmanifest', JSON.stringify({
       id: '/', name: cfg.siteName, short_name: 'Discover', lang: 'en',
       description: cfg.pages.home?.description || 'Excursions, transfers and dining in Sharm El-Sheikh.',
-      start_url: '/?utm_source=pwa', scope: '/', display: 'standalone', display_override: ['standalone', 'minimal-ui'],
+      start_url: '/?utm_source=pwa', scope: '/', display: 'fullscreen', display_override: ['fullscreen', 'minimal-ui'],
       orientation: 'portrait', background_color: '#0d0d0f', theme_color: '#0d0d0f', categories: ['travel', 'lifestyle'],
       icons: [
         { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
