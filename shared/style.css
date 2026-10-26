@@ -4945,7 +4945,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .rd-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .rd-act:focus-visible, .rd-tab:focus-visible, .rd-chip:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 2px; }
 
-.rd-tabs { position: sticky; top: 0; z-index: 20; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 14px -20px 0; padding: 10px 20px; background: color-mix(in srgb, var(--bg-card) 92%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--border-field); }
+.rd-tabs { position: sticky; top: 0; z-index: 20; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 14px 0 0; padding: 10px 0; background: color-mix(in srgb, var(--bg-card) 92%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--border-field); }
 .rd-tabs::-webkit-scrollbar { display: none; }
 .rd-tab { flex: 0 0 auto; padding: 8px 16px; border-radius: 99px; border: 1px solid transparent; background: transparent; color: var(--text-secondary); font: 700 13px/1 inherit; cursor: pointer; white-space: nowrap; transition: background .15s ease, color .15s ease; }
 .rd-tab.on { color: #fff; background: var(--rd-accent); }
@@ -5091,4 +5091,9 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .dh { height: 460px; }
   .ex-facts { grid-template-columns: repeat(3, 1fr); } .ex-fact-wide { grid-column: auto; }
   .ex-inc { grid-template-columns: 1fr 1fr; }
+}
+
+
+@media (max-width: 1023px) {
+  .rd-main.detail-main, .art-main.detail-main { box-shadow: none; border: 0; background: var(--bg-card); padding-bottom: 40px !important; }
 }
