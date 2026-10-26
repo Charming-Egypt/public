@@ -5,7 +5,7 @@
   'use strict';
   if (window.DS_SITE !== 'app') return;
   var doc = document.documentElement;
-  var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+  var standalone = (window.matchMedia && (matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: fullscreen)').matches)) || navigator.standalone === true;
   if (standalone) doc.classList.add('is-pwa');
 
   function tr(k, fb) { try { var v = typeof t === 'function' ? t(k) : null; return v && v !== k ? v : fb; } catch (e) { return fb; } }
