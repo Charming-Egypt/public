@@ -1,0 +1,24 @@
+{
+  "name": "discover-sharm",
+  "private": true,
+  "description": "Discover Sharm — three static sites (www, app, admin) from one source tree",
+  "scripts": {
+    "build": "node tools/build.mjs all",
+    "build:www": "node tools/build.mjs www",
+    "build:app": "node tools/build.mjs app",
+    "build:admin": "node tools/build.mjs admin",
+    "dev:www": "node tools/serve.mjs --site www --port 8081",
+    "dev:app": "node tools/serve.mjs --site app --port 8082",
+    "dev:admin": "node tools/serve.mjs --site admin --port 8083",
+    "seed": "node tools/make-seed.mjs",
+    "test:payments": "node workers/tests/payments.test.mjs",
+    "import:bookings": "node tools/import-firebase-bookings.mjs",
+    "test:translate": "node workers/tests/translate.test.mjs",
+    "test:content": "node workers/tests/content.test.mjs",
+    "export:content": "node tools/export-to-github.mjs",
+    "test:settings": "node workers/tests/settings.test.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
