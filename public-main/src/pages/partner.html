@@ -1,0 +1,38 @@
+    <div id="partnerPage" class="page">
+      <div class="min-h-screen">
+        <div class="listing-hero hidden lg:block">
+          <div class="listing-hero-inner">
+            <p class="listing-eyebrow" data-i18n="growWithUs">— GROW WITH US</p>
+            <h1 class="listing-title" data-i18n="footerPartner">Become a Partner</h1>
+            <p class="listing-count" data-i18n="listYourHotelExcursionOrTransfer">List your hotel, excursion, or transfer service on Discover Sharm</p>
+          </div>
+        </div>
+        <div class="px-5 pt-6 pb-4 header-light lg:hidden">
+          <div class="flex items-center gap-3">
+            <button type="button" aria-label="Back" data-i18n-aria="ariaBack" data-back onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+            <div><p class="section-subtitle" data-i18n="growWithUs">— GROW WITH US</p><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)" data-i18n="footerPartner">Become a Partner</h1></div>
+          </div>
+        </div>
+        <div class="static-page-body px-5 py-6 pb-28">
+          <p class="static-page-lead" data-i18n="whetherYouRunAHotelA">Whether you run a hotel, a trip or excursion company, or a transfer service in Sharm El-Sheikh, we'd love to feature you. Tell us about your business below and our partnerships team will follow up.</p>
+          <form class="partner-form" onsubmit="submitPartnerForm(event)">
+            <label class="text-[10px] tracking-widest text-violet-500 font-semibold" data-i18n="partnerType">PARTNER TYPE</label>
+            <div class="partner-type-row">
+              <label class="partner-type-chip"><input type="radio" name="partnerType" value="Hotel" checked><i class="fa-solid fa-hotel" aria-hidden="true"></i> <span data-i18n="partnerTypeHotel">Hotel</span></label>
+              <label class="partner-type-chip"><input type="radio" name="partnerType" value="Trip Supplier"><i class="fa-solid fa-umbrella-beach" aria-hidden="true"></i> <span data-i18n="partnerTypeTripSupplier">Trip Supplier</span></label>
+              <label class="partner-type-chip"><input type="radio" name="partnerType" value="Transfer"><i class="fa-solid fa-shuttle-van" aria-hidden="true"></i> <span data-i18n="partnerTypeTransfer">Transfer</span></label>
+              <label class="partner-type-chip"><input type="radio" name="partnerType" value="Restaurant"><i class="fa-solid fa-utensils" aria-hidden="true"></i> <span data-i18n="partnerTypeRestaurant">Restaurant / Café</span></label>
+            </div>
+            <input type="text" id="partnerBusinessName" required placeholder="Business name" data-i18n-placeholder="phBusinessName" class="input-field w-full px-3 py-2.5 text-sm">
+            <input type="text" id="partnerContactName" required placeholder="Contact person" data-i18n-placeholder="phContactPerson" class="input-field w-full px-3 py-2.5 text-sm">
+            <input type="tel" id="partnerPhone" required placeholder="Phone number" data-i18n-placeholder="phPhoneNumber" class="input-field w-full px-3 py-2.5 text-sm">
+            <input type="email" id="partnerEmail" required placeholder="Email" data-i18n-placeholder="phEmail" class="input-field w-full px-3 py-2.5 text-sm">
+            <label class="text-[10px] tracking-widest text-violet-500 font-semibold mt-2" data-i18n="supportingDocuments">SUPPORTING DOCUMENTS</label>
+            <p class="text-[11px]" style="color:var(--text-secondary)" data-i18n="uploadClearPhotosOrPdfsHelps">Upload clear photos or PDFs — helps us verify and onboard you faster.</p>
+            <div id="partnerDocSlots" class="partner-doc-grid"></div>
+            <textarea id="partnerMessage" rows="4" placeholder="Tell us about your business (optional)" data-i18n-placeholder="phTellUsAboutBusiness" class="input-field w-full px-3 py-2.5 text-sm"></textarea>
+            <button type="submit" class="btn-gold w-full py-3.5 rounded-2xl font-bold text-ink-900" data-i18n="submitApplication">Submit Application</button>
+          </form>
+        </div>
+      </div>
+    </div>
