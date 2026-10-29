@@ -1,0 +1,124 @@
+# كل المتغيّرات (Cloudflare فقط — مفيش حاجة في الكود)
+
+> **القواعد:**
+> - متغيرات **Pages** بتتحقن وقت الـ build، فبعد أي تغيير: Deployments ← **Retry deployment**.
+> - متغيرات **Workers** بتتطبق على طول بعد الحفظ (Save and deploy). ملفات `wrangler.*.toml` مفيهاش قيم (`keep_vars = true`) فنشر الـ Worker مش هيمسح اللي في الداشبورد.
+> - النوع: **Text** = عادي، **Secret** = مخفي (للمفاتيح السرية).
+
+## أولًا — القيم اللي هتجيبها
+
+| القيمة | تجيبها منين |
+|---|---|
+| **Supabase URL** | Supabase ← Project Settings ← API ← *Project URL* (`https://xxxx.supabase.co`) |
+| **Supabase anon key** | نفس الصفحة ← *anon public* |
+| **Supabase service_role** | نفس الصفحة ← *service_role* (**سرّي جدًا — للـ Worker الدفع بس**) |
+| **Google Client ID** | Google Cloud Console ← APIs & Services ← Credentials ← OAuth 2.0 Client ID (Web) ← *Client ID*. (ونفس الـ Client ID/Secret تتفعّل في Supabase ← Authentication ← Providers ← Google) |
+| **رابط الدفع** | بعد نشر Worker الدفع: `https://discover-sharm-payments.<حسابك>.workers.dev` أو دومينك `https://pay.discover-sharm.com` |
+| **رابط المحتوى** | بعد نشر Worker المحتوى: `https://discover-sharm-content.<حسابك>.workers.dev` أو `https://content.discover-sharm.com` |
+| **GitHub token** | GitHub ← Settings ← Developer settings ← Fine-grained tokens ← *Repository access: Only select repositories → ريبو الداتا بس* ← Permissions ← **Contents: Read and write** (ومفيش حاجة تانية) |
+| **رابط الترجمة** | بعد نشر Worker الترجمة: `https://discover-sharm-translate.<حسابك>.workers.dev` أو `https://translate.discover-sharm.com` |
+| **Kashier** | لوحة Kashier ← Merchant ID + API Key + Secret Key |
+| **Resend** (اختياري) | resend.com ← API Keys |
+
+> الروابط تتكتب كاملة بـ `https://` وبدون `/` في الآخر (البناء بيصلّحها لو نسيت، بس الأفضل تكتبها صح).
+
+## ثانيًا — مشاريع Pages (Settings ← Variables and Secrets)
+
+| المتغير | www | app | admin | النوع |
+|---|:-:|:-:|:-:|---|
+| `DS_SUPABASE_URL` | ✅ | ✅ | ✅ | Text |
+| `DS_SUPABASE_ANON_KEY` | ✅ | ✅ | ✅ | Text |
+| `DS_GOOGLE_CLIENT_ID` | ✅ | ✅ | | Text |
+| `DS_PAYMENTS_BASE` | ✅ | ✅ | | Text |
+| `DS_TRANSLATE_BASE` | | | ✅ | Text |
+| `DS_CONTENT_BASE` | ✅ | ✅ | ✅ | Text — رابط Worker المحتوى (`https://content.discover-sharm.com`). من غيره الموقع بيرجع يقرا/يكتب من الداتا بيس زي الأول |
+| `DS_SETTINGS_BASE` | ✅ | ✅ | ✅ | Text — رابط settings-worker (`https://settings.discover-sharm.com`). إعدادات الموقع واللغات بتتقرا/تتكتب من `settings.json` في GitHub. متغيرات الـ Worker: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `GITHUB_REPO`, `GITHUB_BRANCH`, `ALLOWED_ORIGINS` + secret `GITHUB_TOKEN` |
+| `DS_MEDIA_BASE` | ✅ | ✅ | ✅ | Text — بيدج الصور `https://media.discover-sharm.com` (Cloudflare Pages مخصص للصور، شوف `media-site/README.md`). المتصفح بيجرّب يحمّل الصورة منه، ولو مش موجودة بيرجع للـ Worker |
+| `DS_STATIC_BASE` | ✅ | ✅ | ✅ | Text — رابط الـ R2 `https://data.discover-sharm.com` اللي فيه الكتالوج والإعدادات كـ JSON ثابت (بيتحدّث لحظة الحفظ فتعديلات الأدمن بتظهر في ثواني). من غيره الموقع بيشتغل عن طريق الـ Workers |
+| `DS_CONTACT_PHONE` | ✅ | ✅ | | Text — مثال `+20 100 000 0000` |
+| `DS_CONTACT_WHATSAPP` | ✅ | ✅ | | Text — رقم واتساب بكود الدولة `20100…` |
+| `DS_CONTACT_EMAIL` | ✅ | ✅ | | Text |
+| `DS_SOCIAL_FACEBOOK` | ✅ | ✅ | | Text — رابط كامل |
+| `DS_SOCIAL_INSTAGRAM` | ✅ | ✅ | | Text — رابط كامل |
+| `DS_SOCIAL_TIKTOK` | ✅ | ✅ | | Text — رابط كامل |
+| `DS_SOCIAL_YOUTUBE` | ✅ | ✅ | | Text — رابط كامل (اختياري) |
+
+> بيانات التواصل والسوشيال بقت متغيرات Cloudflare (مش في إعدادات السوبر أدمن). لو كل المتغيرات فاضية الصفحة بتفضل زي ما هي؛ ولو حطيت أي واحد، أيقونات السوشيال اللي مالهاش رابط بتختفي. بعد التغيير: **Retry deployment**.
+
+(ولو الـ build مش لاقي Node مناسب ضيف `NODE_VERSION` = `20` في كل مشروع.)
+
+## ثالثًا — Worker الدفع `discover-sharm-payments` (Settings ← Variables and Secrets)
+
+| المتغير | القيمة | النوع |
+|---|---|---|
+| `SUPABASE_URL` | Supabase Project URL | Text |
+| `SUPABASE_ANON_KEY` | anon public key | Text |
+| `SUPABASE_SERVICE_ROLE_KEY` | service_role key | **Secret** |
+| `KASHIER_MERCHANT_ID` | Merchant ID من Kashier (`MID-…`) | Text |
+| `KASHIER_API_KEY` | API Key من Kashier | **Secret** |
+| `KASHIER_SECRET_KEY` | Secret Key (توقيع الـ webhook) | **Secret** |
+| `KASHIER_MODE` | `live` (أو `test` للتجربة) | Text |
+| `KASHIER_CURRENCY` | `EGP` | Text |
+| `SITE_URL` | `https://app.discover-sharm.com` (رابط الفاوتشر في الإيميل) | Text |
+| `MAIL_FROM` | `Discover Sharm <bookings@discover-sharm.com>` | Text |
+| `RESEND_API_KEY` | اختياري — إيميلات التأكيد | **Secret** |
+
+اختياري: KV Namespace باسم الـ binding `RATE_LIMIT_KV` (Settings ← Bindings) لتحديد معدل الطلبات.
+
+## رابعًا — Worker الترجمة `discover-sharm-translate` (Settings ← Variables and Secrets)
+
+| المتغير | القيمة | النوع |
+|---|---|---|
+| `SUPABASE_URL` | Supabase Project URL (نفس الأدمن) | Text |
+| `SUPABASE_ANON_KEY` | anon public key | Text |
+| `ALLOWED_ORIGINS` | `https://admin.discover-sharm.com` | Text |
+
+والـ **Workers AI binding** باسم `AI` موجود في `wrangler.translate.toml` (`[ai]`)؛ لو نشرته من الداشبورد بدل wrangler ضيفه من Settings ← Bindings ← Add ← Workers AI ← اسم المتغير `AI`.
+
+## خامسًا — الترتيب الصح أول مرة
+1. انشر Worker الدفع والترجمة (`npx wrangler deploy -c wrangler.payments.toml` / `-c wrangler.translate.toml`).
+2. اضبط متغيرات كل Worker من الجداول فوق.
+3. اربط الدومينين (`pay.…` و `translate.…`) من Settings ← Domains & Routes، أو استخدم رابط workers.dev.
+4. حطي روابطهم في متغيرات Pages (`DS_PAYMENTS_BASE` / `DS_TRANSLATE_BASE`) مع باقي متغيرات الجدول التاني.
+5. Retry deployment للتلات مشاريع.
+6. Supabase ← Authentication ← URL Configuration: ضيف الدومينات التلاتة في Redirect URLs.
+
+## PWA (app.discover-sharm.com)
+
+The app site is an installable PWA. Everything is generated by `node tools/build.mjs` into `dist/app`:
+`manifest.webmanifest`, `sw.js` (service worker, versioned per build), `offline.html`, `icons/` (from `shared/pwa/`), `pwa.js` (install card, update bar, offline banner).
+- Icons: replace the PNGs in `shared/pwa/` (192, 512, maskable 192/512, apple-touch 180, favicon 32) to change the app icon.
+- `sw.js` is served `no-cache` (see `_headers`) so updates reach users; a "new version" bar appears and refreshes the app.
+- Cached for offline: the app shell, visited pages, catalog JSON (`/data/*`) and photos (bounded). API / Supabase / auth / payments are never cached.
+- Needs HTTPS (Cloudflare Pages provides it). Install: Chrome/Android shows the install card; iOS shows "Share → Add to Home Screen".
+
+### PWA — icons, screenshots, push, offline outbox
+- **Icons**: `shared/pwa/` (made from the supplied store icons). `badge.png` is the monochrome notification badge.
+- **Install screenshots**: drop real PNG screenshots (780×1688, portrait) into `shared/pwa-shots/` (e.g. `1-home.png`, `2-excursions.png` …). The build adds them to `manifest.webmanifest` → `screenshots` and copies them to `/screenshots/`. Without the folder the manifest has none.
+- **Push notifications** (every new row in `public.notifications` becomes a push to the user's devices):
+  1. `node tools/gen-vapid.mjs` → public + private key.
+  2. Run migration `supabase/migrations/20261022000900_push.sql`.
+  3. `supabase secrets set VAPID_PUBLIC_KEY=… VAPID_PRIVATE_KEY=… VAPID_SUBJECT=mailto:you@domain PUSH_WEBHOOK_SECRET=<random>` then `supabase functions deploy send-push --no-verify-jwt`.
+  4. Supabase Dashboard → Database → Webhooks → table `notifications`, INSERT → Edge Function `send-push`, header `x-webhook-secret: <same secret>`.
+  5. Cloudflare Pages (app project): `DS_VAPID_PUBLIC_KEY` = the public key → redeploy. Without it the "Notifications" row in Settings stays hidden.
+  iPhone/iPad only receive push after the app is installed to the Home Screen (iOS 16.4+).
+- **Offline outbox / Background Sync**: contact messages and reviews written offline are stored in IndexedDB (`ds-outbox`) and sent automatically when the connection returns (page `online` event, next launch, or the Background Sync `ds-outbox` tag on Chromium). Bookings need online card payment, so offline they are saved as a draft; when back online a "Finish your booking → Continue" bar appears (and a notification if the app is in the background).
+
+
+## Worker المحتوى (`discover-sharm-content`) — الفنادق والرحلات والترانسفير والمطاعم والتدوينات
+
+| المتغير | النوع | القيمة |
+|---|---|---|
+| `GITHUB_TOKEN` | **Secret** | الـ fine-grained token (ريبو الداتا فقط، Contents: Read and write) |
+| `SUPABASE_SERVICE_ROLE_KEY` | **Secret** | نفس مفتاح الـ service_role بتاع Worker الدفع |
+| `SUPABASE_URL` · `SUPABASE_ANON_KEY` | Text | زي باقي الـ Workers |
+| `GITHUB_REPO` | Text | `اسم-الحساب/اسم-ريبو-الداتا` |
+| `GITHUB_BRANCH` | Text | `main` |
+| `ALLOWED_ORIGINS` | Text | `https://www.discover-sharm.com,https://app.discover-sharm.com,https://admin.discover-sharm.com` |
+
+
+## متغيرات اختيارية لـ Worker الترجمة (`discover-sharm-translate`)
+| المتغير | الافتراضي | ملاحظة |
+|---|---|---|
+| `TRANSLATE_MODEL` | `@cf/google/gemma-4-26b-a4b-it` | موديل الترجمة الأساسي (أي Text Generation model من Workers AI) |
+| `TRANSLATE_FALLBACK_MODEL` | `@cf/meta/llama-3.3-70b-instruct-fp8-fast` | بيتجرب لو الأساسي فشل في نص معيّن، وبعده m2m100 كآخر حل |
