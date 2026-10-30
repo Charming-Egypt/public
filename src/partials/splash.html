@@ -1,0 +1,28 @@
+<div id="splashPage" role="presentation" aria-hidden="true" style="position:fixed;inset:0;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:{{SPLASH_BG}};opacity:1;transition:opacity .4s ease;">
+    <!-- In-app splash: lives in the HTML shell so it paints instantly. Same colour as manifest background_color (SPLASH_BG in tools/build.mjs).
+         Separate from the home-screen icon files (icon-*.png) on purpose: changing this logo never touches the installed icon. -->
+    <style>
+      @keyframes dsSplashPulse { 0%,100% { transform: scale(1); opacity: .95; } 50% { transform: scale(1.06); opacity: 1; } }
+      #splashPage .ds-splash-logo { width: min(48vw, 11rem); height: auto; object-fit: contain; animation: dsSplashPulse 1.6s ease-in-out infinite; }
+      #splashPage .ds-splash-text { margin: 1.5rem 0 0; color: #fff; font: 700 .95rem/1.2 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; letter-spacing: .28em; text-transform: uppercase; text-align: center; }
+      @media (prefers-reduced-motion: reduce) { #splashPage .ds-splash-logo { animation: none; } }
+    </style>
+    <img src="/icons/splash-logo.png?v={{ICON_V}}" class="ds-splash-logo" width="480" height="541" alt="" decoding="async" fetchpriority="high" onerror="this.onerror=null;if(typeof FALLBACK_LOGO!=='undefined')this.src=FALLBACK_LOGO;" />
+    <p class="ds-splash-text">Discover Sharm</p>
+    <script>
+      (function () {
+        var done = false;
+        function hide() {
+          if (done) return; done = true;
+          var s = document.getElementById('splashPage');
+          if (!s) return;
+          s.style.pointerEvents = 'none';
+          s.style.opacity = '0';                       // 0.4s fade (transition declared inline above)
+          setTimeout(function () { if (s.parentNode) s.parentNode.removeChild(s); }, 400);
+        }
+        if (document.readyState === 'complete') setTimeout(hide, 0);
+        else window.addEventListener('load', hide);
+        setTimeout(hide, 600);                         // fallback: never block on a slow asset
+      })();
+    </script>
+  </div>
