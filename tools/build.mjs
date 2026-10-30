@@ -307,7 +307,7 @@ ${linkify(bottomNav)}
     const shortcuts = [['excursions', 'Excursions', '/excursions/'], ['transfers', 'Transfers', '/transfers/'], ['restaurants', 'Restaurants', '/restaurants/'], ['bookings', 'My Bookings', '/bookings/']]
       .filter(([k]) => pageEnabled(k)).map(([, name, url]) => ({ name, short_name: name, url, icons: [{ src: IC('icon-192.png'), sizes: '192x192', type: 'image/png' }] }));
     out.write('manifest.webmanifest', JSON.stringify({
-      id: '/', name: cfg.siteName, short_name: 'Discover', lang: 'en',
+      id: '/', name: cfg.siteName, short_name: 'Discover Sharm', lang: 'en',
       description: cfg.pages.home?.description || 'Excursions, transfers and dining in Sharm El-Sheikh.',
       start_url: '/?utm_source=pwa', scope: '/', display: 'standalone', display_override: ['standalone', 'minimal-ui'],
       orientation: 'portrait', background_color: SPLASH_BG, theme_color: SPLASH_BG, categories: ['travel', 'lifestyle'],
@@ -315,7 +315,7 @@ ${linkify(bottomNav)}
         { src: IC('icon-192.png'), sizes: '192x192', type: 'image/png', purpose: 'any' },
         { src: IC('icon-512.png'), sizes: '512x512', type: 'image/png', purpose: 'any' },
         { src: IC('icon-maskable-192.png'), sizes: '192x192', type: 'image/png', purpose: 'maskable' },
-        { src: IC('icon-maskable-512.png'), sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+        { src: IC('icon-512.png'), sizes: '512x512', type: 'image/png', purpose: 'maskable' },
       ],
       shortcuts,
       screenshots: fs.existsSync(path.join(ROOT, 'shared/pwa-shots')) ? fs.readdirSync(path.join(ROOT, 'shared/pwa-shots')).filter((f) => /\.png$/.test(f)).sort()
