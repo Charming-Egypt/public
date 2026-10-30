@@ -68,9 +68,7 @@
 /* ---------- home: banner hero + floating search card ---------- */
 [data-site="app"] #heroSection { --hdr: calc(62px + env(safe-area-inset-top, 0px)); --hero-h: 312px; height: auto; min-height: 0; background: transparent; overflow: visible; padding-bottom: 0; }
 [data-site="app"] #heroSection .stars-container { display: none; }
-/* fallback colour if the photo is slow or fails: the card stays a deep sea-blue panel instead of a grey patch */
 [data-site="app"] #heroSection::before { content: ""; position: absolute; inset: var(--hdr) 12px auto 12px; height: var(--hero-h); border-radius: 28px; background: linear-gradient(160deg, #0f3b5c, #071a2a); }
-/* header sits on the page body (same colour as the status bar in light + dark); the hero is a rounded slider-style card under it */
 [data-site="app"] #heroSection .hero-bg-img, [data-site="app"] #heroSection .hero-overlay { inset: var(--hdr) 12px auto 12px; width: calc(100% - 24px); height: var(--hero-h); border-radius: 28px; }
 [data-site="app"] #heroSection .hero-overlay { background: linear-gradient(180deg, rgba(0,0,0,.28) 0%, rgba(0,0,0,.05) 38%, rgba(0,0,0,.74) 100%) !important; }
 [data-site="app"] #heroSection .hero-content { padding: 0 !important; color: #fff; }
@@ -78,7 +76,6 @@
 [data-site="app"] #heroSection .header-floating { width: 100%; background: none; border: 0; box-shadow: none; padding: 0; }
 [data-site="app"] #heroSection .hero-content > div:first-child .icon-btn { width: 44px; height: 44px; border-radius: 50% !important; background: var(--bg-card) !important; border: 1px solid var(--ap-line) !important; color: var(--text-primary) !important; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
 [data-site="app"] #heroSection .site-logo { filter: none; }
-/* the logo keeps its original artwork in both themes (a faint shadow only keeps the white lettering readable on the light page) */
 :root[data-site="app"]:not([data-theme="dark"]) #heroSection .site-logo { filter: drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
 [data-site="app"] #heroSection .hero-content > div:nth-child(2) { height: var(--hero-h); margin: 0 12px; display: flex; flex-direction: column; justify-content: flex-end; text-align: start; padding: 0 22px 58px !important; }
 [data-site="app"] #heroEyebrowText { color: rgba(255,255,255,.8) !important; letter-spacing: .22em; font-size: 10.5px; margin-bottom: 8px; }
@@ -174,11 +171,8 @@
 [data-site="app"] #authPage .auth-hint { color: var(--text-secondary); }
 [data-site="app"] #authPage [class*="text-white"] { color: var(--text-primary) !important; }
 [data-site="app"] #authPage .text-gold-400 { color: var(--ap-accent) !important; }
-
-/* auth page: the same drifting waves as the rest of the app, behind the logo / title / card (the card stays above them) */
 [data-site="app"] #authPage > .ds-waves--auth { position: fixed; z-index: 0; }
 [data-site="app"] #authPage > .relative { z-index: 10; }
-/* auth page — text colours that were hard-coded for the dark scene (white on white in Light Mode). Everything now follows the theme tokens. */
 [data-site="app"] #authPage .auth-review-row small { color: var(--text-secondary); }
 [data-site="app"] #authPage .auth-review-row b { color: var(--text-primary); }
 [data-site="app"] #authPage .auth-edit { color: var(--ap-accent); }
@@ -233,9 +227,7 @@ html.is-pwa body { overscroll-behavior-y: none; -webkit-user-select: none; user-
 html.is-pwa input, html.is-pwa textarea, html.is-pwa [contenteditable] { -webkit-user-select: text; user-select: text; }
 html.is-pwa #pwaInstallRow { display: none !important; }
 
-/* ---------- detail pages (trip, hotel, transfer, restaurant, destination, article) ----------
-   Same idea as the home hero: the back/share bar sits on the page body (same colour as the status bar — see pwa.js) and the photo is a rounded,
-   slider-style card with a small side margin. The sheet below no longer overlaps the photo. */
+/* ---------- detail pages (trip, hotel, transfer, restaurant, destination, article) ---------- */
 [data-site="app"] .dh { --dh-bar: calc(62px + env(safe-area-inset-top, 0px)); height: auto; padding: var(--dh-bar) 12px 0; overflow: visible; background: transparent; }
 [data-site="app"] .dh-track { height: 300px; border-radius: 28px; background: linear-gradient(160deg, #0f3b5c, #071a2a); }
 [data-site="app"] .dh-shade { inset: var(--dh-bar) 12px 0 12px; border-radius: 28px; }
@@ -250,24 +242,19 @@ html.is-pwa #pwaInstallRow { display: none !important; }
 
 
 /* ==========================================================================
-   APP — TOP WAVES  (same curved language as the bottom tab bar)
-   Three layered, slowly drifting waves sit UNDER the status bar, the header and the hero.
-   • Each layer is a CSS mask (wave strip at the bottom + solid block above it) filled with a gradient, exactly like the tab bar.
-   • The very top of every gradient is the page colour (--bg-body), so in the installed PWA the transparent / theme-coloured
-     status bar and the waves read as one surface in both light and dark mode (pwa.js keeps <meta theme-color> in step).
-   • One global canopy lives in #mainApp (home + list pages); detail pages carry their own inside .dh (see detailHero()).
+   APP — TOP WAVES
    ========================================================================== */
 :root[data-site="app"]:not([data-theme="dark"]) {
   --bg-body-a: rgba(246,245,243,.86);
-  --wa-0: var(--bg-body); --wa-1: #e9f5f9; --wa-2: #bfe3f0; --wa-3: rgba(164,213,233,0);   /* sea: page colour → light sea → fades into the page */
-  --wv-b: linear-gradient(180deg, rgba(246,245,243,0) 0%, rgba(253,232,211,.55) 50%, rgba(251,199,154,.9) 100%);   /* sand   */
-  --wv-c: linear-gradient(180deg, rgba(249,115,22,0) 0%, rgba(249,115,22,0) 38%, rgba(251,146,60,.32) 74%, rgba(249,115,22,.88) 100%);   /* sunset crest */
+  --wa-0: var(--bg-body); --wa-1: #e9f5f9; --wa-2: #bfe3f0; --wa-3: rgba(164,213,233,0);
+  --wv-b: linear-gradient(180deg, rgba(246,245,243,0) 0%, rgba(253,232,211,.55) 50%, rgba(251,199,154,.9) 100%);
+  --wv-c: linear-gradient(180deg, rgba(249,115,22,0) 0%, rgba(249,115,22,0) 38%, rgba(251,146,60,.32) 74%, rgba(249,115,22,.88) 100%);
 }
 :root[data-site="app"][data-theme="dark"] {
   --bg-body-a: rgba(13,13,15,.86);
-  --wa-0: var(--bg-body); --wa-1: #0b2236; --wa-2: #12486e; --wa-3: rgba(18,72,110,0);   /* deep sea: page colour → navy → fades into the page */
-  --wv-b: linear-gradient(180deg, rgba(13,13,15,0) 0%, rgba(70,30,14,.6) 50%, rgba(154,52,18,.85) 100%);   /* ember  */
-  --wv-c: linear-gradient(180deg, rgba(249,115,22,0) 0%, rgba(249,115,22,0) 38%, rgba(249,115,22,.34) 74%, rgba(251,146,60,.92) 100%);   /* sunset crest */
+  --wa-0: var(--bg-body); --wa-1: #0b2236; --wa-2: #12486e; --wa-3: rgba(18,72,110,0);
+  --wv-b: linear-gradient(180deg, rgba(13,13,15,0) 0%, rgba(70,30,14,.6) 50%, rgba(154,52,18,.85) 100%);
+  --wv-c: linear-gradient(180deg, rgba(249,115,22,0) 0%, rgba(249,115,22,0) 38%, rgba(249,115,22,.34) 74%, rgba(251,146,60,.92) 100%);
 }
 [data-site="app"] {
   --wm-a: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 36' preserveAspectRatio='none'%3E%3Cpath d='M0 0H400V22C340 33 270 33 200 22S60 11 0 22Z'/%3E%3C/svg%3E");
@@ -275,13 +262,12 @@ html.is-pwa #pwaInstallRow { display: none !important; }
   --wm-c: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 36' preserveAspectRatio='none'%3E%3Cpath d='M0 0H400V19C345 31 285 31 200 19S55 7 0 19Z'/%3E%3C/svg%3E");
 }
 [data-site="app"] .ds-waves {
-  --st: env(safe-area-inset-top, 0px); --hd: calc(var(--st) + 62px);     /* status bar + header row */
-  --wa: 230px; --wb: 46px; --wc: 22px;                                    /* how far each layer reaches below the header (list pages) */
+  --st: env(safe-area-inset-top, 0px); --hd: calc(var(--st) + 62px);
+  --wa: 230px; --wb: 46px; --wc: 22px;
   position: absolute; top: 0; left: 0; right: 0; height: calc(var(--hd) + var(--wa)); z-index: 0; pointer-events: none; overflow: hidden;
 }
-/* home + detail pages: the hero card follows right under the header, so the crests live inside the header row */
 [data-site="app"] .ds-waves--hero { --hd: calc(var(--st) + 86px); --wa: 300px; --wb: 8px; --wc: -14px; }
-#mainApp:has(#homePage.active) > .ds-waves { --hd: calc(var(--st) + 86px); --wa: 300px; --wb: 8px; --wc: -14px; }   /* separate rule: an engine without :has() must still read the line above */
+#mainApp:has(#homePage.active) > .ds-waves { --hd: calc(var(--st) + 86px); --wa: 300px; --wb: 8px; --wc: -14px; }
 #mainApp:has(.page.active .dh) > .ds-waves { display: none; }
 [data-site="app"] .dh { isolation: isolate; }
 [data-site="app"] .dh > .ds-waves--hero { z-index: -1; }
@@ -308,14 +294,12 @@ html.is-pwa #pwaInstallRow { display: none !important; }
 @keyframes dsWaveL { to { transform: translate3d(-50%, 0, 0); } }
 @keyframes dsWaveR { from { transform: translate3d(-50%, 0, 0); } to { transform: translate3d(0, 0, 0); } }
 @media (prefers-reduced-motion: reduce) { [data-site="app"] .ds-waves > i { animation: none; } }
-html.ds-far .ds-waves > i { animation-play-state: paused; }   /* scrolled well past the waves: stop animating (battery) */
+html.ds-far .ds-waves > i { animation-play-state: paused; }
 
-/* inner-page headers: transparent while the waves are visible, frosted once content scrolls under them */
 :root[data-site="app"]:not(.ds-scrolled) .header-light { background: transparent !important; }
 :root[data-site="app"].ds-scrolled .header-light { background: var(--bg-body-a) !important; -webkit-backdrop-filter: blur(18px) saturate(160%) !important; backdrop-filter: blur(18px) saturate(160%) !important; }
 :root[data-site="app"] .header-light { transition: background-color .25s ease; }
 
-/* status-bar scrim: once the page scrolls, whatever slides under the (transparent) status bar is frosted so the clock / battery stay readable */
 :root[data-site="app"]::after {
   content: ""; position: fixed; top: 0; left: 0; right: 0; height: env(safe-area-inset-top, 0px); z-index: 40; pointer-events: none;
   background: var(--bg-body-a); -webkit-backdrop-filter: blur(16px) saturate(160%); backdrop-filter: blur(16px) saturate(160%);
@@ -323,7 +307,6 @@ html.ds-far .ds-waves > i { animation-play-state: paused; }   /* scrolled well p
 }
 :root[data-site="app"].ds-scrolled::after { opacity: 1; }
 
-/* ---------- header band: 24px taller on home + detail pages so the waves show under the buttons; logo always dead-centre ---------- */
 [data-site="app"] #heroSection { --hdr: calc(86px + env(safe-area-inset-top, 0px)); }
 [data-site="app"] .dh { --dh-bar: calc(86px + env(safe-area-inset-top, 0px)); }
 [data-site="app"] .dh .dh-btn.ds-detail-back { top: calc(env(safe-area-inset-top, 0px) + 21px) !important; }
@@ -333,37 +316,25 @@ html.ds-far .ds-waves > i { animation-play-state: paused; }   /* scrolled well p
 
 /* ==========================================================================
    APP — v7 fixes
-   1. Detail pages: the sticky tabs (z-index 20) sat ABOVE the booking bar (Tailwind z-10) and covered the price / Book Now → bar is now above everything on the page.
-   2. Grey band above the booking bar / grey strips down the sides + under the sheet: the big drop shadow of .detail-main → removed (flat sheet, like the destination page).
-   3. TOP WAVES ARE PINNED: .ds-waves is position:fixed, so it stays at the top of the screen while the page scrolls (it used to scroll away with the page).
-      - list / home pages: the wave canopy sits behind the content (wallpaper), the sticky header stays see-through so the waves always show in the header band.
-      - detail pages: the waves AND the back / share / heart buttons are fixed; once the page scrolls the waves come to the front and shrink to a slim header band
-        (--wa is a registered length, so it eases), and the sticky tabs park right under that band.
    ========================================================================== */
 @property --wa { syntax: '<length>'; inherits: true; initial-value: 230px; }
 
-/* 1 + 2 ---------------------------------------------------------------- */
 [data-site="app"] .detail-mobile-bar { z-index: 9980 !important; box-shadow: none !important; backdrop-filter: none; -webkit-backdrop-filter: none; border-top: 1px solid var(--ap-line); }
 [data-site="app"] .detail-main, [data-site="app"] .dp-sheet, [data-site="app"] .rd-main.detail-main, [data-site="app"] .art-main.detail-main { box-shadow: none !important; border: 0 !important; }
 [data-site="app"] .detail-main .card:hover { box-shadow: none; }
 
-/* 3 — fixed waves ------------------------------------------------------- */
 [data-site="app"] .ds-waves { position: fixed; transition: --wa .35s ease; }
 @media (min-width: 900px) {
   [data-site="app"] .ds-waves { left: 50%; right: auto; width: 100%; max-width: 860px; transform: translateX(-50%); }
 }
-/* header sits over the fixed waves: see-through, with a light blur once content scrolls under it (the old 86% page colour hid the waves) */
 :root[data-site="app"].ds-scrolled .header-light { background: transparent !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
-/* status-bar scrim: no dark / grey veil — it just takes the page colour */
 :root[data-site="app"]::after { display: none; }
 
-/* detail pages: waves no longer in an isolated stack, so they can move in front of the sheet when the page scrolls */
 [data-site="app"] .dh { isolation: isolate; }
 :root[data-site="app"].ds-scrolled .dh { isolation: auto; }
 [data-site="app"] .dh > .ds-waves--hero { z-index: -1; }
 :root[data-site="app"].ds-scrolled .dh > .ds-waves--hero { z-index: 28; --wa: 14px; }
 :root[data-site="app"].ds-scrolled .dh > .ds-waves--hero > i:nth-child(1) { opacity: 1; }
-/* back / share / heart stay on screen */
 [data-site="app"] .dh .dh-btn { position: fixed; z-index: 40; }
 [data-site="app"] .dh .dh-extra { inset-inline-end: 68px; }
 @media (min-width: 900px) {
@@ -371,18 +342,12 @@ html.ds-far .ds-waves > i { animation-play-state: paused; }   /* scrolled well p
   [data-site="app"] .dh .dh-share { inset-inline-end: calc((100vw - 860px) / 2 + 16px); }
   [data-site="app"] .dh .dh-extra { inset-inline-end: calc((100vw - 860px) / 2 + 68px); }
 }
-/* the photo counter / dots / badge are part of the photo, they keep scrolling with it (override .dh-btn only matches buttons) */
-/* sticky section tabs (restaurant / trip) park under the header band instead of sliding under the fixed waves + buttons */
 [data-site="app"] .rd-tabs { top: calc(88px + env(safe-area-inset-top, 0px)); }
 [data-site="app"] .rd-sec { scroll-margin-top: calc(150px + env(safe-area-inset-top, 0px)); }
 
 
 /* ==========================================================================
-   APP — v8: HOME header sits ON the waves, and the waves are the fixed header while scrolling (same as the trip / transfer / hotel pages)
-   • The home hero now carries its own wave canopy (#heroSection > .ds-waves--hero) and the menu / logo / avatar row is position:fixed on top of it.
-   • At the top the waves sit behind the hero card; after the first scroll they come to the front and shrink to a slim band (--wa) that stays under the icons.
-   • .hero-content no longer forms its own stacking layer, so the fixed icon row (z 40) can sit above the waves (z 28) which sit above the page content.
-   • The floating "sticky pill" header is not used in the app any more (it would duplicate the fixed row).
+   APP — v8: HOME header
    ========================================================================== */
 #mainApp:has(#homePage.active) > .ds-waves { display: none; }
 [data-site="app"] #heroSection { isolation: isolate; }
@@ -403,8 +368,7 @@ html.ds-far .ds-waves > i { animation-play-state: paused; }   /* scrolled well p
 
 
 /* ==========================================================================
-   APP — v9: every listing page (excursions, hotels, transfers, restaurants & cafes …) shows ONE card at a time and swipes sideways.
-   All of them render into a `.lc-grid`, so this is one rule for all. A small "1 / N" pager (pwa.js, `.lc-pager`) sits under the card.
+   APP — v9: listing pages swipeable
    ========================================================================== */
 [data-site="app"] .lc-grid {
   display: grid !important; grid-template-columns: none !important; grid-auto-flow: column; grid-auto-columns: 100%;
@@ -426,31 +390,23 @@ html.ds-far .ds-waves > i { animation-play-state: paused; }   /* scrolled well p
 
 /* ==========================================================================
    APP — v10
-   1. EVERY page scrolls UNDER the header: the wave canopy is the fixed header surface on all pages (home + detail pages already were).
-      Pages no longer form their own stacking layer (the fade-in animation no longer "fills forwards"), so the order is simply
-      content (auto) < waves (28, after the first scroll) < header row / buttons (30-40). At the very top the waves stay behind the content (z -1).
-   2. One header geometry everywhere: a 86px band (+ status-bar inset), 16px side gutter, 44px round button + title dead-centre — identical to the home row.
-   3. Listing pages: the data sits directly on the page (no card), the date / people controls live inside the Filters sheet, no description line under the title.
    ========================================================================== */
-/* 1 — stacking */
 [data-site="app"] .page { z-index: auto; }
 [data-site="app"] .page.active { animation: pageEnter .45s cubic-bezier(.16, 1, .3, 1); }
 [data-site="app"] #mainApp > .ds-waves { z-index: -1; }
 :root[data-site="app"].ds-scrolled #mainApp > .ds-waves { z-index: 28; --wa: 14px; }
 :root[data-site="app"].ds-scrolled #mainApp > .ds-waves > i:nth-child(1) { opacity: 1; }
-[data-site="app"] #guestsModal { z-index: 99998; }   /* opened from inside the Filters sheet (z 9000) */
+[data-site="app"] #guestsModal { z-index: 99998; }
 
-/* 2 — header band */
 [data-site="app"] .header-light {
   position: sticky; top: 0; z-index: 30; box-sizing: border-box; display: flex; align-items: center; gap: 12px;
   height: calc(86px + env(safe-area-inset-top, 0px)); padding: env(safe-area-inset-top, 0px) 16px 0 !important; margin: 0;
 }
 [data-site="app"] .header-light > div, [data-site="app"] .header-light > .flex { margin: 0 !important; }
 [data-site="app"] .header-light > div:not(.w-11) { min-width: 0; }
-[data-site="app"] .header-light > p { display: none; }                                   /* e.g. the transfers description under the title */
+[data-site="app"] .header-light > p { display: none; }
 [data-site="app"] .header-light [data-back] { flex: 0 0 44px; }
 
-/* 3 — flat listing items */
 [data-site="app"] .lc { border: 0 !important; background: transparent !important; box-shadow: none !important; border-radius: 0 !important; }
 [data-site="app"] .lc-media { margin: 0; border-radius: 28px; }
 [data-site="app"] .lc-body { padding: 16px 4px 4px; }
@@ -460,20 +416,12 @@ html.ds-far .ds-waves > i { animation-play-state: paused; }   /* scrolled well p
 
 
 /* ==========================================================================
-   v17 — (1) safe space under the last section on pages with the fixed price / Book Now bar
-         (2) slider / hero photos emerge from under the waves (see below)
+   v17
    ========================================================================== */
-/* (1) bar = 16px + content (~74px) + 14px + safe-area; the reviews (last section) used to end underneath it */
 @media (max-width: 1023px) {
   [data-site="app"] .detail-main.has-mbar { padding-bottom: calc(150px + env(safe-area-inset-bottom, 0px)) !important; }
 }
 
-/* (2) the photo sliders (detail pages + home hero) are the LAST wave: full-width, with a MOVING wave edge, rising out from UNDER the orange waves.
-   - wave layer 1 (blue) is hidden while the page is at the top, so the photo takes its place; it comes back once the page scrolls (slim header band)
-   - the sand/ember + sunset-crest layers keep their old colours and are drawn OVER the top of the photo
-   - the photo has no side margins any more; its top edge is a wave (mask) that drifts sideways like the other layers (--pw = one wave length, --pt = duration)
-   - it tucks --tuck px up under the orange layers; the bottom edge / height of the photo are unchanged
-   - the drift pauses once the page scrolls (the photo leaves the screen) and for prefers-reduced-motion */
 [data-site="app"] { --tuck: 54px; --pw: 380px; --pt: 22s;
   --wm-photo: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 36' preserveAspectRatio='none'%3E%3Cpath d='M0 36H400V19C340 3 270 3 200 19S60 35 0 19Z'/%3E%3C/svg%3E"); }
 :root[data-site="app"]:not(.ds-scrolled) .dh > .ds-waves--hero > i:nth-child(1),
@@ -486,7 +434,6 @@ html.ds-far .ds-waves > i { animation-play-state: paused; }   /* scrolled well p
   from { -webkit-mask-position: 0 0, 0 35px;                 mask-position: 0 0, 0 35px; }
   to   { -webkit-mask-position: calc(var(--pw) * -1) 0, 0 35px; mask-position: calc(var(--pw) * -1) 0, 0 35px; }
 }
-/* the photo layers: wave strip on top (repeats + drifts) over a solid block */
 [data-site="app"] .dh-track, [data-site="app"] .dh-shade,
 [data-site="app"] #heroSection::before, [data-site="app"] #heroSection .hero-bg-img, [data-site="app"] #heroSection .hero-overlay {
   -webkit-mask: var(--wm-photo) 0 0 / var(--pw) 36px repeat-x, linear-gradient(#000,#000) 0 35px / 100% calc(100% - 35px) no-repeat;
@@ -500,27 +447,40 @@ html.ds-far .ds-waves > i { animation-play-state: paused; }   /* scrolled well p
   [data-site="app"] #heroSection::before, [data-site="app"] #heroSection .hero-bg-img, [data-site="app"] #heroSection .hero-overlay { animation: none; }
 }
 
-/* detail pages: edge to edge */
 [data-site="app"] .dh { padding-left: 0; padding-right: 0; }
 [data-site="app"] .dh-track { width: 100%; margin-top: calc(var(--tuck) * -1); height: calc(300px + var(--tuck)); border-radius: 0 0 28px 28px; }
 [data-site="app"] .dh-shade { top: calc(var(--dh-bar) - var(--tuck)); left: 0; right: 0; border-radius: 0 0 28px 28px; }
 [data-site="app"] .dh-count { inset-inline-end: 16px; }
 [data-site="app"] .dh-badge { inset-inline-start: 16px; }
 
-/* home hero card: edge to edge */
 [data-site="app"] #heroSection::before,
 [data-site="app"] #heroSection .hero-bg-img,
 [data-site="app"] #heroSection .hero-overlay {
   top: calc(var(--hdr) - var(--tuck)); left: 0; right: 0; width: 100%; height: calc(var(--hero-h) + var(--tuck)); border-radius: 0 0 28px 28px;
 }
 
-/* header avatar (home): no white circle around it — just the avatar sitting on the waves */
 [data-site="app"] #heroSection .hero-content > div:first-child .icon-btn[data-page="profile"] { background: transparent !important; border: 0 !important; box-shadow: none !important; width: 44px; height: 44px; }
 [data-site="app"] #heroSection .icon-btn[data-page="profile"] .nav-avatar-circle { width: 40px; height: 40px; font-size: 16px; box-shadow: 0 6px 14px -6px rgba(194,65,12,.6); }
 
-/* log in / sign up: the website logo instead of the compass tile (white lettering — keep it readable on the light waves) */
 [data-site="app"] #authPage .auth-logo { height: 56px; width: auto; max-width: 70%; object-fit: contain; filter: none; }
 :root[data-site="app"]:not([data-theme="dark"]) #authPage .auth-logo { filter: drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
 
-/* detail pages: the band above the photo (status bar + header row) must be exactly the page colour, not the white page sheet behind it — otherwise it reads lighter than the status bar and a seam shows until the page scrolls */
 [data-site="app"] .dh { background: var(--bg-body); }
+
+
+/* ==========================================================================
+   تعديل خلفية محتوى الصفحات لتطابق لون الموقع الأساسي (--bg-body)
+   ========================================================================== */
+[data-site="app"] .page,
+[data-site="app"] #mainApp,
+[data-site="app"] .detail-main,
+[data-site="app"] .dp-sheet,
+[data-site="app"] .rd-main.detail-main,
+[data-site="app"] .art-main.detail-main {
+  background-color: var(--bg-body) !important;
+}
+
+[data-site="app"] .content-body,
+[data-site="app"] .page-content {
+  background-color: var(--bg-body) !important;
+}
