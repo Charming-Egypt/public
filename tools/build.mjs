@@ -81,7 +81,7 @@ function csp(site) {
 }
 // ONE colour for every "app is starting" surface: manifest background_color (the OS-drawn PWA splash), theme-color, the iOS launch images
 // (shared/pwa/splash/*, drawn by tools/make-pwa-assets.py with the same colour) and the in-page splash (src/partials/splash.html).
-const SPLASH_BG = '#f97316';   // brand orange
+const SPLASH_BG = '#111827';   // dark splash screen (keep in sync with BG_SPLASH in tools/make-pwa-assets.py)
 // icons/splash images keep their file names, so a changed logo would be served from the 30-day cache (and an installed PWA would keep its old icon):
 // every reference carries ?v=<hash of shared/pwa>, so a new logo is a new URL everywhere (manifest, <link>s, precache, splash)
 const ICON_V = (() => {
@@ -267,13 +267,12 @@ ${iosSplashLinks}
   const splash = P('splash').replace(/\{\{SPLASH_BG\}\}/g, SPLASH_BG).replace(/\{\{ICON_V\}\}/g, ICON_V), chrome = P('chrome'), bottomNav = P('bottom-nav');
   const bodyShell = ({ route, detail, pageHtml, withSplash }) => {
     const attrs = `data-route="${route}"${detail ? ` data-detail="${detail}"` : ''}`;
-    // in-app animated splash: inline in the HTML shell (instant paint), fades out on window load / ~600ms fallback (see src/partials/splash.html)
+    // in-app animated splash: inline in the HTML shell, right after <body> (instant paint), fades out on window load / ~600ms fallback (see src/partials/splash.html)
     const splashHtml = withSplash && site === 'app' ? splash.trim() + '\n  ' : '';
-    const idx = chrome.indexOf('<div id="authPage"');
-    const chromeHtml = linkify(chrome.slice(0, idx) + splashHtml + chrome.slice(idx));
+    // the splash is the FIRST element inside <body> so it is the first thing painted
     return `<body ${attrs}>
-  <a href="#mainApp" class="skip-link" data-i18n="skipToContent">Skip to content</a>
-${chromeHtml}
+  ${splashHtml}<a href="#mainApp" class="skip-link" data-i18n="skipToContent">Skip to content</a>
+${linkify(chrome)}
   <div id="mainApp" class="relative z-10" tabindex="-1">${site === 'app' ? `
   <div class="ds-waves" aria-hidden="true"><i></i><i></i><i></i></div>` : ''}
 ${pageHtml}
@@ -307,15 +306,15 @@ ${linkify(bottomNav)}
     const shortcuts = [['excursions', 'Excursions', '/excursions/'], ['transfers', 'Transfers', '/transfers/'], ['restaurants', 'Restaurants', '/restaurants/'], ['bookings', 'My Bookings', '/bookings/']]
       .filter(([k]) => pageEnabled(k)).map(([, name, url]) => ({ name, short_name: name, url, icons: [{ src: IC('icon-192.png'), sizes: '192x192', type: 'image/png' }] }));
     out.write('manifest.webmanifest', JSON.stringify({
-      id: '/', name: cfg.siteName, short_name: 'Discover Sharm', lang: 'en',
+      id: '/', name: cfg.siteName, short_name: 'Discover', lang: 'en',
       description: cfg.pages.home?.description || 'Excursions, transfers and dining in Sharm El-Sheikh.',
-      start_url: '/?utm_source=pwa', scope: '/', display: 'standalone', display_override: ['standalone', 'minimal-ui'],
+      start_url: '/?utm_source=pwa', scope: '/', display: 'fullscreen', display_override: ['fullscreen', 'standalone', 'minimal-ui'],   // fullscreen = no status/nav bars (Android); iOS ignores it and uses apple-mobile-web-app-capable
       orientation: 'portrait', background_color: SPLASH_BG, theme_color: SPLASH_BG, categories: ['travel', 'lifestyle'],
       icons: [
         { src: IC('icon-192.png'), sizes: '192x192', type: 'image/png', purpose: 'any' },
         { src: IC('icon-512.png'), sizes: '512x512', type: 'image/png', purpose: 'any' },
         { src: IC('icon-maskable-192.png'), sizes: '192x192', type: 'image/png', purpose: 'maskable' },
-        { src: IC('icon-512.png'), sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+        { src: IC('icon-maskable-512.png'), sizes: '512x512', type: 'image/png', purpose: 'maskable' },
       ],
       shortcuts,
       screenshots: fs.existsSync(path.join(ROOT, 'shared/pwa-shots')) ? fs.readdirSync(path.join(ROOT, 'shared/pwa-shots')).filter((f) => /\.png$/.test(f)).sort()
@@ -326,7 +325,7 @@ ${linkify(bottomNav)}
       .filter((u, i, a) => a.indexOf(u) === i).filter((u) => u === '/' || fs.existsSync(path.join(outRoot(site), u, 'index.html')));
     const precache = [...new Set([
       '/offline.html', '/manifest.webmanifest', ...shellPages,
-      IC('icon-192.png'), IC('icon-512.png'), IC('icon-maskable-192.png'), IC('icon-512.png'), IC('apple-touch-icon.png'), IC('logo.png'),   // splash-logo: the launch screen must also work offline
+      IC('icon-192.png'), IC('icon-512.png'), IC('icon-maskable-192.png'), IC('icon-maskable-512.png'), IC('apple-touch-icon.png'), IC('splash-logo.png'),   // splash-logo: the launch screen must also work offline
       ...assetList.map((f) => `/${f}?v=${V[f]}`), `/site.css?v=${V['site.css']}`,
       ...['destinations', 'articles', 'reviews', 'lang/manifest', 'lang/en'].map((f) => `/data/${f}.json?v=${DATA_V}`),   // same URLs the pages ask for
     ])];

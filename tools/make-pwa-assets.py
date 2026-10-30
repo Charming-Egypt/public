@@ -2,11 +2,12 @@
 """Regenerates every PWA / splash image from ONE source logo (tools/pwa-src/logo.png, transparent PNG).
    python3 tools/make-pwa-assets.py      (needs Pillow)
 Writes into shared/pwa/: icons (any + maskable), apple-touch-icon, splash-logo.png (the in-page splash) and splash/*.png (iOS launch screens).
-The background colour MUST match SPLASH_BG in tools/build.mjs (manifest background_color, theme-color and the in-page splash all use it)."""
+The splash background (BG_SPLASH) MUST match SPLASH_BG in tools/build.mjs (manifest background_color, theme-color and the in-page splash all use it)."""
 from PIL import Image
 import os, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BG = (249, 115, 22, 255)  # #f97316 (brand orange)  == SPLASH_BG
+BG_SPLASH = (17, 24, 39, 255)   # #111827  == SPLASH_BG in tools/build.mjs (iOS launch screens + the 'any' icons Android draws its splash from)
+BG = (249, 115, 22, 255)        # #f97316 brand orange — the home-screen launcher icon only (maskable, apple-touch, favicon)
 src = Image.open(os.path.join(ROOT, 'tools/pwa-src/logo.png')).convert('RGBA')
 src = src.crop(src.split()[3].point(lambda a: 255 if a > 8 else 0).getbbox())   # trim empty margin
 
@@ -15,7 +16,7 @@ def canvas(w, h, logo_w=None, logo_h=None, cy=0.5, transparent=False):
        transparent=False: on the solid splash colour, saved as opaque RGB (iOS launch images must be opaque).
        transparent=True : NO background at all, RGBA - for the manifest 'any' icons. Android draws its PWA splash from these on top of
                           manifest background_color, so a baked-in background shows up as a visible box."""
-    c = Image.new('RGBA', (w, h), (0, 0, 0, 0) if transparent else BG)
+    c = Image.new('RGBA', (w, h), (0, 0, 0, 0) if transparent else BG_SPLASH)
     k = min((logo_w or w) / splash_src.width, (logo_h or h) / splash_src.height)
     lg = splash_src.resize((max(1, round(splash_src.width * k)), max(1, round(splash_src.height * k))), Image.LANCZOS)
     c.alpha_composite(lg, ((w - lg.width) // 2, round(h * cy - lg.height / 2)))
@@ -34,8 +35,8 @@ art = art.crop(art.split()[3].point(lambda a: 255 if a > 8 else 0).getbbox())
 splash_src = Image.open(os.path.join(ROOT, 'tools/pwa-src/splash-logo.png')).convert('RGBA')
 splash_src = splash_src.crop(splash_src.split()[3].point(lambda a: 255 if a > 8 else 0).getbbox())
 def splash_icon(n, inner):
-    """'any' icons: the transparent splash logo on solid brand orange, fitted inside the central inner*n box."""
-    c = Image.new('RGBA', (n, n), BG)
+    """'any' icons: the transparent splash logo on the solid splash colour, fitted inside the central inner*n box."""
+    c = Image.new('RGBA', (n, n), BG_SPLASH)
     k = n * inner / max(splash_src.width, splash_src.height)
     lg = splash_src.resize((max(1, round(splash_src.width * k)), max(1, round(splash_src.height * k))), Image.LANCZOS)
     c.alpha_composite(lg, ((n - lg.width) // 2, (n - lg.height) // 2))

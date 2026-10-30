@@ -16,6 +16,7 @@
           if (done) return; done = true;
           var s = document.getElementById('splashPage');
           if (!s) return;
+          s.style.pointerEvents = 'none';
           s.style.opacity = '0';                       // 0.4s fade (transition declared inline above)
           setTimeout(function () { if (s.parentNode) s.parentNode.removeChild(s); }, 400);
         }
