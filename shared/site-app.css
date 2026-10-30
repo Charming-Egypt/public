@@ -31,7 +31,7 @@
   --bg-field: #212125; --border-field: #2e2e34; --chrome-bg-solid: #121214; --chrome-bg: rgba(18,18,20,.92);
   --ap-line: rgba(255,255,255,.09); --ap-shadow: 0 18px 40px -26px rgba(0,0,0,.9);
 }
-[data-site="app"] body { background: var(--bg-body); color: var(--text-primary); }
+[data-site="app"] body { background: var(--bg-card); color: var(--text-primary); }
 
 /* ---------- curved tab bar: raised side "ears", long smooth sweep, round cup for the floating button ---------- */
 [data-site="app"] { --ap-nav-h: 110px; }
