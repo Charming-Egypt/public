@@ -1323,7 +1323,7 @@ function showTransferPage(id, opts = {}) {
     <button onclick="startTransferBooking('${v.id}')" class="btn-gold w-full py-3.5 rounded-2xl font-bold text-ink-900">${t('bookNowBtn')}</button>
     <p class="detail-sidebar-note"><i class="fa-solid fa-users"></i> ${capacityLine}</p>`;
   page.innerHTML = `
-    <div class="min-h-screen pb-28" style="background:var(--bg-card)">
+    <div class="min-h-screen pb-28" >
       ${detailHero({ images: v.images || [v.image], icon: 'fa-shuttle-van', back: 'closeTransferPage()', cls: 'detail-gallery', badge: `<span class="dh-badge"><i class="fa-solid fa-shuttle-van"></i>${v.vehicleType}</span>` })}
       ${renderPhotoGrid(v.images || [v.image])}
       <div class="detail-layout">
