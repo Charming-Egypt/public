@@ -4840,7 +4840,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .photo-grid { max-width: none; margin: 8px var(--dx-gutter) 0; border-radius: 32px; gap: 10px; height: 460px; }
   .photo-grid-cell { border-radius: 0; }
   .detail-layout { max-width: none; padding: 0 var(--dx-gutter); gap: 36px; margin-top: 28px; grid-template-columns: 1fr 400px; }
-  .detail-main { border-radius: 32px; background: var(--bg-body); border-color: var(--dx-line); padding: 40px !important; box-shadow: 0 30px 60px -44px rgba(0,0,0,.3); }
+  .detail-main { border-radius: 32px; background: var(--bg-card); border-color: var(--dx-line); padding: 40px !important; box-shadow: 0 30px 60px -44px rgba(0,0,0,.3); }
   .detail-sidebar-card { border-radius: 32px; border: 1px solid var(--dx-line); box-shadow: 0 30px 60px -36px rgba(0,0,0,.35); padding: 28px; }
   .detail-main h2.font-display { font-size: 32px; line-height: 1.15; }
   .detail-main h3.font-display::before { display: none; }
@@ -5096,7 +5096,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
    (.detail-main carries a big drop shadow that showed as a grey band under the sheet, right above the bottom dock.)
    max-width:1023px = phone/tablet; the app build turns it into "all", desktop keeps its card. */
 @media (max-width: 1023px) {
-  .rd-main.detail-main, .art-main.detail-main { box-shadow: none; border: 0; background: var(--bg-body); padding-bottom: 40px !important; }   /* 40px = the destination sheet; the 92px base value is room for a booking bar these pages don't have */
+  .rd-main.detail-main, .art-main.detail-main { box-shadow: none; border: 0; background: var(--bg-card); padding-bottom: 40px !important; }   /* 40px = the destination sheet; the 92px base value is room for a booking bar these pages don't have */
 }
 
 /* Restaurant cards: the complete name is always shown (wraps instead of clamping / ellipsis) */
