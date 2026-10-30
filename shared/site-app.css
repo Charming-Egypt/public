@@ -355,6 +355,8 @@ html.ds-far .ds-waves > i { animation-play-state: paused; }   /* scrolled well p
 [data-site="app"] .rd-main.detail-main,
 [data-site="app"] .art-main.detail-main { background: var(--bg-body) !important; }
 [data-site="app"] .rd-tabs { background: color-mix(in srgb, var(--bg-body) 92%, transparent); }
+/* the full-page wrappers (.min-h-screen) of the detail / list pages also carry inline style="background:var(--bg-card)" (booking.js, frontend.js) */
+[data-site="app"] .min-h-screen[style*="--bg-card"] { background: var(--bg-body) !important; }
 
 /* 3 — fixed waves ------------------------------------------------------- */
 [data-site="app"] .ds-waves { position: fixed; transition: --wa .35s ease; }
