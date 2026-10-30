@@ -306,9 +306,9 @@ ${linkify(bottomNav)}
     const shortcuts = [['excursions', 'Excursions', '/excursions/'], ['transfers', 'Transfers', '/transfers/'], ['restaurants', 'Restaurants', '/restaurants/'], ['bookings', 'My Bookings', '/bookings/']]
       .filter(([k]) => pageEnabled(k)).map(([, name, url]) => ({ name, short_name: name, url, icons: [{ src: IC('icon-192.png'), sizes: '192x192', type: 'image/png' }] }));
     out.write('manifest.webmanifest', JSON.stringify({
-      id: '/', name: cfg.siteName, short_name: 'Discover', lang: 'en',
+      id: '/', name: cfg.siteName, short_name: 'Discover Sharm', lang: 'en',
       description: cfg.pages.home?.description || 'Excursions, transfers and dining in Sharm El-Sheikh.',
-      start_url: '/?utm_source=pwa', scope: '/', display: 'fullscreen', display_override: ['fullscreen', 'standalone', 'minimal-ui'],   // fullscreen = no status/nav bars (Android); iOS ignores it and uses apple-mobile-web-app-capable. pwa.js re-asserts it on the first tap
+      start_url: '/?utm_source=pwa', scope: '/', display: 'standalone', display_override: ['fullscreen', 'standalone', 'minimal-ui'],   // fullscreen = no status/nav bars (Android); iOS ignores it and uses apple-mobile-web-app-capable. pwa.js re-asserts it on the first tap
       orientation: 'portrait', background_color: SPLASH_BG, theme_color: SPLASH_BG, categories: ['travel', 'lifestyle'],
       icons: [
         { src: IC('icon-192.png'), sizes: '192x192', type: 'image/png', purpose: 'any' },
