@@ -171,6 +171,8 @@
 [data-site="app"] #authPage .auth-hint { color: var(--text-secondary); }
 [data-site="app"] #authPage [class*="text-white"] { color: var(--text-primary) !important; }
 [data-site="app"] #authPage .text-gold-400 { color: var(--ap-accent) !important; }
+
+/* auth page: the same drifting waves as the rest of the app, behind the logo / title / card (the card stays above them) */
 [data-site="app"] #authPage > .ds-waves--auth { position: fixed; z-index: 0; }
 [data-site="app"] #authPage > .relative { z-index: 10; }
 [data-site="app"] #authPage .auth-review-row small { color: var(--text-secondary); }
@@ -242,7 +244,7 @@ html.is-pwa #pwaInstallRow { display: none !important; }
 
 
 /* ==========================================================================
-   APP — TOP WAVES
+   APP — TOP WAVES  (same curved language as the bottom tab bar)
    ========================================================================== */
 :root[data-site="app"]:not([data-theme="dark"]) {
   --bg-body-a: rgba(246,245,243,.86);
@@ -266,7 +268,6 @@ html.is-pwa #pwaInstallRow { display: none !important; }
   --wa: 230px; --wb: 46px; --wc: 22px;
   position: absolute; top: 0; left: 0; right: 0; height: calc(var(--hd) + var(--wa)); z-index: 0; pointer-events: none; overflow: hidden;
 }
-[data-site="app"] .ds-waves--hero { --hd: calc(var(--st) + 86px); --wa: 300px; --wb: 8px; --wc: -14px; }
 #mainApp:has(#homePage.active) > .ds-waves { --hd: calc(var(--st) + 86px); --wa: 300px; --wb: 8px; --wc: -14px; }
 #mainApp:has(.page.active .dh) > .ds-waves { display: none; }
 [data-site="app"] .dh { isolation: isolate; }
@@ -300,7 +301,7 @@ html.ds-far .ds-waves > i { animation-play-state: paused; }
 :root[data-site="app"].ds-scrolled .header-light { background: var(--bg-body-a) !important; -webkit-backdrop-filter: blur(18px) saturate(160%) !important; backdrop-filter: blur(18px) saturate(160%) !important; }
 :root[data-site="app"] .header-light { transition: background-color .25s ease; }
 
-:root[data-site="app"]::after {
+[data-site="app"]::after {
   content: ""; position: fixed; top: 0; left: 0; right: 0; height: env(safe-area-inset-top, 0px); z-index: 40; pointer-events: none;
   background: var(--bg-body-a); -webkit-backdrop-filter: blur(16px) saturate(160%); backdrop-filter: blur(16px) saturate(160%);
   opacity: 0; transition: opacity .25s ease;
@@ -342,8 +343,6 @@ html.ds-far .ds-waves > i { animation-play-state: paused; }
   [data-site="app"] .dh .dh-share { inset-inline-end: calc((100vw - 860px) / 2 + 16px); }
   [data-site="app"] .dh .dh-extra { inset-inline-end: calc((100vw - 860px) / 2 + 68px); }
 }
-[data-site="app"] .rd-tabs { top: calc(88px + env(safe-area-inset-top, 0px)); }
-[data-site="app"] .rd-sec { scroll-margin-top: calc(150px + env(safe-area-inset-top, 0px)); }
 
 
 /* ==========================================================================
@@ -368,7 +367,7 @@ html.ds-far .ds-waves > i { animation-play-state: paused; }
 
 
 /* ==========================================================================
-   APP — v9: listing pages swipeable
+   APP — v9: listing pages swipe
    ========================================================================== */
 [data-site="app"] .lc-grid {
   display: grid !important; grid-template-columns: none !important; grid-auto-flow: column; grid-auto-columns: 100%;
@@ -416,7 +415,8 @@ html.ds-far .ds-waves > i { animation-play-state: paused; }
 
 
 /* ==========================================================================
-   v17
+   v17 — (1) safe space under the last section
+         (2) slider / hero photos emerge from under the waves
    ========================================================================== */
 @media (max-width: 1023px) {
   [data-site="app"] .detail-main.has-mbar { padding-bottom: calc(150px + env(safe-area-inset-bottom, 0px)) !important; }
@@ -469,18 +469,16 @@ html.ds-far .ds-waves > i { animation-play-state: paused; }
 
 
 /* ==========================================================================
-   تعديل خلفية محتوى الصفحات لتطابق لون الموقع الأساسي (--bg-body)
+   إلغاء الـ Sticky عن التابات (مضاف حديثاً بناءً على طلبك)
    ========================================================================== */
-[data-site="app"] .page,
-[data-site="app"] #mainApp,
-[data-site="app"] .detail-main,
-[data-site="app"] .dp-sheet,
-[data-site="app"] .rd-main.detail-main,
-[data-site="app"] .art-main.detail-main {
-  background-color: var(--bg-body) !important;
+[data-site="app"] .rd-tabs,
+[data-site="app"] .detail-tabs,
+[data-site="app"] .sticky {
+  position: static !important;
+  top: auto !important;
+  z-index: auto !important;
 }
 
-[data-site="app"] .content-body,
-[data-site="app"] .page-content {
-  background-color: var(--bg-body) !important;
+[data-site="app"] .rd-sec {
+  scroll-margin-top: calc(20px + env(safe-area-inset-top, 0px)) !important;
 }
