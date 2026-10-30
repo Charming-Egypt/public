@@ -33,6 +33,13 @@ art = art.crop(art.split()[3].point(lambda a: 255 if a > 8 else 0).getbbox())
 # splash artwork: tools/pwa-src/splash-logo.png (transparent) - used ONLY by splash-logo.png and splash/*.png
 splash_src = Image.open(os.path.join(ROOT, 'tools/pwa-src/splash-logo.png')).convert('RGBA')
 splash_src = splash_src.crop(splash_src.split()[3].point(lambda a: 255 if a > 8 else 0).getbbox())
+def splash_icon(n, inner):
+    """'any' icons: the transparent splash logo on solid brand orange, fitted inside the central inner*n box."""
+    c = Image.new('RGBA', (n, n), BG)
+    k = n * inner / max(splash_src.width, splash_src.height)
+    lg = splash_src.resize((max(1, round(splash_src.width * k)), max(1, round(splash_src.height * k))), Image.LANCZOS)
+    c.alpha_composite(lg, ((n - lg.width) // 2, (n - lg.height) // 2))
+    return c.convert('RGB')
 def app_icon(n, inner):
     """opaque square in the brand colour (#f97316) with the icon artwork centred; inner = share of the side the artwork fills
        (0.80 = the maskable safe zone, so round / squircle masks never cut the text or logo)."""
@@ -44,8 +51,8 @@ def app_icon(n, inner):
 for n in (192, 512):
     # ALL four launcher icons: opaque brand orange, logo inside the central 80% safe zone (its diagonal fits the 80% circle,
     # so round / squircle masks never clip it). They are NOT used for the splash any more (splash-logo.png + splash/*.png do that).
-    app_icon(n, .80).save(f'{out}/icon-{n}.png', optimize=True)
-    app_icon(n, .80).save(f'{out}/icon-maskable-{n}.png', optimize=True)
+    splash_icon(n, .80).save(f'{out}/icon-{n}.png', optimize=True)       # 'any'      <- tools/pwa-src/splash-logo.png
+    app_icon(n, .80).save(f'{out}/icon-maskable-{n}.png', optimize=True)  # 'maskable' <- tools/pwa-src/app-icon-art.png
 app_icon(180, .84).save(f'{out}/apple-touch-icon.png', optimize=True)
 app_icon(32, .9).save(f'{out}/favicon-32.png', optimize=True)
 # in-app splash (src/partials/splash.html): transparent, the page supplies the background
