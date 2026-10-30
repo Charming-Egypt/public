@@ -1,3 +1,0 @@
-User-agent: *
-Disallow: /design-system/
-Sitemap: https://www.discover-sharm.com/sitemap.xml
