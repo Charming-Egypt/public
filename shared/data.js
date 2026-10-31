@@ -300,9 +300,12 @@ function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').
 function hideSplash() {
   const splash = document.getElementById('splashPage');
   if (splash) {
-    splash.style.transition = 'opacity .5s ease';
-    splash.style.opacity = '0';
-    setTimeout(() => { splash.style.display = 'none'; splash.remove(); }, 500);
+    const wait = Math.max(0, (window.__dsSplashUntil || 0) - Date.now());   // splash.html sets a minimum display time so the intro is seen
+    setTimeout(() => {
+      splash.style.transition = 'opacity .5s ease';
+      splash.style.opacity = '0';
+      setTimeout(() => { splash.style.display = 'none'; splash.remove(); }, 500);
+    }, wait);
   }
 }
 

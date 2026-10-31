@@ -1535,7 +1535,7 @@ function showDestinationPage(id, opts = {}) {
   const others = CATALOG.destinations.filter(x => x.id !== d.id);
 
   page.innerHTML = `
-    <div class="min-h-screen pb-28 rd dp">
+    <div class="min-h-screen pb-28 rd dp" style="background:var(--bg-card)">
       ${detailHero({ images: imgs, icon: 'fa-mountain-sun', back: 'closeDestinationPage()', badge: `<span class="dh-badge"><i class="fa-solid fa-compass"></i>${t('exploreEyebrow', 'Explore')}</span>` })}
       <div class="dp-sheet">
         <header class="rd-head">
