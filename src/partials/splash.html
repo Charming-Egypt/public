@@ -1,109 +1,63 @@
 <div id="splashPage" role="presentation" aria-hidden="true">
-    <!-- In-app splash: lives in the HTML shell so it paints instantly. Themed: follows <html data-theme> (set in <head> before first paint), so it is
-         the same night-sea / day-sea look as the home page waves. Self-contained on purpose (own variables, own masks) — it must not depend on
-         site-app.css having been parsed. {{SPLASH_BG}} is only the fallback colour (= manifest background_color, see SPLASH_BG in tools/build.mjs).
-         The logo tile is the app icon (icon-512.png): a fixed navy badge that reads on both the light and the dark scene.
+    <!-- In-app splash: lives in the HTML shell so it paints instantly. Themed: follows <html data-theme> (set in <head> before first paint).
+         Layers, back to front:  page colour (--bg-body of the app theme)  →  the site's top wave gradient (same canopy as the home page)  →
+         splash-art.webp (transparent PNG artwork: logo + quad rider + dunes, so it sits on the page colour in both light and dark)  →  fade scrim under the status bar  →  loader.
+         Self-contained on purpose (own variables, own masks) — it must not depend on site-app.css having been parsed.
+         {{SPLASH_BG}} is only the fallback colour (= manifest background_color, see SPLASH_BG in tools/build.mjs).
          Min display time is set below (window.__dsSplashUntil) and honoured by hideSplash() in data.js. -->
     <style>
-      #splashPage { --sp-bg: #0d0d0f; --sp-text: #f5f5f6; --sp-sub: #a9abb3;
-        --sp-sea-1: #0b2236; --sp-sea-2: #12486e; --sp-sea-3: #1d6f9f; --sp-sea-4: #2b8fbf;
+      #splashPage { --sp-bg: #0d0d0f; --sp-sea-1: #0b2236; --sp-sea-2: #12486e; --sp-sea-3: #1d6f9f;
         --sp-ember-1: rgba(70,30,14,.7); --sp-ember-2: rgba(154,52,18,.9);
-        --sp-glow: rgba(249,115,22,.34); --sp-glow-2: rgba(249,115,22,.10); --sp-boat: #f5f5f6; --sp-bird: rgba(245,245,246,.7); --sp-palm: #1a4f73;
-        position: fixed; inset: 0; z-index: 999; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center;
-        background: var(--sp-bg, {{SPLASH_BG}}); color: var(--sp-text); opacity: 1; transition: opacity .5s ease; }
-      :root[data-theme="light"] #splashPage { --sp-bg: #f6f5f3; --sp-text: #16171b; --sp-sub: #6d6f77;
-        --sp-sea-1: #e9f5f9; --sp-sea-2: #bfe3f0; --sp-sea-3: #8dcfe6; --sp-sea-4: #5bb8d9;
-        --sp-ember-1: rgba(253,232,211,.85); --sp-ember-2: rgba(251,199,154,.95);
-        --sp-glow: rgba(249,115,22,.30); --sp-glow-2: rgba(251,146,60,.10); --sp-boat: #ffffff; --sp-bird: rgba(22,23,27,.55); --sp-palm: #0f3b5c; }
+        position: fixed; inset: 0; z-index: 999; overflow: hidden; background: var(--sp-bg, {{SPLASH_BG}}); opacity: 1; transition: opacity .5s ease; }
+      :root[data-theme="light"] #splashPage { --sp-bg: #f6f5f3; --sp-sea-1: #e9f5f9; --sp-sea-2: #bfe3f0; --sp-sea-3: #8dcfe6;
+        --sp-ember-1: rgba(253,232,211,.85); --sp-ember-2: rgba(251,199,154,.95); }
       #splashPage * { box-sizing: border-box; }
 
-      /* sky glow (sun) behind the logo */
-      #splashPage .sp-sun { position: absolute; left: 50%; top: 44%; width: 130vmin; height: 130vmin; margin: -65vmin 0 0 -65vmin; border-radius: 50%; pointer-events: none;
-        background: radial-gradient(circle, var(--sp-glow) 0%, var(--sp-glow-2) 38%, transparent 66%); animation: spSun 4.2s ease-in-out infinite; }
-
-      /* waves: same masked-strip technique as the home canopy (see site-app.css). Top = sea fading into the page, bottom = flipped sea with sand + sunset crests. */
+      /* site top gradient: same masked-strip waves as the home canopy (see site-app.css) — page colour at the very top → sea → sand → sunset crest */
       #splashPage .sp-waves { --wm-a: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 36' preserveAspectRatio='none'%3E%3Cpath d='M0 0H400V22C340 33 270 33 200 22S60 11 0 22Z'/%3E%3C/svg%3E");
         --wm-b: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 36' preserveAspectRatio='none'%3E%3Cpath d='M0 0H400V20C330 8 270 8 200 20S70 32 0 20Z'/%3E%3C/svg%3E");
         --wm-c: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 36' preserveAspectRatio='none'%3E%3Cpath d='M0 0H400V19C345 31 285 31 200 19S55 7 0 19Z'/%3E%3C/svg%3E");
-        position: absolute; left: 0; right: 0; pointer-events: none; overflow: hidden; }
+        position: absolute; top: 0; left: 0; right: 0; height: 36vh; pointer-events: none; overflow: hidden; }
       #splashPage .sp-waves > i { position: absolute; top: 0; left: 0; width: 200%; display: block; will-change: transform; backface-visibility: hidden; }
-      #splashPage .sp-top { top: 0; height: 34vh; }
-      #splashPage .sp-bottom { bottom: 0; height: 38vh; transform: scaleY(-1); }          /* flipped: solid block at the bottom edge, crests on top */
       #splashPage .sp-waves > i:nth-child(1) { height: 100%; opacity: .96; animation: spL 46s linear infinite;
+        background: linear-gradient(180deg, var(--sp-bg) 0, var(--sp-bg) 12%, var(--sp-sea-1) 40%, var(--sp-sea-2) 78%, var(--sp-sea-3) 100%);
         -webkit-mask: linear-gradient(#000,#000) top / 100% calc(100% - 35px) no-repeat, var(--wm-a) bottom / 50% 36px repeat-x; mask: linear-gradient(#000,#000) top / 100% calc(100% - 35px) no-repeat, var(--wm-a) bottom / 50% 36px repeat-x; }
       #splashPage .sp-waves > i:nth-child(2) { height: calc(100% - 26px); opacity: .92; animation: spR 34s linear infinite;
+        background: linear-gradient(180deg, transparent 0%, transparent 35%, var(--sp-ember-1) 70%, var(--sp-ember-2) 100%);
         -webkit-mask: linear-gradient(#000,#000) top / 100% calc(100% - 35px) no-repeat, var(--wm-b) bottom / 25% 36px repeat-x; mask: linear-gradient(#000,#000) top / 100% calc(100% - 35px) no-repeat, var(--wm-b) bottom / 25% 36px repeat-x; }
       #splashPage .sp-waves > i:nth-child(3) { height: calc(100% - 54px); opacity: .9; animation: spL 26s linear infinite;
+        background: linear-gradient(180deg, transparent 0%, transparent 55%, rgba(251,146,60,.35) 82%, rgba(249,115,22,.9) 100%);
         -webkit-mask: linear-gradient(#000,#000) top / 100% calc(100% - 35px) no-repeat, var(--wm-c) bottom / 50% 36px repeat-x; mask: linear-gradient(#000,#000) top / 100% calc(100% - 35px) no-repeat, var(--wm-c) bottom / 50% 36px repeat-x; }
-      /* top (not flipped): page colour at the very top → sea → fades out */
-      #splashPage .sp-top > i:nth-child(1) { background: linear-gradient(180deg, var(--sp-bg) 0, var(--sp-bg) 12%, var(--sp-sea-1) 40%, var(--sp-sea-2) 78%, var(--sp-sea-3) 100%); }
-      #splashPage .sp-top > i:nth-child(2) { background: linear-gradient(180deg, transparent 0%, transparent 35%, var(--sp-ember-1) 70%, var(--sp-ember-2) 100%); }
-      #splashPage .sp-top > i:nth-child(3) { background: linear-gradient(180deg, transparent 0%, transparent 55%, rgba(251,146,60,.35) 82%, rgba(249,115,22,.9) 100%); }
-      /* bottom (flipped, so gradient 0% = screen bottom edge): deep sea at the edge → lighter toward the crest */
-      #splashPage .sp-bottom > i:nth-child(1) { background: linear-gradient(180deg, var(--sp-sea-2) 0%, var(--sp-sea-3) 50%, var(--sp-sea-4) 100%); }
-      #splashPage .sp-bottom > i:nth-child(2) { background: linear-gradient(180deg, transparent 0%, transparent 45%, var(--sp-ember-1) 78%, var(--sp-ember-2) 100%); }
-      #splashPage .sp-bottom > i:nth-child(3) { background: linear-gradient(180deg, transparent 0%, transparent 58%, rgba(251,146,60,.4) 82%, rgba(249,115,22,.92) 100%); }
 
-      /* floating bits */
-      #splashPage .sp-boat { position: absolute; bottom: calc(38vh - 6px); left: 0; width: 46px; height: 46px; color: var(--sp-boat); animation: spSail 14s linear infinite; }
-      #splashPage .sp-boat svg { display: block; width: 100%; height: 100%; animation: spBob 2.6s ease-in-out infinite; transform-origin: 50% 90%; overflow: visible; }
-      #splashPage .sp-palm { position: absolute; bottom: calc(38vh - 14px); inset-inline-end: 7vw; width: 58px; height: 74px; color: var(--sp-palm); opacity: .9; }
-      #splashPage .sp-palm svg { display: block; width: 100%; height: 100%; transform-origin: 50% 100%; animation: spSway 4s ease-in-out infinite; }
-      #splashPage .sp-birds { position: absolute; top: 24vh; left: 0; width: 56px; height: 22px; color: var(--sp-bird); animation: spFly 18s linear infinite; }
-      #splashPage .sp-birds svg { display: block; width: 100%; height: 100%; }
+      /* artwork: transparent PNG (1080×2400) → covers the screen, anchored to the bottom so the rider + dunes always sit on the edge */
+      #splashPage .sp-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 100%; display: block; animation: spArt .8s cubic-bezier(.2,.8,.2,1) both; }
+      /* status-bar scrim: page colour fading out, so the clock/battery area reads as part of the page like on every other screen */
+      #splashPage .sp-scrim { position: absolute; top: 0; left: 0; right: 0; height: calc(env(safe-area-inset-top, 0px) + 44px); pointer-events: none;
+        background: linear-gradient(180deg, var(--sp-bg) 0%, transparent 100%); }
 
-      /* centre: logo badge, name, tagline, loader */
-      #splashPage .sp-center { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; margin-top: -12vh; text-align: center; padding: 0 24px; }
-      #splashPage .sp-logo { position: relative; width: min(46vw, 11rem); aspect-ratio: 1; border-radius: 34%; overflow: hidden; background: #0f1b2d;
-        box-shadow: 0 0 0 3px rgba(249,115,22,.9), 0 0 0 9px rgba(249,115,22,.16), 0 24px 50px -16px rgba(249,115,22,.65), 0 18px 40px -20px rgba(0,0,0,.6);
-        animation: spPop .7s cubic-bezier(.2,.9,.3,1.2) both, spPulse 2.4s ease-in-out .7s infinite; }
-      #splashPage .sp-logo img { display: block; width: 100%; height: 100%; object-fit: cover; }
-      #splashPage .sp-name { margin: 1.6rem 0 0; font: 800 1.05rem/1.1 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; letter-spacing: .3em; text-transform: uppercase; color: var(--sp-text); padding-inline-start: .3em; animation: spRise .6s ease .25s both; }
-      #splashPage .sp-tag { margin: .55rem 0 0; font: 500 .82rem/1.4 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; color: var(--sp-sub); animation: spRise .6s ease .4s both; }
-      #splashPage .sp-dots { display: flex; gap: 7px; margin-top: 1.5rem; animation: spRise .6s ease .55s both; }
-      #splashPage .sp-dots i { width: 8px; height: 8px; border-radius: 50%; background: #f97316; animation: spDot 1.1s ease-in-out infinite; }
-      #splashPage .sp-dots i:nth-child(2) { animation-delay: .15s; background: #fb923c; }
-      #splashPage .sp-dots i:nth-child(3) { animation-delay: .3s; background: #fdba74; }
+      /* loader */
+      #splashPage .sp-dots { position: absolute; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 22px); transform: translateX(-50%); display: flex; gap: 8px; padding: 9px 14px; border-radius: 99px; background: rgba(0,0,0,.28); animation: spRise .6s ease .5s both; }
+      #splashPage .sp-dots i { width: 8px; height: 8px; border-radius: 50%; background: #fff; animation: spDot 1.1s ease-in-out infinite; }
+      #splashPage .sp-dots i:nth-child(2) { animation-delay: .15s; }
+      #splashPage .sp-dots i:nth-child(3) { animation-delay: .3s; }
 
       @keyframes spL { to { transform: translate3d(-50%, 0, 0); } }
       @keyframes spR { from { transform: translate3d(-50%, 0, 0); } to { transform: translate3d(0, 0, 0); } }
-      @keyframes spSun { 0%,100% { transform: scale(1); opacity: .9; } 50% { transform: scale(1.08); opacity: 1; } }
-      @keyframes spPop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-      @keyframes spPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
-      @keyframes spRise { from { transform: translateY(10px); opacity: 0; } to { transform: none; opacity: 1; } }
-      @keyframes spDot { 0%,100% { transform: translateY(0); opacity: .45; } 50% { transform: translateY(-6px); opacity: 1; } }
-      @keyframes spSail { from { transform: translateX(-60px); } to { transform: translateX(calc(100vw + 20px)); } }
-      @keyframes spBob { 0%,100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-4px) rotate(3deg); } }
-      @keyframes spSway { 0%,100% { transform: rotate(-2.5deg); } 50% { transform: rotate(2.5deg); } }
-      @keyframes spFly { from { transform: translateX(calc(100vw + 10px)); } to { transform: translateX(-80px); } }
-      @media (prefers-reduced-motion: reduce) { #splashPage * { animation: none !important; } #splashPage .sp-boat { transform: translateX(18vw); } #splashPage .sp-birds { transform: translateX(60vw); } }
+      @keyframes spArt { from { transform: translateY(24px) scale(1.03); opacity: 0; } to { transform: none; opacity: 1; } }
+      @keyframes spRise { from { transform: translate(-50%, 10px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+      @keyframes spDot { 0%,100% { transform: translateY(0); opacity: .5; } 50% { transform: translateY(-5px); opacity: 1; } }
+      @media (prefers-reduced-motion: reduce) { #splashPage * { animation: none !important; } }
     </style>
 
-    <div class="sp-sun"></div>
-
-    <div class="sp-waves sp-top"><i></i><i></i><i></i></div>
-    <div class="sp-waves sp-bottom"><i></i><i></i><i></i></div>
-
-    <!-- seagulls -->
-    <div class="sp-birds"><svg viewBox="0 0 56 22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12c5-8 10-8 13 0 3-8 8-8 13 0"/><path d="M34 6c3-5 7-5 9 0 2-5 6-5 9 0" opacity=".7"/></svg></div>
-    <!-- palm island -->
-    <div class="sp-palm"><svg viewBox="0 0 58 74" fill="currentColor"><path d="M29 74c-1-18-1-30 3-44h3c-3 14-3 27-2 44z"/><path d="M33 30C24 20 12 20 4 28c10-3 18-1 25 5zM33 30c8-11 20-12 28-6-10-1-18 1-25 8zM33 30c-3-12 2-22 12-27-4 9-5 17-9 27zM33 30C30 18 22 10 11 8c8 5 13 12 19 24z"/><ellipse cx="29" cy="73" rx="26" ry="3.4" opacity=".9"/></svg></div>
-    <!-- sailboat -->
-    <div class="sp-boat"><svg viewBox="0 0 46 46" fill="currentColor"><path d="M22 4v28H8z"/><path d="M26 10v22h14z" opacity=".85"/><path d="M4 35h38l-5 8H9z" fill="#f97316"/><path d="M22 2h2v33h-2z" opacity=".9"/></svg></div>
-
-    <div class="sp-center">
-      <div class="sp-logo"><img src="/icons/icon-512.png?v={{ICON_V}}" width="512" height="512" alt="" decoding="async" fetchpriority="high" onerror="this.onerror=null;if(typeof FALLBACK_LOGO!=='undefined')this.src=FALLBACK_LOGO;" /></div>
-      <p class="sp-name">Discover Sharm</p>
-      <p class="sp-tag" id="spTag">Sun · Sea · Adventure</p>
-      <div class="sp-dots"><i></i><i></i><i></i></div>
-    </div>
+    <div class="sp-waves"><i></i><i></i><i></i></div>
+    <img class="sp-art" src="/icons/splash-art.webp?v={{ICON_V}}" width="900" height="2000" alt="" decoding="async" fetchpriority="high" onerror="this.style.display='none'" />
+    <div class="sp-scrim"></div>
+    <div class="sp-dots"><i></i><i></i><i></i></div>
 
     <script>
       (function () {
         var MIN = 1600, HARD = 3200, t0 = Date.now(), done = false;
         window.__dsSplashUntil = t0 + MIN;               // hideSplash() (data.js) waits for this, so the intro is always seen
-        var TAGS = { en: 'Sun · Sea · Adventure', ar: 'شمس · بحر · مغامرة', de: 'Sonne · Meer · Abenteuer', ru: 'Солнце · Море · Приключения', it: 'Sole · Mare · Avventura', tr: 'Güneş · Deniz · Macera' };
-        try { var tg = document.getElementById('spTag'), lg = document.documentElement.lang; if (tg && TAGS[lg]) tg.textContent = TAGS[lg]; } catch (e) {}
         function hide() {
           if (done) return; done = true;
           var s = document.getElementById('splashPage');

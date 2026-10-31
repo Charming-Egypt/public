@@ -325,7 +325,7 @@ ${linkify(bottomNav)}
       .filter((u, i, a) => a.indexOf(u) === i).filter((u) => u === '/' || fs.existsSync(path.join(outRoot(site), u, 'index.html')));
     const precache = [...new Set([
       '/offline.html', '/manifest.webmanifest', ...shellPages,
-      IC('icon-192.png'), IC('icon-512.png'), IC('icon-maskable-192.png'), IC('icon-maskable-512.png'), IC('apple-touch-icon.png'), IC('splash-logo.png'),   // splash-logo: the launch screen must also work offline
+      IC('icon-192.png'), IC('icon-512.png'), IC('icon-maskable-192.png'), IC('icon-maskable-512.png'), IC('apple-touch-icon.png'), IC('splash-logo.png'), IC('splash-art.webp'),   // splash-logo / splash-art: the launch screen must also work offline
       ...assetList.map((f) => `/${f}?v=${V[f]}`), `/site.css?v=${V['site.css']}`,
       ...['destinations', 'articles', 'reviews', 'lang/manifest', 'lang/en'].map((f) => `/data/${f}.json?v=${DATA_V}`),   // same URLs the pages ask for
     ])];
