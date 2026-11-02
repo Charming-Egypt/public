@@ -128,7 +128,7 @@ self.addEventListener('push', (event) => {
   let d = {};
   try { d = event.data ? event.data.json() : {}; } catch (e) { d = { body: event.data ? event.data.text() : '' }; }
   event.waitUntil(self.registration.showNotification(d.title || 'Discover Sharm', {
-    body: d.body || '', icon: '/icons/icon-192.png', badge: '/icons/badge.png', tag: d.tag || undefined,
+    body: d.body || '', icon: 'https://blogger.googleusercontent.com/img/a/AVvXsEjJnB5c7R2uZzCNpzUtsow1OaJSWKAuybM2Wxux8wLk0EYV4TMA-xe1gIRXyrQ8Hw1dDVhgL94mMfLdMmB1HmsQXlI0vYYoJ83Z2o6Iu3r1UTxZxm7KbtD6jDQnZyVyInzRPr2dKnCqEdUuOW6QaVKtqC0fyVi7vJ65sWVJZSgiSRle3UXA3il3Qk6kdJwN=s150', badge: 'https://blogger.googleusercontent.com/img/a/AVvXsEjJnB5c7R2uZzCNpzUtsow1OaJSWKAuybM2Wxux8wLk0EYV4TMA-xe1gIRXyrQ8Hw1dDVhgL94mMfLdMmB1HmsQXlI0vYYoJ83Z2o6Iu3r1UTxZxm7KbtD6jDQnZyVyInzRPr2dKnCqEdUuOW6QaVKtqC0fyVi7vJ65sWVJZSgiSRle3UXA3il3Qk6kdJwN=s150', tag: d.tag || undefined,
     data: { url: d.url || '/' }, lang: undefined,
   }));
 });
@@ -181,7 +181,7 @@ self.addEventListener('sync', (event) => {
     const draft = items.find((i) => i.kind === 'draft');
     if (draft && !visible) {
       const l = draft.lang && SYNC_TXT[draft.lang] ? draft.lang : 'en';
-      await self.registration.showNotification(SYNC_TXT[l][0], { body: SYNC_TXT[l][1], icon: '/icons/icon-192.png', badge: '/icons/badge.png', tag: 'ds-draft', data: { url: '/?resume=1' } });
+      await self.registration.showNotification(SYNC_TXT[l][0], { body: SYNC_TXT[l][1], icon: 'https://blogger.googleusercontent.com/img/a/AVvXsEjJnB5c7R2uZzCNpzUtsow1OaJSWKAuybM2Wxux8wLk0EYV4TMA-xe1gIRXyrQ8Hw1dDVhgL94mMfLdMmB1HmsQXlI0vYYoJ83Z2o6Iu3r1UTxZxm7KbtD6jDQnZyVyInzRPr2dKnCqEdUuOW6QaVKtqC0fyVi7vJ65sWVJZSgiSRle3UXA3il3Qk6kdJwN=s150', badge: 'https://blogger.googleusercontent.com/img/a/AVvXsEjJnB5c7R2uZzCNpzUtsow1OaJSWKAuybM2Wxux8wLk0EYV4TMA-xe1gIRXyrQ8Hw1dDVhgL94mMfLdMmB1HmsQXlI0vYYoJ83Z2o6Iu3r1UTxZxm7KbtD6jDQnZyVyInzRPr2dKnCqEdUuOW6QaVKtqC0fyVi7vJ65sWVJZSgiSRle3UXA3il3Qk6kdJwN=s150', tag: 'ds-draft', data: { url: '/?resume=1' } });
     }
   })());
 });
