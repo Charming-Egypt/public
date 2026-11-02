@@ -1,0 +1,10 @@
+    <div id="notificationsPage" class="page">
+      <div class="min-h-screen pb-28">
+        <div class="px-5 pt-6 pb-4 flex items-center gap-3 header-light">
+          <button type="button" aria-label="Back" data-i18n-aria="ariaBack" data-back onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+          <div class="flex-1"><p class="section-subtitle" data-i18n="updatesEyebrow">— UPDATES</p><h1 class="text-xl font-bold font-display" style="color:var(--text-primary)" data-i18n="notifications">Notifications</h1></div>
+          <button onclick="notifications.markAllRead()" class="text-[11px] font-semibold text-violet-500" data-i18n="markAllRead">Mark all as read</button>
+        </div>
+        <div class="px-5 py-6 space-y-3" id="notificationsList"></div>
+      </div>
+    </div>
