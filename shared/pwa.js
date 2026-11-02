@@ -6,7 +6,7 @@
   if (window.DS_SITE !== 'app') return;
   var doc = document.documentElement;
   // the manifest asks for display:fullscreen, so an installed app reports 'fullscreen' (not 'standalone') — both mean "launched from the home screen"
-  var standalone = (window.matchMedia && (matchMedia('(display-mode: fullscreen)').matches || matchMedia('(display-mode: standalone)').matches)) || navigator.standalone === true;
+  var standalone = (window.matchMedia && (matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: standalone)').matches)) || navigator.standalone === true;
   if (standalone) doc.classList.add('is-pwa');
 
   /* ---------- keep the system bars hidden (manifest display:fullscreen) ----------
