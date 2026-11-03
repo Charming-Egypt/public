@@ -598,6 +598,7 @@ async function loadCatalogFromWorker() {
 
 function refreshCatalogUI() {
   try { window.DS_renderSiteBits && window.DS_renderSiteBits(); } catch (e) { /* frontend.js not ready yet */ }
+  try { window.DS_renderWeather && window.DS_renderWeather(); } catch (e) { /* frontend.js not ready yet */ }   // weather labels are built in JS, so data-i18n can't reach them
   try { if (document.getElementById('searchCard')) search.refreshLabels(); } catch (e) { /* frontend.js not ready yet */ }
   if (document.getElementById('hotelsList')) hotels.render();
   if (document.getElementById('excursionsList')) excursionsUi.render();

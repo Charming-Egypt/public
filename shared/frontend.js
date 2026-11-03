@@ -2002,6 +2002,7 @@ const WX = {
   },
   render(d) {
     const main = document.getElementById('wxMain'), stats = document.getElementById('wxStats'); if (!main || !stats) return;
+    this.last = d; this.failed = false;   // kept so a language change can repaint the labels (see rerender)
     const n = (v) => Math.round(v), info = this.describe(d.code, d.day);
     main.innerHTML = `<div class="wx-pill"><span class="wx-icon ${info.tint || (d.day ? '' : 'is-night')}"><i class="fa-solid ${info.icon}" aria-hidden="true"></i></span>
       <span class="wx-temp" dir="ltr">${n(d.temp)}°C</span><span class="wx-sep" aria-hidden="true"></span><span class="wx-cond">${esc(t(info.key, 'Clear sky'))}</span></div>`;
@@ -2013,8 +2014,11 @@ const WX = {
       d.sea != null ? cell('fa-water', t('wxSea', 'Sea'), `${n(d.sea)}°`) : '',
     ].join('');
   },
+  // language switched (I18N.set -> refreshCatalogUI): repaint the condition / stat labels from the data we already have — no refetch
+  rerender() { if (this.last) this.render(this.last); else if (this.failed) this.fail(); },
   fail() {
     const main = document.getElementById('wxMain'), stats = document.getElementById('wxStats'); if (!main || !stats) return;
+    this.failed = true;
     main.innerHTML = `<p class="wx-off">${esc(t('wxUnavailable', 'Weather is unavailable right now'))}</p>`; stats.innerHTML = '';
   },
   async init() {
@@ -2027,6 +2031,8 @@ const WX = {
     } catch (e) { if (!(saved && saved.d)) this.fail(); }
   },
 };
+
+window.DS_renderWeather = () => WX.rerender();
 
 // ==================== SKELETON GUARD ====================
 // The list renderers run as soon as a page is activated — usually BEFORE the catalog has arrived. Without this they would paint
