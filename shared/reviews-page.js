@@ -95,12 +95,12 @@ const reviewsPg = (() => {
     const title = tt('rvHeroTitle', 'Loved by {n} verified guests').replace('{n}', `<em>${total.toLocaleString(lang())}</em>`);
     el.innerHTML = `
       <div class="rvp-hero-top"><span class="rvp-badge"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> ${tt('rvBadge', 'Voucher-verified reviews')}</span></div>
+      <h2 class="rvp-hero-title">${title}</h2>
+      <p class="rvp-hero-sub">${tt('rvHeroSub', 'Every review is tied to a real booking voucher, so what you read here comes from guests who were really there.')}</p>
       <div class="rvp-hero-main">
         <div class="rvp-score"><b>${avg.toFixed(1)}</b>${stars(avg)}<small>${tt('rvOutOf', 'OUT OF 5')}</small></div>
-        <div class="rvp-hero-copy"><h2 class="rvp-hero-title">${title}</h2>
-          <p class="rvp-hero-sub">${tt('rvHeroSub', 'Every review is tied to a real booking voucher, so what you read here comes from guests who were really there.')}</p></div>
+        <div class="rvp-bars" aria-label="${tt('rvBreakdown', 'Rating breakdown')}">${bars}</div>
       </div>
-      <div class="rvp-bars" aria-label="${tt('rvBreakdown', 'Rating breakdown')}">${bars}</div>
       <button type="button" class="rvp-cta" onclick="reviewsPg.tab('write')"><i class="fa-solid fa-pen-nib" aria-hidden="true"></i> ${tt('rvTabWrite', 'Write a review')}</button>`;
   }
   function paintFilters() {
@@ -125,10 +125,10 @@ const reviewsPg = (() => {
     return `<article class="rvp-card" style="--i:${Math.min(i, 8)}">
       <header class="rvp-card-head">
         <div class="rvp-avatar">${r.photo_url ? `<img src="${E(r.photo_url)}" alt="" loading="lazy" onerror="this.remove()">` : E(initial.toUpperCase())}<span class="rvp-tick" title="${tt('rvVerified', 'Verified voucher')}"><i class="fa-solid fa-check" aria-hidden="true"></i></span></div>
-        <div class="rvp-who"><b>${E(mask(r.name))}</b>${stars(r.rating, 'sm')}<small>${r.created_at ? fmtDate(r.created_at) : ''}</small></div>
-        <span class="rvp-vbadge"><i class="fa-solid fa-ticket" aria-hidden="true"></i> ${tt('rvVerified', 'Verified voucher')}</span>
+        <div class="rvp-who"><b>${E(mask(r.name))}</b><span class="rvp-meta">${stars(r.rating, 'sm')}${r.created_at ? `<small>${fmtDate(r.created_at)}</small>` : ''}</span></div>
+        <span class="rvp-vbadge"><i class="fa-solid fa-ticket" aria-hidden="true"></i><span>${tt('rvVerified', 'Verified voucher')}</span></span>
       </header>
-      <p class="rvp-text" dir="auto">“${E(r.comment)}”</p>
+      <p class="rvp-text" dir="auto">${E(r.comment)}</p>
       ${photos.length ? `<div class="rvp-photos n${Math.min(photos.length, 3)}">${photos.slice(0, 3).map((src, j) => `<button type="button" onclick="openLightboxSet('${key}', ${j})" aria-label="${tt('rvOpenPhoto', 'Open photo')}"><img src="${E(src)}" alt="" loading="lazy">${j === 2 && photos.length > 3 ? `<span>+${photos.length - 3}</span>` : ''}</button>`).join('')}</div>` : ''}
       ${r.owner_reply ? `<div class="rvp-reply"><b><i class="fa-solid fa-reply" aria-hidden="true"></i> ${tt('rvReply', 'Reply from Discover Sharm')}</b><p dir="auto">${E(typeof r.owner_reply === 'string' ? r.owner_reply : r.owner_reply.text || '')}</p></div>` : ''}
       <footer class="rvp-card-foot">${itemChip}</footer>
