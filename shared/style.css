@@ -5159,11 +5159,14 @@ html[dir="rtl"] .wx-pill { padding: 6px 6px 6px 20px; }
 /* Hotels are hidden everywhere until the admin enables them (html[data-hotels] is set in <head> and by renderSiteBits) */
 html:not([data-hotels="on"]) .ds-hotels-ui { display: none !important; }
 
-/* ---------- Footer: soft pastel body + three layers of slowly drifting waves along its top edge ---------- */
+/* ---------- Footer: the waves ARE the footer's top edge (page colour flows into a soft peach -> sea-glass body) ----------
+   Three wide, low-amplitude waves. Back two use a horizontal peach<->sea-glass gradient, the front one is the footer's own top colour,
+   so there is no straight line anywhere. Every tile starts/ends at the same height and slope, so the slow drift loops without a jump. */
 #siteFooter {
   --ft-top: #f8d9c5; --ft-mid: #f6e6cf; --ft-end: #bfe2df;                /* light theme: peach -> cream -> sea-glass */
-  --ft-w1: #9fd3cf; --ft-w2: #f2a88e; --ft-w3: var(--ft-top);
-  position: relative; overflow: hidden; isolation: isolate; border-top: 0; padding-top: 78px;
+  --ft-a: #f2b9a0; --ft-b: #a9dbd6;                                        /* wave gradient stops */
+  --ft-tile: 50%;                                                          /* 50% of the 200%-wide layer = one wave per screen width */
+  position: relative; overflow: visible; isolation: isolate; border-top: 0; margin-top: 64px; padding-top: 44px;
   background:
     radial-gradient(120% 70% at 100% 100%, rgba(143,207,201,.75), transparent 62%),
     radial-gradient(90% 60% at 0% 55%, rgba(242,168,142,.45), transparent 65%),
@@ -5171,19 +5174,23 @@ html:not([data-hotels="on"]) .ds-hotels-ui { display: none !important; }
 }
 html[data-theme="dark"] #siteFooter {
   --ft-top: #33211f; --ft-mid: #1f2428; --ft-end: #0f2a31;
-  --ft-w1: #1c4a52; --ft-w2: #7d3d2e; --ft-w3: var(--ft-top);
+  --ft-a: #7d3d2e; --ft-b: #1f5560;
   background:
     radial-gradient(120% 70% at 100% 100%, rgba(29,92,102,.7), transparent 62%),
     radial-gradient(90% 60% at 0% 55%, rgba(125,61,46,.45), transparent 65%),
     linear-gradient(180deg, var(--ft-top) 0, var(--ft-mid) 55%, var(--ft-end) 100%);
 }
-.ft-waves { position: absolute; top: -1px; left: 0; right: 0; height: 96px; z-index: -1; pointer-events: none; overflow: hidden; }
+/* 110px tall; the footer box starts 70px down, so every crest sits above the footer's top edge and hides it */
+.ft-waves { position: absolute; top: -70px; left: 0; right: 0; height: 110px; z-index: -1; pointer-events: none; overflow: hidden; }
 .ft-waves > i { position: absolute; top: 0; left: 0; width: 200%; height: 100%; display: block; will-change: transform; backface-visibility: hidden;
-  -webkit-mask-repeat: repeat-x; mask-repeat: repeat-x; -webkit-mask-size: 50% 100%; mask-size: 50% 100%; }
-.ft-waves > i:nth-child(1) { background: var(--ft-w1); opacity: .9; -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 80' preserveAspectRatio='none'%3E%3Cpath d='M0%2022C60%204%20140%204%20200%2022S340%2040%20400%2022V80H0Z'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 80' preserveAspectRatio='none'%3E%3Cpath d='M0%2022C60%204%20140%204%20200%2022S340%2040%20400%2022V80H0Z'/%3E%3C/svg%3E"); animation: ftWaveL 38s linear infinite; }
-.ft-waves > i:nth-child(2) { background: var(--ft-w2); opacity: .85; -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 80' preserveAspectRatio='none'%3E%3Cpath d='M0%2036C70%2054%20130%2054%20200%2036S330%2018%20400%2036V80H0Z'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 80' preserveAspectRatio='none'%3E%3Cpath d='M0%2036C70%2054%20130%2054%20200%2036S330%2018%20400%2036V80H0Z'/%3E%3C/svg%3E"); -webkit-mask-size: 25% 100%; mask-size: 25% 100%; animation: ftWaveR 28s linear infinite; }
-.ft-waves > i:nth-child(3) { background: var(--ft-w3); -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 80' preserveAspectRatio='none'%3E%3Cpath d='M0%2052C70%2038%20130%2038%20200%2052S330%2066%20400%2052V80H0Z'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 80' preserveAspectRatio='none'%3E%3Cpath d='M0%2052C70%2038%20130%2038%20200%2052S330%2066%20400%2052V80H0Z'/%3E%3C/svg%3E"); animation: ftWaveL 20s linear infinite; }
+  -webkit-mask-repeat: repeat-x; mask-repeat: repeat-x; -webkit-mask-size: var(--ft-tile) 100%; mask-size: var(--ft-tile) 100%; }
+.ft-waves > i:nth-child(1) { background: linear-gradient(90deg, var(--ft-a), var(--ft-b), var(--ft-a)) 0 0 / var(--ft-tile) 100% repeat-x; opacity: .55;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 110' preserveAspectRatio='none'%3E%3Cpath d='M0 30C90 6 150 6 200 30S310 54 400 30V110H0Z'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 110' preserveAspectRatio='none'%3E%3Cpath d='M0 30C90 6 150 6 200 30S310 54 400 30V110H0Z'/%3E%3C/svg%3E"); animation: ftWaveL 60s linear infinite; }
+.ft-waves > i:nth-child(2) { background: linear-gradient(90deg, var(--ft-b), var(--ft-a), var(--ft-b)) 0 0 / var(--ft-tile) 100% repeat-x; opacity: .6;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 110' preserveAspectRatio='none'%3E%3Cpath d='M0 46C90 68 150 68 200 46S310 24 400 46V110H0Z'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 110' preserveAspectRatio='none'%3E%3Cpath d='M0 46C90 68 150 68 200 46S310 24 400 46V110H0Z'/%3E%3C/svg%3E"); animation: ftWaveR 46s linear infinite; }
+.ft-waves > i:nth-child(3) { background: var(--ft-top);
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 110' preserveAspectRatio='none'%3E%3Cpath d='M0 54C90 40 150 40 200 54S310 68 400 54V110H0Z'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 110' preserveAspectRatio='none'%3E%3Cpath d='M0 54C90 40 150 40 200 54S310 68 400 54V110H0Z'/%3E%3C/svg%3E"); animation: ftWaveL 34s linear infinite; }
 @keyframes ftWaveL { to { transform: translate3d(-50%, 0, 0); } }
 @keyframes ftWaveR { from { transform: translate3d(-50%, 0, 0); } to { transform: translate3d(0, 0, 0); } }
 @media (prefers-reduced-motion: reduce) { .ft-waves > i { animation: none; } }
-@media (min-width: 1024px) { .ft-waves { height: 120px; } #siteFooter { padding-top: 96px; } }
+@media (min-width: 1024px) { #siteFooter { --ft-tile: 25%; margin-top: 72px; padding-top: 56px; } }
