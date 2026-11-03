@@ -167,6 +167,7 @@ function buildPublic(site) {
   const extra = fs.readFileSync(path.join(ROOT, 'shared', siteCss), 'utf8');
   out.write('site.css', extra); V['site.css'] = sha(extra);
   out.copy('shared/data', 'data');
+  out.copy('shared/img', 'img');   // artwork (transfers banner)
   out.copy('shared/favicon.ico', 'favicon.ico');
 
   // ---- <head> --------------------------------------------------------------------------------------------------------
@@ -407,6 +408,7 @@ ${linkify(bottomNav)}
       '/offline.html', '  Cache-Control: no-cache',
       '/icons/*', '  Cache-Control: public, max-age=2592000',
     ] : []),
+    '/img/*', '  Cache-Control: public, max-age=2592000',
     '/data/*',
     '  Cache-Control: public, max-age=31536000, immutable',   // every request carries ?v=<hash> (DS_DATA_V), so a changed file is a new URL
     '',
