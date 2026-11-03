@@ -255,53 +255,6 @@
     </div>
   </div>
 
-  <!-- Write a review modal -->
-  <div id="reviewModal" class="modal-overlay hidden">
-    <div class="modal-content" style="max-width:380px;">
-      <div class="flex justify-between items-center mb-5">
-        <h3 class="font-display text-lg font-bold" style="color:var(--text-primary)" data-i18n="writeReview">Write a Review</h3>
-        <button type="button" aria-label="Close" data-i18n-aria="ariaClose" onclick="reviews.closeModal()" class="w-9 h-9 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
-      </div>
-      <p class="text-xs mb-4 leading-relaxed" style="color:var(--text-secondary)" data-i18n="reviewVerifyNote">To keep reviews genuine, enter the Booking ID from your confirmation to verify you stayed / booked with us.</p>
-      <form onsubmit="reviews.submit(event)" class="space-y-4">
-        <div>
-          <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="bookingIdLabel">BOOKING ID</label>
-          <input type="text" id="reviewBookingId" required maxlength="20" placeholder="DS-XXXXXX" class="input-field w-full px-3 py-2.5 text-sm uppercase" style="color:var(--text-primary)" />
-        </div>
-        <div>
-          <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="yourRating">YOUR RATING</label>
-          <div class="star-input flex gap-2" id="reviewStarInput">
-            <i class="fa-solid fa-star" aria-hidden="true" data-star="1" onclick="reviews.setStars(1)"></i>
-            <i class="fa-solid fa-star" aria-hidden="true" data-star="2" onclick="reviews.setStars(2)"></i>
-            <i class="fa-solid fa-star" aria-hidden="true" data-star="3" onclick="reviews.setStars(3)"></i>
-            <i class="fa-solid fa-star" aria-hidden="true" data-star="4" onclick="reviews.setStars(4)"></i>
-            <i class="fa-solid fa-star" aria-hidden="true" data-star="5" onclick="reviews.setStars(5)"></i>
-          </div>
-        </div>
-        <div>
-          <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="yourName">YOUR NAME</label>
-          <input type="text" id="reviewName" required maxlength="60" class="input-field w-full px-3 py-2.5 text-sm" style="color:var(--text-primary)" />
-        </div>
-        <div>
-          <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="nationality">NATIONALITY</label>
-          <select id="reviewNationality" required class="input-field w-full px-3 py-2.5 text-sm" style="color:var(--text-primary)"></select>
-        </div>
-        <div>
-          <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="yourReview">YOUR REVIEW</label>
-          <textarea id="reviewComment" rows="3" required maxlength="1000" class="input-field w-full px-3 py-2.5 text-sm" style="color:var(--text-primary)"></textarea>
-        </div>
-        <div>
-          <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="photosOptional">PHOTOS (OPTIONAL)</label>
-          <input type="file" id="reviewImages" accept="image/*" multiple class="hidden" onchange="reviews.addImages(this.files)" />
-          <div class="review-photo-picker" id="reviewImagePreview">
-            <button type="button" onclick="document.getElementById('reviewImages').click()" class="review-photo-add" data-i18n="add"><i class="fa-solid fa-camera" aria-hidden="true"></i><span>Add</span></button>
-          </div>
-        </div>
-        <button type="submit" class="btn-violet w-full py-3.5 rounded-2xl font-bold" data-i18n="submitReview">Submit Review</button>
-      </form>
-    </div>
-  </div>
-
   <!-- Flight passengers modal -->
   <div id="flightPaxModal" class="modal-overlay hidden">
     <div class="modal-content">
@@ -362,6 +315,7 @@
         <div class="drawer-link" onclick="nav.go('transfers'); sidebar.close()"><i class="fa-solid fa-shuttle-van w-5 text-center" aria-hidden="true"></i><span data-i18n="navTransfers">Transfers</span></div>
         <div class="drawer-link" onclick="nav.go('restaurants'); sidebar.close()"><i class="fa-solid fa-utensils w-5 text-center" aria-hidden="true"></i><span data-i18n="navRestaurants">Restaurants & Cafes</span></div>
         <div class="drawer-link" onclick="nav.go('bookings'); sidebar.close()"><i class="fa-regular fa-calendar-check w-5 text-center" aria-hidden="true"></i><span data-i18n="navBookings">My Bookings</span></div>
+        <div class="drawer-link" onclick="nav.go('reviews'); sidebar.close()"><i class="fa-regular fa-star w-5 text-center" aria-hidden="true"></i><span data-i18n="navReviews">Reviews</span></div>
         <div class="drawer-link hidden" id="drawerFavoritesLink" onclick="nav.go('favorites'); sidebar.close()"><i class="fa-regular fa-heart w-5 text-center" aria-hidden="true"></i><span data-i18n="navFavorites">Favorites</span></div>
         <div class="drawer-link" onclick="nav.go('settings'); sidebar.close()"><i class="fa-solid fa-gear w-5 text-center" aria-hidden="true"></i><span data-i18n="settingsTitle">Settings</span></div>
       </div>
@@ -413,6 +367,7 @@
       <button onclick="nav.go('transfers')" data-page="transfers" class="nav-item dn-link drawer-link" data-i18n="navTransfers">Transfers</button>
       <button onclick="nav.go('restaurants')" data-page="restaurants" class="nav-item dn-link drawer-link" data-i18n="navRestaurants">Restaurants</button>
       <button onclick="nav.go('bookings')" data-page="bookings" class="nav-item dn-link" data-i18n="myBookings">My Bookings</button>
+      <button onclick="nav.go('reviews')" data-page="reviews" class="nav-item dn-link" data-i18n="navReviews">Reviews</button>
     </div>
     <div class="dn-right flex items-center gap-2">
       <button type="button" aria-label="Open menu" data-i18n-aria="ariaMenu" onclick="sidebar.open()" class="dn-round"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>

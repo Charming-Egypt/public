@@ -53,6 +53,12 @@
       "description": "Hotels and resorts in Sharm El-Sheikh, from Naama Bay to Sharks Bay.",
       "nav": "hotels"
     },
+    "reviews": {
+      "path": "/reviews/",
+      "title": "Guest Reviews — Discover Sharm",
+      "description": "Real, voucher-verified reviews from guests who booked excursions, transfers and dining in Sharm El-Sheikh.",
+      "nav": "reviews"
+    },
     "about": {
       "path": "/about/",
       "title": "About Us — Discover Sharm",

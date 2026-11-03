@@ -36,6 +36,7 @@ const ROUTES = {
   restaurants: '/restaurants/',
   hotels: '/hotels/',
   bookings: '/bookings/',
+  reviews: '/reviews/',
   profile: '/profile/',
   settings: '/settings/',
   notifications: '/notifications/',
@@ -56,6 +57,7 @@ const PAGE_TITLES = {
   restaurants: 'Restaurants — Discover Sharm',
   hotels: 'Hotels — Discover Sharm',
   bookings: 'My Bookings — Discover Sharm',
+  reviews: 'Guest Reviews — Discover Sharm',
   profile: 'My Profile — Discover Sharm',
   settings: 'Settings — Discover Sharm',
   notifications: 'Notifications — Discover Sharm',
@@ -135,7 +137,7 @@ function enterApp() {
   document.getElementById('authPage')?.classList.add('hidden');
   document.documentElement.removeAttribute('data-gate');
   document.getElementById('mainApp')?.classList.remove('hidden');
-  if (__entered) { updateStickyHeaderState(); return; }   // signed in from the auth overlay: don't boot twice
+  if (__entered) { updateStickyHeaderState(); if (typeof reviewsPg !== 'undefined') reviewsPg.rerender(); return; }   // signed in from the auth overlay: don't boot twice (the reviews page must unlock, though)
   __entered = true;
 
   __catalogLoadPromise = loadCatalogFromWorker();
@@ -211,6 +213,7 @@ const nav = {
     if (page === 'transfers' && SHOW_TRANSFERS) transfersUi.render();
     if (page === 'restaurants' && SHOW_RESTAURANTS) restaurantsUi.renderFull();
     if (page === 'bookings') bookings.render();
+    if (page === 'reviews') reviewsPg.init();
     if (page === 'notifications') notifications.render();
     if (page === 'profile') updateProfileStats();
 
@@ -1968,7 +1971,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 document.addEventListener('submit', (e) => {
   if (e.target.closest('#authPage form')) { e.preventDefault(); handleAuthSubmit(e); }
-  if (e.target.closest('#reviewModal form')) { e.preventDefault(); reviews.submit(e); }
 });
 
 // ==================== WEATHER (home hero) ====================

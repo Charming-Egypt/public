@@ -610,6 +610,7 @@ function refreshCatalogUI() {
   if (document.getElementById('restaurantsRow')) restaurantsUi.renderRow();
   if (document.getElementById('reviewsRow')) reviewsHomeUi.render();
   if (document.getElementById('articlesRow')) articlesUi.render();
+  if (document.getElementById('reviewsPage') && typeof reviewsPg !== 'undefined') reviewsPg.rerender();
 }
 
 // ==================== AUTH ====================
@@ -1116,105 +1117,13 @@ function updateDrawerUser(name, email, photoURL) {
 }
 
 // ==================== REVIEWS ====================
+// Writing a review lives on its own page (/reviews/, shared/reviews-page.js): it needs a voucher number and the voucher holder's
+// signed-in account, and takes name + avatar from that account. Every "Write a review" button just opens that page
+// (with the voucher already filled in when it comes from My Bookings).
 const reviews = {
-  currentTarget: null,
-  selectedStars: 0,
-  pendingImages: [],
-  addImages(fileList) {
-    const files = Array.from(fileList || []).slice(0, 6 - this.pendingImages.length);
-    files.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.pendingImages.push(reader.result);
-        this.renderImagePreview();
-      };
-      reader.readAsDataURL(file);
-    });
-    document.getElementById('reviewImages').value = '';
-  },
-  removeImage(i) {
-    this.pendingImages.splice(i, 1);
-    this.renderImagePreview();
-  },
-  renderImagePreview() {
-    const el = document.getElementById('reviewImagePreview');
-    if (!el) return;
-    el.innerHTML = this.pendingImages.map((src, i) => `
-      <div class="review-photo-thumb">
-        <img src="${src}" alt="">
-        <button type="button" onclick="reviews.removeImage(${i})"><i class="fa-solid fa-xmark"></i></button>
-      </div>`).join('') +
-      (this.pendingImages.length < 6 ? `<button type="button" onclick="document.getElementById('reviewImages').click()" class="review-photo-add"><i class="fa-solid fa-camera"></i><span>Add</span></button>` : '');
-  },
-  async submit(e) {
-    e.preventDefault();
-    if (this.submitting) return;
-    const bookingId = document.getElementById('reviewBookingId').value.trim().toUpperCase();
-    const name = document.getElementById('reviewName').value.trim();
-    const comment = document.getElementById('reviewComment').value.trim();
-    const rating = this.selectedStars || 5;
-
-    if (!bookingId || !comment) return toast('Booking ID and comment required', 'error');
-
-    this.submitting = true;
-    const submitBtn = e.target.querySelector('button[type="submit"]');
-    if (submitBtn) { submitBtn.disabled = true; submitBtn.style.opacity = '.6'; }
-
-    try {
-      const reviewBody = {
-        type: this.currentTarget.type,
-        id: this.currentTarget.id,
-        bookingId,
-        name,
-        comment,
-        rating,
-        photoURL: currentUser?.photoURL || null,
-        images: this.pendingImages
-      };
-      if (!navigator.onLine && window.DS_OUTBOX && await DS_OUTBOX.add('review', reviewBody)) {
-        document.getElementById('reviewModal').classList.add('hidden');
-        toast(t('pwaQueued'), 'info');
-        return;
-      }
-      await apiFetch('/api/reviews', { method: 'POST', body: JSON.stringify(reviewBody) });
-      document.getElementById('reviewModal').classList.add('hidden');
-      toast(t('reviewSubmittedMsg'), 'success');
-      const ids = {
-        hotel: { list: 'hotelReviewsList', summary: 'hotelRatingSummary', bars: 'hotelRatingBars' },
-        excursion: { list: 'excursionReviewsList', summary: 'excursionRatingSummary', bars: 'excursionRatingBars' },
-        transfer: { list: 'transferReviewsList', summary: 'transferRatingSummary', bars: 'transferRatingBars' },
-      }[this.currentTarget.type] || { list: 'excursionReviewsList', summary: 'excursionRatingSummary', bars: 'excursionRatingBars' };
-      loadReviews(this.currentTarget.type, this.currentTarget.id, ids.list, ids.summary, ids.bars);
-    } catch (e) {
-      toast(e.message, 'error');
-    } finally {
-      this.submitting = false;
-      if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = ''; }
-    }
-  },
   openModal(type, id, bookingId = '') {
-    this.currentTarget = { type, id, bookingId };
-    this.selectedStars = 0;
-    this.pendingImages = [];
-    document.getElementById('reviewBookingId').value = bookingId;
-    document.getElementById('reviewName').value = (currentUser && currentUser.displayName) || '';
-    document.getElementById('reviewComment').value = '';
-    this.renderImagePreview();
-    this.paintStars(0);
-    document.getElementById('reviewModal').classList.remove('hidden');
+    location.assign(pathForPage('reviews') + '?write=1' + (bookingId ? '&v=' + encodeURIComponent(bookingId) : ''));
   },
-  closeModal() {
-    document.getElementById('reviewModal').classList.add('hidden');
-  },
-  setStars(n) {
-    this.selectedStars = n;
-    this.paintStars(n);
-  },
-  paintStars(n) {
-    document.querySelectorAll('#reviewStarInput i').forEach(el => {
-      el.classList.toggle('active', Number(el.dataset.star) <= n);
-    });
-  }
 };
 
 // ==================== LOAD REVIEWS ====================

@@ -156,7 +156,7 @@ function buildPublic(site) {
 
   // ---- assets (hashed for cache busting) -----------------------------------------------------------------------------
   const siteCss = `site-${site}.css`;
-  const assetList = ['style.css', 'tailwind.css', 'data.js', 'supabase-api.js', 'booking.js', 'frontend.js', 'router.js', 'ds-bridge.js', 'ds-site.js'];
+  const assetList = ['style.css', 'tailwind.css', 'data.js', 'supabase-api.js', 'booking.js', 'frontend.js', 'reviews-page.js', 'router.js', 'ds-bridge.js', 'ds-site.js'];
   const V = {};
   if (site === 'app') assetList.push('pwa.js');
   for (const f of assetList) {
@@ -255,6 +255,7 @@ function buildPublic(site) {
   ${useSupabase ? `<script src="/supabase-api.js?v=${V['supabase-api.js']}"></script>` : ''}
   <script src="/booking.js?v=${V['booking.js']}"></script>
   <script src="/frontend.js?v=${V['frontend.js']}"></script>
+  <script src="/reviews-page.js?v=${V['reviews-page.js']}"></script>
   <script src="/router.js?v=${V['router.js']}"></script>${site === 'app' ? `
   <script src="/pwa.js?v=${V['pwa.js']}"></script>` : ''}
 </body>
