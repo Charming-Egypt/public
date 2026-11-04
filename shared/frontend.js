@@ -1795,7 +1795,7 @@ function dhRender() {
         <div><b>${n((CATALOG.destinations || []).length)}</b><span>${esc(t('dhStatDest'))}</span></div>
         <div><b>${avg}</b><span>${esc(t('dhStatRating'))}</span></div>
       </div>
-      ${rv ? `<p class="dh-quote">“${esc(String(rv.text || '')).slice(0, 110)}”</p><p class="dh-by"><span>${esc((rv.name || 'G').charAt(0))}</span>${esc(rv.name || '')}</p>` : ''}`;
+      ${rv ? `<p class="dh-quote">“${esc(String(rv.text || '')).slice(0, 110)}”</p><p class="dh-by">${reviewsHomeUi.avatar(rv, 'dh-by-av')}${esc(rv.name || '')}${reviewsHomeUi.country(rv)}</p>` : ''}`;
   }
   const story = document.getElementById('dhStory');
   const a = (CATALOG.articles || [])[0];
@@ -1830,17 +1830,33 @@ const destinationsUi = {
 
 // ==================== REVIEWS RENDERER ====================
 const reviewsHomeUi = {
+  // avatar: the guest's photo when there is one, otherwise a stable colour per name (same palette as the /reviews/ page)
+  AV: [['#fb923c', '#ea580c'], ['#38bdf8', '#0369a1'], ['#34d399', '#047857'], ['#a78bfa', '#6d28d9'], ['#f472b6', '#be185d'], ['#fbbf24', '#b45309'], ['#2dd4bf', '#0f766e'], ['#f87171', '#b91c1c']],
+  avatar(rv, cls) {
+    const nm = String(rv.name || 'G').trim(), ini = esc([...nm][0] || 'G').toUpperCase();
+    let h = 0; for (const ch of nm) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+    const c = this.AV[h % this.AV.length], photo = rv.avatar || rv.photo_url;
+    return `<div class="${cls}"${photo ? '' : ` style="background:linear-gradient(135deg,${c[0]},${c[1]});color:#fff"`}>${photo ? `<img src="${esc(photo)}" alt="" loading="lazy" onerror="this.remove()">` : ini}</div>`;
+  },
+  country(rv) {
+    const cc = String(rv.nationality || rv.country || '').toUpperCase();
+    if (!/^[A-Z]{2}$/.test(cc)) return '';
+    let n = cc;
+    try { n = new Intl.DisplayNames([(typeof I18N !== 'undefined' && I18N.get) ? I18N.get() : 'en'], { type: 'region' }).of(cc) || cc; } catch {}
+    return `<span class="rv-home-nat"><span aria-hidden="true">${typeof countryFlagEmoji === 'function' ? countryFlagEmoji(cc) : ''}</span>${esc(n)}</span>`;
+  },
   render() {
     const row = document.getElementById('reviewsRow');
     if (!row) return;
     row.innerHTML = CATALOG.reviews.map(rv => `
       <div class="review-slide-card">
         <div class="flex items-center gap-3 mb-3">
-          <div class="review-avatar-badge">${(rv.name || 'G').charAt(0)}</div>
-          <div class="flex-1 min-w-0"><p class="text-sm font-semibold truncate">${rv.name}</p><div class="flex">${utils.renderStars(rv.rating)}</div></div>
+          ${this.avatar(rv, 'review-avatar-badge')}
+          <div class="flex-1 min-w-0"><p class="text-sm font-semibold truncate">${esc(rv.name || '')}</p>
+            <div class="flex items-center gap-2 min-w-0"><div class="flex">${utils.renderStars(rv.rating)}</div>${this.country(rv)}</div></div>
         </div>
-        <p class="text-xs leading-relaxed mb-3">"${rv.text}"</p>
-        <p class="text-[10px] font-semibold text-violet-500 truncate">${rv.itemName || ''}</p>
+        <p class="text-xs leading-relaxed mb-3">"${esc(rv.text || '')}"</p>
+        <p class="text-[10px] font-semibold text-violet-500 truncate">${esc(rv.itemName || '')}</p>
       </div>`).join('');
   }
 };
