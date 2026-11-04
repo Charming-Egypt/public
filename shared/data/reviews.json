@@ -1,6 +1,6 @@
 [
   {
-    "id": "rv1", "name": "Marco B.", "rating": 5, "section": "excursion",
+    "id": "rv1", "avatar": "/img/avatars/rv1.webp", "name": "Marco B.", "nationality": "IT", "rating": 5, "section": "excursion",
     "itemName": { "en": "Ras Mohammed Snorkeling Trip", "ar": "رحلة سنوركل رأس محمد", "ru": "Снорклинг-тур в Рас-Мохаммед", "de": "Ras-Mohammed-Schnorcheltour", "it": "Escursione Snorkeling a Ras Mohammed", "tr": "Ras Muhammed Şnorkel Turu" },
     "image": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80",
     "text": {
@@ -13,7 +13,7 @@
     }
   },
   {
-    "id": "rv2", "name": "Ahmed T.", "rating": 5, "section": "excursion",
+    "id": "rv2", "avatar": "/img/avatars/rv2.webp", "name": "Ahmed T.", "nationality": "EG", "rating": 5, "section": "excursion",
     "itemName": { "en": "White Desert Safari & BBQ Dinner", "ar": "رحلة سفاري الصحراء البيضاء وعشاء شواء", "ru": "Сафари в Белую пустыню и барбекю-ужин", "de": "Wüstensafari & BBQ-Dinner", "it": "Safari nel Deserto Bianco e cena BBQ", "tr": "Beyaz Çöl Safarisi ve Barbekü Yemeği" },
     "image": "https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=800&q=80",
     "text": {
@@ -26,7 +26,7 @@
     }
   },
   {
-    "id": "rv3", "name": "Dimitri V.", "rating": 5, "section": "transfer",
+    "id": "rv3", "avatar": "/img/avatars/rv3.webp", "name": "Dimitri V.", "nationality": "RU", "rating": 5, "section": "transfer",
     "itemName": { "en": "VIP Hiace AC Airport Transfer", "ar": "ترانسفير مطار VIP هايس مكيف", "ru": "VIP-трансфер Hiace с кондиционером", "de": "VIP-Hiace-Flughafentransfer mit Klimaanlage", "it": "Transfer aeroportuale VIP Hiace con aria condizionata", "tr": "VIP Klimalı Hiace Havalimanı Transferi" },
     "image": "https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=800&q=80",
     "text": {
@@ -39,7 +39,7 @@
     }
   },
   {
-    "id": "rv4", "name": "Olga P.", "rating": 5, "section": "excursion",
+    "id": "rv4", "avatar": "/img/avatars/rv4.webp", "name": "Olga P.", "nationality": "RU", "rating": 5, "section": "excursion",
     "itemName": { "en": "Blue Hole Dahab Snorkeling & Diving Trip", "ar": "رحلة سنوركل وغطس البحر الأزرق دهب", "ru": "Снорклинг и дайвинг в Голубой дыре, Дахаб", "de": "Blue Hole Dahab Schnorchel- & Tauchtour", "it": "Escursione Snorkeling e Diving al Blue Hole di Dahab", "tr": "Dahab Mavi Delik Şnorkel ve Dalış Turu" },
     "image": "https://images.unsplash.com/photo-1544551763-92ab472cad5d?auto=format&fit=crop&w=800&q=80",
     "text": {
@@ -52,7 +52,7 @@
     }
   },
   {
-    "id": "rv5", "name": "Priya N.", "rating": 5, "section": "transfer",
+    "id": "rv5", "avatar": "/img/avatars/rv5.webp", "name": "Priya N.", "nationality": "IN", "rating": 5, "section": "transfer",
     "itemName": { "en": "Private Minivan Hotel-to-Hotel Transfer", "ar": "ترانسفير خاص من فندق إلى فندق بفان مكيف", "ru": "Частный трансфер на микроавтобусе от отеля к отелю", "de": "Privater Minivan-Transfer von Hotel zu Hotel", "it": "Transfer privato in minivan da hotel a hotel", "tr": "Otelden Otele Özel Klimalı Minivan Transferi" },
     "image": "https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=800&q=80",
     "text": {
@@ -65,7 +65,7 @@
     }
   },
   {
-    "id": "rv6", "name": "Klaus M.", "rating": 5, "section": "excursion",
+    "id": "rv6", "avatar": "/img/avatars/rv6.webp", "name": "Klaus M.", "nationality": "DE", "rating": 5, "section": "excursion",
     "itemName": { "en": "Tiran Island Boat Trip", "ar": "رحلة بحرية إلى جزيرة تيران", "ru": "Морская прогулка на остров Тиран", "de": "Bootsausflug zur Insel Tiran", "it": "Gita in barca all'isola di Tiran", "tr": "Tiran Adası Tekne Turu" },
     "image": "https://images.unsplash.com/photo-1544551763-77ef2d0cfc6c?auto=format&fit=crop&w=800&q=80",
     "text": {
@@ -78,7 +78,7 @@
     }
   },
   {
-    "id": "rv7", "name": "Youssef E.", "rating": 5, "section": "excursion",
+    "id": "rv7", "avatar": "/img/avatars/rv7.webp", "name": "Youssef E.", "nationality": "EG", "rating": 5, "section": "excursion",
     "itemName": { "en": "Quad Bike Desert Sunset Safari", "ar": "رحلة سفاري الدراجات الرباعية عند الغروب", "ru": "Сафари на квадроциклах в пустыне на закате", "de": "Quad-Wüstensafari bei Sonnenuntergang", "it": "Safari nel deserto in quad al tramonto", "tr": "Çölde Gün Batımı ATV Safarisi" },
     "image": "https://images.unsplash.com/photo-1451337516015-6b6e9a44a8a3?auto=format&fit=crop&w=800&q=80",
     "text": {
@@ -91,7 +91,7 @@
     }
   },
   {
-    "id": "rv8", "name": "Helena D.", "rating": 5, "section": "excursion",
+    "id": "rv8", "avatar": "/img/avatars/rv8.webp", "name": "Helena D.", "nationality": "DE", "rating": 5, "section": "excursion",
     "itemName": { "en": "Colored Canyon & St. Catherine Day Trip", "ar": "رحلة يوم كامل للكانيون الملون ودير سانت كاترين", "ru": "Однодневная поездка в Цветной каньон и монастырь Св. Екатерины", "de": "Tagesausflug zum Colored Canyon & Katharinenkloster", "it": "Gita di un giorno al Canyon Colorato e Santa Caterina", "tr": "Renkli Kanyon ve Aziz Katerina Manastırı Günübirlik Turu" },
     "image": "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=800&q=80",
     "text": {
@@ -104,7 +104,7 @@
     }
   },
   {
-    "id": "rv9", "name": "Chen L.", "rating": 5, "section": "excursion",
+    "id": "rv9", "avatar": "/img/avatars/rv9.webp", "name": "Chen L.", "nationality": "CN", "rating": 5, "section": "excursion",
     "itemName": { "en": "Ras Mohammed Snorkeling Trip", "ar": "رحلة سنوركل رأس محمد", "ru": "Снорклинг-тур в Рас-Мохаммед", "de": "Ras-Mohammed-Schnorcheltour", "it": "Escursione Snorkeling a Ras Mohammed", "tr": "Ras Muhammed Şnorkel Turu" },
     "image": "https://images.unsplash.com/photo-1583212292454-1fe6229603b7?auto=format&fit=crop&w=800&q=80",
     "text": {
@@ -117,7 +117,7 @@
     }
   },
   {
-    "id": "rv10", "name": "Nadia R.", "rating": 5, "section": "transfer",
+    "id": "rv10", "avatar": "/img/avatars/rv10.webp", "name": "Nadia R.", "nationality": "RU", "rating": 5, "section": "transfer",
     "itemName": { "en": "Tourist H1 Airport Transfer", "ar": "ترانسفير مطار H1 سياحي", "ru": "Туристический трансфер H1", "de": "Touristen-H1-Flughafentransfer", "it": "Transfer aeroportuale H1 turistico", "tr": "Turistik H1 Havalimanı Transferi" },
     "image": "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=800&q=80",
     "text": {
@@ -130,7 +130,7 @@
     }
   },
   {
-    "id": "rv11", "name": "Sara H.", "rating": 4, "section": "excursion",
+    "id": "rv11", "avatar": "/img/avatars/rv11.webp", "name": "Sara H.", "nationality": "SA", "rating": 4, "section": "excursion",
     "itemName": { "en": "Blue Hole Dahab Snorkeling & Diving Trip", "ar": "رحلة سنوركل وغطس البحر الأزرق دهب", "ru": "Снорклинг и дайвинг в Голубой дыре, Дахаб", "de": "Blue Hole Dahab Schnorchel- & Tauchtour", "it": "Escursione Snorkeling e Diving al Blue Hole di Dahab", "tr": "Dahab Mavi Delik Şnorkel ve Dalış Turu" },
     "image": "https://images.unsplash.com/photo-1544551763-92ab472cad5d?auto=format&fit=crop&w=800&q=80",
     "text": {
@@ -143,7 +143,7 @@
     }
   },
   {
-    "id": "rv12", "name": "Robert F.", "rating": 5, "section": "transfer",
+    "id": "rv12", "avatar": "/img/avatars/rv12.webp", "name": "Robert F.", "nationality": "GB", "rating": 5, "section": "transfer",
     "itemName": { "en": "Group Shuttle Airport Transfer", "ar": "ترانسفير مطار جماعي (شاتل)", "ru": "Групповой шаттл-трансфер в аэропорт", "de": "Gruppen-Shuttle-Flughafentransfer", "it": "Transfer aeroportuale navetta di gruppo", "tr": "Grup Servisi Havalimanı Transferi" },
     "image": "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80",
     "text": {
@@ -156,7 +156,7 @@
     }
   },
   {
-    "id": "rv13", "name": "Fatima A.", "rating": 5, "section": "excursion",
+    "id": "rv13", "avatar": "/img/avatars/rv13.webp", "name": "Fatima A.", "nationality": "SA", "rating": 5, "section": "excursion",
     "itemName": { "en": "Colored Canyon & St. Catherine Day Trip", "ar": "رحلة يوم كامل للكانيون الملون ودير سانت كاترين", "ru": "Однодневная поездка в Цветной каньон и монастырь Св. Екатерины", "de": "Tagesausflug zum Colored Canyon & Katharinenkloster", "it": "Gita di un giorno al Canyon Colorato e Santa Caterina", "tr": "Renkli Kanyon ve Aziz Katerina Manastırı Günübirlik Turu" },
     "image": "https://images.unsplash.com/photo-1533640470979-4d0a55850c30?auto=format&fit=crop&w=800&q=80",
     "text": {
@@ -169,7 +169,7 @@
     }
   },
   {
-    "id": "rv14", "name": "Julia S.", "rating": 5, "section": "excursion",
+    "id": "rv14", "avatar": "/img/avatars/rv14.webp", "name": "Julia S.", "nationality": "DE", "rating": 5, "section": "excursion",
     "itemName": { "en": "Tiran Island Boat Trip", "ar": "رحلة بحرية إلى جزيرة تيران", "ru": "Морская прогулка на остров Тиран", "de": "Bootsausflug zur Insel Tiran", "it": "Gita in barca all'isola di Tiran", "tr": "Tiran Adası Tekne Turu" },
     "image": "https://images.unsplash.com/photo-1544551763-77ef2d0cfc6c?auto=format&fit=crop&w=800&q=80",
     "text": {
@@ -182,7 +182,7 @@
     }
   },
   {
-    "id": "rv15", "name": "Mariam Z.", "rating": 5, "section": "excursion",
+    "id": "rv15", "avatar": "/img/avatars/rv15.webp", "name": "Mariam Z.", "nationality": "EG", "rating": 5, "section": "excursion",
     "itemName": { "en": "White Desert Safari & BBQ Dinner", "ar": "رحلة سفاري الصحراء البيضاء وعشاء شواء", "ru": "Сафари в Белую пустыню и барбекю-ужин", "de": "Wüstensafari & BBQ-Dinner", "it": "Safari nel Deserto Bianco e cena BBQ", "tr": "Beyaz Çöl Safarisi ve Barbekü Yemeği" },
     "image": "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=800&q=80",
     "text": {
@@ -195,7 +195,7 @@
     }
   },
   {
-    "id": "rv16", "name": "Tom R.", "rating": 5, "section": "transfer",
+    "id": "rv16", "avatar": "/img/avatars/rv16.webp", "name": "Tom R.", "nationality": "GB", "rating": 5, "section": "transfer",
     "itemName": { "en": "VIP Hiace AC Airport Transfer", "ar": "ترانسفير مطار VIP هايس مكيف", "ru": "VIP-трансфер Hiace с кондиционером", "de": "VIP-Hiace-Flughafentransfer mit Klimaanlage", "it": "Transfer aeroportuale VIP Hiace con aria condizionata", "tr": "VIP Klimalı Hiace Havalimanı Transferi" },
     "image": "https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=800&q=80",
     "text": {
@@ -208,7 +208,7 @@
     }
   },
   {
-    "id": "rv17", "name": "Aya M.", "rating": 4, "section": "excursion",
+    "id": "rv17", "avatar": "/img/avatars/rv17.webp", "name": "Aya M.", "nationality": "JO", "rating": 4, "section": "excursion",
     "itemName": { "en": "Colored Canyon & St. Catherine Day Trip", "ar": "رحلة يوم كامل للكانيون الملون ودير سانت كاترين", "ru": "Однодневная поездка в Цветной каньон и монастырь Св. Екатерины", "de": "Tagesausflug zum Colored Canyon & Katharinenkloster", "it": "Gita di un giorno al Canyon Colorato e Santa Caterina", "tr": "Renkli Kanyon ve Aziz Katerina Manastırı Günübirlik Turu" },
     "image": "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=800&q=80",
     "text": {
@@ -221,7 +221,7 @@
     }
   },
   {
-    "id": "rv18", "name": "Michael O.", "rating": 5, "section": "transfer",
+    "id": "rv18", "avatar": "/img/avatars/rv18.webp", "name": "Michael O.", "nationality": "US", "rating": 5, "section": "transfer",
     "itemName": { "en": "Private Minivan Hotel-to-Hotel Transfer", "ar": "ترانسفير خاص من فندق إلى فندق بفان مكيف", "ru": "Частный трансфер на микроавтобусе от отеля к отелю", "de": "Privater Minivan-Transfer von Hotel zu Hotel", "it": "Transfer privato in minivan da hotel a hotel", "tr": "Otelden Otele Özel Klimalı Minivan Transferi" },
     "image": "https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=800&q=80",
     "text": {
@@ -234,7 +234,7 @@
     }
   },
   {
-    "id": "rv19", "name": "Layla H.", "rating": 5, "section": "excursion",
+    "id": "rv19", "avatar": "/img/avatars/rv19.webp", "name": "Layla H.", "nationality": "AE", "rating": 5, "section": "excursion",
     "itemName": { "en": "Blue Hole Dahab Snorkeling & Diving Trip", "ar": "رحلة سنوركل وغطس البحر الأزرق دهب", "ru": "Снорклинг и дайвинг в Голубой дыре, Дахаб", "de": "Blue Hole Dahab Schnorchel- & Tauchtour", "it": "Escursione Snorkeling e Diving al Blue Hole di Dahab", "tr": "Dahab Mavi Delik Şnorkel ve Dalış Turu" },
     "image": "https://images.unsplash.com/photo-1544551763-92ab472cad5d?auto=format&fit=crop&w=800&q=80",
     "text": {
@@ -247,7 +247,7 @@
     }
   },
   {
-    "id": "rv20", "name": "Karim S.", "rating": 5, "section": "transfer",
+    "id": "rv20", "avatar": "/img/avatars/rv20.webp", "name": "Karim S.", "nationality": "EG", "rating": 5, "section": "transfer",
     "itemName": { "en": "Tourist H1 Airport Transfer", "ar": "ترانسفير مطار H1 سياحي", "ru": "Туристический трансфер H1", "de": "Touristen-H1-Flughafentransfer", "it": "Transfer aeroportuale H1 turistico", "tr": "Turistik H1 Havalimanı Transferi" },
     "image": "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=800&q=80",
     "text": {

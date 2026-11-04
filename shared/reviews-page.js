@@ -37,6 +37,9 @@ const reviewsPg = (() => {
     try { const n = new Intl.DisplayNames([lang()], { type: 'region' }).of(cc); if (n && n !== cc) return n; } catch {}
     const c = (typeof COUNTRY_CODES !== 'undefined' ? COUNTRY_CODES : []).find(x => x.code === cc); return c ? c.name : cc;
   };
+  // no photo on the account/review: a stable colour per person, so avatars are distinct instead of all orange
+  const AV = [['#fb923c', '#ea580c'], ['#38bdf8', '#0369a1'], ['#34d399', '#047857'], ['#a78bfa', '#6d28d9'], ['#f472b6', '#be185d'], ['#fbbf24', '#b45309'], ['#2dd4bf', '#0f766e'], ['#f87171', '#b91c1c']];
+  const avStyle = (n) => { let h = 0; for (const ch of String(n || '')) h = (h * 31 + ch.charCodeAt(0)) >>> 0; const c = AV[h % AV.length]; return `background:linear-gradient(135deg,${c[0]},${c[1]})`; };
   const validCC = (cc) => /^[A-Z]{2}$/.test(cc || '');
   const kinds = () => ['excursion', 'transfer', 'restaurant', ...((typeof SHOW_HOTELS !== 'undefined' && SHOW_HOTELS) ? ['hotel'] : [])]
     .filter(k => ({ excursion: typeof SHOW_EXCURSIONS === 'undefined' || SHOW_EXCURSIONS, transfer: typeof SHOW_TRANSFERS === 'undefined' || SHOW_TRANSFERS, restaurant: typeof SHOW_RESTAURANTS === 'undefined' || SHOW_RESTAURANTS, hotel: true })[k]);
@@ -46,7 +49,7 @@ const reviewsPg = (() => {
     if (S.staticRows) return S.staticRows;
     try { await ensureCatalogLoaded(); } catch {}
     S.staticRows = (CATALOG.reviews || []).map((r, i) => ({
-      id: r.id || 's' + i, name: r.name, nationality: r.nationality || r.country || '', rating: Number(r.rating) || 5, comment: r.text || '', images: [], owner_reply: null, created_at: null,
+      id: r.id || 's' + i, name: r.name, nationality: r.nationality || r.country || '', photo_url: r.avatar || null, rating: Number(r.rating) || 5, comment: r.text || '', images: [], owner_reply: null, created_at: null,
       properties: { name: typeof r.itemName === 'string' ? r.itemName : '', kind: r.section || 'excursion', id: null },
     }));
     return S.staticRows;
@@ -130,7 +133,7 @@ const reviewsPg = (() => {
     const itemChip = p.name ? (link ? `<a class="rvp-item" href="${E(link)}">${chipInner}</a>` : `<span class="rvp-item">${chipInner}</span>`) : '<span></span>';
     return `<article class="rvp-card" style="--i:${Math.min(i, 8)}">
       <header class="rvp-card-head">
-        <div class="rvp-avatar">${r.photo_url ? `<img src="${E(r.photo_url)}" alt="" loading="lazy" onerror="this.remove()">` : E(initial.toUpperCase())}<span class="rvp-tick" title="${tt('rvVerified', 'Verified voucher')}"><i class="fa-solid fa-check" aria-hidden="true"></i></span></div>
+        <div class="rvp-avatar"${r.photo_url ? '' : ` style="${avStyle(r.name)}"`}>${r.photo_url ? `<img src="${E(r.photo_url)}" alt="" loading="lazy" onerror="this.remove()">` : E(initial.toUpperCase())}<span class="rvp-tick" title="${tt('rvVerified', 'Verified voucher')}"><i class="fa-solid fa-check" aria-hidden="true"></i></span></div>
         <div class="rvp-who"><div class="rvp-nm"><b>${E(mask(r.name))}</b>${validCC(r.nationality) ? `<span class="rvp-nat" title="${E(countryName(r.nationality))}"><span class="rvp-flag" aria-hidden="true">${flag(r.nationality)}</span><span>${E(countryName(r.nationality))}</span></span>` : ''}</div><span class="rvp-meta">${stars(r.rating, 'sm')}${r.created_at ? `<small>${fmtDate(r.created_at)}</small>` : ''}</span></div>
         <span class="rvp-vbadge"><i class="fa-solid fa-ticket" aria-hidden="true"></i><span>${tt('rvVerified', 'Verified voucher')}</span></span>
       </header>
