@@ -132,11 +132,11 @@
 [data-site="app"] .lc-cta { background: var(--ap-grad) !important; color: #fff !important; border-radius: 999px !important; box-shadow: var(--ap-glow) !important; padding: 11px 20px; }
 
 /* ---------- detail pages ---------- */
-[data-site="app"] .detail-main { border-radius: 34px 34px 0 0; background: var(--bg-card); border: 0; margin-top: -30px; }
+[data-site="app"] .detail-main { border-radius: 34px 34px 0 0; background: var(--bg-body); border: 0; margin-top: -30px; }
 [data-site="app"] .detail-main h2.font-display, [data-site="app"] .detail-main h3.font-display { font-family: 'Inter', sans-serif !important; font-weight: 800; letter-spacing: -.02em; }
 [data-site="app"] .detail-main h3.font-display::before { background: var(--ap-accent); }
 [data-site="app"] .trust-badge { border-radius: 999px; background: var(--bg-field); border-color: transparent; }
-[data-site="app"] .detail-mobile-bar { background: var(--bg-card); border-top: 1px solid var(--ap-line); box-shadow: 0 -14px 30px -22px rgba(0,0,0,.5); border-radius: 26px 26px 0 0; padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)); }
+[data-site="app"] .detail-mobile-bar { background: var(--bg-body); border-top: 1px solid var(--ap-line); box-shadow: 0 -14px 30px -22px rgba(0,0,0,.5); border-radius: 26px 26px 0 0; padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)); }
 [data-site="app"] .btn-gold, [data-site="app"] .detail-book-btn { background: var(--ap-grad) !important; color: #fff !important; border-radius: 999px !important; box-shadow: var(--ap-glow) !important; border: 0; }
 
 /* ---------- bookings / profile / settings ---------- */
@@ -174,6 +174,36 @@
 [data-site="app"] #authPage .auth-hint { color: var(--text-secondary); }
 [data-site="app"] #authPage [class*="text-white"] { color: var(--text-primary) !important; }
 [data-site="app"] #authPage .text-gold-400 { color: var(--ap-accent) !important; }
+
+/* auth page: the same drifting waves as the rest of the app, behind the logo / title / card (the card stays above them) */
+[data-site="app"] #authPage > .ds-waves--auth { position: fixed; z-index: 0; }
+[data-site="app"] #authPage > .relative { z-index: 10; }
+/* auth page — text colours that were hard-coded for the dark scene (white on white in Light Mode). Everything now follows the theme tokens. */
+[data-site="app"] #authPage .auth-review-row small { color: var(--text-secondary); }
+[data-site="app"] #authPage .auth-review-row b { color: var(--text-primary); }
+[data-site="app"] #authPage .auth-edit { color: var(--ap-accent); }
+[data-site="app"] #authPage .auth-check { color: var(--text-secondary); }
+[data-site="app"] #authPage .auth-check a { color: var(--ap-accent); }
+[data-site="app"] #authPage .auth-check-box { border-color: var(--border-field); background: var(--bg-card); }
+[data-site="app"] #authPage .auth-check input:checked + .auth-check-box { background: var(--ap-accent); border-color: var(--ap-accent); color: #fff; }
+[data-site="app"] #authPage .auth-strength span { background: var(--bg-field); }
+[data-site="app"] #authPage .auth-strength em { color: var(--text-secondary); }
+[data-site="app"] #authPage .auth-strength[data-score="1"] span:nth-child(-n+1) { background: #ef4444; }
+[data-site="app"] #authPage .auth-strength[data-score="2"] span:nth-child(-n+2) { background: #f97316; }
+[data-site="app"] #authPage .auth-strength[data-score="3"] span:nth-child(-n+3) { background: #eab308; }
+[data-site="app"] #authPage .auth-strength[data-score="4"] span:nth-child(-n+4) { background: #22c55e; }
+[data-site="app"] #authPage .auth-strength[data-score="1"] em { color: #dc2626; }
+[data-site="app"] #authPage .auth-strength[data-score="2"] em { color: #ea580c; }
+[data-site="app"] #authPage .auth-strength[data-score="3"] em { color: #a16207; }
+[data-site="app"] #authPage .auth-strength[data-score="4"] em { color: #15803d; }
+[data-site="app"] #authPage .auth-err { color: #dc2626; }
+:root[data-site="app"][data-theme="dark"] #authPage .auth-err { color: #f87171; }
+[data-site="app"] #authPage .auth-phone select option { color: #222; background: #fff; }
+:root[data-site="app"][data-theme="dark"] #authPage .auth-phone select option { color: #f4f4f4; background: #1c1c1f; }
+[data-site="app"] #authPage .auth-back { background: var(--bg-field); border: 1.5px solid var(--ap-line); color: var(--text-primary); border-radius: 999px; }
+[data-site="app"] #authPage .auth-submit { color: #fff; border-radius: 999px; }
+[data-site="app"] #authPage .auth-eye:hover { color: var(--text-primary); }
+[data-site="app"] #authPage .auth-input:focus-within .auth-input-icon { color: var(--ap-accent); }
 
 /* ---------- type, accent utilities, profile / bookings ---------- */
 [data-site="app"] .font-display { font-family: 'Inter', sans-serif !important; letter-spacing: -.01em; }
@@ -229,13 +259,13 @@ html.is-pwa #pwaInstallRow { display: none !important; }
    ========================================================================== */
 :root[data-site="app"]:not([data-theme="dark"]) {
   --bg-body-a: rgba(246,245,243,.86);
-  --wa-0: #f6f5f3; --wa-1: #e9f5f9; --wa-2: #bfe3f0; --wa-3: rgba(164,213,233,0);   /* sea: page colour → light sea → fades into the page */
+  --wa-0: var(--bg-body); --wa-1: #e9f5f9; --wa-2: #bfe3f0; --wa-3: rgba(164,213,233,0);   /* sea: page colour → light sea → fades into the page */
   --wv-b: linear-gradient(180deg, rgba(246,245,243,0) 0%, rgba(253,232,211,.55) 50%, rgba(251,199,154,.9) 100%);   /* sand   */
   --wv-c: linear-gradient(180deg, rgba(249,115,22,0) 0%, rgba(249,115,22,0) 38%, rgba(251,146,60,.32) 74%, rgba(249,115,22,.88) 100%);   /* sunset crest */
 }
 :root[data-site="app"][data-theme="dark"] {
   --bg-body-a: rgba(13,13,15,.86);
-  --wa-0: #0d0d0f; --wa-1: #0b2236; --wa-2: #12486e; --wa-3: rgba(18,72,110,0);   /* deep sea: page colour → navy → fades into the page */
+  --wa-0: var(--bg-body); --wa-1: #0b2236; --wa-2: #12486e; --wa-3: rgba(18,72,110,0);   /* deep sea: page colour → navy → fades into the page */
   --wv-b: linear-gradient(180deg, rgba(13,13,15,0) 0%, rgba(70,30,14,.6) 50%, rgba(154,52,18,.85) 100%);   /* ember  */
   --wv-c: linear-gradient(180deg, rgba(249,115,22,0) 0%, rgba(249,115,22,0) 38%, rgba(249,115,22,.34) 74%, rgba(251,146,60,.92) 100%);   /* sunset crest */
 }
@@ -258,7 +288,7 @@ html.is-pwa #pwaInstallRow { display: none !important; }
 [data-site="app"] .ds-waves > i { position: absolute; top: 0; left: 0; width: 200%; display: block; will-change: transform; backface-visibility: hidden; }
 [data-site="app"] .ds-waves > i:nth-child(1) {
   height: calc(var(--hd) + var(--wa)); opacity: .96;
-  background: linear-gradient(180deg, var(--wa-0) 0, var(--wa-1) calc(var(--hd) * .8), var(--wa-2) calc(var(--hd) + 40px), var(--wa-3) 100%);
+  background: linear-gradient(180deg, var(--bg-body) 0, var(--bg-body) calc(var(--st) + 18px), var(--wa-1) calc(var(--hd) * .8), var(--wa-2) calc(var(--hd) + 40px), var(--wa-3) 100%);
   -webkit-mask: linear-gradient(#000,#000) top / 100% calc(100% - 35px) no-repeat, var(--wm-a) bottom / 50% 36px repeat-x;
           mask: linear-gradient(#000,#000) top / 100% calc(100% - 35px) no-repeat, var(--wm-a) bottom / 50% 36px repeat-x;
   animation: dsWaveL 46s linear infinite;
@@ -316,6 +346,17 @@ html.ds-far .ds-waves > i { animation-play-state: paused; }   /* scrolled well p
 [data-site="app"] .detail-mobile-bar { z-index: 9980 !important; box-shadow: none !important; backdrop-filter: none; -webkit-backdrop-filter: none; border-top: 1px solid var(--ap-line); }
 [data-site="app"] .detail-main, [data-site="app"] .dp-sheet, [data-site="app"] .rd-main.detail-main, [data-site="app"] .art-main.detail-main { box-shadow: none !important; border: 0 !important; }
 [data-site="app"] .detail-main .card:hover { box-shadow: none; }
+
+/* Detail-page sheet = page colour. The sheets were painted with --bg-card (inline style="background:var(--bg-card)" in booking.js + the
+   max-width:1023px rule in style.css), which in the app theme is lighter than --bg-body (#171719 vs #0d0d0f dark), so the content showed as a
+   different panel from the page / status-bar / header band. !important is needed to beat the inline style. */
+[data-site="app"] .detail-main,
+[data-site="app"] .dp-sheet,
+[data-site="app"] .rd-main.detail-main,
+[data-site="app"] .art-main.detail-main { background: var(--bg-body) !important; }
+[data-site="app"] .rd-tabs { background: color-mix(in srgb, var(--bg-body) 92%, transparent); }
+/* the full-page wrappers (.min-h-screen) of the detail / list pages also carry inline style="background:var(--bg-card)" (booking.js, frontend.js) */
+[data-site="app"] .min-h-screen[style*="--bg-card"] { background: var(--bg-body) !important; }
 
 /* 3 — fixed waves ------------------------------------------------------- */
 [data-site="app"] .ds-waves { position: fixed; transition: --wa .35s ease; }
@@ -427,3 +468,70 @@ html.ds-far .ds-waves > i { animation-play-state: paused; }   /* scrolled well p
 [data-site="app"] .lf-host .lf-ctx { display: none; }
 [data-site="app"] #transfersToolbar { margin-top: 0; }
 .lf-sec-ctx .lf-ctx { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
+
+
+/* ==========================================================================
+   v17 — (1) safe space under the last section on pages with the fixed price / Book Now bar
+         (2) slider / hero photos emerge from under the waves (see below)
+   ========================================================================== */
+/* (1) bar = 16px + content (~74px) + 14px + safe-area; the reviews (last section) used to end underneath it */
+@media (max-width: 1023px) {
+  [data-site="app"] .detail-main.has-mbar { padding-bottom: calc(150px + env(safe-area-inset-bottom, 0px)) !important; }
+}
+
+/* (2) the photo sliders (detail pages + home hero) are the LAST wave: full-width, with a MOVING wave edge, rising out from UNDER the orange waves.
+   - wave layer 1 (blue) is hidden while the page is at the top, so the photo takes its place; it comes back once the page scrolls (slim header band)
+   - the sand/ember + sunset-crest layers keep their old colours and are drawn OVER the top of the photo
+   - the photo has no side margins any more; its top edge is a wave (mask) that drifts sideways like the other layers (--pw = one wave length, --pt = duration)
+   - it tucks --tuck px up under the orange layers; the bottom edge / height of the photo are unchanged
+   - the drift pauses once the page scrolls (the photo leaves the screen) and for prefers-reduced-motion */
+[data-site="app"] { --tuck: 54px; --pw: 380px; --pt: 22s;
+  --wm-photo: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 36' preserveAspectRatio='none'%3E%3Cpath d='M0 36H400V19C340 3 270 3 200 19S60 35 0 19Z'/%3E%3C/svg%3E"); }
+:root[data-site="app"]:not(.ds-scrolled) .dh > .ds-waves--hero > i:nth-child(1),
+:root[data-site="app"]:not(.ds-scrolled) #heroSection > .ds-waves--hero > i:nth-child(1) { opacity: 0; }
+[data-site="app"] .ds-waves--hero > i:nth-child(1) { transition: opacity .25s ease; }
+:root[data-site="app"]:not(.ds-scrolled) .dh > .ds-waves--hero,
+:root[data-site="app"]:not(.ds-scrolled) #heroSection > .ds-waves--hero { z-index: 1; }
+
+@keyframes dsPhotoWave {
+  from { -webkit-mask-position: 0 0, 0 35px;                 mask-position: 0 0, 0 35px; }
+  to   { -webkit-mask-position: calc(var(--pw) * -1) 0, 0 35px; mask-position: calc(var(--pw) * -1) 0, 0 35px; }
+}
+/* the photo layers: wave strip on top (repeats + drifts) over a solid block */
+[data-site="app"] .dh-track, [data-site="app"] .dh-shade,
+[data-site="app"] #heroSection::before, [data-site="app"] #heroSection .hero-bg-img, [data-site="app"] #heroSection .hero-overlay {
+  -webkit-mask: var(--wm-photo) 0 0 / var(--pw) 36px repeat-x, linear-gradient(#000,#000) 0 35px / 100% calc(100% - 35px) no-repeat;
+          mask: var(--wm-photo) 0 0 / var(--pw) 36px repeat-x, linear-gradient(#000,#000) 0 35px / 100% calc(100% - 35px) no-repeat;
+  animation: dsPhotoWave var(--pt) linear infinite;
+}
+:root[data-site="app"].ds-scrolled .dh-track, :root[data-site="app"].ds-scrolled .dh-shade,
+:root[data-site="app"].ds-scrolled #heroSection::before, :root[data-site="app"].ds-scrolled #heroSection .hero-bg-img, :root[data-site="app"].ds-scrolled #heroSection .hero-overlay { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  [data-site="app"] .dh-track, [data-site="app"] .dh-shade,
+  [data-site="app"] #heroSection::before, [data-site="app"] #heroSection .hero-bg-img, [data-site="app"] #heroSection .hero-overlay { animation: none; }
+}
+
+/* detail pages: edge to edge */
+[data-site="app"] .dh { padding-left: 0; padding-right: 0; }
+[data-site="app"] .dh-track { width: 100%; margin-top: calc(var(--tuck) * -1); height: calc(300px + var(--tuck)); border-radius: 0 0 28px 28px; }
+[data-site="app"] .dh-shade { top: calc(var(--dh-bar) - var(--tuck)); left: 0; right: 0; border-radius: 0 0 28px 28px; }
+[data-site="app"] .dh-count { inset-inline-end: 16px; }
+[data-site="app"] .dh-badge { inset-inline-start: 16px; }
+
+/* home hero card: edge to edge */
+[data-site="app"] #heroSection::before,
+[data-site="app"] #heroSection .hero-bg-img,
+[data-site="app"] #heroSection .hero-overlay {
+  top: calc(var(--hdr) - var(--tuck)); left: 0; right: 0; width: 100%; height: calc(var(--hero-h) + var(--tuck)); border-radius: 0 0 28px 28px;
+}
+
+/* header avatar (home): no white circle around it — just the avatar sitting on the waves */
+[data-site="app"] #heroSection .hero-content > div:first-child .icon-btn[data-page="profile"] { background: transparent !important; border: 0 !important; box-shadow: none !important; width: 44px; height: 44px; }
+[data-site="app"] #heroSection .icon-btn[data-page="profile"] .nav-avatar-circle { width: 40px; height: 40px; font-size: 16px; box-shadow: 0 6px 14px -6px rgba(194,65,12,.6); }
+
+/* log in / sign up: the website logo instead of the compass tile (white lettering — keep it readable on the light waves) */
+[data-site="app"] #authPage .auth-logo { height: 56px; width: auto; max-width: 70%; object-fit: contain; filter: none; }
+:root[data-site="app"]:not([data-theme="dark"]) #authPage .auth-logo { filter: drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
+
+/* detail pages: the band above the photo (status bar + header row) must be exactly the page colour, not the white page sheet behind it — otherwise it reads lighter than the status bar and a seam shows until the page scrolls */
+[data-site="app"] .dh { background: var(--bg-body); }

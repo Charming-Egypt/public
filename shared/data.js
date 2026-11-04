@@ -297,15 +297,6 @@ function confirmDialog({ title, body = '', confirmLabel, cancelLabel, danger = f
 
 function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
-function hideSplash() {
-  const splash = document.getElementById('splashPage');
-  if (splash) {
-    splash.style.transition = 'opacity .5s ease';
-    splash.style.opacity = '0';
-    setTimeout(() => { splash.style.display = 'none'; splash.remove(); }, 500);
-  }
-}
-
 // ==================== THEME ====================
 const THEME = {
   get() { return localStorage.getItem('ds_theme') || 'dark'; },
@@ -542,8 +533,10 @@ function localizeCatalog(lang) {
 //   3. Only the few files the bundle marks "null" (destinations / journal / testimonials not exported yet) fall back to the static /data/*.json.
 const CATALOG_FILES = ['hotels', 'excursions', 'transfers', 'destinations', 'restaurants', 'reviews', 'articles'];
 const CATALOG_KEY = 'ds_catalog_v4';
+// false until the catalog (cached copy or fresh answer) is in: the list renderers wait for it and the pages show skeleton placeholders meanwhile (see frontend.js "SKELETON GUARD")
+window.__catalogReady = false;
 // with static hosting a recheck costs almost nothing (a 304 from the CDN), so edits made in the admin show up within ~20 s; without it keep the gentler 3 min
-const CATALOG_FRESH_MS = (window.DS_SUPABASE && window.DS_SUPABASE.staticBase) ? 20 * 1000 : 3 * 60 * 1000;
+const CATALOG_FRESH_MS = (window.DS_SUPABASE && window.DS_SUPABASE.mediaBase) ? 20 * 1000 : 3 * 60 * 1000;
 
 async function loadCatalogFromWorker() {
   const files = CATALOG_FILES;
@@ -558,7 +551,7 @@ async function loadCatalogFromWorker() {
   try { saved = JSON.parse(localStorage.getItem(CATALOG_KEY) || 'null'); } catch {}
   try { localStorage.removeItem('ds_catalog_offline'); sessionStorage.removeItem('ds_catalog_v3'); } catch {}   // older versions kept two copies
   const hasSaved = !!(saved && saved.d && files.every(f => Array.isArray(saved.d[f])));
-  if (hasSaved) { Object.assign(CATALOG_RAW, saved.d); localizeCatalog(I18N.get()); refreshCatalogUI(); }
+  if (hasSaved) { Object.assign(CATALOG_RAW, saved.d); window.__catalogReady = true; localizeCatalog(I18N.get()); refreshCatalogUI(); }
   if (hasSaved && Date.now() - (saved.t || 0) < CATALOG_FRESH_MS) return;   // fresh enough: zero requests
 
   // the per-file route (database / static files): used when no content Worker is configured, and as a safety net if the bundle is unavailable
@@ -593,16 +586,19 @@ async function loadCatalogFromWorker() {
       for (const f of files) CATALOG_RAW[f] = fresh[f] !== undefined ? fresh[f] : (base[f] || CATALOG_RAW[f] || []);
       if (got === files.length) { try { localStorage.setItem(CATALOG_KEY, JSON.stringify({ t: Date.now(), d: Object.fromEntries(files.map(f => [f, CATALOG_RAW[f]])) })); } catch {} }
     } else if (!hasSaved) { for (const f of files) CATALOG_RAW[f] = CATALOG_RAW[f] || []; }   // offline and nothing saved: empty lists
+    window.__catalogReady = true;
     localizeCatalog(I18N.get());
     refreshCatalogUI();
   };
 
   if (hasSaved) { fetchAll(); return; }   // old copy is already on screen; refresh behind it
-  await fetchAll();
+  try { await fetchAll(); }
+  catch (e) { console.warn('Catalog load failed:', e); window.__catalogReady = true; for (const f of files) CATALOG_RAW[f] = CATALOG_RAW[f] || []; localizeCatalog(I18N.get()); refreshCatalogUI(); }   // never leave the skeletons spinning forever
 }
 
 function refreshCatalogUI() {
   try { window.DS_renderSiteBits && window.DS_renderSiteBits(); } catch (e) { /* frontend.js not ready yet */ }
+  try { window.DS_renderWeather && window.DS_renderWeather(); } catch (e) { /* frontend.js not ready yet */ }   // weather labels are built in JS, so data-i18n can't reach them
   try { if (document.getElementById('searchCard')) search.refreshLabels(); } catch (e) { /* frontend.js not ready yet */ }
   if (document.getElementById('hotelsList')) hotels.render();
   if (document.getElementById('excursionsList')) excursionsUi.render();
@@ -614,6 +610,7 @@ function refreshCatalogUI() {
   if (document.getElementById('restaurantsRow')) restaurantsUi.renderRow();
   if (document.getElementById('reviewsRow')) reviewsHomeUi.render();
   if (document.getElementById('articlesRow')) articlesUi.render();
+  if (document.getElementById('reviewsPage') && typeof reviewsPg !== 'undefined') reviewsPg.rerender();
 }
 
 // ==================== AUTH ====================
@@ -651,6 +648,7 @@ const auth = {
     currentUser = null;
     localStorage.removeItem('ds_auth_token');
     localStorage.removeItem('ds_current_user');
+    try { sidebar.close(); } catch {}   // the side menu must not stay open on top of the log-in screen
     nav.showAuth();
   },
   isLoggedIn() { return !!authToken; },
@@ -708,7 +706,7 @@ function authRenderStep(focus = true) {
   const isLogin = authMode === 'login';
   const step = isLogin ? 1 : authStep;
   document.querySelectorAll('#authForm .auth-pane').forEach(p => p.classList.toggle('is-active', Number(p.dataset.pane) === step));
-  authEl('authSocial')?.classList.toggle('hidden', !isLogin && step !== 1);
+  authEl('authSocial')?.classList.toggle('hidden', !isLogin);   // Google sign-in: log-in form only
   authEl('authBackBtn')?.classList.toggle('hidden', isLogin || step === 1);
   const btn = authEl('authSubmitBtn');
   if (btn) {
@@ -1119,105 +1117,13 @@ function updateDrawerUser(name, email, photoURL) {
 }
 
 // ==================== REVIEWS ====================
+// Writing a review lives on its own page (/reviews/, shared/reviews-page.js): it needs a voucher number and the voucher holder's
+// signed-in account, and takes name + avatar from that account. Every "Write a review" button just opens that page
+// (with the voucher already filled in when it comes from My Bookings).
 const reviews = {
-  currentTarget: null,
-  selectedStars: 0,
-  pendingImages: [],
-  addImages(fileList) {
-    const files = Array.from(fileList || []).slice(0, 6 - this.pendingImages.length);
-    files.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.pendingImages.push(reader.result);
-        this.renderImagePreview();
-      };
-      reader.readAsDataURL(file);
-    });
-    document.getElementById('reviewImages').value = '';
-  },
-  removeImage(i) {
-    this.pendingImages.splice(i, 1);
-    this.renderImagePreview();
-  },
-  renderImagePreview() {
-    const el = document.getElementById('reviewImagePreview');
-    if (!el) return;
-    el.innerHTML = this.pendingImages.map((src, i) => `
-      <div class="review-photo-thumb">
-        <img src="${src}" alt="">
-        <button type="button" onclick="reviews.removeImage(${i})"><i class="fa-solid fa-xmark"></i></button>
-      </div>`).join('') +
-      (this.pendingImages.length < 6 ? `<button type="button" onclick="document.getElementById('reviewImages').click()" class="review-photo-add"><i class="fa-solid fa-camera"></i><span>Add</span></button>` : '');
-  },
-  async submit(e) {
-    e.preventDefault();
-    if (this.submitting) return;
-    const bookingId = document.getElementById('reviewBookingId').value.trim().toUpperCase();
-    const name = document.getElementById('reviewName').value.trim();
-    const comment = document.getElementById('reviewComment').value.trim();
-    const rating = this.selectedStars || 5;
-
-    if (!bookingId || !comment) return toast('Booking ID and comment required', 'error');
-
-    this.submitting = true;
-    const submitBtn = e.target.querySelector('button[type="submit"]');
-    if (submitBtn) { submitBtn.disabled = true; submitBtn.style.opacity = '.6'; }
-
-    try {
-      const reviewBody = {
-        type: this.currentTarget.type,
-        id: this.currentTarget.id,
-        bookingId,
-        name,
-        comment,
-        rating,
-        photoURL: currentUser?.photoURL || null,
-        images: this.pendingImages
-      };
-      if (!navigator.onLine && window.DS_OUTBOX && await DS_OUTBOX.add('review', reviewBody)) {
-        document.getElementById('reviewModal').classList.add('hidden');
-        toast(t('pwaQueued'), 'info');
-        return;
-      }
-      await apiFetch('/api/reviews', { method: 'POST', body: JSON.stringify(reviewBody) });
-      document.getElementById('reviewModal').classList.add('hidden');
-      toast(t('reviewSubmittedMsg'), 'success');
-      const ids = {
-        hotel: { list: 'hotelReviewsList', summary: 'hotelRatingSummary', bars: 'hotelRatingBars' },
-        excursion: { list: 'excursionReviewsList', summary: 'excursionRatingSummary', bars: 'excursionRatingBars' },
-        transfer: { list: 'transferReviewsList', summary: 'transferRatingSummary', bars: 'transferRatingBars' },
-      }[this.currentTarget.type] || { list: 'excursionReviewsList', summary: 'excursionRatingSummary', bars: 'excursionRatingBars' };
-      loadReviews(this.currentTarget.type, this.currentTarget.id, ids.list, ids.summary, ids.bars);
-    } catch (e) {
-      toast(e.message, 'error');
-    } finally {
-      this.submitting = false;
-      if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = ''; }
-    }
-  },
   openModal(type, id, bookingId = '') {
-    this.currentTarget = { type, id, bookingId };
-    this.selectedStars = 0;
-    this.pendingImages = [];
-    document.getElementById('reviewBookingId').value = bookingId;
-    document.getElementById('reviewName').value = (currentUser && currentUser.displayName) || '';
-    document.getElementById('reviewComment').value = '';
-    this.renderImagePreview();
-    this.paintStars(0);
-    document.getElementById('reviewModal').classList.remove('hidden');
+    location.assign(pathForPage('reviews') + '?write=1' + (bookingId ? '&v=' + encodeURIComponent(bookingId) : ''));
   },
-  closeModal() {
-    document.getElementById('reviewModal').classList.add('hidden');
-  },
-  setStars(n) {
-    this.selectedStars = n;
-    this.paintStars(n);
-  },
-  paintStars(n) {
-    document.querySelectorAll('#reviewStarInput i').forEach(el => {
-      el.classList.toggle('active', Number(el.dataset.star) <= n);
-    });
-  }
 };
 
 // ==================== LOAD REVIEWS ====================
@@ -1347,10 +1253,11 @@ const favorites = {
 };
 
 const bookings = {
+  _loaded: false,   // a signed-in visitor sees skeleton cards (static markup in bookings.html) until the first answer is in
   async load(force) {
-    if (!authToken) { this.render(); return; }
+    if (!authToken) { this._loaded = true; this.render(); return; }
     const hit = !force && userCache.get('bk');
-    if (hit) { state.bookings = hit; this.render(); return; }
+    if (hit) { state.bookings = hit; this._loaded = true; this.render(); return; }
     try {
       const data = await apiFetch('/api/user/bookings');
       state.bookings = data.bookings || [];
@@ -1358,9 +1265,11 @@ const bookings = {
     } catch (e) {
       state.bookings = [];
     }
+    this._loaded = true;
     this.render();
   },
   render() {
+    if (authToken && !this._loaded) return;
     const list = document.getElementById('bookingsList'); if (!list) return;
     const upcoming = state.bookings.filter(b => {
       const d = b.checkin || b.date;
@@ -1423,15 +1332,18 @@ const bookings = {
 
 const notifications = {
   list: [],
+  _loaded: false,
   async load(force) {
-    if (!authToken) { this.render(); return; }
+    if (!authToken) { this._loaded = true; this.render(); return; }
     const hit = !force && userCache.get('nt');
-    if (hit) { this.list = hit; this.render(); return; }
+    if (hit) { this.list = hit; this._loaded = true; this.render(); return; }
     try { const data = await apiFetch('/api/notifications'); this.list = data.notifications || []; userCache.set('nt', this.list); } catch (e) { this.list = []; }
+    this._loaded = true;
     this.render();
   },
   render() {
     this.updateBadge();
+    if (authToken && !this._loaded) return;
     const list = document.getElementById('notificationsList'); if (!list) return;
     if (!this.list.length) { list.innerHTML = `<p class="text-center py-10">${t('noNotificationsYet')}</p>`; return; }
     list.innerHTML = this.list.map(n => `

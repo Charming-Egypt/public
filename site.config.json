@@ -37,8 +37,8 @@
     },
     "transfers": {
       "path": "/transfers/",
-      "title": "Airport Transfers — Discover Sharm",
-      "description": "Private airport transfers in Sharm El-Sheikh with fixed prices and professional drivers.",
+      "title": "Transfers — Discover Sharm",
+      "description": "Private transfers in Sharm El-Sheikh with fixed prices and professional drivers.",
       "nav": "transfers"
     },
     "restaurants": {
@@ -52,6 +52,12 @@
       "title": "Hotels — Discover Sharm",
       "description": "Hotels and resorts in Sharm El-Sheikh, from Naama Bay to Sharks Bay.",
       "nav": "hotels"
+    },
+    "reviews": {
+      "path": "/reviews/",
+      "title": "Guest Reviews — Discover Sharm",
+      "description": "Real, voucher-verified reviews from guests who booked excursions, transfers and dining in Sharm El-Sheikh.",
+      "nav": "reviews"
     },
     "about": {
       "path": "/about/",

@@ -33,8 +33,7 @@
 | `DS_TRANSLATE_BASE` | | | ✅ | Text |
 | `DS_CONTENT_BASE` | ✅ | ✅ | ✅ | Text — رابط Worker المحتوى (`https://content.discover-sharm.com`). من غيره الموقع بيرجع يقرا/يكتب من الداتا بيس زي الأول |
 | `DS_SETTINGS_BASE` | ✅ | ✅ | ✅ | Text — رابط settings-worker (`https://settings.discover-sharm.com`). إعدادات الموقع واللغات بتتقرا/تتكتب من `settings.json` في GitHub. متغيرات الـ Worker: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `GITHUB_REPO`, `GITHUB_BRANCH`, `ALLOWED_ORIGINS` + secret `GITHUB_TOKEN` |
-| `DS_MEDIA_BASE` | ✅ | ✅ | ✅ | Text — بيدج الصور `https://media.discover-sharm.com` (Cloudflare Pages مخصص للصور، شوف `media-site/README.md`). المتصفح بيجرّب يحمّل الصورة منه، ولو مش موجودة بيرجع للـ Worker |
-| `DS_STATIC_BASE` | ✅ | ✅ | ✅ | Text — رابط الـ R2 `https://data.discover-sharm.com` اللي فيه الكتالوج والإعدادات كـ JSON ثابت (بيتحدّث لحظة الحفظ فتعديلات الأدمن بتظهر في ثواني). من غيره الموقع بيشتغل عن طريق الـ Workers |
+| `DS_MEDIA_BASE` | ✅ | ✅ | ✅ | Text — رابط الاستضافة الثابتة (R2) `https://media.discover-sharm.com`. الصور والكتالوج والإعدادات بتتقرا منه مباشرة (من غير Worker ولا داتا بيس) وتعديلات الأدمن بتظهر في ثواني. من غيره الموقع بيشتغل زي الأول عن طريق الـ Workers |
 | `DS_CONTACT_PHONE` | ✅ | ✅ | | Text — مثال `+20 100 000 0000` |
 | `DS_CONTACT_WHATSAPP` | ✅ | ✅ | | Text — رقم واتساب بكود الدولة `20100…` |
 | `DS_CONTACT_EMAIL` | ✅ | ✅ | | Text |

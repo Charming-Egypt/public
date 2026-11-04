@@ -11,6 +11,7 @@
 
   <div id="authPage" class="fixed inset-0 z-[95] hidden dark-scene overflow-y-auto">
     <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1600&q=80')] bg-cover bg-center opacity-20"></div>
+    <div class="ds-waves ds-waves--auth" aria-hidden="true" data-app-only><i></i><i></i><i></i></div>
     <div class="stars-container"></div>
     <div class="ambient-orb orb-1"></div>
     <div class="ambient-orb orb-2"></div>
@@ -27,7 +28,7 @@
           <h2 class="font-display text-4xl xl:text-5xl font-bold text-white leading-tight mb-5" data-i18n="authBrandTitle">Your Sharm El Sheikh journey starts here</h2>
           <p class="text-white/50 text-base mb-10" data-i18n="authBrandSubtitle">Handpicked hotels, private excursions, and seamless transfers — all in one place.</p>
           <ul class="space-y-4">
-            <li class="flex items-center gap-3 text-white/70 text-sm">
+            <li class="flex items-center gap-3 text-white/70 text-sm ds-hotels-ui">
               <span class="w-9 h-9 rounded-xl flex items-center justify-center bg-white/5 border" style="border-color:#262626;"><i class="fa-solid fa-hotel text-gold-400" aria-hidden="true"></i></span>
               <span data-i18n="authFeatureHotels">Handpicked hotels & resorts</span>
             </li>
@@ -47,7 +48,7 @@
       <div class="w-full lg:w-1/2 xl:w-2/5 flex flex-col justify-center px-5 py-10 lg:px-14 lg:py-10">
         <div class="w-full lg:max-w-md lg:mx-auto">
           <div class="text-center mb-6 lg:hidden">
-            <div class="w-14 h-14 mx-auto mb-3 bg-gradient-to-br from-gold-300 via-gold-400 to-gold-600 rounded-2xl flex items-center justify-center shadow-2xl"><i class="fa-solid fa-compass text-xl text-ink-900" aria-hidden="true"></i></div>
+            <img src="https://blogger.googleusercontent.com/img/a/AVvXsEijXrWtde6tToaU9FtagWqPfjqA6WXHuyb4o-kQ208kWktjrv7N0nDGNdYbT2fl_mIDx4PsLwQ11GKYLYWhnA5n3ccOWGHIW1izBqqhLJhXhfeLFsCAa5pAgAfGvCx0opO6HJ_ZdNjRP3koAnLAEAdzWFbmj7KRiUAWxveqhw3pBPNhoFnBlVJvbwVGmdpQ=s1600" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="auth-logo mx-auto" alt="Discover Sharm" />
           </div>
           <div class="mb-6 text-center lg:text-start">
             <h1 class="font-display text-2xl font-bold text-white" id="authTitle" data-i18n="welcomeBack">Welcome Back</h1>
@@ -75,7 +76,7 @@
               </ol>
             </div>
 
-            <!-- Google (login, and step 1 of sign-up) -->
+            <!-- Google (log-in form only — never shown while signing up) -->
             <div id="authSocial">
               <!-- Google's own rendered button is mounted here by initGoogleSignInButton() —
                    far more reliable across browsers than a custom button driving One Tap. -->
@@ -254,53 +255,6 @@
     </div>
   </div>
 
-  <!-- Write a review modal -->
-  <div id="reviewModal" class="modal-overlay hidden">
-    <div class="modal-content" style="max-width:380px;">
-      <div class="flex justify-between items-center mb-5">
-        <h3 class="font-display text-lg font-bold" style="color:var(--text-primary)" data-i18n="writeReview">Write a Review</h3>
-        <button type="button" aria-label="Close" data-i18n-aria="ariaClose" onclick="reviews.closeModal()" class="w-9 h-9 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
-      </div>
-      <p class="text-xs mb-4 leading-relaxed" style="color:var(--text-secondary)" data-i18n="reviewVerifyNote">To keep reviews genuine, enter the Booking ID from your confirmation to verify you stayed / booked with us.</p>
-      <form onsubmit="reviews.submit(event)" class="space-y-4">
-        <div>
-          <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="bookingIdLabel">BOOKING ID</label>
-          <input type="text" id="reviewBookingId" required maxlength="20" placeholder="DS-XXXXXX" class="input-field w-full px-3 py-2.5 text-sm uppercase" style="color:var(--text-primary)" />
-        </div>
-        <div>
-          <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="yourRating">YOUR RATING</label>
-          <div class="star-input flex gap-2" id="reviewStarInput">
-            <i class="fa-solid fa-star" aria-hidden="true" data-star="1" onclick="reviews.setStars(1)"></i>
-            <i class="fa-solid fa-star" aria-hidden="true" data-star="2" onclick="reviews.setStars(2)"></i>
-            <i class="fa-solid fa-star" aria-hidden="true" data-star="3" onclick="reviews.setStars(3)"></i>
-            <i class="fa-solid fa-star" aria-hidden="true" data-star="4" onclick="reviews.setStars(4)"></i>
-            <i class="fa-solid fa-star" aria-hidden="true" data-star="5" onclick="reviews.setStars(5)"></i>
-          </div>
-        </div>
-        <div>
-          <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="yourName">YOUR NAME</label>
-          <input type="text" id="reviewName" required maxlength="60" class="input-field w-full px-3 py-2.5 text-sm" style="color:var(--text-primary)" />
-        </div>
-        <div>
-          <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="nationality">NATIONALITY</label>
-          <select id="reviewNationality" required class="input-field w-full px-3 py-2.5 text-sm" style="color:var(--text-primary)"></select>
-        </div>
-        <div>
-          <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="yourReview">YOUR REVIEW</label>
-          <textarea id="reviewComment" rows="3" required maxlength="1000" class="input-field w-full px-3 py-2.5 text-sm" style="color:var(--text-primary)"></textarea>
-        </div>
-        <div>
-          <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="photosOptional">PHOTOS (OPTIONAL)</label>
-          <input type="file" id="reviewImages" accept="image/*" multiple class="hidden" onchange="reviews.addImages(this.files)" />
-          <div class="review-photo-picker" id="reviewImagePreview">
-            <button type="button" onclick="document.getElementById('reviewImages').click()" class="review-photo-add" data-i18n="add"><i class="fa-solid fa-camera" aria-hidden="true"></i><span>Add</span></button>
-          </div>
-        </div>
-        <button type="submit" class="btn-violet w-full py-3.5 rounded-2xl font-bold" data-i18n="submitReview">Submit Review</button>
-      </form>
-    </div>
-  </div>
-
   <!-- Flight passengers modal -->
   <div id="flightPaxModal" class="modal-overlay hidden">
     <div class="modal-content">
@@ -356,11 +310,12 @@
       </div>
       <div class="space-y-1 flex-1 overflow-y-auto">
         <div class="drawer-link" onclick="nav.go('home'); sidebar.close()"><i class="fa-solid fa-house w-5 text-center" aria-hidden="true"></i><span data-i18n="navHome">Home</span></div>
-        <div class="drawer-link hidden" id="drawerHotelsLink" onclick="nav.go('hotels'); sidebar.close()"><i class="fa-solid fa-hotel w-5 text-center" aria-hidden="true"></i><span data-i18n="navHotels">Hotels</span></div>
+        <div class="drawer-link hidden ds-hotels-ui" id="drawerHotelsLink" onclick="nav.go('hotels'); sidebar.close()"><i class="fa-solid fa-hotel w-5 text-center" aria-hidden="true"></i><span data-i18n="navHotels">Hotels</span></div>
         <div class="drawer-link" onclick="nav.go('excursions'); sidebar.close()"><i class="fa-solid fa-umbrella-beach w-5 text-center" aria-hidden="true"></i><span data-i18n="navExcursions">Excursions</span></div>
-        <div class="drawer-link" onclick="nav.go('transfers'); sidebar.close()"><i class="fa-solid fa-shuttle-van w-5 text-center" aria-hidden="true"></i><span data-i18n="navTransfers">Airport Transfers</span></div>
+        <div class="drawer-link" onclick="nav.go('transfers'); sidebar.close()"><i class="fa-solid fa-shuttle-van w-5 text-center" aria-hidden="true"></i><span data-i18n="navTransfers">Transfers</span></div>
         <div class="drawer-link" onclick="nav.go('restaurants'); sidebar.close()"><i class="fa-solid fa-utensils w-5 text-center" aria-hidden="true"></i><span data-i18n="navRestaurants">Restaurants & Cafes</span></div>
         <div class="drawer-link" onclick="nav.go('bookings'); sidebar.close()"><i class="fa-regular fa-calendar-check w-5 text-center" aria-hidden="true"></i><span data-i18n="navBookings">My Bookings</span></div>
+        <div class="drawer-link" onclick="nav.go('reviews'); sidebar.close()"><i class="fa-regular fa-star w-5 text-center" aria-hidden="true"></i><span data-i18n="navReviews">Reviews</span></div>
         <div class="drawer-link hidden" id="drawerFavoritesLink" onclick="nav.go('favorites'); sidebar.close()"><i class="fa-regular fa-heart w-5 text-center" aria-hidden="true"></i><span data-i18n="navFavorites">Favorites</span></div>
         <div class="drawer-link" onclick="nav.go('settings'); sidebar.close()"><i class="fa-solid fa-gear w-5 text-center" aria-hidden="true"></i><span data-i18n="settingsTitle">Settings</span></div>
       </div>
@@ -408,10 +363,11 @@
     <div class="dn-pill flex items-center text-sm font-semibold">
       <button onclick="nav.go('home')" data-page="home" class="nav-item dn-link" data-i18n="navHome">Home</button>
       <button onclick="nav.go('excursions')" data-page="excursions" class="nav-item dn-link drawer-link" data-i18n="navExcursions">Excursions</button>
-      <button onclick="nav.go('hotels')" data-page="hotels" id="desktopHotelsLink" class="nav-item dn-link hidden" data-i18n="navHotels">Hotels</button>
+      <button onclick="nav.go('hotels')" data-page="hotels" id="desktopHotelsLink" class="nav-item dn-link hidden ds-hotels-ui" data-i18n="navHotels">Hotels</button>
       <button onclick="nav.go('transfers')" data-page="transfers" class="nav-item dn-link drawer-link" data-i18n="navTransfers">Transfers</button>
       <button onclick="nav.go('restaurants')" data-page="restaurants" class="nav-item dn-link drawer-link" data-i18n="navRestaurants">Restaurants</button>
       <button onclick="nav.go('bookings')" data-page="bookings" class="nav-item dn-link" data-i18n="myBookings">My Bookings</button>
+      <button onclick="nav.go('reviews')" data-page="reviews" class="nav-item dn-link" data-i18n="navReviews">Reviews</button>
     </div>
     <div class="dn-right flex items-center gap-2">
       <button type="button" aria-label="Open menu" data-i18n-aria="ariaMenu" onclick="sidebar.open()" class="dn-round"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>

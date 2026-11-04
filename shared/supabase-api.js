@@ -17,7 +17,7 @@
       ...(window.DS_SESSION_STORAGE ? { storage: window.DS_SESSION_STORAGE } : {}) },
   });
 
-  // ---- photos: loaded from the media Pages project; if one is not there (yet), the content Worker serves it straight from the private repo ----
+  // ---- photos: loaded from static hosting; if one is not there (yet), the content Worker serves it (and copies it over for next time) ----
   if (cfg.mediaBase && cfg.contentBase) {
     const pre = cfg.mediaBase + '/img/';
     document.addEventListener('error', (e) => {
@@ -28,16 +28,28 @@
     }, true);
   }
 
+  // Static JSON on the media domain (catalog/, settings/) is cached by Cloudflare's CDN. Each folder has a tiny version.json ({ v: <content hash> }, rechecked every
+  // few seconds); the file is then asked for as ...json?v=<hash>. A changed file = a new hash = a new URL, so no cache ever has to be purged. If the pointer is
+  // missing (older deployment) the plain URL is used, exactly as before.
+  async function mediaUrl(file) {
+    const plain = `${cfg.mediaBase}/${file}`;
+    try {
+      const r = await fetch(`${cfg.mediaBase}/${file.split('/')[0]}/version.json`);
+      if (r.ok) { const j = await r.json(); if (j && /^[a-f0-9]{8,64}$/.test(String(j.v))) return `${plain}?v=${j.v}`; }
+    } catch (e) { /* no pointer */ }
+    return plain;
+  }
+
   // ---- site settings (sections on/off, languages, announcement, maintenance, contact): public row, cached for instant next load ----
   (() => {
-  const KEY = 'ds_site_settings', FRESH_MS = cfg.staticBase ? 20 * 1000 : 5 * 60 * 1000;   // on static hosting a recheck is nearly free, so edits show within ~20 s
+  const KEY = 'ds_site_settings', FRESH_MS = cfg.mediaBase ? 20 * 1000 : 5 * 60 * 1000;   // on static hosting a recheck is nearly free, so edits show within ~20 s
   let cached = null; try { cached = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch {}
   // a copy younger than 5 minutes is used as-is: browsing 6 pages makes ONE settings request, not 6
   if (cached && cached.t && Date.now() - cached.t < FRESH_MS) { window.DS_SETTINGS_READY = Promise.resolve(cached); return; }
   const fresh = (async () => {
     let res;
-    if (cfg.staticBase) {   // static copy published by the settings Worker on every save (no Worker call, no database)
-      try { const r = await fetch(`${cfg.staticBase}/settings/settings.json`); if (r.ok) { const j = await r.json(); res = { value: j.value || {}, langs: j.langs || [] }; } } catch (e) { /* fall through to the Worker */ }
+    if (cfg.mediaBase) {   // static copy published by the settings Worker on every save (no Worker call, no database)
+      try { const r = await fetch(await mediaUrl('settings/settings.json')); if (r.ok) { const j = await r.json(); res = { value: j.value || {}, langs: j.langs || [] }; } } catch (e) { /* fall through to the Worker */ }
     }
     if (res) { /* static copy answered */ }
     else if (cfg.settingsBase) {   // settings live in settings.json in the private GitHub data repo; the settings Worker serves them
@@ -162,8 +174,8 @@
   // The WHOLE public catalog in one request (all catalogs + live ratings + restaurant branches + home testimonials), answered from the
   // content Worker's edge cache. Replaces 6 Worker calls + 6 database queries that used to run on every page view.
   async function readBundle() {
-    if (cfg.staticBase) {   // static hosting: published the moment staff save; the browser rechecks it every few seconds (tiny 304 when unchanged)
-      try { const sr = await fetch(`${cfg.staticBase}/catalog/bundle.json`); if (sr.ok) return await sr.json(); } catch (e) { /* not published yet / unreachable: ask the Worker */ }
+    if (cfg.mediaBase) {   // static hosting: published the moment staff save; the browser rechecks it every few seconds (tiny 304 when unchanged)
+      try { const sr = await fetch(await mediaUrl('catalog/bundle.json')); if (sr.ok) return await sr.json(); } catch (e) { /* not published yet / unreachable: ask the Worker */ }
     }
     const r = await fetch(`${cfg.contentBase}/catalog/bundle.json`);
     if (!r.ok) throw fail('Catalog unavailable', { status: r.status });
@@ -220,11 +232,11 @@
     }
     if (file === 'reviews.json') {   // home page testimonials = REAL customer reviews (4★+ with a written comment); the static file is only a fallback while there are none
       try {
-        const rows = await run(sb.from('reviews').select('id, name, rating, comment, created_at, properties!inner(name, kind, status)')
+        const rows = await run(sb.from('reviews').select('id, name, nationality, photo_url, rating, comment, created_at, properties!inner(name, kind, status)')
           .eq('status', 'published').eq('properties.status', 'published').gte('rating', 4).not('comment', 'is', null)
           .order('created_at', { ascending: false }).limit(40));
         const real = rows.filter(r => String(r.comment || '').trim().length >= 25).slice(0, 20)
-          .map(r => ({ id: r.id, name: (r.name || '').trim() || 'Guest', rating: r.rating, text: String(r.comment).trim(), itemName: r.properties.name || '', section: r.properties.kind }));
+          .map(r => ({ id: r.id, name: (r.name || '').trim() || 'Guest', nationality: r.nationality || '', avatar: r.photo_url || '', rating: r.rating, text: String(r.comment).trim(), itemName: r.properties.name || '', section: r.properties.kind }));
         if (real.length) return real;
       } catch (e) { /* fall through to the static file */ }
     }

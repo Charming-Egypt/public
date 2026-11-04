@@ -5,7 +5,8 @@
   'use strict';
   if (window.DS_SITE !== 'app') return;
   var doc = document.documentElement;
-  var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+  // installed app reports 'standalone' (fullscreen kept only as a fallback for already-installed old copies)
+  var standalone = (window.matchMedia && (matchMedia('(display-mode: fullscreen)').matches || matchMedia('(display-mode: standalone)').matches)) || navigator.standalone === true;
   if (standalone) doc.classList.add('is-pwa');
 
   function tr(k, fb) { try { var v = typeof t === 'function' ? t(k) : null; return v && v !== k ? v : fb; } catch (e) { return fb; } }
@@ -18,15 +19,12 @@
 
   /* ---------- browser theme colour follows the app theme ---------- */
   var meta = document.querySelector('meta[name="theme-color"]');
-  // The top of the page is the top of the wave canopy (site-app.css "TOP WAVES"), whose first colour is --bg-body — so the status bar
-  // takes the page colour in both themes and reads as transparent. The one exception: a detail-style page that has no wave canopy of
-  // its own (no .dh hero) is still drawn on --bg-card. Values mirror --bg-body / --bg-card in site-app.css.
+  // Every page now sits on --bg-body (detail sheets included), so the status bar is always the body colour. Values mirror --bg-body in site-app.css.
   var tcQueued = false;
   function syncThemeColor() {
     tcQueued = false;
-    var light = doc.dataset.theme === 'light', pg = document.querySelector('.page.active');
-    var detail = !!(pg && /DetailPage$/.test(pg.id) && !pg.querySelector('.dh'));
-    if (meta) meta.setAttribute('content', detail ? (light ? '#ffffff' : '#171719') : (light ? '#f6f5f3' : '#0d0d0f'));
+    var light = doc.dataset.theme === 'light';
+    if (meta) meta.setAttribute('content', light ? '#f6f5f3' : '#0d0d0f');
   }
   function queueTheme() { if (!tcQueued) { tcQueued = true; requestAnimationFrame(syncThemeColor); } }
   syncThemeColor();

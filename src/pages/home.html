@@ -19,9 +19,12 @@
                  </div>
           </div>
           <div class="px-6 pt-6 md:pt-16 pb-3 text-center">
-            <p class="text-gold-400 text-xs font-semibold tracking-[0.24em] uppercase mb-3 hero-text-swap" id="heroEyebrowText" data-i18n="premiumStays">Luxury Red Sea stays</p>
-            <h1 class="font-display text-4xl md:text-6xl font-bold mb-3 leading-[0.94] hero-text-swap" id="heroTitleText" data-i18n="heroTitle">Plan your perfect<br /><span class="italic text-gold-400">Sharm escape</span></h1>
-            <p class="text-white/75 text-base md:text-lg max-w-xl mx-auto text-balance hero-text-swap" id="heroSubtitleText" data-i18n="heroSubtitle">Beachfront resorts, private transfers, and unforgettable sunsets on your next getaway.</p>
+            <!-- Live weather for Sharm El Sheikh (Open-Meteo, free / no key) — filled by WX.init() in frontend.js; shimmer placeholder until it arrives -->
+            <div class="wx" id="wxCard" aria-live="polite">
+              <span class="wx-place"><span class="wx-live" aria-hidden="true"></span><span data-i18n="wxLocation">Sharm El Sheikh</span></span>
+              <div id="wxMain"><div class="sk wx-sk-pill"></div></div>
+              <div class="wx-stats" id="wxStats"><div class="sk wx-sk-line"></div></div>
+            </div>
             <div class="dh-cta">
               <button type="button" class="dh-btn-dark" onclick="document.getElementById('searchCard')?.scrollIntoView({behavior:'smooth',block:'center'})"><span data-i18n="dhCtaPrimary">Start exploring</span><i class="fa-solid fa-arrow-right rtl-flip" aria-hidden="true"></i></button>
               <button type="button" class="dh-btn-ghost" onclick="document.getElementById('destinationsRow')?.scrollIntoView({behavior:'smooth',block:'center'})"><span class="dh-play"><i class="fa-solid fa-play" aria-hidden="true"></i></span><span data-i18n="dhCtaGhost">See destinations</span></button>
@@ -31,14 +34,14 @@
           <!-- ============ SEARCH CARD (hotels / excursions / transfers — tabs follow the enabled sections) ============ -->
           <div class="ds-search" id="searchCard">
             <div class="ds-search-tabs" id="searchTabsContainer" role="tablist">
-              <button type="button" role="tab" id="searchTabHotels" class="ds-search-tab" onclick="search.switchTab('hotels')"><i class="fa-solid fa-hotel" aria-hidden="true"></i><span data-i18n="navHotels">Hotels</span></button>
+              <button type="button" role="tab" id="searchTabHotels" class="ds-search-tab ds-hotels-ui" onclick="search.switchTab('hotels')"><i class="fa-solid fa-hotel" aria-hidden="true"></i><span data-i18n="navHotels">Hotels</span></button>
               <button type="button" role="tab" id="searchTabExcursions" class="ds-search-tab" onclick="search.switchTab('excursions')"><i class="fa-solid fa-umbrella-beach" aria-hidden="true"></i><span data-i18n="navExcursions">Excursions</span></button>
-              <button type="button" role="tab" id="searchTabTransfers" class="ds-search-tab" onclick="search.switchTab('transfers')"><i class="fa-solid fa-shuttle-van" aria-hidden="true"></i><span data-i18n="navTransfers">Airport Transfers</span></button>
+              <button type="button" role="tab" id="searchTabTransfers" class="ds-search-tab" onclick="search.switchTab('transfers')"><i class="fa-solid fa-shuttle-van" aria-hidden="true"></i><span data-i18n="navTransfers">Transfers</span></button>
             </div>
 
             <div class="ds-search-card">
               <!-- Hotels: dates + guests -->
-              <div id="hotelSearchForm" class="ds-form" style="display:none">
+              <div id="hotelSearchForm" class="ds-form ds-hotels-ui" style="display:none">
                 <div class="ds-cells">
                   <button type="button" class="ds-cell" data-date-field="searchCheckIn"><span class="ds-label" data-i18n="checkinLabelCaps">CHECK-IN</span><span class="ds-value" id="checkinDisplay">Select date</span></button>
                   <button type="button" class="ds-cell" data-date-field="searchCheckOut"><span class="ds-label" data-i18n="checkoutLabelCaps">CHECK-OUT</span><span class="ds-value" id="checkoutDisplay">Select date</span></button>
@@ -81,9 +84,9 @@
           </div>
 
           <div class="dh-cards" id="dhCards">
-            <a class="dh-card dh-feat" id="dhFeat" role="button" tabindex="0"></a>
-            <div class="dh-card dh-stats" id="dhStats"></div>
-            <a class="dh-card dh-story" id="dhStory" role="button" tabindex="0" onclick="nav.go('journal')"></a>
+            <a class="dh-card dh-feat sk" id="dhFeat" role="button" tabindex="0"></a>
+            <div class="dh-card dh-stats sk" id="dhStats"></div>
+            <a class="dh-card dh-story sk" id="dhStory" role="button" tabindex="0" onclick="nav.go('journal')"></a>
           </div>
 
         </div>
@@ -98,7 +101,7 @@
               <div class="category-tile-icon"><i class="fa-solid fa-umbrella-beach" aria-hidden="true"></i></div>
               <span data-i18n="navExcursions">Excursions</span>
             </button>
-            <button onclick="nav.go('hotels')" id="categoryTileHotels" class="category-tile hidden">
+            <button onclick="nav.go('hotels')" id="categoryTileHotels" class="category-tile hidden ds-hotels-ui">
               <div class="category-tile-icon"><i class="fa-solid fa-hotel" aria-hidden="true"></i></div>
               <span data-i18n="navHotels">Hotels</span>
             </button>
@@ -119,7 +122,7 @@
           <div class="px-5 flex items-center justify-between mb-4">
             <div><p class="section-subtitle" data-i18n="exploreEyebrow">— EXPLORE</p><h3 class="section-title" data-i18n="destinationsTitle">Popular Destinations</h3></div>
           </div>
-          <div id="destinationsRow" class="horizontal-scroll px-5"></div>
+          <div id="destinationsRow" class="horizontal-scroll px-5"><div class="sk sk-dest"></div><div class="sk sk-dest"></div><div class="sk sk-dest"></div><div class="sk sk-dest"></div><div class="sk sk-dest"></div></div>
         </div>
 
         
@@ -129,26 +132,26 @@
             <div><p class="section-subtitle" data-i18n="thingsToDoEyebrow">— THINGS TO DO</p><h3 class="section-title" data-i18n="featuredExcursions">Featured Excursions</h3></div>
             <button onclick="nav.go('excursions')" class="text-violet-500 text-sm font-medium flex items-center gap-1" data-i18n="viewAll">View All <i class="fa-solid fa-arrow-left text-xs" aria-hidden="true"></i></button>
           </div>
-          <div id="featuredExcursions" class="results-scroll-snap"></div>
+          <div id="featuredExcursions" class="results-scroll-snap"><div class="sk sk-hero-card"></div><div class="sk sk-hero-card"></div></div>
         </div>
 
         <!-- Featured Hotels -->
-        <div class="px-5 mb-8">
+        <div class="px-5 mb-8 ds-hotels-ui">
           <div class="flex items-center justify-between mb-4">
             <div><p class="section-subtitle" data-i18n="stayEyebrow">— WHERE TO STAY</p><h3 class="section-title" data-i18n="featuredHotelsTitle">Featured Hotels</h3></div>
             <button onclick="nav.go('hotels')" class="text-violet-500 text-sm font-medium flex items-center gap-1" data-i18n="viewAll">View All <i class="fa-solid fa-arrow-left text-xs" aria-hidden="true"></i></button>
           </div>
-          <div id="featuredHotels"></div>
+          <div id="featuredHotels"><div class="sk-grid"><div class="sk-lc"><div class="sk sk-media"></div><div class="sk-body"><div class="sk sk-line" style="width:78%;height:18px"></div><div class="sk sk-line" style="width:50%"></div><div class="sk-row"><div class="sk sk-line" style="width:64px"></div><div class="sk sk-line" style="width:64px"></div><div class="sk sk-line" style="width:64px"></div></div><div class="sk sk-line" style="width:35%;height:22px;margin-top:6px"></div></div></div><div class="sk-lc"><div class="sk sk-media"></div><div class="sk-body"><div class="sk sk-line" style="width:78%;height:18px"></div><div class="sk sk-line" style="width:50%"></div><div class="sk-row"><div class="sk sk-line" style="width:64px"></div><div class="sk sk-line" style="width:64px"></div><div class="sk sk-line" style="width:64px"></div></div><div class="sk sk-line" style="width:35%;height:22px;margin-top:6px"></div></div></div><div class="sk-lc"><div class="sk sk-media"></div><div class="sk-body"><div class="sk sk-line" style="width:78%;height:18px"></div><div class="sk sk-line" style="width:50%"></div><div class="sk-row"><div class="sk sk-line" style="width:64px"></div><div class="sk sk-line" style="width:64px"></div><div class="sk sk-line" style="width:64px"></div></div><div class="sk sk-line" style="width:35%;height:22px;margin-top:6px"></div></div></div></div></div>
         </div>
 
         <!-- Transfer promo banner -->
         <div class="px-5 mb-8">
-          <div id="transferPromoBanner" class="banner-creative rounded-[26px] relative overflow-hidden cursor-pointer" onclick="nav.go('transfers')" style="background-image:linear-gradient(120deg,rgba(10, 10, 10, .88),rgba(10, 10, 10, .35) 60%,rgba(10, 10, 10, .1)), url('https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1000&q=80')">
-            <div class="relative z-10 p-6 lg:p-12 text-white max-w-[75%] lg:max-w-[50%]">
-              <div class="inline-block bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-[10px] lg:text-xs font-bold mb-3 border border-white/20"><i class="fa-solid fa-shuttle-van text-orange-300 ml-1" aria-hidden="true"></i><span data-i18n="airportTransferBadge">AIRPORT TRANSFERS</span></div>
-              <p class="font-display text-2xl lg:text-4xl font-bold mb-1 lg:mb-2" data-i18n="transferPromoTitle">Land & Go</p>
-              <p class="text-sm lg:text-base text-white/80 mb-4 lg:mb-6" data-i18n="transferPromoSubtitle">Book your ride to the hotel in advance</p>
-              <button onclick="event.stopPropagation(); nav.go('transfers')" class="btn-gold px-6 py-2.5 lg:px-8 lg:py-3.5 rounded-xl font-bold text-ink-900 text-sm lg:text-base ripple" data-i18n="bookTransfer">Book a Transfer</button>
+          <div id="transferPromoBanner" class="banner-creative tpb rounded-[26px] relative overflow-hidden cursor-pointer" onclick="nav.go('transfers')">
+            <img class="tpb-img" src="/img/transfer-banner-960.webp" srcset="/img/transfer-banner-960.webp 960w, /img/transfer-banner-1935.webp 1935w" sizes="(min-width:1024px) 1200px, 92vw" width="1935" height="944" alt="" loading="lazy" decoding="async" draggable="false" />
+            <div class="tpb-body">
+              <p class="tpb-title" data-i18n="transferPromoTitle">To &amp; From the Airport</p>
+              <p class="tpb-sub" data-i18n="transferPromoSubtitle">Book in advance and your driver will be waiting for you</p>
+              <button type="button" onclick="event.stopPropagation(); nav.go('transfers')" class="tpb-btn ripple" data-i18n="bookTransfer">Book a Transfer</button>
             </div>
           </div>
         </div>
@@ -159,7 +162,7 @@
             <div><p class="section-subtitle" data-i18n="diningEyebrow">— EAT & DRINK</p><h3 class="section-title" data-i18n="restaurantsTitle">Restaurants & Cafes</h3></div>
             <button onclick="nav.go('restaurants')" class="text-violet-500 text-sm font-medium flex items-center gap-1" data-i18n="viewAll">View All <i class="fa-solid fa-arrow-left text-xs" aria-hidden="true"></i></button>
           </div>
-          <div id="restaurantsRow" class="horizontal-scroll"></div>
+          <div id="restaurantsRow" class="horizontal-scroll"><div class="sk sk-rest"></div><div class="sk sk-rest"></div><div class="sk sk-rest"></div></div>
         </div>
 
      
@@ -168,8 +171,9 @@
         <div class="mb-8">
           <div class="px-5 flex items-center justify-between mb-4">
             <div><p class="section-subtitle" data-i18n="storiesEyebrow">— GUEST STORIES</p><h3 class="section-title" data-i18n="whatGuestsSay">What Our Guests Say</h3></div>
+            <button onclick="nav.go('reviews')" class="rvp-seeall" data-i18n="rvSeeAll">See all</button>
           </div>
-          <div class="horizontal-scroll px-5" id="reviewsRow"></div>
+          <div class="horizontal-scroll px-5" id="reviewsRow"><div class="sk sk-review"></div><div class="sk sk-review"></div><div class="sk sk-review"></div></div>
         </div>
 
         <!-- Articles -->
@@ -177,11 +181,12 @@
           <div class="flex items-center justify-between mb-4">
             <div><p class="section-subtitle" data-i18n="journalEyebrow">— JOURNAL</p><h3 class="section-title" data-i18n="articlesTitle">Travel Guides & Tips</h3></div>
           </div>
-          <div id="articlesRow" class="space-y-4"></div>
+          <div id="articlesRow" class="space-y-4"><div class="article-card"><div class="sk article-card-img"></div><div class="article-card-body sk-article-lines"><div class="sk sk-line" style="width:85%"></div><div class="sk sk-line" style="width:100%"></div><div class="sk sk-line" style="width:70%"></div></div></div><div class="article-card"><div class="sk article-card-img"></div><div class="article-card-body sk-article-lines"><div class="sk sk-line" style="width:85%"></div><div class="sk sk-line" style="width:100%"></div><div class="sk sk-line" style="width:70%"></div></div></div><div class="article-card"><div class="sk article-card-img"></div><div class="article-card-body sk-article-lines"><div class="sk sk-line" style="width:85%"></div><div class="sk sk-line" style="width:100%"></div><div class="sk sk-line" style="width:70%"></div></div></div></div>
         </div>
 
         <!-- Footer -->
         <footer id="siteFooter">
+          <div class="ft-waves" aria-hidden="true"><i></i><i></i><i></i></div>
           <!-- Desktop footer -->
           <div class="hidden lg:block footer-desktop">
             <div class="footer-grid">
@@ -199,7 +204,7 @@
               <div class="footer-col">
                 <h4 data-i18n="footerExplore">Explore</h4>
                 <a onclick="nav.go('excursions')" data-i18n="navExcursions">Excursions</a>
-                <a onclick="nav.go('hotels')" id="footerHotelsLink" class="hidden" data-i18n="navHotels">Hotels</a>
+                <a onclick="nav.go('hotels')" id="footerHotelsLink" class="hidden ds-hotels-ui" data-i18n="navHotels">Hotels</a>
                 <a onclick="nav.go('transfers')" data-i18n="navTransfers">Transfers</a>
                 <a onclick="nav.go('restaurants')" data-i18n="navRestaurants">Restaurants</a>
               </div>

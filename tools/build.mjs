@@ -7,14 +7,13 @@
  *   node tools/build.mjs app        # only app.discover-sharm.com   -> dist/app
  *   node tools/build.mjs admin      # only admin.discover-sharm.com -> dist/admin
  *
- * www   desktop / large screens. Same pages as the app, desktop layout, no bottom tab bar, no splash.
+ * www   desktop / large screens. Same pages as the app, desktop layout, no bottom tab bar.
  * app   phones + tablets. App-style layout everywhere (the desktop CSS rules are switched off at build time).
  * admin super-admin console (/) + owner consoles (/owner/…). Separate origin, no shared login cookies, noindex, locked-down headers.
  *
  * www and app are linked: ds-site.js sends each visitor to the right one, ds-bridge.js shares the login session,
  * language, theme and currency between them. Each dist/<site> folder is complete — upload it as its own project.
  */
-import { buildStockIndex } from './stock-index.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -42,7 +41,7 @@ const env = (k) => (process.env[k] || '').trim();
 // "translate.discover-sharm.com" (no scheme) used to become a RELATIVE url in the browser -> 404. Always make it absolute, no trailing slash.
 const url = (v) => { v = String(v || '').trim().replace(/\/+$/, ''); return v && !/^https?:\/\//i.test(v) ? 'https://' + v : v; };
 const sbc = { url: url(env('DS_SUPABASE_URL')), anonKey: env('DS_SUPABASE_ANON_KEY'), googleClientId: env('DS_GOOGLE_CLIENT_ID'),
-  paymentsBase: url(env('DS_PAYMENTS_BASE')), translateBase: url(env('DS_TRANSLATE_BASE')), contentBase: url(env('DS_CONTENT_BASE')), settingsBase: url(env('DS_SETTINGS_BASE')), mediaBase: url(env('DS_MEDIA_BASE')), staticBase: url(env('DS_STATIC_BASE')) };
+  paymentsBase: url(env('DS_PAYMENTS_BASE')), translateBase: url(env('DS_TRANSLATE_BASE')), contentBase: url(env('DS_CONTENT_BASE')), settingsBase: url(env('DS_SETTINGS_BASE')), mediaBase: url(env('DS_MEDIA_BASE')) };
 const useSupabase = !!(sbc.url && sbc.anonKey);
 const SUPABASE_JS = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js';   // pinned
 
@@ -64,7 +63,7 @@ function csp(site) {
       `style-src ${uniq(["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'])}`,
       "font-src 'self' data: https://fonts.gstatic.com",
       "img-src 'self' data: blob: https:",
-      `connect-src ${uniq(["'self'", originOf(sbc.url), wsOf(sbc.url), originOf(sbc.translateBase), originOf(sbc.contentBase), originOf(sbc.settingsBase), originOf(sbc.staticBase), SITES.www])}`,
+      `connect-src ${uniq(["'self'", originOf(sbc.url), wsOf(sbc.url), originOf(sbc.translateBase), originOf(sbc.contentBase), originOf(sbc.settingsBase), originOf(sbc.mediaBase)])}`,
       "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://www.google.com", "object-src 'none'", "base-uri 'self'", "form-action 'self'", "frame-ancestors 'none'", 'upgrade-insecure-requests',
     ].join('; ');
   }
@@ -74,12 +73,22 @@ function csp(site) {
     `style-src ${uniq(["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com', 'https://accounts.google.com'])}`,
     "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com",
     "img-src 'self' data: blob: https:",
-    `connect-src ${uniq(["'self'", originOf(sbc.url), wsOf(sbc.url), originOf(sbc.paymentsBase), originOf(sbc.contentBase), originOf(sbc.settingsBase), originOf(sbc.staticBase), 'https://open.er-api.com', 'https://accounts.google.com', 'https://cloudflareinsights.com'])}`,
+    `connect-src ${uniq(["'self'", originOf(sbc.url), wsOf(sbc.url), originOf(sbc.paymentsBase), originOf(sbc.contentBase), originOf(sbc.settingsBase), originOf(sbc.mediaBase), 'https://open.er-api.com', 'https://api.open-meteo.com', 'https://marine-api.open-meteo.com', 'https://accounts.google.com', 'https://cloudflareinsights.com'])}`,
     // https: (not a short list) because the card-verification (3-D Secure) frame can land on the issuing bank's own domain
     "frame-src https:", "object-src 'none'", "base-uri 'self'", "frame-ancestors 'self'",
     "worker-src 'self'", "manifest-src 'self'", 'upgrade-insecure-requests',
   ].join('; ');
 }
+// App background colour: manifest background_color / theme_color (the OS paints this itself while a PWA starts; the site has no splash screen of its own —
+// pages show skeleton placeholders until the data arrives, see "SKELETON" in shared/style.css).
+const SPLASH_BG = '#111827';
+// icons/splash images keep their file names, so a changed logo would be served from the 30-day cache (and an installed PWA would keep its old icon):
+// every reference carries ?v=<hash of shared/pwa>, so a new logo is a new URL everywhere (manifest, <link>s, precache, splash)
+const ICON_V = (() => {
+  const h = crypto.createHash('sha1'), walk = (d) => { for (const f of fs.readdirSync(d).sort()) { const p = path.join(d, f); fs.statSync(p).isDirectory() ? walk(p) : h.update(f).update(fs.readFileSync(p)); } };
+  walk(path.join(ROOT, 'shared', 'pwa')); return h.digest('hex').slice(0, 8);
+})();
+const IC = (f) => `/icons/${f}?v=${ICON_V}`;
 // content hash of everything served from /data (editorial JSON + language files): the pages ask for /data/*.json?v=<hash>, so each URL is
 // immutable (cached for a year, never re-requested) and a new hash is a new URL the moment any of the files changes
 const DATA_V = (() => {
@@ -147,7 +156,7 @@ function buildPublic(site) {
 
   // ---- assets (hashed for cache busting) -----------------------------------------------------------------------------
   const siteCss = `site-${site}.css`;
-  const assetList = ['style.css', 'tailwind.css', 'data.js', 'supabase-api.js', 'booking.js', 'frontend.js', 'router.js', 'ds-bridge.js', 'ds-site.js'];
+  const assetList = ['style.css', 'tailwind.css', 'data.js', 'supabase-api.js', 'booking.js', 'frontend.js', 'reviews-page.js', 'router.js', 'ds-bridge.js', 'ds-site.js'];
   const V = {};
   if (site === 'app') assetList.push('pwa.js');
   for (const f of assetList) {
@@ -158,6 +167,7 @@ function buildPublic(site) {
   const extra = fs.readFileSync(path.join(ROOT, 'shared', siteCss), 'utf8');
   out.write('site.css', extra); V['site.css'] = sha(extra);
   out.copy('shared/data', 'data');
+  out.copy('shared/img', 'img');   // artwork (transfers banner)
   out.copy('shared/favicon.ico', 'favicon.ico');
 
   // ---- <head> --------------------------------------------------------------------------------------------------------
@@ -186,16 +196,16 @@ function buildPublic(site) {
   <meta property="og:url" content="${SITES.www + canonicalPath}" />
   <meta name="twitter:card" content="summary_large_image" />${ld}${site === 'app' ? `
   <link rel="manifest" href="/manifest.webmanifest" />
-  <meta name="theme-color" content="#0d0d0f" />
+  <meta name="theme-color" content="${SPLASH_BG}" />
   <meta name="application-name" content="${esc(cfg.siteName)}" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="${esc(cfg.siteName)}" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="format-detection" content="telephone=no" />
-  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
-  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />` : ''}
+  <link rel="apple-touch-icon" href="${IC('apple-touch-icon.png')}" />
+  <link rel="icon" type="image/png" sizes="192x192" href="${IC('icon-192.png')}" />
+  <link rel="icon" type="image/png" sizes="32x32" href="${IC('favicon-32.png')}" />` : ''}
 
   <script src="/ds-bridge.js?v=${V['ds-bridge.js']}"></script>
   <script>
@@ -214,6 +224,8 @@ function buildPublic(site) {
         d.dataset.theme = localStorage.getItem('ds_theme') || 'dark';
         var l = localStorage.getItem('ds_lang') || 'en';
         d.lang = l; d.dir = l === 'ar' ? 'rtl' : 'ltr';
+        var ss = JSON.parse(localStorage.getItem('ds_site_settings') || 'null');   // hotels: hidden unless the admin switched them on
+        d.dataset.hotels = ss && ss.value && ss.value.sections && ss.value.sections.hotels === true ? 'on' : 'off';
         var signedIn = localStorage.getItem('ds_auth_token') || (window.DS_HAS_SESSION && DS_HAS_SESSION());
         if (!signedIn && !sessionStorage.getItem('ds_guest')) d.dataset.gate = 'auth';
       } catch (e) {}
@@ -237,12 +249,13 @@ function buildPublic(site) {
   };
 
   const scripts = () => `
-  ${useSupabase ? `<script>window.DS_SUPABASE = ${JSON.stringify({ url: sbc.url, anonKey: sbc.anonKey, googleClientId: sbc.googleClientId || '', paymentsBase: sbc.paymentsBase || '', contentBase: sbc.contentBase || '', settingsBase: sbc.settingsBase || '', mediaBase: sbc.mediaBase || '', staticBase: sbc.staticBase || '' })};</script>
+  ${useSupabase ? `<script>window.DS_SUPABASE = ${JSON.stringify({ url: sbc.url, anonKey: sbc.anonKey, googleClientId: sbc.googleClientId || '', paymentsBase: sbc.paymentsBase || '', contentBase: sbc.contentBase || '', settingsBase: sbc.settingsBase || '', mediaBase: sbc.mediaBase || '' })};</script>
   <script src="${SUPABASE_JS}"></script>` : '<!-- Supabase not configured: running on the legacy API -->'}
   <script src="/data.js?v=${V['data.js']}"></script>
   ${useSupabase ? `<script src="/supabase-api.js?v=${V['supabase-api.js']}"></script>` : ''}
   <script src="/booking.js?v=${V['booking.js']}"></script>
   <script src="/frontend.js?v=${V['frontend.js']}"></script>
+  <script src="/reviews-page.js?v=${V['reviews-page.js']}"></script>
   <script src="/router.js?v=${V['router.js']}"></script>${site === 'app' ? `
   <script src="/pwa.js?v=${V['pwa.js']}"></script>` : ''}
 </body>
@@ -250,17 +263,23 @@ function buildPublic(site) {
 `;
 
   // ---- body shell ----------------------------------------------------------------------------------------------------
-  const splash = P('splash'), chrome = P('chrome'), bottomNav = P('bottom-nav');
-  const bodyShell = ({ route, detail, pageHtml, withSplash }) => {
+  const chrome = P('chrome'), bottomNav = P('bottom-nav');
+  // detail pages (/excursions/view/?id=…): shown until the item is rendered (openDetailFromRoute() removes it)
+  const detailSkeleton = `<div id="detailSkeleton" class="page active sk-detail" aria-hidden="true">
+    <div class="sk sk-detail-hero"></div>
+    <div class="sk-detail-body">
+      <div class="sk sk-line" style="width:70%;height:26px"></div>
+      <div class="sk sk-line" style="width:45%"></div>
+      <div class="sk-row"><div class="sk sk-pill"></div><div class="sk sk-pill"></div><div class="sk sk-pill"></div></div>
+      <div class="sk sk-line" style="width:100%"></div><div class="sk sk-line" style="width:94%"></div><div class="sk sk-line" style="width:82%"></div><div class="sk sk-line" style="width:60%"></div>
+      <div class="sk" style="height:120px;border-radius:20px;margin-top:8px"></div>
+    </div>
+  </div>`;
+  const bodyShell = ({ route, detail, pageHtml }) => {
     const attrs = `data-route="${route}"${detail ? ` data-detail="${detail}"` : ''}`;
-    const splashHtml = withSplash && site === 'app'       // the animated splash is an app-launch screen: app site only
-      ? splash.trim() + `\n  <script>try{if(sessionStorage.getItem('ds_splashed')){var s=document.getElementById('splashPage');if(s)s.remove()}else{sessionStorage.setItem('ds_splashed','1')}}catch(e){}</script>\n`
-      : '';
-    const idx = chrome.indexOf('<div id="authPage"');
-    const chromeHtml = linkify(chrome.slice(0, idx) + splashHtml + chrome.slice(idx));
     return `<body ${attrs}>
   <a href="#mainApp" class="skip-link" data-i18n="skipToContent">Skip to content</a>
-${chromeHtml}
+${linkify(chrome)}
   <div id="mainApp" class="relative z-10" tabindex="-1">${site === 'app' ? `
   <div class="ds-waves" aria-hidden="true"><i></i><i></i><i></i></div>` : ''}
 ${pageHtml}
@@ -275,14 +294,14 @@ ${linkify(bottomNav)}
     if (!pageEnabled(key)) continue;
     const bodyHtml = read(`src/pages/${key}.html`).replace('class="page"', 'class="page active"');
     const html = head({ title: meta.title, description: meta.description, canonicalPath: meta.path, noindex: meta.noindex })
-      + '\n' + bodyShell({ route: key, pageHtml: linkify(bodyHtml), withSplash: key === 'home' }) + scripts();
+      + '\n' + bodyShell({ route: key, pageHtml: linkify(bodyHtml) }) + scripts();
     out.write(meta.path === '/' ? 'index.html' : path.join(meta.path, 'index.html'), html);
     if (!meta.noindex) urls.push(meta.path);
     count++;
   }
   for (const [section, meta] of Object.entries(cfg.details)) {
     const html = head({ title: meta.title, description: meta.title.replace(' — ', ' · '), canonicalPath: meta.path, noindex: true })
-      + '\n' + bodyShell({ route: meta.nav, detail: section, pageHtml: '', withSplash: false }) + scripts();
+      + '\n' + bodyShell({ route: meta.nav, detail: section, pageHtml: detailSkeleton }) + scripts();
     out.write(path.join(meta.path, 'index.html'), html);
     count++;
   }
@@ -292,17 +311,17 @@ ${linkify(bottomNav)}
     out.copy('shared/pwa', 'icons');
     out.write('offline.html', read('shared/offline.html'));
     const shortcuts = [['excursions', 'Excursions', '/excursions/'], ['transfers', 'Transfers', '/transfers/'], ['restaurants', 'Restaurants', '/restaurants/'], ['bookings', 'My Bookings', '/bookings/']]
-      .filter(([k]) => pageEnabled(k)).map(([, name, url]) => ({ name, short_name: name, url, icons: [{ src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }] }));
+      .filter(([k]) => pageEnabled(k)).map(([, name, url]) => ({ name, short_name: name, url, icons: [{ src: IC('icon-192.png'), sizes: '192x192', type: 'image/png' }] }));
     out.write('manifest.webmanifest', JSON.stringify({
       id: '/', name: cfg.siteName, short_name: 'Discover', lang: 'en',
       description: cfg.pages.home?.description || 'Excursions, transfers and dining in Sharm El-Sheikh.',
-      start_url: '/?utm_source=pwa', scope: '/', display: 'standalone', display_override: ['standalone', 'minimal-ui'],
-      orientation: 'portrait', background_color: '#0d0d0f', theme_color: '#0d0d0f', categories: ['travel', 'lifestyle'],
+      start_url: '/?utm_source=pwa', scope: '/', display: 'standalone', display_override: ['standalone', 'minimal-ui'],   // standalone = app window with the system status/nav bars visible
+      orientation: 'portrait', background_color: SPLASH_BG, theme_color: SPLASH_BG, categories: ['travel', 'lifestyle'],
       icons: [
-        { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
-        { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
-        { src: '/icons/icon-maskable-192.png', sizes: '192x192', type: 'image/png', purpose: 'maskable' },
-        { src: '/icons/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+        { src: IC('icon-192.png'), sizes: '192x192', type: 'image/png', purpose: 'any' },
+        { src: IC('icon-512.png'), sizes: '512x512', type: 'image/png', purpose: 'any' },
+        { src: IC('icon-maskable-192.png'), sizes: '192x192', type: 'image/png', purpose: 'maskable' },
+        { src: IC('icon-maskable-512.png'), sizes: '512x512', type: 'image/png', purpose: 'maskable' },
       ],
       shortcuts,
       screenshots: fs.existsSync(path.join(ROOT, 'shared/pwa-shots')) ? fs.readdirSync(path.join(ROOT, 'shared/pwa-shots')).filter((f) => /\.png$/.test(f)).sort()
@@ -313,7 +332,7 @@ ${linkify(bottomNav)}
       .filter((u, i, a) => a.indexOf(u) === i).filter((u) => u === '/' || fs.existsSync(path.join(outRoot(site), u, 'index.html')));
     const precache = [...new Set([
       '/offline.html', '/manifest.webmanifest', ...shellPages,
-      '/icons/icon-192.png', '/icons/icon-512.png', '/icons/apple-touch-icon.png',
+      IC('icon-192.png'), IC('icon-512.png'), IC('icon-maskable-192.png'), IC('icon-maskable-512.png'), IC('apple-touch-icon.png'),
       ...assetList.map((f) => `/${f}?v=${V[f]}`), `/site.css?v=${V['site.css']}`,
       ...['destinations', 'articles', 'reviews', 'lang/manifest', 'lang/en'].map((f) => `/data/${f}.json?v=${DATA_V}`),   // same URLs the pages ask for
     ])];
@@ -361,15 +380,6 @@ ${linkify(bottomNav)}
       `  <url><loc>${SITES.www}${u}</loc><xhtml:link rel="alternate" media="only screen and (max-width: 1023px)" href="${SITES.app}${u}"/></url>`).join('\n')}\n</urlset>\n`);
   }
 
-  // ---- ready-made photo library: shared/stock/** → /stock/** + /stock/index.json (www only; the consoles read it cross-origin) ----
-  if (site === 'www') {
-    const lib = buildStockIndex(path.join(ROOT, 'shared', 'stock'));
-    for (const f of lib.files) out.copy(`shared/stock/${f.rel}`, `stock/${f.rel}`);
-    out.write('stock/index.json', JSON.stringify(lib.index));
-    lib.warnings.forEach(w => console.warn(`\x1b[33m⚠ ${w}\x1b[0m`));
-    console.log(`[www] photo library: ${lib.files.length} photos`);
-  }
-
   // ---- hosting files ---------------------------------------------------------------------------------------------
   out.write('CNAME', new URL(domain).hostname + '\n');
   out.write('.nojekyll', '');
@@ -399,11 +409,7 @@ ${linkify(bottomNav)}
       '/offline.html', '  Cache-Control: no-cache',
       '/icons/*', '  Cache-Control: public, max-age=2592000',
     ] : []),
-    ...(site === 'www' ? [   // photo library (rules cannot overlap: Pages merges a header that appears in two matching rules)
-      '/stock/index.json', '  Cache-Control: no-cache', '  Access-Control-Allow-Origin: *',
-      '/stock/:section/:file', '  Cache-Control: public, max-age=86400', '  Access-Control-Allow-Origin: *',
-      '/stock/:section/:album/:file', '  Cache-Control: public, max-age=86400', '  Access-Control-Allow-Origin: *',
-    ] : []),
+    '/img/*', '  Cache-Control: public, max-age=2592000',
     '/data/*',
     '  Cache-Control: public, max-age=31536000, immutable',   // every request carries ?v=<hash> (DS_DATA_V), so a changed file is a new URL
     '',
@@ -419,14 +425,13 @@ function buildAdmin() {
   const site = 'admin', out = mk(site), domain = SITES.admin;
   fs.rmSync(outRoot(site), { recursive: true, force: true });
 
-  const files = ['console.css', 'i18n.js', 'console.js', 'editor.js', 'stock.js', 'qr.js', 'restaurants.js', 'settings.js', 'schemas.js', 'supabase-console.js'];
+  const files = ['console.css', 'i18n.js', 'console.js', 'editor.js', 'qr.js', 'restaurants.js', 'settings.js', 'schemas.js', 'supabase-console.js'];
   const V = {};
   for (const f of files) { const b = fs.readFileSync(path.join(ROOT, 'console', f)); out.write(`console/${f}`, b); V[f] = sha(b); }
   const adminJs = fs.readFileSync(path.join(ROOT, 'admin-src', 'admin.js')); out.write('admin.js', adminJs); V['admin.js'] = sha(adminJs);
 
   const sbCfg = `// GENERATED by tools/build.mjs from site.config.json — public values only.
-window.DS_SUPABASE = ${useSupabase ? JSON.stringify({ url: sbc.url, anonKey: sbc.anonKey, translateBase: (sbc.translateBase || '').replace(/\/$/, ''), contentBase: (sbc.contentBase || '').replace(/\/$/, ''), settingsBase: (sbc.settingsBase || '').replace(/\/$/, ''), mediaBase: (sbc.mediaBase || '').replace(/\/$/, ''), staticBase: (sbc.staticBase || '').replace(/\/$/, '') }) : 'null'};
-window.DS_STOCK_BASE = ${JSON.stringify(SITES.www + '/stock')};   // ready-made photo library (served by the main website project)
+window.DS_SUPABASE = ${useSupabase ? JSON.stringify({ url: sbc.url, anonKey: sbc.anonKey, translateBase: (sbc.translateBase || '').replace(/\/$/, ''), contentBase: (sbc.contentBase || '').replace(/\/$/, ''), settingsBase: (sbc.settingsBase || '').replace(/\/$/, ''), mediaBase: (sbc.mediaBase || '').replace(/\/$/, '') }) : 'null'};
 ${useSupabase ? `document.write('<script src="${SUPABASE_JS}"><\\/script>');` : ''}
 `;
   out.write('console/supabase-config.js', sbCfg); V['supabase-config.js'] = sha(sbCfg);
@@ -440,7 +445,7 @@ ${useSupabase ? `document.write('<script src="${SUPABASE_JS}"><\\/script>');` : 
       .replace('src="../console/supabase-console.js"', `src="/console/supabase-console.js?v=${V['supabase-console.js']}"`)
       .replace('src="../console/console.js"', `src="/console/console.js?v=${V['console.js']}"`)
       // schemas + the console modules (editor, QR, restaurants, settings) load right after console.js, before any inline script
-      .replace('src="../console/schemas.js"></script>', `src="/console/schemas.js?v=${V['schemas.js']}"></script>\n` + ['stock', 'editor', 'qr', 'restaurants', 'settings'].map(f => `<script src="/console/${f}.js?v=${V[f + '.js']}"></script>`).join('\n'))
+      .replace('src="../console/schemas.js"></script>', `src="/console/schemas.js?v=${V['schemas.js']}"></script>\n` + ['editor', 'qr', 'restaurants', 'settings'].map(f => `<script src="/console/${f}.js?v=${V[f + '.js']}"></script>`).join('\n'))
       .replace('src="admin.js"', `src="/admin.js?v=${V['admin.js']}"`);
     out.write(outRel, h);
   };

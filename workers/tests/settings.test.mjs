@@ -78,15 +78,17 @@ r = await call('PUT', '/admin/settings', { tok: 'tok-admin', body: { value: { re
 
 // ---- static copy: every save is on static hosting before the admin sees "saved" -----------------------------------------------------------
 const objs = new Map();
-const env2 = { ...env, STATIC: { async put(k, v, o) { objs.set(k, { v, o }); } }, STATIC_BASE: 'https://data.test' };
+const env2 = { ...env, MEDIA: { async put(k, v, o) { objs.set(k, { v, o }); } }, MEDIA_BASE: 'https://media.test' };
 const call2 = async (method, path, { tok, body } = {}) => { const rs = await worker.fetch(new Request('https://s.test' + path, { method, headers: { Origin: ORIGIN, ...(tok ? { Authorization: 'Bearer ' + tok } : {}), 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined }), env2, { waitUntil() {} }); return { status: rs.status }; };
 assert.equal((await call2('PUT', '/admin/settings', { tok: 'tok-admin', body: { value: { announcement: { text: 'Hello' } } } })).status, 200);
 let pub = JSON.parse(objs.get('settings/settings.json').v);
 assert.equal(pub.value.announcement.text, 'Hello', 'the new announcement is on static hosting right after the save');
 assert.match(objs.get('settings/settings.json').o.httpMetadata.cacheControl, /max-age=5\b/);
 assert.equal(pub.langs.length, 0); assert.equal(pub.fallback, undefined);
+const sv1 = JSON.parse(objs.get('settings/version.json').v).v; assert.match(sv1, /^[a-f0-9]{16}$/, 'settings get a version pointer');
 assert.equal((await call2('POST', '/admin/languages', { tok: 'tok-admin', body: { code: 'fr', name: 'French', nativeName: 'Français', strings: { hi: 'salut' } } })).status, 200);
 pub = JSON.parse(objs.get('settings/settings.json').v); assert.equal(pub.langs[0].code, 'fr', 'language changes are published too');
+assert.notEqual(JSON.parse(objs.get('settings/version.json').v).v, sv1, 'a change gets a new version');
 const n0 = objs.size; objs.clear();
 assert.equal((await call2('PUT', '/admin/settings', { tok: 'tok-owner', body: { value: { x: 1 } } })).status, 403); assert.equal(objs.size, 0, 'a refused save publishes nothing');
 

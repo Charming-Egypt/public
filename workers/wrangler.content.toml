@@ -15,18 +15,17 @@ SUPABASE_URL = "https://YOUR-PROJECT.supabase.co"
 SUPABASE_ANON_KEY = "YOUR-ANON-KEY"
 GITHUB_REPO = "YOUR-ORG/discover-sharm-data"     # the private data repo (owner/name)
 GITHUB_BRANCH = "main"
-MEDIA_BASE = "https://media.discover-sharm.com"      # the Cloudflare Pages project that serves the photos (see media-site/README.md)
-STATIC_BASE = "https://data.discover-sharm.com"      # public address of the R2 bucket below: the catalog JSON that makes admin edits visible in seconds
+MEDIA_BASE = "https://media.discover-sharm.com"       # public address of the R2 bucket below (static hosting for photos + the published catalog)
 ALLOWED_ORIGINS = "https://www.discover-sharm.com,https://app.discover-sharm.com,https://admin.discover-sharm.com"
 
-# Catalog JSON on static hosting: one small R2 bucket shared by the content + settings Workers (photos are NOT here: they live on the Pages project above).
-#   npx wrangler r2 bucket create discover-sharm-data
-#   Cloudflare → R2 → discover-sharm-data → Settings → Custom Domains → data.discover-sharm.com   (public, served by the CDN: no Worker involved)
-#   Optional: Rules → Cache Rules → "data.discover-sharm.com / path starts with /catalog or /settings → Eligible for cache, Edge TTL: respect origin"
+# Static hosting: one R2 bucket shared by the content + settings Workers.
+#   npx wrangler r2 bucket create discover-sharm-media
+#   Cloudflare → R2 → discover-sharm-media → Settings → Custom Domains → media.discover-sharm.com   (public, served by the CDN: no Worker involved)
+#   Optional: Rules → Cache Rules → "media.discover-sharm.com / path starts with /catalog or /settings → Eligible for cache, Edge TTL: respect origin"
 [[r2_buckets]]
-binding = "STATIC"
-bucket_name = "discover-sharm-data"
+binding = "MEDIA"
+bucket_name = "discover-sharm-media"
 
-# Every 5 minutes: refresh the static catalog (live star ratings; photos that Pages has just published).
+# Every 5 minutes: refresh the static catalog (live star ratings) and copy any photo that is in GitHub but not in the bucket yet.
 [triggers]
 crons = ["*/5 * * * *"]

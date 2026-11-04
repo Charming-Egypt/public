@@ -12,7 +12,9 @@ window.DS_CONFIG = window.DS_CONFIG || {
 let SITE_SET = {};
 try { SITE_SET = (JSON.parse(localStorage.getItem('ds_site_settings') || 'null') || {}).value || {}; } catch {}
 const secFlag = (k, def) => (SITE_SET.sections && SITE_SET.sections[k] !== undefined ? !!SITE_SET.sections[k] : def);
-let SHOW_HOTELS = secFlag('hotels', window.DS_CONFIG.SHOW_HOTELS);
+// Hotels are OFF unless the admin has explicitly switched them on (site settings) — the build config / missing setting never enables them.
+const hotelsOn = () => !!(SITE_SET.sections && SITE_SET.sections.hotels === true);
+let SHOW_HOTELS = hotelsOn();
 let SHOW_EXCURSIONS = secFlag('excursions', window.DS_CONFIG.SHOW_EXCURSIONS);
 let SHOW_TRANSFERS = secFlag('transfers', window.DS_CONFIG.SHOW_TRANSFERS);
 let SHOW_RESTAURANTS = secFlag('restaurants', window.DS_CONFIG.SHOW_RESTAURANTS);
@@ -34,6 +36,7 @@ const ROUTES = {
   restaurants: '/restaurants/',
   hotels: '/hotels/',
   bookings: '/bookings/',
+  reviews: '/reviews/',
   profile: '/profile/',
   settings: '/settings/',
   notifications: '/notifications/',
@@ -50,10 +53,11 @@ const ROUTES = {
 const PAGE_TITLES = {
   home: 'Discover Sharm — Luxury Travel',
   excursions: 'Excursions in Sharm El-Sheikh — Discover Sharm',
-  transfers: 'Airport Transfers — Discover Sharm',
+  transfers: 'Transfers — Discover Sharm',
   restaurants: 'Restaurants — Discover Sharm',
   hotels: 'Hotels — Discover Sharm',
   bookings: 'My Bookings — Discover Sharm',
+  reviews: 'Guest Reviews — Discover Sharm',
   profile: 'My Profile — Discover Sharm',
   settings: 'Settings — Discover Sharm',
   notifications: 'Notifications — Discover Sharm',
@@ -104,6 +108,7 @@ async function openDetailFromRoute(section, id) {
   try {
     await ensureCatalogLoaded();
     def.open(id, { render: true });
+    document.getElementById('detailSkeleton')?.remove();   // the real page is in: drop the placeholder
     if (!document.querySelector('#mainApp .page.active')) setTimeout(leave, 1200); // unknown id: toast, then back to the list
   } catch (e) {
     console.error('openDetailFromRoute failed:', e);
@@ -132,8 +137,7 @@ function enterApp() {
   document.getElementById('authPage')?.classList.add('hidden');
   document.documentElement.removeAttribute('data-gate');
   document.getElementById('mainApp')?.classList.remove('hidden');
-  hideSplash();
-  if (__entered) { updateStickyHeaderState(); return; }   // signed in from the auth overlay: don't boot twice
+  if (__entered) { updateStickyHeaderState(); if (typeof reviewsPg !== 'undefined') reviewsPg.rerender(); return; }   // signed in from the auth overlay: don't boot twice (the reviews page must unlock, though)
   __entered = true;
 
   __catalogLoadPromise = loadCatalogFromWorker();
@@ -157,6 +161,7 @@ function enterApp() {
 
   // Each HTML file knows which screen it is (<body data-route / data-detail>).
   const route = document.body.dataset.route || 'home';
+  if (route === 'hotels' && !SHOW_HOTELS && !document.body.dataset.detail) { location.replace(pathForPage('home')); return; }   // hotels switched off: no dead page
   const detail = document.body.dataset.detail;
   if (detail) {
     openDetailFromRoute(detail, new URLSearchParams(location.search).get('id'));
@@ -208,6 +213,7 @@ const nav = {
     if (page === 'transfers' && SHOW_TRANSFERS) transfersUi.render();
     if (page === 'restaurants' && SHOW_RESTAURANTS) restaurantsUi.renderFull();
     if (page === 'bookings') bookings.render();
+    if (page === 'reviews') reviewsPg.init();
     if (page === 'notifications') notifications.render();
     if (page === 'profile') updateProfileStats();
 
@@ -222,7 +228,7 @@ const nav = {
   },
 
   showAuth() {
-    hideSplash();
+    try { sidebar.close(); } catch {}
     document.getElementById('authPage').classList.remove('hidden');
     document.getElementById('mainApp').classList.add('hidden');
     switchAuthMode('login');
@@ -1326,7 +1332,7 @@ function showTransferPage(id, opts = {}) {
       ${detailHero({ images: v.images || [v.image], icon: 'fa-shuttle-van', back: 'closeTransferPage()', cls: 'detail-gallery', badge: `<span class="dh-badge"><i class="fa-solid fa-shuttle-van"></i>${v.vehicleType}</span>` })}
       ${renderPhotoGrid(v.images || [v.image])}
       <div class="detail-layout">
-        <div class="detail-main relative -mt-6 rounded-t-[28px] p-5 space-y-6 pb-32" style="background:var(--bg-card)">
+        <div class="detail-main has-mbar relative -mt-6 rounded-t-[28px] p-5 space-y-6 pb-32" style="background:var(--bg-card)">
         <div>
           <h2 class="font-display text-2xl font-bold mb-1 leading-tight">${v.vehicleType} ${t('transferWord')}</h2>
           <div class="flex items-center gap-2 text-sm mb-1">${utils.renderStars(v.rating || 4.5)}<span class="text-xs">${Number(v.rating || 4.5).toFixed(1)}${v.reviews ? ` (${v.reviews})` : ''}</span></div>
@@ -1443,25 +1449,13 @@ const restaurantsUi = {
   },
   listCard(r) {
     return lcCard({ click: `showRestaurantPage('${r.id}')`, img: getImageUrl(r.image), badge: t(r.category === 'cafe' ? 'cafeCategoryLabel' : 'restaurantCategoryLabel'), rating: r.rating || '', reviews: r.reviews,
-      title: lf.esc(r.name), loc: lf.esc(r.location), meta: [['fa-solid fa-utensils', lf.esc(r.cuisine)]],
+      cls: 'lc-full', title: lf.esc(r.name), loc: lf.esc(r.location), meta: [['fa-solid fa-utensils', lf.esc(r.cuisine)]],
       from: t('priceLevelLabel'), price: '$'.repeat(r.priceLevel || 2), cta: t('viewDetailsBtn') });
   },
-  renderCard(r) {
-    const img = getImageUrl(r.image);
-    return `
-      <div onclick="showRestaurantPage('${r.id}')" class="restaurant-card cursor-pointer">
-        <div class="relative h-36 overflow-hidden">
-          <img alt="" src="${img}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-          <span class="absolute top-3 left-3 bg-ink-950/70 text-white text-xs font-bold px-3 py-1 rounded-full capitalize">${t(r.category === 'cafe' ? 'cafeCategoryLabel' : 'restaurantCategoryLabel')}</span>
-          <span class="absolute top-3 right-3 rating-pill px-2 py-1 rounded-full flex items-center gap-1"><i class="fa-solid fa-star text-gold-400 text-[10px]"></i><span class="text-[10px] font-bold text-gold-400">${r.rating}</span></span>
-        </div>
-        <div class="p-4">
-          <h3 class="font-display font-bold text-lg mb-1 truncate" style="color:var(--text-primary)">${r.name}</h3>
-          <p class="text-sm mb-2" style="color:var(--text-secondary)">${r.cuisine} · ${'$'.repeat(r.priceLevel || 2)}</p>
-          <p class="text-xs flex items-center gap-1" style="color:var(--text-secondary)"><i class="fa-solid fa-location-dot text-violet-500"></i>${r.location}</p>
-        </div>
-      </div>`;
+  renderCard(r) {   // home row: the same card as the listing pages (lcCard), at a fixed scroll width; the full name always shows
+    return lcCard({ cls: 'lc-full lc-row', click: `showRestaurantPage('${r.id}')`, img: getImageUrl(r.image), badge: t(r.category === 'cafe' ? 'cafeCategoryLabel' : 'restaurantCategoryLabel'), rating: r.rating || '', reviews: r.reviews,
+      title: lf.esc(r.name), loc: lf.esc(r.location), meta: [['fa-solid fa-utensils', lf.esc(r.cuisine)]],
+      from: t('priceLevelLabel'), price: '$'.repeat(r.priceLevel || 2), cta: t('viewDetailsBtn') });
   }
 };
 
@@ -1755,7 +1749,7 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lf.cur) 
 function lcCard(o) {
   const e = lf.esc;
   return `
-    <article class="lc" onclick="${o.click}" tabindex="0" onkeydown="if(event.key==='Enter'){${o.click}}">
+    <article class="lc${o.cls ? ' ' + o.cls : ''}" onclick="${o.click}" tabindex="0" onkeydown="if(event.key==='Enter'){${o.click}}">
       <div class="lc-media">
         <img alt="" loading="lazy" src="${o.img}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
         <span class="lc-shade"></span>
@@ -1780,13 +1774,14 @@ function lcCard(o) {
 function dhRender() {
   const feat = document.getElementById('dhFeat');
   if (!feat) return;
+  ['dhFeat', 'dhStats', 'dhStory'].forEach(i => document.getElementById(i)?.classList.remove('sk'));   // desktop hero cards: shimmer placeholder -> real content
   const img = u => getImageUrl(u);
   const d = (CATALOG.destinations || [])[0];
   if (d) {
     feat.onclick = () => showDestinationPage(d.id);
     feat.innerHTML = `<img alt="" src="${img(d.image)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
       <span class="dh-feat-shade"></span>
-      <span class="dh-feat-body"><small>${esc(t('dhFeatured'))}</small><b>${esc(d.name)}</b><em>★ ${Number(d.rating || 0).toFixed(1)}</em></span>
+      <span class="dh-feat-body"><small>${esc(t('dhFeatured'))}</small><b>${esc(d.name)}</b></span>
       <span class="dh-arrow"><i class="fa-solid fa-arrow-right rtl-flip" aria-hidden="true"></i></span>`;
   }
   const stats = document.getElementById('dhStats');
@@ -1800,7 +1795,7 @@ function dhRender() {
         <div><b>${n((CATALOG.destinations || []).length)}</b><span>${esc(t('dhStatDest'))}</span></div>
         <div><b>${avg}</b><span>${esc(t('dhStatRating'))}</span></div>
       </div>
-      ${rv ? `<p class="dh-quote">“${esc(String(rv.text || '')).slice(0, 110)}”</p><p class="dh-by"><span>${esc((rv.name || 'G').charAt(0))}</span>${esc(rv.name || '')}</p>` : ''}`;
+      ${rv ? `<p class="dh-quote">“${esc(String(rv.text || '')).slice(0, 110)}”</p><p class="dh-by">${reviewsHomeUi.avatar(rv, 'dh-by-av')}${esc(rv.name || '')}${reviewsHomeUi.country(rv)}</p>` : ''}`;
   }
   const story = document.getElementById('dhStory');
   const a = (CATALOG.articles || [])[0];
@@ -1825,7 +1820,6 @@ const destinationsUi = {
         <div onclick="showDestinationPage('${d.id}')" class="destination-card cursor-pointer rounded-[18px] overflow-hidden shadow-lg">
           <img alt="" src="${imgSrc}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover absolute inset-0">
           <div class="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/30 to-transparent"></div>
-          <div class="absolute top-3 right-3 rating-pill px-2 py-1 rounded-full"><span class="text-[9px] font-bold text-gold-400">★ ${d.rating}</span></div>
           <div class="absolute bottom-3 right-3 left-3 text-white">
             <p class="font-display font-bold text-base leading-tight">${d.name}</p>
           </div>
@@ -1836,17 +1830,33 @@ const destinationsUi = {
 
 // ==================== REVIEWS RENDERER ====================
 const reviewsHomeUi = {
+  // avatar: the guest's photo when there is one, otherwise a stable colour per name (same palette as the /reviews/ page)
+  AV: [['#fb923c', '#ea580c'], ['#38bdf8', '#0369a1'], ['#34d399', '#047857'], ['#a78bfa', '#6d28d9'], ['#f472b6', '#be185d'], ['#fbbf24', '#b45309'], ['#2dd4bf', '#0f766e'], ['#f87171', '#b91c1c']],
+  avatar(rv, cls) {
+    const nm = String(rv.name || 'G').trim(), ini = esc([...nm][0] || 'G').toUpperCase();
+    let h = 0; for (const ch of nm) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+    const c = this.AV[h % this.AV.length], photo = rv.avatar || rv.photo_url;
+    return `<div class="${cls}"${photo ? '' : ` style="background:linear-gradient(135deg,${c[0]},${c[1]});color:#fff"`}>${photo ? `<img src="${esc(photo)}" alt="" loading="lazy" onerror="this.remove()">` : ini}</div>`;
+  },
+  country(rv) {
+    const cc = String(rv.nationality || rv.country || '').toUpperCase();
+    if (!/^[A-Z]{2}$/.test(cc)) return '';
+    let n = cc;
+    try { n = new Intl.DisplayNames([(typeof I18N !== 'undefined' && I18N.get) ? I18N.get() : 'en'], { type: 'region' }).of(cc) || cc; } catch {}
+    return `<span class="rv-home-nat"><span aria-hidden="true">${typeof countryFlagEmoji === 'function' ? countryFlagEmoji(cc) : ''}</span>${esc(n)}</span>`;
+  },
   render() {
     const row = document.getElementById('reviewsRow');
     if (!row) return;
     row.innerHTML = CATALOG.reviews.map(rv => `
       <div class="review-slide-card">
         <div class="flex items-center gap-3 mb-3">
-          <div class="review-avatar-badge">${(rv.name || 'G').charAt(0)}</div>
-          <div class="flex-1 min-w-0"><p class="text-sm font-semibold truncate">${rv.name}</p><div class="flex">${utils.renderStars(rv.rating)}</div></div>
+          ${this.avatar(rv, 'review-avatar-badge')}
+          <div class="flex-1 min-w-0"><p class="text-sm font-semibold truncate">${esc(rv.name || '')}</p>
+            <div class="flex items-center gap-2 min-w-0"><div class="flex">${utils.renderStars(rv.rating)}</div>${this.country(rv)}</div></div>
         </div>
-        <p class="text-xs leading-relaxed mb-3">"${rv.text}"</p>
-        <p class="text-[10px] font-semibold text-violet-500 truncate">${rv.itemName || ''}</p>
+        <p class="text-xs leading-relaxed mb-3">"${esc(rv.text || '')}"</p>
+        <p class="text-[10px] font-semibold text-violet-500 truncate">${esc(rv.itemName || '')}</p>
       </div>`).join('');
   }
 };
@@ -1911,11 +1921,12 @@ function applyCategoryVisibility() {
     document.getElementById('statFavoritesCard')?.remove();
     document.getElementById('profileStatsGrid')?.classList.replace('grid-cols-3', 'grid-cols-2');
   }
+  document.documentElement.dataset.hotels = SHOW_HOTELS ? 'on' : 'off';   // CSS (.ds-hotels-ui) hides every hotel element in the static HTML until the admin enables hotels
   document.getElementById('drawerHotelsLink')?.classList.toggle('hidden', !SHOW_HOTELS);
   document.getElementById('desktopHotelsLink')?.classList.toggle('hidden', !SHOW_HOTELS);
   document.getElementById('footerHotelsLink')?.classList.toggle('hidden', !SHOW_HOTELS);
   document.getElementById('categoryTileHotels')?.classList.toggle('hidden', !SHOW_HOTELS);
-  document.getElementById('categoryTileRestaurants')?.classList.toggle('hidden', !SHOW_HOTELS);
+  document.getElementById('categoryTileRestaurants')?.classList.toggle('hidden', !SHOW_RESTAURANTS);
   document.querySelectorAll('.drawer-link').forEach(link => {
     const onclick = link.getAttribute('onclick') || '';
     if (onclick.includes("nav.go('excursions')") && !SHOW_EXCURSIONS) link.style.display = 'none';
@@ -1971,13 +1982,92 @@ document.addEventListener('DOMContentLoaded', async () => {
   try { search.updatePaxDisplays(); lf.ctxChanged(); } catch (e) {}   // listing pages: strip + prices follow the searched dates / people
   search.switchTab(search.activeTab);   // card follows what restoreUiState brought back (dates, category, tab)
   if (auth.isLoggedIn() || sessionStorage.getItem('ds_guest')) { enterApp(); } else { nav.showAuth(); }
-  setTimeout(hideSplash, 3000);
+  WX.init();
 });
 
 document.addEventListener('submit', (e) => {
   if (e.target.closest('#authPage form')) { e.preventDefault(); handleAuthSubmit(e); }
-  if (e.target.closest('#reviewModal form')) { e.preventDefault(); reviews.submit(e); }
 });
+
+// ==================== WEATHER (home hero) ====================
+// Open-Meteo: free, no API key, CORS-enabled. Current conditions + today's high/low for Sharm El Sheikh, plus the sea temperature from its marine endpoint
+// (optional — the card still shows without it). Last good answer is kept in localStorage (20 min) so the card paints instantly on the next page load.
+const WX = {
+  KEY: 'ds_weather_v1', FRESH_MS: 20 * 60 * 1000,
+  LAT: 27.9158, LON: 34.33, SEA_LAT: 27.85, SEA_LON: 34.37,
+  async fetchJson(url) { const r = await fetch(url, { cache: 'no-store' }); if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); },
+  async load() {
+    const [w, m] = await Promise.allSettled([
+      this.fetchJson(`https://api.open-meteo.com/v1/forecast?latitude=${this.LAT}&longitude=${this.LON}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,is_day&daily=temperature_2m_max,temperature_2m_min&timezone=Africa%2FCairo&forecast_days=1`),
+      this.fetchJson(`https://marine-api.open-meteo.com/v1/marine?latitude=${this.SEA_LAT}&longitude=${this.SEA_LON}&current=sea_surface_temperature&timezone=Africa%2FCairo`),
+    ]);
+    if (w.status !== 'fulfilled' || !w.value.current) throw new Error('weather unavailable');
+    const c = w.value.current, d = w.value.daily || {};
+    const sea = m.status === 'fulfilled' && m.value && m.value.current ? m.value.current.sea_surface_temperature : null;
+    return { temp: c.temperature_2m, feels: c.apparent_temperature, hum: c.relative_humidity_2m, wind: c.wind_speed_10m, code: c.weather_code, day: c.is_day !== 0,
+      hi: d.temperature_2m_max && d.temperature_2m_max[0], lo: d.temperature_2m_min && d.temperature_2m_min[0], sea: typeof sea === 'number' ? sea : null };
+  },
+  // WMO weather code -> [label key, FontAwesome icon (day), icon (night), tint]
+  describe(code, day) {
+    const pick = (key, d, n, tint) => ({ key, icon: day ? d : (n || d), tint: tint || '' });
+    if (code === 0) return pick('wxClear', 'fa-sun', 'fa-moon');
+    if (code === 1 || code === 2) return pick('wxPartly', 'fa-cloud-sun', 'fa-cloud-moon');
+    if (code === 3) return pick('wxCloudy', 'fa-cloud', 'fa-cloud', 'is-grey');
+    if (code === 45 || code === 48) return pick('wxFog', 'fa-smog', 'fa-smog', 'is-grey');
+    if (code >= 51 && code <= 67 || code >= 80 && code <= 82) return pick('wxRain', 'fa-cloud-rain', 'fa-cloud-rain', 'is-grey');
+    if (code >= 95) return pick('wxStorm', 'fa-cloud-bolt', 'fa-cloud-bolt', 'is-grey');
+    return pick('wxCloudy', 'fa-cloud', 'fa-cloud', 'is-grey');
+  },
+  render(d) {
+    const main = document.getElementById('wxMain'), stats = document.getElementById('wxStats'); if (!main || !stats) return;
+    this.last = d; this.failed = false;   // kept so a language change can repaint the labels (see rerender)
+    const n = (v) => Math.round(v), info = this.describe(d.code, d.day);
+    main.innerHTML = `<div class="wx-pill"><span class="wx-icon ${info.tint || (d.day ? '' : 'is-night')}"><i class="fa-solid ${info.icon}" aria-hidden="true"></i></span>
+      <span class="wx-temp" dir="ltr">${n(d.temp)}°C</span><span class="wx-sep" aria-hidden="true"></span><span class="wx-cond">${esc(t(info.key, 'Clear sky'))}</span></div>`;
+    const cell = (icon, label, value) => `<span><i class="fa-solid ${icon}" aria-hidden="true"></i><span class="wx-sr">${esc(label)}</span><span dir="ltr">${value}</span></span>`;
+    stats.innerHTML = [
+      cell('fa-temperature-half', t('wxFeels', 'Feels like'), `${n(d.feels)}°`),
+      cell('fa-droplet', t('wxHumidity', 'Humidity'), `${n(d.hum)}%`),
+      cell('fa-wind', t('wxWind', 'Wind'), `${n(d.wind)} km/h`),
+      d.sea != null ? cell('fa-water', t('wxSea', 'Sea'), `${n(d.sea)}°`) : '',
+    ].join('');
+  },
+  // language switched (I18N.set -> refreshCatalogUI): repaint the condition / stat labels from the data we already have — no refetch
+  rerender() { if (this.last) this.render(this.last); else if (this.failed) this.fail(); },
+  fail() {
+    const main = document.getElementById('wxMain'), stats = document.getElementById('wxStats'); if (!main || !stats) return;
+    this.failed = true;
+    main.innerHTML = `<p class="wx-off">${esc(t('wxUnavailable', 'Weather is unavailable right now'))}</p>`; stats.innerHTML = '';
+  },
+  async init() {
+    if (!document.getElementById('wxCard')) return;
+    let saved = null; try { saved = JSON.parse(localStorage.getItem(this.KEY) || 'null'); } catch {}
+    if (saved && saved.d) { this.render(saved.d); if (Date.now() - (saved.t || 0) < this.FRESH_MS) return; }
+    try {
+      const d = await this.load(); this.render(d);
+      try { localStorage.setItem(this.KEY, JSON.stringify({ t: Date.now(), d })); } catch {}
+    } catch (e) { if (!(saved && saved.d)) this.fail(); }
+  },
+};
+
+window.DS_renderWeather = () => WX.rerender();
+
+// ==================== SKELETON GUARD ====================
+// The list renderers run as soon as a page is activated — usually BEFORE the catalog has arrived. Without this they would paint
+// "no results" and then jump to the real cards. Until window.__catalogReady (set in data.js) they do nothing, so the static skeleton
+// markup in the HTML pages (class "sk") stays on screen; once the catalog is in, refreshCatalogUI() renders and replaces the skeletons.
+(function () {
+  const guard = (obj, name) => {
+    const orig = obj && obj[name]; if (typeof orig !== 'function') return;
+    obj[name] = function () { if (!window.__catalogReady) return; return orig.apply(this, arguments); };
+  };
+  guard(hotels, 'render'); guard(ui, 'renderFeaturedHotels');
+  guard(excursionsUi, 'render'); guard(excursionsUi, 'renderFeatured');
+  guard(transfersUi, 'render');
+  guard(restaurantsUi, 'renderFull'); guard(restaurantsUi, 'renderRow');
+  guard(destinationsUi, 'render'); guard(reviewsHomeUi, 'render'); guard(articlesUi, 'render');
+  guard(window, 'renderJournalPage');
+})();
 
 // ==================== EXPOSE GLOBALLY ====================
 window.showTransferPage = showTransferPage;
@@ -2008,7 +2098,7 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') search.clo
 // ==================== SITE SETTINGS (from the admin console) ====================
 function applySiteSettings(v) {
   SITE_SET = v || {};
-  SHOW_HOTELS = secFlag('hotels', window.DS_CONFIG.SHOW_HOTELS); SHOW_EXCURSIONS = secFlag('excursions', window.DS_CONFIG.SHOW_EXCURSIONS);
+  SHOW_HOTELS = hotelsOn(); SHOW_EXCURSIONS = secFlag('excursions', window.DS_CONFIG.SHOW_EXCURSIONS);
   SHOW_TRANSFERS = secFlag('transfers', window.DS_CONFIG.SHOW_TRANSFERS); SHOW_RESTAURANTS = secFlag('restaurants', window.DS_CONFIG.SHOW_RESTAURANTS);
   SHOW_DESTINATIONS = secFlag('destinations', window.DS_CONFIG.SHOW_DESTINATIONS); SHOW_JOURNAL = secFlag('journal', window.DS_CONFIG.SHOW_JOURNAL !== false);
   applyContactSettings(window.DS_CONFIG.CONTACT);   // phone / e-mail / social links: Cloudflare variables (DS_CONTACT_*, DS_SOCIAL_*)

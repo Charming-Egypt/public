@@ -13,8 +13,8 @@
  *           POST   /admin/languages          body { code, name, nativeName, dir, strings, enabled }   add / update an interface language
  *           DELETE /admin/languages/{code}
  *
- * STATIC COPY (optional, recommended): bind the same R2 bucket as the content Worker (binding STATIC) and set STATIC_BASE. Every save then writes the public view to
- * STATIC_BASE/settings/settings.json (browsers revalidate it every few seconds), so settings changes reach visitors in seconds and the sites stop calling this Worker.
+ * STATIC COPY (optional, recommended): bind the same R2 bucket as the content Worker (binding MEDIA) and set MEDIA_BASE. Every save then writes the public view to
+ * MEDIA_BASE/settings/settings.json + a version pointer settings/version.json (browsers revalidate the pointer every few seconds, the file itself is cached by ?v=<hash>), so settings changes reach visitors in seconds and the sites stop calling this Worker.
  *
  * The super-admin check is the database's own is_super_admin() called with the caller's token (no service key needed here).
  */
@@ -51,9 +51,16 @@ async function requireSuperAdmin(env, req) {
   if ((await r.json()) !== true) throw fail(403, 'Not allowed');
 }
 
-const staticBase = (env) => String(env.STATIC_BASE || '').trim().replace(/\/+$/, '');
-const hasStatic = (env) => !!(env.STATIC && staticBase(env));
-const publishSettings = (env, file) => env.STATIC.put('settings/settings.json', JSON.stringify(publicView(norm(file))), { httpMetadata: { contentType: 'application/json; charset=utf-8', cacheControl: 'public, max-age=5' } });
+const mediaBase = (env) => String(env.MEDIA_BASE || '').trim().replace(/\/+$/, '');
+const hasMedia = (env) => !!(env.MEDIA && mediaBase(env));
+const sha16 = async (text) => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)))].slice(0, 8).map(b => b.toString(16).padStart(2, '0')).join('');
+// settings/settings.json + settings/version.json = { v: <content hash> }. The sites read the pointer, then ask for settings.json?v=<hash>; a Cloudflare Cache Rule
+// keeps each ?v= URL at the edge for a year and a changed file is a new URL, so the CDN refreshes itself. The file is written BEFORE its pointer.
+const publishSettings = async (env, file) => {
+  const body = JSON.stringify(publicView(norm(file))), v = await sha16(body), meta = { contentType: 'application/json; charset=utf-8', cacheControl: 'public, max-age=5' };
+  await env.MEDIA.put('settings/settings.json', body, { httpMetadata: meta });
+  await env.MEDIA.put('settings/version.json', JSON.stringify({ v }), { httpMetadata: meta });
+};
 
 const edge = () => (typeof caches !== 'undefined' && caches.default) || null;
 
@@ -81,7 +88,7 @@ export default {
         const res = new Response(JSON.stringify({ ...publicView(norm(cur && cur.json)), ...(cur ? {} : { fallback: true }) }), { status: 200,
           headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=15, s-maxage=30, stale-while-revalidate=120', 'Access-Control-Allow-Origin': '*' } });
         if (cache && ctx && ctx.waitUntil) ctx.waitUntil(cache.put(key, res.clone()));
-        if (cur && hasStatic(env) && ctx && ctx.waitUntil) ctx.waitUntil(publishSettings(env, cur.json).catch(() => {}));   // first request after a deploy fills the static copy
+        if (cur && hasMedia(env) && ctx && ctx.waitUntil) ctx.waitUntil(publishSettings(env, cur.json).catch(() => {}));   // first request after a deploy fills the static copy
         return res;
       }
 
@@ -94,7 +101,7 @@ export default {
       const save = async (fn, msg) => {
         const saved = await gh.mutateJSON(FILE, (cur) => { const f = norm(cur); const next = fn(f); return next === undefined ? undefined : { ...next, updatedAt: now() }; }, msg);
         const c = edge(); if (c && ctx && ctx.waitUntil) ctx.waitUntil(c.delete(new Request(url.origin + '/settings')).catch(() => {}));   // this location stops serving the old copy
-        if (saved && hasStatic(env)) { try { await publishSettings(env, saved); } catch (e) { console.error('settings publish', e.message); } }   // visitors get it within seconds
+        if (saved && hasMedia(env)) { try { await publishSettings(env, saved); } catch (e) { console.error('settings publish', e.message); } }   // visitors get it within seconds
         return saved;
       };
 

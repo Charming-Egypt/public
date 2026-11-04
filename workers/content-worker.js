@@ -33,13 +33,12 @@
  * unless the booking code in the database already knows its price; on failure the database change is rolled back.
  */
 
-// STATIC HOSTING (optional, recommended) — two separate things:
-//   1. PHOTOS on a dedicated Cloudflare Pages project (MEDIA_BASE, e.g. https://media.discover-sharm.com). That project is built from this same private GitHub data repo
-//      (media-site/build-media.mjs copies api/*/img/* into the site and writes img/manifest.json), so a photo saved here by the console is published by Pages a minute later
-//      and served by the CDN forever after, with no Worker involved. Until the manifest lists a photo, the catalog keeps pointing at this Worker's /img/ address, so a
-//      photo is never broken (this also covers the case where the monthly Pages build allowance is used up).
-//   2. The public CATALOG as one small JSON on an R2 bucket (bind it as STATIC, public address STATIC_BASE, e.g. https://data.discover-sharm.com): published the moment staff
-//      change anything (and every 5 min for live ratings, see the cron trigger), so an admin edit reaches visitors in seconds. Pages cannot take a write from a Worker.
+// STATIC HOSTING (optional but recommended): bind an R2 bucket as MEDIA and set MEDIA_BASE to its public address (e.g. https://media.discover-sharm.com).
+//   · photos are still committed to the private GitHub repo with GITHUB_TOKEN (the source of truth) AND copied to the bucket; the site loads them from MEDIA_BASE
+//     (img/<category>/<hash>.jpg — immutable, a year in the browser), so photo views never touch this Worker
+//   · the public catalog is published to MEDIA_BASE/catalog/bundle.json the moment staff change anything (and every 5 min for live ratings, see the cron
+//     trigger), so an admin edit reaches visitors in seconds instead of minutes
+//   · POST /media/sync (super admin) / the cron copy any photo that is in GitHub but not in the bucket yet (one-time backfill, automatic after that)
 import { github, toB64, fromB64, textToB64, unutf8, fail } from './lib/github.js';
 
 const CATS = {
@@ -343,7 +342,7 @@ async function staticHandle(gh, who, kind, method, id, action, body) {
   throw fail(404, 'Not found');
 }
 
-async function uploadImage(gh, who, body, origin) {
+async function uploadImage(gh, who, body, origin, env) {
   if (!who.isAdmin && !(who.isOwner && who.kinds.length)) throw fail(403, 'Not allowed');
   const kind = KIND_OF[String(body.cat || '')] || (who.kinds[0] || 'excursion');
   if (!who.isAdmin && (CATS[kind].githubOnly || !who.kinds.includes(kind))) throw fail(403, 'Not allowed');
@@ -358,6 +357,12 @@ async function uploadImage(gh, who, body, origin) {
   const name = `${hash}.${m[1] === 'image/png' ? 'png' : m[1] === 'image/webp' ? 'webp' : 'jpg'}`;
   try { await gh.putFile(imgPath(kind, name), toB64(bytes), null, `image ${name} uploaded by ${who.id}`); }
   catch (e) { if (e.message !== 'github_conflict') throw e; }   // same bytes uploaded before: the file is already there
+  if (env && hasMedia(env)) {   // static copy: the site reads the photo from there, no Worker involved
+    try {
+      await env.MEDIA.put(`img/${CATS[kind].dir}/${name}`, bytes, { httpMetadata: { contentType: m[1], cacheControl: IMG_CACHE } });
+      return { url: `${mediaBase(env)}/img/${CATS[kind].dir}/${name}` };
+    } catch (e) { console.error('media_put_failed', e.message); }   // GitHub has it; the Worker address keeps working
+  }
   return { url: `${origin}/img/${CATS[kind].dir}/${name}` };
 }
 
@@ -365,42 +370,70 @@ async function uploadImage(gh, who, body, origin) {
 const MIME = { jpg: 'image/jpeg', png: 'image/png', webp: 'image/webp' };
 const edge = () => (typeof caches !== 'undefined' && caches.default) || null;
 
-// ---- static hosting -------------------------------------------------------------------------------------------------------------
+// ---- static media hosting (R2) ----------------------------------------------------------------------------------------------
+const MIME_BY_EXT = { jpg: 'image/jpeg', png: 'image/png', webp: 'image/webp' };
+const IMG_CACHE = 'public, max-age=31536000, immutable';
+const IMG_DIRS = ['hotels', 'excursions', 'transfers', 'restaurants', 'journal', 'destinations'];
+const IMG_NAME_RE = /^[a-f0-9]{16}\.(?:jpg|png|webp)$/;
 const MEDIA_URL_RE = /https?:\/\/[^"\\\s]*?\/img\/((?:hotels|excursions|transfers|restaurants|journal|destinations)\/[a-f0-9]{16}\.(?:jpg|png|webp))/g;
-const trimBase = (v) => String(v || '').trim().replace(/\/+$/, '');
-const mediaBase = (env) => trimBase(env.MEDIA_BASE);                     // the Pages project that serves the photos
-const photosOn = (env) => !!mediaBase(env);
-const staticBase = (env) => trimBase(env.STATIC_BASE);                   // the R2 bucket that serves the catalog JSON
-const hasStatic = (env) => !!(env.STATIC && staticBase(env));
-const sha16 = async (text) => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)))].slice(0, 8).map(b => b.toString(16).padStart(2, '0')).join('');
-
-// photos that Pages has really published: its build writes img/manifest.json (["hotels/0123….jpg", …]). Anything not listed keeps the Worker address.
-async function pagesPhotos(env) {
-  try {
-    const r = await fetch(`${mediaBase(env)}/img/manifest.json`, { headers: { 'Cache-Control': 'no-cache' } });
-    if (!r.ok) return new Set();
-    const list = await r.json();
-    return new Set(Array.isArray(list) ? list.filter(x => typeof x === 'string') : []);
-  } catch (e) { console.error('media_manifest', e.message); return new Set(); }
+const mediaBase = (env) => String(env.MEDIA_BASE || '').trim().replace(/\/+$/, '');
+const hasMedia = (env) => !!(env.MEDIA && mediaBase(env));
+// photos saved by the console carry this Worker's address; the published catalog points at the static host instead
+// …but only for photos that really are in the bucket (`present`), so a photo that has not been copied yet never shows as broken
+const toStaticUrls = (text, env, present) => (hasMedia(env) ? text.replace(MEDIA_URL_RE, (m, p) => (present && present.has(p) ? `${mediaBase(env)}/img/${p}` : m)) : text);
+async function mediaPresent(env) {
+  const have = new Set(); let cursor;
+  do { const l = await env.MEDIA.list({ prefix: 'img/', cursor }); l.objects.forEach(o => have.add(o.key.slice(4))); cursor = l.truncated ? l.cursor : undefined; } while (cursor);
+  return have;
 }
-// photo addresses in the catalog: this Worker's → the Pages project's, only for photos that are published there
-const toPagesUrls = (text, env, present) => (photosOn(env) ? text.replace(MEDIA_URL_RE, (m, p) => (present && present.has(p) ? `${mediaBase(env)}/img/${p}` : m)) : text);
+const sha16 = async (text) => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)))].slice(0, 8).map(b => b.toString(16).padStart(2, '0')).join('');
 
 // the bundle as text + a fingerprint of its content (not of the build time): unchanged content is never re-published
 async function bundleBody(env) {
-  const obj = await buildBundle(env), present = photosOn(env) ? await pagesPhotos(env) : null;
-  return { body: toPagesUrls(JSON.stringify(obj), env, present), h: await sha16(toPagesUrls(JSON.stringify({ ...obj, builtAt: '' }), env, present)) };
+  const obj = await buildBundle(env), present = hasMedia(env) ? await mediaPresent(env) : null;
+  return { body: toStaticUrls(JSON.stringify(obj), env, present), h: await sha16(toStaticUrls(JSON.stringify({ ...obj, builtAt: '' }), env, present)) };
+}
+// Version pointer: catalog/version.json = { v: <content hash> }. The sites read it (a few bytes, rechecked every few seconds) and then ask for
+// catalog/bundle.json?v=<hash>. A Cloudflare Cache Rule keeps every ?v= URL at the edge for a year, and a changed catalog is a NEW url, so the CDN
+// never serves old data and never needs a purge. The bundle is always written BEFORE the pointer, so a pointer never names content that is not there yet.
+async function putVersion(env, h) {
+  const head = await env.MEDIA.head('catalog/version.json');
+  if (head && head.customMetadata && head.customMetadata.v === h) return false;
+  await env.MEDIA.put('catalog/version.json', JSON.stringify({ v: h }), { httpMetadata: { contentType: 'application/json; charset=utf-8', cacheControl: 'public, max-age=5' }, customMetadata: { v: h } });
+  return true;
 }
 async function putBundle(env, body, h, force) {
-  const head = await env.STATIC.head('catalog/bundle.json');
-  if (!force && head && head.customMetadata && head.customMetadata.h === h) return { changed: false };
-  await env.STATIC.put('catalog/bundle.json', body, { httpMetadata: { contentType: 'application/json; charset=utf-8', cacheControl: 'public, max-age=5' }, customMetadata: { h } });
+  const head = await env.MEDIA.head('catalog/bundle.json');
+  if (!force && head && head.customMetadata && head.customMetadata.h === h) { await putVersion(env, h); return { changed: false }; }   // (also heals a missing pointer)
+  await env.MEDIA.put('catalog/bundle.json', body, { httpMetadata: { contentType: 'application/json; charset=utf-8', cacheControl: 'public, max-age=5' }, customMetadata: { h } });
+  await putVersion(env, h);
   return { changed: true };
 }
 async function publishBundle(env, force) {
-  if (!hasStatic(env)) return { skipped: 'no_static' };
+  if (!hasMedia(env)) return { skipped: 'no_media' };
   const { body, h } = await bundleBody(env);
   return putBundle(env, body, h, force);
+}
+
+// copy photos that are in the private GitHub repo but not in the bucket yet (at most `limit` per call; { copied, remaining })
+async function syncMedia(env, limit = 40) {
+  if (!hasMedia(env)) return { copied: 0, remaining: 0, skipped: 'no_media' };
+  const gh = github(env); let copied = 0, remaining = 0;
+  for (const dir of IMG_DIRS) {
+    const names = (await gh.listDir(`${ROOT}/${dir}/img`)).map(f => f.name).filter(n => IMG_NAME_RE.test(n));
+    if (!names.length) continue;
+    const have = new Set(), prefix = `img/${dir}/`; let cursor;
+    do { const l = await env.MEDIA.list({ prefix, cursor }); l.objects.forEach(o => have.add(o.key.slice(prefix.length))); cursor = l.truncated ? l.cursor : undefined; } while (cursor);
+    for (const n of names) {
+      if (have.has(n)) continue;
+      if (copied >= limit) { remaining++; continue; }
+      const up = await gh.raw(`${ROOT}/${dir}/img/${n}`);
+      if (!up.ok) continue;
+      await env.MEDIA.put(prefix + n, await up.arrayBuffer(), { httpMetadata: { contentType: MIME_BY_EXT[n.split('.')[1]], cacheControl: IMG_CACHE } });
+      copied++;
+    }
+  }
+  return { copied, remaining };
 }
 
 // ---- public catalog (read side) -----------------------------------------------------------------------------------------------
@@ -460,7 +493,7 @@ async function serveBundle(req, env, ctx) {
   };
   const build = async () => {
     const { body, h } = await bundleBody(env);
-    if (hasStatic(env) && ctx && ctx.waitUntil) ctx.waitUntil(putBundle(env, body, h).catch(e => console.error('publish', e.message)));   // first request after a deploy also fills the static copy
+    if (hasMedia(env) && ctx && ctx.waitUntil) ctx.waitUntil(putBundle(env, body, h).catch(e => console.error('publish', e.message)));   // first request after a deploy also fills the static copy
     const stored = new Response(body, { status: 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': `public, max-age=${BUNDLE_KEEP_S}, s-maxage=${BUNDLE_KEEP_S}`, 'X-Built-At': String(Date.now()) } });
     if (cache) await cache.put(key, stored.clone());
     return stored;
@@ -525,20 +558,31 @@ const core = {
         const cache = edge(), key = new Request(url.origin + url.pathname);
         const hit = cache && await cache.match(key); if (hit) return hit;
         const imgHeaders = { 'Content-Type': MIME[seg[2].split('.')[1]], 'Cache-Control': 'public, max-age=31536000, immutable', 'Access-Control-Allow-Origin': '*', 'Cross-Origin-Resource-Policy': 'cross-origin' };
-        const up = await github(env).raw(imgPath(kind, seg[2]));
-        if (!up.ok) throw fail(404, 'Not found');
-        const res = new Response(up.body, { status: 200, headers: imgHeaders });
+        const rkey = `img/${CATS[kind].dir}/${seg[2]}`;
+        let res;
+        const stored = hasMedia(env) ? await env.MEDIA.get(rkey) : null;
+        if (stored) res = new Response(stored.body, { status: 200, headers: imgHeaders });
+        else {
+          const up = await github(env).raw(imgPath(kind, seg[2]));
+          if (!up.ok) throw fail(404, 'Not found');
+          if (hasMedia(env)) {   // first time this photo is asked for through the Worker: keep a static copy for next time
+            const buf = await up.arrayBuffer();
+            if (ctx && ctx.waitUntil) ctx.waitUntil(env.MEDIA.put(rkey, buf, { httpMetadata: { contentType: imgHeaders['Content-Type'], cacheControl: IMG_CACHE } }).catch(() => {}));
+            res = new Response(buf, { status: 200, headers: imgHeaders });
+          } else res = new Response(up.body, { status: 200, headers: imgHeaders });
+        }
         if (cache && ctx && ctx.waitUntil) ctx.waitUntil(cache.put(key, res.clone()));
         return res;
       }
 
       // ---------- staff ----------
-      if (seg[0] !== 'items' && seg[0] !== 'upload') throw fail(404, 'Not found');
+      if (seg[0] !== 'items' && seg[0] !== 'upload' && seg[0] !== 'media') throw fail(404, 'Not found');
       if (!cors['Access-Control-Allow-Origin']) throw fail(403, 'Origin not allowed');
       const db = supabase(env), who = await db.whoami(req), gh = github(env);
       let body = {}; if (req.method === 'POST' || req.method === 'PUT') { const t = await req.text(); if (t.length > MAX_BODY * 4) throw fail(413, 'Too large'); try { body = t ? JSON.parse(t) : {}; } catch { throw fail(400, 'Invalid JSON'); } }
 
-      if (seg[0] === 'upload' && req.method === 'POST') return json(await uploadImage(gh, who, body, url.origin));
+      if (seg[0] === 'media' && seg[1] === 'sync' && req.method === 'POST') { requireAdmin(who); return json(await syncMedia(env, 100)); }
+      if (seg[0] === 'upload' && req.method === 'POST') return json(await uploadImage(gh, who, body, url.origin, env));
 
       const kind = KIND_OF[seg[1] || ''];
       if (!kind) throw fail(404, 'Unknown category');
@@ -574,15 +618,18 @@ export default {
       const u = new URL(req.url);
       if (u.pathname.startsWith('/items/')) {
         const c = edge(); if (c) ctx.waitUntil(c.delete(new Request(u.origin + '/catalog/bundle.json')).catch(() => {}));
-        if (hasStatic(env)) ctx.waitUntil(publishBundle(env).catch(e => console.error('publish', e.message)));
+        if (hasMedia(env)) ctx.waitUntil(publishBundle(env).catch(e => console.error('publish', e.message)));
       }
     }
     return res;
   },
-  // cron (wrangler.content.toml): refresh the static catalog — live ratings change without any staff edit, and photos Pages has just published switch to their static address
+  // cron (wrangler.content.toml): refresh the static catalog (live ratings change without any staff edit) and copy photos not in the bucket yet
   async scheduled(_event, env, ctx) {
-    if (!hasStatic(env)) return;
-    ctx.waitUntil(publishBundle(env).catch(e => console.error('cron publish', e.message)));
+    if (!hasMedia(env)) return;
+    ctx.waitUntil((async () => {
+      try { await publishBundle(env); } catch (e) { console.error('cron publish', e.message); }
+      try { await syncMedia(env, 40); } catch (e) { console.error('cron sync', e.message); }
+    })());
   },
 };
 

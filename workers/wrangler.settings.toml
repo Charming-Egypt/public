@@ -14,10 +14,10 @@ SUPABASE_URL = "https://YOUR-PROJECT.supabase.co"
 SUPABASE_ANON_KEY = "YOUR-ANON-KEY"
 GITHUB_REPO = "YOUR-ORG/discover-sharm-data"
 GITHUB_BRANCH = "main"
-STATIC_BASE = "https://data.discover-sharm.com"
+MEDIA_BASE = "https://media.discover-sharm.com"
 ALLOWED_ORIGINS = "https://admin.discover-sharm.com"
 
 # Static copy of the public settings (same bucket as the content Worker) — see settings-worker.js
 [[r2_buckets]]
-binding = "STATIC"
-bucket_name = "discover-sharm-data"
+binding = "MEDIA"
+bucket_name = "discover-sharm-media"

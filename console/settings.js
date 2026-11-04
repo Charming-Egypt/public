@@ -7,7 +7,7 @@ const { esc } = DS;
 const BUILTIN = [['ar', 'العربية', 'rtl'], ['en', 'English', 'ltr'], ['ru', 'Русский', 'ltr'], ['de', 'Deutsch', 'ltr'], ['it', 'Italiano', 'ltr'], ['tr', 'Türkçe', 'ltr']];
 const SECTIONS = [['hotels', 'الفنادق', '🏨'], ['excursions', 'الرحلات', '🧭'], ['transfers', 'الترانسفير', '🚐'], ['restaurants', 'المطاعم والكافيهات', '🍽️'], ['destinations', 'الوجهات', '📍'], ['journal', 'المجلة (المقالات)', '📰']];
 const RTL = new Set(['ar', 'fa', 'ur', 'he', 'ps', 'sd', 'ku', 'yi']);
-const DEFAULTS = { sections: Object.fromEntries(SECTIONS.map(([k]) => [k, true])), languages: { enabled: BUILTIN.map(l => l[0]), default: 'en' },
+const DEFAULTS = { sections: Object.fromEntries(SECTIONS.map(([k]) => [k, k !== 'hotels'])), languages: { enabled: BUILTIN.map(l => l[0]), default: 'en' },
   announcement: { enabled: false, text: {}, link: '', tone: 'info' }, maintenance: { enabled: false, message: {} },
   site: { name: 'Discover Sharm' } };
 const merge = (d, v) => { const o = Array.isArray(d) ? [] : { ...d }; for (const k of Object.keys(v || {})) o[k] = (v[k] && typeof v[k] === 'object' && !Array.isArray(v[k]) && d && typeof d[k] === 'object') ? merge(d[k], v[k]) : v[k]; return o; };
@@ -38,7 +38,7 @@ DS.settingsView = () => async (m) => {
     const langRows = [...BUILTIN.map(([c, n]) => ({ code: c, name: n, builtin: true })), ...custom.map(l => ({ code: l.code, name: l.nativeName + ' · ' + l.name, builtin: false, keys: l.keys, db: l.enabled }))];
     m.innerHTML = `<h2 class="pt">إعدادات الموقع <span class="muted">التغييرات بتظهر على www و app مباشرة</span></h2>
       <div class="card"><span class="ct">الأقسام</span><p class="muted" style="margin-bottom:12px">لو قفلت قسم بيختفي من القوائم والصفحة الرئيسية والبحث (وبيفضل المحتوى محفوظ).</p>
-        <div class="grid2">${SECTIONS.map(([k, l, ic]) => `<div class="li" style="margin:0;padding:12px 14px">${sw('sec_' + k, S.sections[k] !== false, `<span style="font-size:18px">${ic}</span> ${l}`)}</div>`).join('')}</div>
+        <div class="grid2">${SECTIONS.map(([k, l, ic]) => `<div class="li" style="margin:0;padding:12px 14px">${sw('sec_' + k, k === 'hotels' ? S.sections[k] === true : S.sections[k] !== false, `<span style="font-size:18px">${ic}</span> ${l}`)}</div>`).join('')}</div>
         <div class="row" style="margin-top:14px"><button class="btn" id="s_sec">حفظ الأقسام</button></div></div>
 
       <div class="card"><span class="ct">اللغات</span><p class="muted" style="margin-bottom:12px">فعّل/عطّل لغات الموقع واختار اللغة الافتراضية للزائر الجديد. اللغة اللي بتضيفها بتتترجم واجهتها تلقائيًا، وأي محتوى جديد (رحلات/فنادق/مطاعم) بيتترجم ليها عند الحفظ.</p>

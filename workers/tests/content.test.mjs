@@ -19,7 +19,6 @@ const users = {  // token -> profile
   'tok-off': { id: 'u-off', role: 'owner', is_active: false, owner_kinds: ['hotel'], max_items: null },
 };
 let rows = [];  // properties
-let manifest = [], manifestDown = false;
 let dbCalls = 0, branchRows = [], reviewRows = [], testimonialRows = [];
 let rowN = 0;
 const match = (r, qs) => {
@@ -36,7 +35,6 @@ const jres = (o, status = 200) => new Response(JSON.stringify(o), { status, head
 
 globalThis.fetch = async (u, init = {}) => {
   u = String(u); const method = (init.method || 'GET').toUpperCase();
-  if (u === 'https://media.test/img/manifest.json') return manifestDown ? jres({}, 500) : jres(manifest);   // the media Pages project
   const bodyJ = init.body ? JSON.parse(init.body) : undefined;
   if (u.startsWith('https://api.github.com/')) {
     ghCalls++;
@@ -345,67 +343,77 @@ assert.equal(dbCalls - d0, 1, '5 views of the same item → one database query')
 assert.equal((await worker.fetch(new Request('https://api.test/reviews/..%2Fx.json'), env, ctx)).status, 404, 'ids are validated');
 Date.now = realNow; delete globalThis.caches;
 
-// ===== 14. static hosting: photos on the media Pages project, the catalog on R2 ============================================================
+// ===== 14. static hosting (R2): photos + the published catalog ==========================================================================
 const bucket = new Map(), r2log = { puts: [] };
 const fakeR2 = {
-  async put(key, val, opts = {}) { bucket.set(key, { buf: Buffer.from(val), opts }); r2log.puts.push(key); },
+  async put(key, val, opts = {}) { const buf = typeof val === 'string' ? Buffer.from(val) : Buffer.from(val); bucket.set(key, { buf, opts }); r2log.puts.push(key); },
+  async get(key) { const o = bucket.get(key); return o ? { body: o.buf, httpMetadata: o.opts.httpMetadata } : null; },
   async head(key) { const o = bucket.get(key); return o ? { customMetadata: o.opts.customMetadata || {} } : null; },
+  async list({ prefix = '' } = {}) { return { objects: [...bucket.keys()].filter(k => k.startsWith(prefix)).map(key => ({ key })), truncated: false }; },
 };
-const env2 = { ...env, STATIC: fakeR2, STATIC_BASE: 'https://data.test', MEDIA_BASE: 'https://media.test' };
+const env2 = { ...env, MEDIA: fakeR2, MEDIA_BASE: 'https://media.test' };
 const pend2 = [], ctx2 = { waitUntil: (p) => pend2.push(p) };
 const flush = async () => { while (pend2.length) await Promise.all(pend2.splice(0)); };
-const call2 = async (method, path, { tok, body, origin = ORIGIN, e = env2 } = {}) => {
-  const rs = await worker.fetch(new Request('https://api.test' + path, { method, headers: { Origin: origin, ...(tok ? { Authorization: 'Bearer ' + tok } : {}), 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined }), e, ctx2);
+const call2 = async (method, path, { tok, body, origin = ORIGIN } = {}) => {
+  const rs = await worker.fetch(new Request('https://api.test' + path, { method, headers: { Origin: origin, ...(tok ? { Authorization: 'Bearer ' + tok } : {}), 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined }), env2, ctx2);
   const t = await rs.text(); let j = null; try { j = JSON.parse(t); } catch {}
   await flush(); return { status: rs.status, j, raw: t, headers: rs.headers };
 };
-const published = () => JSON.parse(bucket.get('catalog/bundle.json').buf.toString());
-const bundlePuts = () => r2log.puts.filter(k => k === 'catalog/bundle.json').length;
 
-// 14a. an upload goes to the private GitHub repo with the token; the answer is the Worker address (works at once). The Pages project publishes the photo a minute later.
+// 14a. an upload goes to GitHub (private, with the token) AND to the bucket; the answer is the static address
 r = await call2('POST', '/upload', { tok: 'tok-own-h', body: { image: data(jpeg), cat: 'hotels' } });
 assert.equal(r.status, 200, r.raw);
-assert.match(r.j.url, /^https:\/\/api\.test\/img\/hotels\/[a-f0-9]{16}\.jpg$/, 'usable immediately, no waiting for the Pages build');
-assert.ok(files.has(`api/hotels/img/${r.j.url.split('/').pop()}`), 'GitHub keeps the original (source of truth)');
-assert.equal([...bucket.keys()].some(k => k.startsWith('img/')), false, 'photos are not stored in R2');
+assert.match(r.j.url, /^https:\/\/media\.test\/img\/hotels\/[a-f0-9]{16}\.jpg$/, 'photos are read from static hosting');
+const sname = r.j.url.split('/').pop();
+assert.ok(files.has(`api/hotels/img/${sname}`), 'GitHub keeps the original (source of truth)');
+assert.ok(bucket.has(`img/hotels/${sname}`) && /immutable/.test(bucket.get(`img/hotels/${sname}`).opts.httpMetadata.cacheControl), 'static copy is immutable for a year');
+assert.equal(bucket.get(`img/hotels/${sname}`).opts.httpMetadata.contentType, 'image/jpeg');
 
-// 14b. a staff change publishes the catalog at once. Photos Pages has published (listed in img/manifest.json) get their static address; the others keep working through the Worker.
-const photo = 'https://content.example.com/img/hotels/0123456789abcdef.jpg', photo2 = 'https://content.example.com/img/hotels/fedcba9876543210.jpg';
-manifest = ['hotels/0123456789abcdef.jpg'];
+// 14b. the old Worker address keeps working and fills the bucket when the photo is missing there
+bucket.delete(`img/hotels/${sname}`);
+r = await call2('GET', `/img/hotels/${sname}`, { origin: 'https://random.site' });
+assert.equal(r.status, 200); assert.ok(bucket.has(`img/hotels/${sname}`), 'copied to static hosting on first use');
+
+// 14c. a staff change publishes the catalog to static hosting right away; photo URLs inside it point at the static host
+const photo = 'https://content.example.com/img/hotels/0123456789abcdef.jpg';
+const photo2 = 'https://content.example.com/img/hotels/fedcba9876543210.jpg';   // in GitHub, not copied to the bucket yet
+bucket.set('img/hotels/0123456789abcdef.jpg', { buf: Buffer.from('x'), opts: {} });
 r = await call2('PUT', `/items/hotels/${hid}`, { tok: 'tok-admin', body: { ...hotel, name: { en: 'Sea View LIVE' }, image: photo, gallery: [photo2] } });
 assert.equal(r.status, 200, r.raw);
-let pub = published(), ph = pub.hotels.find(x => x.id === hid);
-assert.equal(ph.name.en, 'Sea View LIVE', 'the edit is on static hosting when the save returns');
-assert.equal(ph.image, 'https://media.test/img/hotels/0123456789abcdef.jpg', 'published photo → read from the media Pages project');
-assert.deepEqual(ph.gallery, [photo2], 'photo Pages has not published yet keeps its working Worker address (never broken)');
+let pub = JSON.parse(bucket.get('catalog/bundle.json').buf.toString());
+assert.equal(pub.hotels.find(x => x.id === hid).name.en, 'Sea View LIVE', 'the edit is already on static hosting when the save returns');
+assert.equal(pub.hotels.find(x => x.id === hid).image, 'https://media.test/img/hotels/0123456789abcdef.jpg', 'photo addresses rewritten to the static host');
+assert.deepEqual(pub.hotels.find(x => x.id === hid).gallery, [photo2], 'a photo not in the bucket yet keeps its working Worker address (never broken)');
 assert.match(bucket.get('catalog/bundle.json').opts.httpMetadata.cacheControl, /max-age=5\b/, 'browsers recheck every few seconds');
+const ver1 = JSON.parse(bucket.get('catalog/version.json').buf.toString()).v;
+assert.match(ver1, /^[a-f0-9]{16}$/, 'a version pointer is published next to the bundle');
+assert.equal(ver1, bucket.get('catalog/bundle.json').opts.customMetadata.h, 'the pointer names the bundle that is in the bucket');
 
-// 14c. the cron: nothing changed → no write; Pages finished its build → the photo switches to the static address by itself
-let n0 = bundlePuts();
+// unchanged content is not re-published (the cron runs every 5 minutes)
+let puts0 = r2log.puts.filter(k => k === 'catalog/bundle.json').length;
 await worker.scheduled({}, env2, ctx2); await flush();
-assert.equal(bundlePuts(), n0, 'cron with no changes → no write');
-manifest = ['hotels/0123456789abcdef.jpg', 'hotels/fedcba9876543210.jpg'];
-await worker.scheduled({}, env2, ctx2); await flush();
-assert.deepEqual(published().hotels.find(x => x.id === hid).gallery, ['https://media.test/img/hotels/fedcba9876543210.jpg'], 'photo now served by Pages');
+assert.equal(r2log.puts.filter(k => k === 'catalog/bundle.json').length, puts0, 'cron with no changes → no write');
 liveHotel.rating_avg = 3.5; liveHotel.rating_count = 9;   // a rating moved without any staff edit
 await worker.scheduled({}, env2, ctx2); await flush();
-assert.equal(published().hotels.find(x => x.id === liveHotel.id).reviews, 9, 'cron picks up new ratings');
+pub = JSON.parse(bucket.get('catalog/bundle.json').buf.toString());
+assert.equal(pub.hotels.find(x => x.id === liveHotel.id).reviews, 9, 'cron picks up new ratings');
+assert.notEqual(JSON.parse(bucket.get('catalog/version.json').buf.toString()).v, ver1, 'changed content → new version → new cache URL');
 
-// 14d. the media site is down / has no manifest yet: everything keeps working on Worker addresses
-manifestDown = true;
-r = await call2('GET', '/catalog/bundle.json', { origin: 'https://random.site' });
-assert.equal(r.status, 200); assert.equal(r.j.hotels.find(x => x.id === hid).image, photo, 'no manifest → no rewrite, no broken photo');
-manifestDown = false;
-
-// 14e. without the R2 bucket the Worker's own bundle route still hands out the Pages addresses
-await new Promise(res => setTimeout(res, 0));
-r = await call2('GET', '/catalog/bundle.json', { origin: 'https://random.site', e: { ...env, MEDIA_BASE: 'https://media.test' } });
-assert.equal(r.status, 200); assert.ok(r.j.hotels.find(x => x.id === hid));
-
-// 14f. refused changes publish nothing
-n0 = r2log.puts.length;
+// failed requests do not publish
+puts0 = r2log.puts.length;
 assert.equal((await call2('PUT', `/items/hotels/${hid}`, { tok: 'tok-cust', body: hotel })).status, 403);
-assert.equal(r2log.puts.length, n0);
-Date.now = realNow; delete globalThis.caches;
+assert.equal(r2log.puts.length, puts0, 'a refused change publishes nothing');
+
+// 14d. backfill: a photo that only exists in GitHub is copied to the bucket (admin endpoint + cron), once
+files.set('api/excursions/img/aaaaaaaaaaaaaaaa.jpg', { b64: jpeg.toString('base64'), sha: 'sx1' });
+assert.equal((await call2('POST', '/media/sync', { tok: 'tok-cust' })).status, 403, 'super admin only');
+r = await call2('POST', '/media/sync', { tok: 'tok-admin' });
+assert.equal(r.status, 200); assert.ok(r.j.copied >= 1 && r.j.remaining === 0); assert.ok(bucket.has('img/excursions/aaaaaaaaaaaaaaaa.jpg'));
+assert.equal((await call2('POST', '/media/sync', { tok: 'tok-admin' })).j.copied, 0, 'second run: nothing left to copy');
+
+// 14e. the fallback bundle route (browsers that cannot reach static hosting) also serves static photo addresses
+r = await call2('GET', '/catalog/bundle.json', { origin: 'https://random.site' });
+assert.equal(r.j.hotels.find(x => x.id === hid).image, 'https://media.test/img/hotels/0123456789abcdef.jpg');
+
 
 console.log('content worker: all checks passed');

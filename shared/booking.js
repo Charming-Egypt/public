@@ -695,7 +695,7 @@ function showHotelPage(hotelId, opts = {}) {
         extra: `<button type="button" class="dh-btn dh-extra ds-detail-back" onclick="favorites.toggle('${h.id}')" aria-label="Favorite"><i class="fa-${state.favorites.includes(h.id) ? 'solid text-red-500' : 'regular'} fa-heart" aria-hidden="true"></i></button>` })}
       ${renderPhotoGrid(h.images || [h.image])}
       <div class="detail-layout">
-        <div class="detail-main relative -mt-6 rounded-t-[28px] p-5 space-y-6 pb-32" style="background:var(--bg-card)">
+        <div class="detail-main has-mbar relative -mt-6 rounded-t-[28px] p-5 space-y-6 pb-32" style="background:var(--bg-card)">
         <div>
           <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold">— ${(h.category || '').toUpperCase()} HOTEL</p>
           <h2 class="font-display text-2xl font-bold mb-1 leading-tight">${h.name}</h2>
@@ -1040,7 +1040,7 @@ function showExcursionPage(excursionId, opts = {}) {
       ${detailHero({ images: imgs, icon: 'fa-water', back: 'closeExcursionPage()', cls: 'detail-gallery', badge: x.category ? `<span class="dh-badge">${E(excursionsUi.categoryLabel(x.category))}</span>` : '' })}
       ${renderPhotoGrid(imgs.length ? imgs : [PLACEHOLDER_IMG])}
       <div class="detail-layout">
-        <div class="detail-main relative -mt-6 rounded-t-[28px] p-5 rd-main ex-main" style="background:var(--bg-card)">
+        <div class="detail-main has-mbar relative -mt-6 rounded-t-[28px] p-5 rd-main ex-main" style="background:var(--bg-card)">
           <header class="rd-head">
             <h1 class="rd-title">${E(x.title)}</h1>
             ${hasRating(x) ? `<div class="rd-rating">${utils.renderStars(x.rating)}<b>${ratingNum(x)}</b>${reviewsN(x) ? `<span>(${reviewsN(x)} ${t('reviewsCountSuffix')})</span>` : ''}</div>` : ''}
@@ -1542,7 +1542,6 @@ function showDestinationPage(id, opts = {}) {
           <h1 class="rd-title">${E(d.name)}</h1>
           ${d.tagline ? `<p class="dp-tagline">${E(d.tagline)}</p>` : ''}
           <div class="dp-meta">
-            ${hasRating(d) ? `<span class="dp-pill"><i class="fa-solid fa-star"></i>${ratingNum(d)}${reviewsN(d) ? `<small>(${reviewsN(d)})</small>` : ''}</span>` : ''}
             ${d.location ? `<span class="dp-pill dp-pill-soft"><i class="fa-solid fa-location-dot"></i>${E(d.location)}</span>` : ''}
           </div>
         </header>
