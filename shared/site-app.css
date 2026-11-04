@@ -535,3 +535,51 @@ html.ds-far .ds-waves > i { animation-play-state: paused; }   /* scrolled well p
 
 /* detail pages: the band above the photo (status bar + header row) must be exactly the page colour, not the white page sheet behind it — otherwise it reads lighter than the status bar and a seam shows until the page scrolls */
 [data-site="app"] .dh { background: var(--bg-body); }
+
+
+/* ==========================================================================
+   APP — unified header row (2026-11-04)
+   Every inner-page header now has the same 3-slot geometry, in LTR and RTL:
+       [ back button ]      [ title — centred ]      [ action / empty ]
+   - the inner `div.flex` wrappers used by most pages are dissolved (display: contents) so all pages share one grid
+   - the title is centred on the screen no matter how wide the action is (equal 1fr side columns)
+   - the back button / action are vertically centred in the 86px band; the round button's icon is centred (it used to hug the edge on
+     Notifications / Profile / Settings because the button itself carries .flex and was caught by `.header-light > .flex { justify-content:flex-start }`)
+   ========================================================================== */
+[data-site="app"] .header-light {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center; column-gap: 12px;
+}
+[data-site="app"] .header-light > .flex:not(button) { display: contents; }
+[data-site="app"] .header-light > .flex:not(button) > * { margin: 0 !important; }
+
+/* slot 1 — back */
+[data-site="app"] .header-light [data-back] {
+  grid-column: 1; grid-row: 1; justify-self: start; align-self: center;
+  display: flex !important; align-items: center; justify-content: center !important; padding: 0 !important; margin: 0 !important;
+}
+[data-site="app"] .header-light [data-back] i { display: block; line-height: 1; }
+
+/* slot 2 — title (centred, one line, never pushes the side slots out) */
+[data-site="app"] .header-light > div:not(.w-11):not(.flex),
+[data-site="app"] .header-light > .flex:not(button) > div:not(.w-11),
+[data-site="app"] .header-light > h1,
+[data-site="app"] .header-light > .flex:not(button) > h1 {
+  grid-column: 2; grid-row: 1; justify-self: center; align-self: center; text-align: center !important; min-width: 0;
+  max-width: calc(100vw - 2 * (44px + 12px) - 32px); flex: none !important;
+}
+[data-site="app"] .header-light h1 {
+  margin: 0; line-height: 1.2; text-align: center !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+}
+
+/* slot 3 — action (e.g. "Mark all as read") or the empty spacer */
+[data-site="app"] .header-light > button:not([data-back]),
+[data-site="app"] .header-light > .flex:not(button) > .w-11:not([data-back]),
+[data-site="app"] .header-light > .w-11:not([data-back]) {
+  grid-column: 3; grid-row: 1; justify-self: end; align-self: center; margin: 0 !important;
+}
+[data-site="app"] .header-light > button:not([data-back]) {
+  min-height: 44px; display: inline-flex; align-items: center; justify-content: flex-end; max-width: 100%;
+  padding: 0 !important; font-size: 12.5px !important; line-height: 1.2; text-align: end; color: var(--ap-accent, #ff7a1a) !important;
+}
