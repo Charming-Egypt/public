@@ -5405,3 +5405,15 @@ html[data-theme="dark"] .rvp-err { color: #fca5a5; }
   .rvp-filters { padding-inline: 0; margin-inline: 0; flex-wrap: wrap; overflow: visible; }
 }
 @media (prefers-reduced-motion: reduce) { .rvp-card, .rvp-bar > div i, .rvp-done-ico, .rvp-submit.busy i { animation: none !important; } }
+
+/* ---- reviewer country (flag + name) ---- */
+.rvp-nm { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.rvp-nat { display: inline-flex; align-items: center; gap: 5px; min-width: 0; padding: 2px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 700; color: var(--text-secondary); background: var(--bg-field); border: 1px solid var(--rv-line); }
+.rvp-nat > span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 110px; }
+.rvp-flag { font-size: 14px; line-height: 1; }
+.rvp-nm b { flex: none; max-width: 60%; }
+.rvp-sel { position: relative; margin-bottom: 20px; }
+.rvp-sel-flag { position: absolute; inset-inline-start: 14px; top: 50%; transform: translateY(-50%); font-size: 20px; pointer-events: none; }
+.rvp-sel > i { position: absolute; inset-inline-end: 16px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--text-secondary); pointer-events: none; }
+.rvp-sel select { width: 100%; min-height: 52px; padding: 0 40px; padding-inline-start: 46px; border-radius: 16px; appearance: none; -webkit-appearance: none; font-size: 15px; font-weight: 600; color: var(--text-primary); background: var(--bg-field); border: 1.5px solid var(--border-field); }
+.rvp-sel select:focus { outline: none; border-color: var(--rv-b); box-shadow: 0 0 0 4px color-mix(in srgb, #f97316 20%, transparent); }

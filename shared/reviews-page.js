@@ -12,7 +12,7 @@ const reviewsPg = (() => {
     step: 'voucher',            // voucher | form | done
     voucher: null,              // answer of lookup_review_voucher (ok === true)
     eligible: null,             // the account's reviewable bookings (shortcut chips, still voucher-based)
-    stars: 0, files: [], busy: false, err: '', doneInfo: null, inited: false,
+    stars: 0, nat: '', files: [], busy: false, err: '', doneInfo: null, inited: false,
   };
   const $ = (id) => document.getElementById(id);
   const tt = (k, f) => t(k, f);
@@ -31,6 +31,13 @@ const reviewsPg = (() => {
     const p = n.split(/\s+/); if (p.length < 2) return p[0];
     return `${p[0]} ${[...p[p.length - 1]][0].toUpperCase()}.`;
   };
+  // nationality: ISO-3166 alpha-2 -> flag emoji + country name in the page language
+  const flag = (cc) => (typeof countryFlagEmoji === 'function' ? countryFlagEmoji(cc) : '');
+  const countryName = (cc) => {
+    try { const n = new Intl.DisplayNames([lang()], { type: 'region' }).of(cc); if (n && n !== cc) return n; } catch {}
+    const c = (typeof COUNTRY_CODES !== 'undefined' ? COUNTRY_CODES : []).find(x => x.code === cc); return c ? c.name : cc;
+  };
+  const validCC = (cc) => /^[A-Z]{2}$/.test(cc || '');
   const kinds = () => ['excursion', 'transfer', 'restaurant', ...((typeof SHOW_HOTELS !== 'undefined' && SHOW_HOTELS) ? ['hotel'] : [])]
     .filter(k => ({ excursion: typeof SHOW_EXCURSIONS === 'undefined' || SHOW_EXCURSIONS, transfer: typeof SHOW_TRANSFERS === 'undefined' || SHOW_TRANSFERS, restaurant: typeof SHOW_RESTAURANTS === 'undefined' || SHOW_RESTAURANTS, hotel: true })[k]);
 
@@ -39,7 +46,7 @@ const reviewsPg = (() => {
     if (S.staticRows) return S.staticRows;
     try { await ensureCatalogLoaded(); } catch {}
     S.staticRows = (CATALOG.reviews || []).map((r, i) => ({
-      id: r.id || 's' + i, name: r.name, rating: Number(r.rating) || 5, comment: r.text || '', images: [], owner_reply: null, created_at: null,
+      id: r.id || 's' + i, name: r.name, nationality: r.nationality || r.country || '', rating: Number(r.rating) || 5, comment: r.text || '', images: [], owner_reply: null, created_at: null,
       properties: { name: typeof r.itemName === 'string' ? r.itemName : '', kind: r.section || 'excursion', id: null },
     }));
     return S.staticRows;
@@ -59,7 +66,7 @@ const reviewsPg = (() => {
     const c = client();
     if (c) {
       try {
-        let q = c.from('reviews').select('id, name, rating, comment, photo_url, images, owner_reply, created_at, properties!inner(id, name, kind, status)')
+        let q = c.from('reviews').select('id, name, nationality, rating, comment, photo_url, images, owner_reply, created_at, properties!inner(id, name, kind, status)')
           .eq('status', 'published').eq('properties.status', 'published').not('comment', 'is', null);
         if (S.kind !== 'all') q = q.eq('properties.kind', S.kind);
         if (S.photos) q = q.neq('images', '[]');
@@ -80,7 +87,7 @@ const reviewsPg = (() => {
     const el = $('rvpHero'); if (!el) return;
     const s = S.stats || { count: 0, avg: 0, stars: {} };
     if (!s.count) {
-      el.innerHTML = `<div class="rvp-hero-top"><span class="rvp-badge"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> ${tt('rvBadge', 'Voucher-verified reviews')}</span></div>
+      el.innerHTML = `
         <div class="rvp-empty-hero"><div class="rvp-empty-ico"><i class="fa-regular fa-star" aria-hidden="true"></i></div>
         <h2 class="rvp-hero-title">${tt('rvBeFirst', 'Be the first to share your experience')}</h2>
         <p class="rvp-hero-sub">${tt('rvHeroSub', 'Every review is tied to a real booking voucher, so what you read here comes from guests who were really there.')}</p>
@@ -94,7 +101,6 @@ const reviewsPg = (() => {
     }).join('');
     const title = tt('rvHeroTitle', 'Loved by {n} verified guests').replace('{n}', `<em>${total.toLocaleString(lang())}</em>`);
     el.innerHTML = `
-      <div class="rvp-hero-top"><span class="rvp-badge"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> ${tt('rvBadge', 'Voucher-verified reviews')}</span></div>
       <h2 class="rvp-hero-title">${title}</h2>
       <p class="rvp-hero-sub">${tt('rvHeroSub', 'Every review is tied to a real booking voucher, so what you read here comes from guests who were really there.')}</p>
       <div class="rvp-hero-main">
@@ -125,7 +131,7 @@ const reviewsPg = (() => {
     return `<article class="rvp-card" style="--i:${Math.min(i, 8)}">
       <header class="rvp-card-head">
         <div class="rvp-avatar">${r.photo_url ? `<img src="${E(r.photo_url)}" alt="" loading="lazy" onerror="this.remove()">` : E(initial.toUpperCase())}<span class="rvp-tick" title="${tt('rvVerified', 'Verified voucher')}"><i class="fa-solid fa-check" aria-hidden="true"></i></span></div>
-        <div class="rvp-who"><b>${E(mask(r.name))}</b><span class="rvp-meta">${stars(r.rating, 'sm')}${r.created_at ? `<small>${fmtDate(r.created_at)}</small>` : ''}</span></div>
+        <div class="rvp-who"><div class="rvp-nm"><b>${E(mask(r.name))}</b>${validCC(r.nationality) ? `<span class="rvp-nat" title="${E(countryName(r.nationality))}"><span class="rvp-flag" aria-hidden="true">${flag(r.nationality)}</span><span>${E(countryName(r.nationality))}</span></span>` : ''}</div><span class="rvp-meta">${stars(r.rating, 'sm')}${r.created_at ? `<small>${fmtDate(r.created_at)}</small>` : ''}</span></div>
         <span class="rvp-vbadge"><i class="fa-solid fa-ticket" aria-hidden="true"></i><span>${tt('rvVerified', 'Verified voucher')}</span></span>
       </header>
       <p class="rvp-text" dir="auto">${E(r.comment)}</p>
@@ -201,7 +207,6 @@ const reviewsPg = (() => {
     const elig = S.eligible;
     el.innerHTML = `<div class="rvp-panel">
       ${steps(1)}
-      ${identityRow()}
       <form id="rvpVForm" class="rvp-vform" autocomplete="off" novalidate>
         <label for="rvpVoucher" class="rvp-label">${tt('rvVoucherLabel', 'VOUCHER NUMBER')}</label>
         <div class="rvp-vrow">
@@ -233,8 +238,10 @@ const reviewsPg = (() => {
           <small>${E(v.id)}${v.date ? ' · ' + fmtDate(v.date) : ''}</small></div>
         <button type="button" class="rvp-link" onclick="reviewsPg.reset()">${tt('rvChange', 'Change')}</button>
       </div>
-      ${identityRow()}
       <form id="rvpForm" novalidate>
+        <label for="rvpNat" class="rvp-label">${tt('rvNationality', 'YOUR COUNTRY')}</label>
+        <div class="rvp-sel"><span class="rvp-sel-flag" id="rvpNatFlag" aria-hidden="true">${S.nat ? flag(S.nat) : '🌍'}</span>
+          <select id="rvpNat"><option value="">${tt('rvNationalityPick', 'Select your country')}</option>${natOptions()}</select><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></div>
         <p class="rvp-label">${tt('yourRating', 'YOUR RATING')}</p>
         <div class="rvp-rate" role="radiogroup" aria-label="${tt('yourRating', 'YOUR RATING')}">
           ${[1, 2, 3, 4, 5].map(n => `<button type="button" role="radio" aria-checked="${st === n}" aria-label="${n}" class="${n <= st ? 'on' : ''}" data-n="${n}"><i class="fa-solid fa-star" aria-hidden="true"></i></button>`).join('')}
@@ -248,9 +255,10 @@ const reviewsPg = (() => {
         <div class="rvp-pics" id="rvpPics"></div>` : ''}
         <p class="rvp-err" id="rvpErr" role="alert">${E(S.err)}</p>
         <button type="submit" class="rvp-submit" id="rvpSubmit"><span>${tt('submitReview', 'Submit Review')}</span><i class="fa-solid fa-paper-plane" aria-hidden="true"></i></button>
-        <p class="rvp-fine"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> ${tt('rvFine', 'Your review is published under your first name and last initial.')}</p>
+        <p class="rvp-fine"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> ${tt('rvFine', 'Your review is published with your first name, last initial and country.')}</p>
       </form></div>`;
     const form = $('rvpForm'), txt = $('rvpText');
+    const nat = $('rvpNat'); if (nat) nat.addEventListener('change', () => { S.nat = nat.value; $('rvpNatFlag').textContent = S.nat ? flag(S.nat) : '🌍'; S.err = ''; $('rvpErr').textContent = ''; });
     const count = () => { const n = txt.value.trim().length; $('rvpCount').textContent = txt.value.length; $('rvpCountMin').textContent = n && n < MIN_CHARS ? tt('rvMin', 'At least {n} characters').replace('{n}', MIN_CHARS) : ''; S._draft = txt.value; };
     txt.addEventListener('input', count); count();
     form.querySelectorAll('.rvp-rate button').forEach(b => b.addEventListener('click', () => setStars(Number(b.dataset.n), LAB)));
@@ -264,6 +272,11 @@ const reviewsPg = (() => {
     form.addEventListener('submit', (ev) => { ev.preventDefault(); submit(); });
     const f = $('rvpFile'); if (f) f.addEventListener('change', () => { addFiles(f.files); f.value = ''; });
     paintPics();
+  }
+  function natOptions() {
+    const list = (typeof COUNTRY_CODES !== 'undefined' ? COUNTRY_CODES : []).map(c => ({ code: c.code, n: countryName(c.code) }))
+      .sort((a, b) => a.n.localeCompare(b.n, lang()));
+    return list.map(c => `<option value="${c.code}"${c.code === S.nat ? ' selected' : ''}>${flag(c.code)} ${E(c.n)}</option>`).join('');
   }
   function setStars(n, LAB) {
     S.stars = n;
@@ -331,6 +344,7 @@ const reviewsPg = (() => {
     if (S.busy) return;
     const txt = ($('rvpText').value || '').trim(), errEl = $('rvpErr'), btn = $('rvpSubmit');
     const fail = (m) => { S.err = m; errEl.textContent = m; };
+    if (!validCC(S.nat)) return fail(tt('rvErrNat', 'Please select your country.'));
     if (!S.stars) return fail(tt('rvErrStars', 'Please choose a star rating.'));
     if (txt.length < MIN_CHARS) return fail(tt('rvMin', 'At least {n} characters').replace('{n}', MIN_CHARS));
     S.busy = true; S.err = ''; errEl.textContent = '';
@@ -349,7 +363,7 @@ const reviewsPg = (() => {
       btn.querySelector('span').textContent = tt('rvSending', 'Sending…');
       const images = uploaded.map(p => c.storage.from('review-media').getPublicUrl(p).data.publicUrl);
       // identity is NOT sent: the database reads name + avatar from the signed-in account
-      const { error } = await c.rpc('submit_review', { p: { bookingId: S.voucher.id, rating: S.stars, comment: txt, images } });
+      const { error } = await c.rpc('submit_review', { p: { bookingId: S.voucher.id, rating: S.stars, comment: txt, nationality: S.nat, images } });
       if (error) throw error;
       S.doneInfo = { rating: S.stars };
       try { Object.keys(sessionStorage).filter(k => k.startsWith('ds_rv_')).forEach(k => sessionStorage.removeItem(k)); } catch {}
