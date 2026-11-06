@@ -18,6 +18,7 @@ let SHOW_HOTELS = hotelsOn();
 let SHOW_EXCURSIONS = secFlag('excursions', window.DS_CONFIG.SHOW_EXCURSIONS);
 let SHOW_TRANSFERS = secFlag('transfers', window.DS_CONFIG.SHOW_TRANSFERS);
 let SHOW_RESTAURANTS = secFlag('restaurants', window.DS_CONFIG.SHOW_RESTAURANTS);
+let SHOW_PACKAGES = secFlag('packages', window.DS_CONFIG.SHOW_PACKAGES !== false);   // packages are excursions with a packageType (see packagesUi)
 let SHOW_DESTINATIONS = secFlag('destinations', window.DS_CONFIG.SHOW_DESTINATIONS);
 let SHOW_JOURNAL = secFlag('journal', window.DS_CONFIG.SHOW_JOURNAL !== false);
 
@@ -32,6 +33,7 @@ const BASE_PATH = '';
 const ROUTES = {
   home: '/',
   excursions: '/excursions/',
+  packages: '/packages/',
   transfers: '/transfers/',
   restaurants: '/restaurants/',
   hotels: '/hotels/',
@@ -53,6 +55,7 @@ const ROUTES = {
 const PAGE_TITLES = {
   home: 'Discover Sharm — Luxury Travel',
   excursions: 'Excursions in Sharm El-Sheikh — Discover Sharm',
+  packages: 'Travel Packages — Discover Sharm',
   transfers: 'Transfers — Discover Sharm',
   restaurants: 'Restaurants — Discover Sharm',
   hotels: 'Hotels — Discover Sharm',
@@ -177,6 +180,7 @@ const nav = {
   go(page, opts = {}) {
     if (page === 'hotels' && !SHOW_HOTELS) return;
     if (page === 'excursions' && !SHOW_EXCURSIONS) return;
+    if (page === 'packages' && !SHOW_PACKAGES) return;
     if (page === 'transfers' && !SHOW_TRANSFERS) return;
     if (page === 'restaurants' && !SHOW_RESTAURANTS) return;
     if (page === 'destinations' && !SHOW_DESTINATIONS) return;
@@ -210,6 +214,7 @@ const nav = {
     if (page === 'journal') renderJournalPage();
     if (page === 'partner') renderPartnerDocSlots();
     if (page === 'excursions' && SHOW_EXCURSIONS) excursionsUi.render();
+    if (page === 'packages' && SHOW_PACKAGES) packagesUi.render();
     if (page === 'transfers' && SHOW_TRANSFERS) transfersUi.render();
     if (page === 'restaurants' && SHOW_RESTAURANTS) restaurantsUi.renderFull();
     if (page === 'bookings') bookings.render();
@@ -1103,7 +1108,7 @@ const excursionsUi = {
     const el = document.getElementById('featuredExcursions');
     if (el) {
       el.className = 'results-scroll-snap';
-      el.innerHTML = CATALOG.excursions.slice(0, 4).map(x => this.renderSliderCard(x)).join('');
+      el.innerHTML = CATALOG.excursions.filter(x => !x.packageType).slice(0, 4).map(x => this.renderSliderCard(x)).join('');
       el.querySelectorAll('.creative-card').forEach(card => {
         card.style.scrollSnapAlign = 'center';
       });
@@ -1175,6 +1180,7 @@ const excursionsUi = {
   filteredSorted() {
     const q = (state.excursionSearchQuery || '').trim().toLowerCase();
     let list = CATALOG.excursions.filter(x => {
+      if (x.packageType) return false;   // packages live on their own page
       if (state.currentExcursionFilter !== 'all' && this.categorySlug(x.category) !== state.currentExcursionFilter) return false;
       if (q && !(`${x.title} ${x.description || ''}`.toLowerCase().includes(q))) return false;
       if (state.excursionMinPrice != null && x.price < state.excursionMinPrice) return false;
@@ -1461,6 +1467,68 @@ const restaurantsUi = {
 
 
 // ==================== LISTING PAGES: search + filter sheet + cards ====================
+// ==================== PACKAGES ====================
+// A package is an ordinary excursion item with `packageType` set (honeymoon | friends | family | adventure) and an optional `days`. That way it
+// reuses the whole excursion pipeline unchanged: detail page, booking flow, price check on the server, payment, voucher, reviews, owner/admin editor.
+// Packages are hidden from the excursions list (see excursionsUi) and listed here instead.
+const PKG_TYPES = {
+  honeymoon: ['fa-heart', 'Honeymoon'],
+  friends: ['fa-people-group', 'Friends'],
+  family: ['fa-people-roof', 'Family'],
+  adventure: ['fa-mountain-sun', 'Adventure & Diving'],
+};
+const pkgLabel = (k) => t('pkgType_' + k, (PKG_TYPES[k] || [])[1] || k);
+
+const packagesUi = {
+  all() { return (CATALOG.excursions || []).filter(x => x.packageType); },
+  isPackageId(id) { return !!(CATALOG.excursions || []).find(x => x.id === id && x.packageType); },
+  filtered() {
+    const f = state.currentPackageFilter || 'all';
+    return this.all().filter(x => f === 'all' || x.packageType === f);
+  },
+  setFilter(v) { state.currentPackageFilter = v; this.render(); },
+  chipsHtml() {
+    const present = new Set(this.all().map(x => x.packageType));
+    const cur = state.currentPackageFilter || 'all';
+    const chip = (v, icon, label) => `<button type="button" class="pkg-chip${cur === v ? ' active' : ''}" onclick="packagesUi.setFilter('${v}')"><i class="fa-solid ${icon}" aria-hidden="true"></i>${lf.esc(label)}</button>`;
+    return chip('all', 'fa-layer-group', t('all', 'All')) +
+      Object.entries(PKG_TYPES).filter(([k]) => present.has(k) || cur === k).map(([k, [icon]]) => chip(k, icon, pkgLabel(k))).join('');
+  },
+  renderCard(x) {
+    const days = Number(x.days) > 0 ? `${Number(x.days)} ${t('pkgDays', 'days')}` : '';
+    return lcCard({
+      cls: 'pkg-card', click: `showExcursionPage('${x.id}')`, img: getImageUrl(x.image), badge: `<i class="fa-solid ${(PKG_TYPES[x.packageType] || ['fa-gift'])[0]}" aria-hidden="true"></i> ${lf.esc(pkgLabel(x.packageType))}`,
+      rating: x.rating ? Number(x.rating).toFixed(1) : '', reviews: x.reviews, title: lf.esc(x.title), loc: lf.esc(x.meetingPoint || t('sharmElSheikhShort')),
+      meta: [['fa-regular fa-clock', lf.esc(x.duration || days)]],
+      tags: (x.includes || []).slice(0, 3).map(i => lf.esc(i)),
+      from: `${t('fromLabel')} ${utils.formatPrice(x.price)} / ${t('perPersonLabel')}`, price: utils.formatPrice(x.price * (state.tripPax || 2)),
+      per: t((state.tripPax || 2) === 1 ? 'forPeopleN1' : 'forPeopleN').replace('{n}', state.tripPax || 2), cta: t('bookNowBtn'),
+    });
+  },
+  render() {
+    if (!SHOW_PACKAGES) return;
+    const list = document.getElementById('packagesList');
+    if (!list) return;
+    const chips = document.getElementById('packagesChips'); if (chips) chips.innerHTML = this.chipsHtml();
+    const items = this.filtered();
+    const countEl = document.getElementById('packagesCount'); if (countEl) countEl.textContent = items.length;
+    list.className = 'lc-grid pb-28';
+    list.innerHTML = items.length
+      ? items.map(x => this.renderCard(x)).join('')
+      : `<div class="text-center py-16 col-span-full"><i class="fa-solid fa-gift pkg-empty-ic" aria-hidden="true"></i><p class="mb-2">${t('pkgNone', 'No packages here yet')}</p><p class="text-xs" style="color:var(--text-secondary)">${t('pkgNoneHint', 'New packages are added regularly — check back soon.')}</p></div>`;
+  },
+  // Home page strip: hidden until at least one package exists.
+  renderFeatured() {
+    const el = document.getElementById('featuredPackages'); if (!el) return;
+    const wrap = document.getElementById('homePackages');
+    const items = this.all().slice(0, 6);
+    if (wrap) wrap.style.display = items.length ? '' : 'none';
+    el.className = 'results-scroll-snap';
+    el.innerHTML = items.map(x => excursionsUi.renderSliderCard(x)).join('');
+    el.querySelectorAll('.creative-card').forEach(card => { card.style.scrollSnapAlign = 'center'; });
+  },
+};
+
 // One component drives the four listing pages (hotels / excursions / transfers / restaurants):
 //   [ search field ............ ] [ ⚙ Filters (2) ]
 //   active-filter chips · "12 results" · Clear all
@@ -1495,7 +1563,7 @@ const LF = {
     sections: () => [
       lfSort([['popular', 'sortPopular'], ['priceLow', 'sortPriceLowHigh'], ['priceHigh', 'sortPriceHighLow'], ['rating', 'sortTopRated']], () => state.excursionSortBy, (v) => excursionsUi.onSortChange(v)),
       lfChips('cat', 'categoryLabel', [{ v: 'all', label: t('all'), icon: 'fa-layer-group' }, { v: 'diving', label: t('catDiving'), icon: 'fa-person-swimming' }, { v: 'desert', label: t('catDesert'), icon: 'fa-person-hiking' }, { v: 'boat', label: t('catBoat'), icon: 'fa-sailboat' }, { v: 'city', label: t('catCity'), icon: 'fa-city' }], () => state.currentExcursionFilter, (v) => search.filterExcursionCategory(v)),
-      lfPrice(() => [state.excursionMinPrice, state.excursionMaxPrice], (a, b) => excursionsUi.onPriceChange(a, b), () => CATALOG.excursions.map(x => x.price)),
+      lfPrice(() => [state.excursionMinPrice, state.excursionMaxPrice], (a, b) => excursionsUi.onPriceChange(a, b), () => CATALOG.excursions.filter(x => !x.packageType).map(x => x.price)),
       lfRating(() => state.excursionMinRating, (v) => excursionsUi.onMinRatingChange(v)),
     ],
   },
@@ -1791,7 +1859,7 @@ function dhRender() {
     const n = (x) => (x && x > 0 ? x : '—');
     const rv = revs[0];
     stats.innerHTML = `<div class="dh-nums">
-        <div><b>${n((CATALOG.excursions || []).length)}</b><span>${esc(t('dhStatExc'))}</span></div>
+        <div><b>${n((CATALOG.excursions || []).filter(x => !x.packageType).length)}</b><span>${esc(t('dhStatExc'))}</span></div>
         <div><b>${n((CATALOG.destinations || []).length)}</b><span>${esc(t('dhStatDest'))}</span></div>
         <div><b>${avg}</b><span>${esc(t('dhStatRating'))}</span></div>
       </div>
@@ -1930,6 +1998,7 @@ function applyCategoryVisibility() {
   document.querySelectorAll('.drawer-link').forEach(link => {
     const onclick = link.getAttribute('onclick') || '';
     if (onclick.includes("nav.go('excursions')") && !SHOW_EXCURSIONS) link.style.display = 'none';
+    if (onclick.includes("nav.go('packages')") && !SHOW_PACKAGES) link.style.display = 'none';
     if (onclick.includes("nav.go('transfers')") && !SHOW_TRANSFERS) link.style.display = 'none';
     if (onclick.includes("nav.go('restaurants')") && !SHOW_RESTAURANTS) link.style.display = 'none';
   });
@@ -1942,6 +2011,7 @@ function applyCategoryVisibility() {
 
   if (!SHOW_HOTELS) document.getElementById('hotelsPage')?.remove();
   if (!SHOW_EXCURSIONS) document.getElementById('excursionsPage')?.remove();
+  if (!SHOW_PACKAGES) { document.getElementById('packagesPage')?.remove(); document.getElementById('homePackages')?.remove(); }
   if (!SHOW_TRANSFERS) document.getElementById('transfersPage')?.remove();
   if (!SHOW_RESTAURANTS) document.getElementById('restaurantsPage')?.remove();
   if (!SHOW_DESTINATIONS) document.getElementById('destinationsPage')?.remove();
@@ -2062,7 +2132,7 @@ window.DS_renderWeather = () => WX.rerender();
     obj[name] = function () { if (!window.__catalogReady) return; return orig.apply(this, arguments); };
   };
   guard(hotels, 'render'); guard(ui, 'renderFeaturedHotels');
-  guard(excursionsUi, 'render'); guard(excursionsUi, 'renderFeatured');
+  guard(excursionsUi, 'render'); guard(excursionsUi, 'renderFeatured'); guard(packagesUi, 'render'); guard(packagesUi, 'renderFeatured');
   guard(transfersUi, 'render');
   guard(restaurantsUi, 'renderFull'); guard(restaurantsUi, 'renderRow');
   guard(destinationsUi, 'render'); guard(reviewsHomeUi, 'render'); guard(articlesUi, 'render');

@@ -232,7 +232,7 @@ function buildPublic(site) {
     })();
     window.DS_CONFIG = ${JSON.stringify({
       SHOW_HOTELS: sectionEnabled('hotels'), SHOW_EXCURSIONS: sectionEnabled('excursions'),
-      SHOW_TRANSFERS: sectionEnabled('transfers'), SHOW_RESTAURANTS: sectionEnabled('restaurants'),
+      SHOW_TRANSFERS: sectionEnabled('transfers'), SHOW_PACKAGES: sectionEnabled('packages'), SHOW_RESTAURANTS: sectionEnabled('restaurants'),
       SHOW_DESTINATIONS: sectionEnabled('destinations'), SHOW_JOURNAL: sectionEnabled('journal'),
       CONTACT: contact, VAPID: site === 'app' ? env('DS_VAPID_PUBLIC_KEY') : '',
     })};

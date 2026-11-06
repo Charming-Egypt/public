@@ -727,5 +727,19 @@
   "rvKindExcursion": "Excursions",
   "rvKindTransfer": "Transfers",
   "rvKindRestaurant": "Restaurants",
-  "rvKindHotel": "Hotels"
+  "rvKindHotel": "Hotels",
+  "navPackages": "Packages",
+  "pkgEyebrow": "— CURATED TRIPS",
+  "pkgTitle": "Packages",
+  "pkgCountSuffix": "ready-made packages",
+  "pkgIntro": "Hand-built trips with everything planned — one price, one booking. Pick the style that fits your group.",
+  "pkgHomeTitle": "Honeymoon, Friends & Family Packages",
+  "pkgPackage": "Package",
+  "pkgDays": "days",
+  "pkgNone": "No packages here yet",
+  "pkgNoneHint": "New packages are added regularly — check back soon.",
+  "pkgType_honeymoon": "Honeymoon",
+  "pkgType_friends": "Friends",
+  "pkgType_family": "Family",
+  "pkgType_adventure": "Adventure & Diving"
 }

@@ -20,7 +20,8 @@
     "excursions": true,
     "transfers": true,
     "restaurants": true,
-    "destinations": true
+    "destinations": true,
+    "packages": true
   },
   "pages": {
     "home": {
@@ -34,6 +35,12 @@
       "title": "Excursions in Sharm El-Sheikh — Discover Sharm",
       "description": "Snorkeling, desert safaris, Ras Mohammed and more. Compare and book the best excursions in Sharm El-Sheikh.",
       "nav": "excursions"
+    },
+    "packages": {
+      "path": "/packages/",
+      "title": "Travel Packages in Sharm El-Sheikh — Discover Sharm",
+      "description": "Honeymoon, friends, family and adventure packages in Sharm El-Sheikh — everything planned, one price.",
+      "nav": "packages"
     },
     "transfers": {
       "path": "/transfers/",

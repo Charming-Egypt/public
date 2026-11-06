@@ -1037,7 +1037,7 @@ function showExcursionPage(excursionId, opts = {}) {
 
   page.innerHTML = `
     <div class="min-h-screen rd ex" style="background:var(--bg-card)">
-      ${detailHero({ images: imgs, icon: 'fa-water', back: 'closeExcursionPage()', cls: 'detail-gallery', badge: x.category ? `<span class="dh-badge">${E(excursionsUi.categoryLabel(x.category))}</span>` : '' })}
+      ${detailHero({ images: imgs, icon: 'fa-water', back: 'closeExcursionPage()', cls: 'detail-gallery', badge: x.packageType ? `<span class="dh-badge"><i class="fa-solid fa-gift" aria-hidden="true"></i> ${E(pkgLabel(x.packageType))} · ${E(t('pkgPackage', 'Package'))}</span>` : (x.category ? `<span class="dh-badge">${E(excursionsUi.categoryLabel(x.category))}</span>` : '') })}
       ${renderPhotoGrid(imgs.length ? imgs : [PLACEHOLDER_IMG])}
       <div class="detail-layout">
         <div class="detail-main has-mbar relative -mt-6 rounded-t-[28px] p-5 rd-main ex-main" style="background:var(--bg-card)">
@@ -1127,7 +1127,7 @@ function renderExcursionBookingStep(step) {
   const x = state.currentExcursion; const subtotal = x.price * state.bookingDraft.participants; const taxes = Math.round(subtotal * 0.05); const total = subtotal + taxes;
   const page = document.createElement('div'); page.id = 'excursionBookingFlowPage'; page.className = 'page bk-flow';
   const summary = bkSummary({
-    img: x.image, title: x.title, sub: `${excursionsUi.categoryLabel(x.category)} · ${x.duration}`, total,
+    img: x.image, title: x.title, sub: `${x.packageType ? pkgLabel(x.packageType) + ' · ' + t('pkgPackage', 'Package') : excursionsUi.categoryLabel(x.category)} · ${x.duration}`, total,
     rows: [
       [t('dateLabel'), utils.formatDate(state.bookingDraft.date)],
       [`${x.title} × ${state.bookingDraft.participants}`, utils.formatPrice(subtotal)],

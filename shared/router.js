@@ -40,7 +40,7 @@
   // ---- UI state that must survive a page load ---------------------------------
   const KEY = 'ds_ui_state_v1';
   const STATE_KEYS = ['searchQuery', 'excursionSearchQuery', 'transferSearchQuery', 'currentFilter',
-    'currentExcursionFilter', 'activeSearchTab', 'guests', 'transferPax', 'transferDirection',
+    'currentExcursionFilter', 'currentPackageFilter', 'activeSearchTab', 'guests', 'transferPax', 'transferDirection',
     'excursionSortBy', 'hotelSortBy', 'transferSortBy', 'tripPax'];
   const SEARCH_KEYS = ['selectedCheckIn', 'selectedCheckOut', 'selectedCategory', 'activeTab'];
 

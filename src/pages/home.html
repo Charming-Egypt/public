@@ -135,6 +135,15 @@
           <div id="featuredExcursions" class="results-scroll-snap"><div class="sk sk-hero-card"></div><div class="sk sk-hero-card"></div></div>
         </div>
 
+        <!-- Featured Packages (hidden until the first package exists) -->
+        <div class="px-5 mb-8" id="homePackages" style="display:none">
+          <div class="flex items-center justify-between mb-4">
+            <div><p class="section-subtitle" data-i18n="pkgEyebrow">— CURATED TRIPS</p><h3 class="section-title" data-i18n="pkgHomeTitle">Honeymoon, Friends &amp; Family Packages</h3></div>
+            <button onclick="nav.go('packages')" class="text-violet-500 text-sm font-medium flex items-center gap-1" data-i18n="viewAll">View All <i class="fa-solid fa-arrow-left text-xs" aria-hidden="true"></i></button>
+          </div>
+          <div id="featuredPackages" class="results-scroll-snap"></div>
+        </div>
+
         <!-- Featured Hotels -->
         <div class="px-5 mb-8 ds-hotels-ui">
           <div class="flex items-center justify-between mb-4">

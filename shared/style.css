@@ -5426,3 +5426,15 @@ html[data-theme="dark"] .rvp-err { color: #fca5a5; }
 .dh-by-av { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; overflow: hidden; font-size: 11px; font-weight: 800; flex: none; }
 .dh-by .rv-home-nat { margin-inline-start: 2px; }
 .dh-by .rv-home-nat, .dh-by .rv-home-nat > span { width: auto; height: auto; border-radius: 0; background: none; color: var(--text-secondary); display: inline-flex; font-size: 11px; }
+
+
+/* ===== Packages (2026-11-06): type chips, card accent, "Package" pill in My Bookings ===== */
+.pkg-intro { color: var(--text-secondary); font-size: 13px; line-height: 1.6; margin: 18px 0 14px; }
+.pkg-chips { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 8px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.pkg-chips::-webkit-scrollbar { display: none; }
+.pkg-chip { flex: none; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--border-field, rgba(255,255,255,.12)); background: var(--bg-field, rgba(255,255,255,.05)); color: var(--text-primary); font-size: 13px; font-weight: 600; white-space: nowrap; transition: background .2s, border-color .2s, color .2s; }
+.pkg-chip i { font-size: 13px; opacity: .85; }
+.pkg-chip.active { background: var(--ds-accent, #f97316); border-color: var(--ds-accent, #f97316); color: #fff; }
+.pkg-card .lc-badge i { margin-inline-end: 4px; }
+.pkg-empty-ic { display: block; font-size: 34px; margin: 0 auto 14px; color: var(--ds-accent, #f97316); opacity: .8; }
+.pkg-pill { display: inline-flex; align-items: center; gap: 5px; margin-bottom: 4px; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; background: rgba(249,115,22,.16); color: var(--ds-accent-2, #fb923c); }

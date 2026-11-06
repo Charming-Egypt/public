@@ -27,6 +27,7 @@ const state = {
   hotelMaxPrice: null,
   hotelMinRating: 0,
   currentExcursionFilter: 'all',
+  currentPackageFilter: 'all',
   excursionSearchQuery: '',
   excursionSortBy: 'popular',
   excursionMinPrice: null,
@@ -602,6 +603,8 @@ function refreshCatalogUI() {
   try { if (document.getElementById('searchCard')) search.refreshLabels(); } catch (e) { /* frontend.js not ready yet */ }
   if (document.getElementById('hotelsList')) hotels.render();
   if (document.getElementById('excursionsList')) excursionsUi.render();
+  if (document.getElementById('packagesList')) packagesUi.render();
+  if (document.getElementById('featuredPackages')) packagesUi.renderFeatured();
   if (document.getElementById('transfersList')) transfersUi.render();
   if (document.getElementById('restaurantsFullList')) restaurantsUi.renderFull();
   if (document.getElementById('destinationsRow')) destinationsUi.render();
@@ -1289,6 +1292,7 @@ const bookings = {
       <div onclick="showBookingDetails('${b.id}')" class="hotel-card rounded-xl p-3 flex gap-3 cursor-pointer">
         <img alt="" src="${getImageUrl(b.image)}" class="w-20 h-20 rounded-lg object-cover" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
         <div class="flex-1">
+          ${(typeof packagesUi !== 'undefined' && b.type === 'excursion' && packagesUi.isPackageId(b.excursionId)) ? `<span class="pkg-pill"><i class="fa-solid fa-gift" aria-hidden="true"></i>${t('pkgPackage', 'Package')}</span>` : ''}
           <h3 class="font-display font-bold text-sm">${b.type === 'hotel' ? b.hotelName : b.type === 'excursion' ? b.title : b.vehicleType + ' Transfer'}</h3>
           <p class="text-[10px]">${utils.formatDate(b.checkin || b.date)}</p>
           <p class="font-bold text-violet-500 text-sm">${b.priceFormatted || utils.formatPrice(b.total)}</p>

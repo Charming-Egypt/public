@@ -727,5 +727,19 @@
   "rvKindExcursion": "الرحلات",
   "rvKindTransfer": "التنقلات",
   "rvKindRestaurant": "المطاعم",
-  "rvKindHotel": "الفنادق"
+  "rvKindHotel": "الفنادق",
+  "navPackages": "الباكدجات",
+  "pkgEyebrow": "— رحلات مختارة",
+  "pkgTitle": "الباكدجات",
+  "pkgCountSuffix": "باكدج جاهز",
+  "pkgIntro": "رحلات متظبّطة بالكامل — سعر واحد وحجز واحد. اختار الستايل المناسب لمجموعتك.",
+  "pkgHomeTitle": "باكدجات شهر العسل والأصدقاء والعائلة",
+  "pkgPackage": "باكدج",
+  "pkgDays": "أيام",
+  "pkgNone": "لسه مفيش باكدجات هنا",
+  "pkgNoneHint": "بنضيف باكدجات جديدة باستمرار — ارجع تشوف قريب.",
+  "pkgType_honeymoon": "شهر العسل",
+  "pkgType_friends": "أصدقاء",
+  "pkgType_family": "عائلة",
+  "pkgType_adventure": "مغامرات وغوص"
 }
