@@ -4,12 +4,12 @@ const { esc, tr, money, dt, badge, PAY, table, modal, form, collect, api, toast,
 const ROLE_L = { super_admin: 'سوبر أدمن', trips_owner: 'مكتب رحلات', hotels_owner: 'مالك فنادق', restaurants_owner: 'مالك مطعم / كافيه', transfers_owner: 'ترانسفير' };
 const ROLE_OPTS = Object.entries(ROLE_L).filter(([k]) => k !== 'super_admin');
 const STATIC_TYPES = ['article', 'review', 'promoSlide'];   // now plain JSON in the repo (shared/data/*.json), no longer managed here
-const TYPES = { hotel: 'الفنادق', excursion: 'الرحلات', transfer: 'الترانسفير', destination: 'الوجهات', restaurant: 'المطاعم', article: 'المقالات', review: 'تقييمات الموقع', promoSlide: 'شرائح الصفحة الرئيسية', journal: 'التدوينات' };
+const TYPES = { hotel: 'الفنادق', excursion: 'الرحلات', package: 'الباكدجات', transfer: 'الترانسفير', destination: 'الوجهات', restaurant: 'المطاعم', article: 'المقالات', review: 'تقييمات الموقع', promoSlide: 'شرائح الصفحة الرئيسية', journal: 'التدوينات' };
 const GH_ONLY = ['journal', 'destination'];   // stored only in the GitHub data repo: no owner, just draft / published
 const STL_GH = { draft: 'مسودة', published: 'منشور' };
-const OWNER_ROLE = { hotel: 'hotels_owner', excursion: 'trips_owner', transfer: 'transfers_owner', restaurant: 'restaurants_owner' };
+const OWNER_ROLE = { hotel: 'hotels_owner', excursion: 'trips_owner', package: 'trips_owner', transfer: 'transfers_owner', restaurant: 'restaurants_owner' };
 const STL = { draft: 'مسودة', pending_review: 'بانتظار المراجعة', published: 'منشور', archived: 'مؤرشف' };
-const PROP_TYPES = ['hotel', 'excursion', 'transfer', 'restaurant', 'journal', 'destination'];   // items stored as JSON files in the private GitHub data repo (via the content Worker)
+const PROP_TYPES = ['hotel', 'excursion', 'package', 'transfer', 'restaurant', 'journal', 'destination'];   // items stored as JSON files in the private GitHub data repo (via the content Worker)
 const nameOf = i => tr(i.name || i.title || i.vehicleType || i.itemName) || i.id;
 const rname = (roles, id) => { const r = roles.find(x => x.uid === id); return r ? esc(r.name || r.email) : (id ? '<span class="muted">' + esc(id.slice(0, 8)) + '…</span>' : '<span class="muted">—</span>'); };
 const roles = async () => (await api('/roles')).roles;
@@ -79,15 +79,16 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', roleLabel: 'س
   { label: 'المحتوى', icon: 'layers', render: async m => {
     let type = 'hotel', q = '', rs = await roles();
     const draw = async () => {
-      window.DS_UPLOAD_CAT = type;   // photos go to api/<category>/img/ in the data repo
-      const d = await api('/items/' + type), owned = !!OWNER_ROLE[type], schema = DS.SCH_ADMIN[type], items = d.items;
+      const apiType = type === 'package' ? 'excursion' : type;   // packages are excursion items with a packageType
+      window.DS_UPLOAD_CAT = apiType;   // photos go to api/<category>/img/ in the data repo
+      const d = await api('/items/' + apiType), owned = !!OWNER_ROLE[type], schema = DS.SCH_ADMIN[type], items = d.items.filter(i => type === 'package' ? !!i.packageType : type === 'excursion' ? !i.packageType : true);
       const list = items.filter(i => !q || (nameOf(i) + ' ' + i.id).toLowerCase().includes(q.toLowerCase()));
       m.innerHTML = `<h2 class="pt">المحتوى <span class="muted">${items.length}</span></h2><div class="chips">${Object.entries(TYPES).filter(([k]) => !STATIC_TYPES.includes(k)).map(([k, v]) => `<span class="chip ${k === type ? 'on' : ''}" data-t="${k}">${v}</span>`).join('')}</div>
         <div class="tools"><input type="search" id="qs" placeholder="بحث بالاسم..." value="${esc(q)}"><button class="btn" id="add">${DS.ic('plus')} إضافة</button></div>` +
         (list.length ? `<div class="igrid">${list.map(i => { const cv = DS.safeSrc(i.image || (i.images || [])[0]); return `<div class="ic"><div class="cv">${cv ? `<img src="${esc(cv)}" loading="lazy" alt="">` : DS.ic('layers')}${owned ? `<span class="badge ${i.owner ? 'b-blue' : 'b-gray'}">${i.owner ? rname(rs, i.owner) : 'بدون مالك'}</span>` : ''}${i.status && i.status !== 'published' ? `<span class="badge b-amber" style="inset-inline-end:8px;inset-inline-start:auto">${STL[i.status] || esc(i.status)}</span>` : ''}${i.pendingEdit ? `<span class="badge b-amber" style="inset-inline-end:8px;inset-inline-start:auto;top:34px">تعديل بانتظار الموافقة</span>` : ''}</div>
           <div class="bd"><b>${esc(nameOf(i))}</b><span class="muted">${esc(i.id)}${i.price != null ? ' · ' + money(i.price) + ' EGP' : ''}${i.rating ? ' · ★ ' + Number(i.rating).toFixed(1) : ''}</span></div>
           <div class="ft">${PROP_TYPES.includes(type) && (i.status !== 'published' || i.pendingEdit) ? `<button class="btn sm" data-pub="${esc(i.id)}">${i.pendingEdit ? 'اعتماد التعديل' : 'نشر'}</button>` : ''}<button class="btn ghost sm" data-e="${esc(i.id)}">تعديل</button><button class="btn ghost sm" data-d="${esc(i.id)}">حذف</button></div></div>`; }).join('')}</div>` : '<div class="empty">مفيش عناصر</div>');
-      const EDITOR = ['excursion', 'hotel', 'transfer', 'restaurant', 'journal', 'destination'], STS = GH_ONLY.includes(type) ? STL_GH : STL;
+      const EDITOR = ['excursion', 'package', 'hotel', 'transfer', 'restaurant', 'journal', 'destination'], STS = GH_ONLY.includes(type) ? STL_GH : STL;
       const edit = (it) => {
         const ownList = rs.filter(r => r.role === OWNER_ROLE[type]);
         if (EDITOR.includes(type)) {   // full-page editor with the admin-only controls in the side column
@@ -106,7 +107,7 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', roleLabel: 'س
               const owEl = sideEl.querySelector('#ow'), ow = owEl ? owEl.value : ''; if (ow) out.owner = ow; else delete out.owner;
               out.status = sideEl.querySelector('#ps').value;
               const force = sideEl.querySelector('#fc') && sideEl.querySelector('#fc').checked ? '?force=1' : '';
-              await api('/items/' + type + (it ? '/' + encodeURIComponent(it.id) : '') + force, { method: it ? 'PUT' : 'POST', body: out });
+              await api('/items/' + apiType + (it ? '/' + encodeURIComponent(it.id) : '') + force, { method: it ? 'PUT' : 'POST', body: out });
             } });
           return;
         }
@@ -120,7 +121,7 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', roleLabel: 'س
           if (owned) { const ow = b.querySelector('#ow').value; if (ow) o.owner = ow; else delete o.owner; }
           const ps = b.querySelector('#ps'); if (ps) o.status = ps.value;
           const force = b.querySelector('#fc') && b.querySelector('#fc').checked ? '?force=1' : '';
-          await api('/items/' + type + (it ? '/' + encodeURIComponent(it.id) : '') + force, { method: it ? 'PUT' : 'POST', body: o }); toast('اتحفظ'); setTimeout(draw, 100);
+          await api('/items/' + apiType + (it ? '/' + encodeURIComponent(it.id) : '') + force, { method: it ? 'PUT' : 'POST', body: o }); toast('اتحفظ'); setTimeout(draw, 100);
         } }] });
       };
       m.querySelector('#add').onclick = () => edit(null);
@@ -128,10 +129,10 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', roleLabel: 'س
       m.onclick = async e => {
         const c = e.target.closest('[data-t]'); if (c) { type = c.dataset.t; q = ''; return draw(); }
         const pub = e.target.closest('[data-pub]');
-        if (pub) { try { await api('/items/' + type + '/' + encodeURIComponent(pub.dataset.pub) + '/publish', { method: 'POST', body: {} }); toast('اتنشر ✓'); draw(); } catch (er) { toast(er.message, true); } return; }
+        if (pub) { try { await api('/items/' + apiType + '/' + encodeURIComponent(pub.dataset.pub) + '/publish', { method: 'POST', body: {} }); toast('اتنشر ✓'); draw(); } catch (er) { toast(er.message, true); } return; }
         const ed = e.target.closest('[data-e]'), de = e.target.closest('[data-d]');
         if (ed) edit(items.find(i => i.id === ed.dataset.e));
-        if (de && confirm('حذف نهائي؟')) { try { await api('/items/' + type + '/' + encodeURIComponent(de.dataset.d), { method: 'DELETE' }); draw(); } catch (er) { toast(er.message, true); } }
+        if (de && confirm('حذف نهائي؟')) { try { await api('/items/' + apiType + '/' + encodeURIComponent(de.dataset.d), { method: 'DELETE' }); draw(); } catch (er) { toast(er.message, true); } }
       };
     };
     await draw();

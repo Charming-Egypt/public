@@ -42,9 +42,6 @@ const SPEC = {
         { k: 'category', l: 'نوع الرحلة', kind: 'chips', req: 1, opts: CATS.excursion },
         { k: 'duration', l: 'المدة', kind: 'i18n', w: 'half', max: 40, ph: 'Example: 8 hours', help: 'بالنص: "8 ساعات" أو "نص يوم".' },
         { k: 'meetingPoint', l: 'نقطة التجمع', kind: 'i18n', w: 'half', max: 120, ph: 'Example: Hotel lobby / Marina Sharm', help: 'فين العميل هيتقابل مع الفريق.' } ] },
-      { id: 'pkg', t: 'باكدج؟', s: 'لو دي باكدج (شهر عسل / أصدقاء / عائلة…) اختار نوعها وهتظهر في صفحة "الباكدجات" بدل الرحلات', f: [
-        { k: 'packageType', l: 'نوع الباكدج', kind: 'chips', opts: [['', 'رحلة عادية (مش باكدج)', '🧭'], ['honeymoon', 'شهر العسل', '💞'], ['friends', 'أصدقاء', '🎉'], ['family', 'عائلة', '👨‍👩‍👧'], ['adventure', 'مغامرات وغوص', '🤿']], help: 'الباكدج بتتحجز زي الرحلة بالظبط (سعر للفرد). اكتب في "السعر يشمل" كل اللي جواها: الإقامة، الرحلات، الانتقالات…' },
-        { k: 'days', l: 'عدد الأيام (اختياري)', kind: 'stepper', min: 0, max: 30, help: 'اتركه 0 لو الباكدج يوم واحد أو مش عايز تعرضه.' } ] },
       { id: 'desc', t: 'الوصف', s: 'نبذة قصيرة + وصف تفصيلي بيقنع العميل', f: [
         { k: 'description', l: 'نبذة قصيرة', kind: 'i18n', long: 1, rows: 3, max: 180, req: 1, help: 'بتظهر على الكارت في القوائم (سطرين تقريبًا).' },
         { k: 'fullDescription', l: 'الوصف الكامل', kind: 'i18n', long: 1, rows: 8, max: 3000, help: 'اشرح التجربة: هنعمل إيه، هنروح فين، إيه اللي هيميّزها.' } ] },
@@ -188,13 +185,28 @@ SPEC.destination = {
 };
 const ROOM_NEW = () => ({ type: {}, price: '', size: '', beds: {}, guests: 2, baseOccupancy: 2, extraAdultFee: '', freeChildrenPerRoom: 0, extraChildFee: '', image: '', description: {}, childPricingTiers: [] });
 
+
+// Packages (honeymoon / friends / family / adventure) are excursion items with a packageType, edited in their own section.
+const pkgSpec = () => {
+  const ex = SPEC.excursion, rename = (f) => f.k === 'title' ? { ...f, l: 'اسم الباكدج', ph: 'Example: Romantic Red Sea escape — 5 days' } : f;
+  const basic = { ...ex.sections[0], t: 'المعلومات الأساسية', s: 'الاسم ونوع الباكدج ومدته', f: [
+    { k: 'title', l: 'اسم الباكدج', kind: 'i18n', req: 1, max: 80, ph: 'Example: Romantic Red Sea escape — 5 days', help: 'اسم واضح — بيظهر في صفحة الباكدجات وفي البحث.' },
+    { k: 'packageType', l: 'نوع الباكدج', kind: 'chips', req: 1, opts: [['honeymoon', 'شهر العسل', '💞'], ['friends', 'أصدقاء', '🎉'], ['family', 'عائلة', '👨‍👩‍👧'], ['adventure', 'مغامرات وغوص', '🤿']] },
+    { k: 'days', l: 'عدد الأيام', kind: 'stepper', min: 0, max: 30, w: 'half', help: 'اتركه 0 لو الباكدج يوم واحد.' },
+    ...ex.sections[0].f.filter(x => x.k === 'duration' || x.k === 'meetingPoint') ] };
+  return { ...ex, title: 'باكدج', sections: [basic, ...ex.sections.slice(1).map(s => s.id === 'iti' ? { ...s, t: 'برنامج الباكدج', s: 'الأيام والأنشطة خطوة بخطوة' } : s)],
+    price: { k: 'price', l: 'سعر الفرد', suffix: 'EGP', help: 'سعر الباكدج للشخص البالغ — بيشمل كل اللي جواها.' },
+    checks: ex.checks.map(c => c[0] === 'نوع الرحلة' ? ['نوع الباكدج', d => !!d.packageType] : c[0] === 'اسم الرحلة' ? ['اسم الباكدج', c[1]] : c) };
+};
+
 DS.itemEditor = (host, o) => {
-  const spec = SPEC[o.type], item = clone(o.item);
+  const spec = o.type === 'package' ? pkgSpec() : SPEC[o.type], item = clone(o.item);
   const ORIG = clone(o.item || {});                            // untouched copy: D is edited live, so change detection must compare against this
   const D = item;                                             // working copy
   D.gallery = (Array.isArray(item.images) && item.images.length ? item.images : (item.image ? [item.image] : [])).slice();
   if (o.type === 'hotel') (D.rooms || (D.rooms = [])).forEach(r => { r.childPricingTiers = r.childPricingTiers || []; });
-  if (o.type === 'excursion') { D.itinerary = D.itinerary || []; D.packageType = D.packageType || ''; }
+  if (o.type === 'excursion' || o.type === 'package') D.itinerary = D.itinerary || [];
+  if (o.type === 'package') { D.packageType = D.packageType || 'honeymoon'; D.category = D.category || 'Package'; }
   if (o.type === 'restaurant') D.menu = D.menu || [];
   const hasAr = String(tr((item[spec.nameKey] || {}).ar) || '').trim(), hasEn = String(((item[spec.nameKey] || {}).en) || '').trim();
   const cur = 'en'; let dirty = false, open = new Set([0]), mon = new Date(), anchor = null, rangeMode = false;

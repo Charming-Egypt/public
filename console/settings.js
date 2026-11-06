@@ -5,7 +5,7 @@
 (function () {
 const { esc } = DS;
 const BUILTIN = [['ar', 'العربية', 'rtl'], ['en', 'English', 'ltr'], ['ru', 'Русский', 'ltr'], ['de', 'Deutsch', 'ltr'], ['it', 'Italiano', 'ltr'], ['tr', 'Türkçe', 'ltr']];
-const SECTIONS = [['hotels', 'الفنادق', '🏨'], ['excursions', 'الرحلات', '🧭'], ['transfers', 'الترانسفير', '🚐'], ['restaurants', 'المطاعم والكافيهات', '🍽️'], ['destinations', 'الوجهات', '📍'], ['journal', 'المجلة (المقالات)', '📰']];
+const SECTIONS = [['hotels', 'الفنادق', '🏨'], ['excursions', 'الرحلات', '🧭'], ['packages', 'الباكدجات', '🎁'], ['transfers', 'الترانسفير', '🚐'], ['restaurants', 'المطاعم والكافيهات', '🍽️'], ['destinations', 'الوجهات', '📍'], ['journal', 'المجلة (المقالات)', '📰']];
 const RTL = new Set(['ar', 'fa', 'ur', 'he', 'ps', 'sd', 'ku', 'yi']);
 const DEFAULTS = { sections: Object.fromEntries(SECTIONS.map(([k]) => [k, k !== 'hotels'])), languages: { enabled: BUILTIN.map(l => l[0]), default: 'en' },
   announcement: { enabled: false, text: {}, link: '', tone: 'info' }, maintenance: { enabled: false, message: {} },

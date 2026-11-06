@@ -15,7 +15,7 @@
 <script src="../console/console.js"></script>
 <script src="../console/schemas.js"></script>
 <script>
-DS.ownerPanel({ key: 'trips', title: 'لوحة مكتب الرحلات', roleLabel: 'مكتب رحلات', api: '/api/owner/trips', itemsLabel: 'رحلاتي', addLabel: 'إضافة رحلة', title_of: i => i.title, schema: DS.SCH.excursion });
+DS.ownerPanel({ key: 'trips', title: 'لوحة مكتب الرحلات', roleLabel: 'مكتب رحلات', api: '/api/owner/trips', itemsLabel: 'رحلاتي', addLabel: 'إضافة رحلة', title_of: i => i.title, schema: DS.SCH.excursion, only: 'trip' });
 </script>
 </body>
 </html>
