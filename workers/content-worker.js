@@ -28,7 +28,7 @@
  *            DELETE /items/{cat}/{id}     owner: hide (archive) · super admin: delete for good
  *            POST /upload                 body { image: "data:image/jpeg;base64,…", cat }
  *
- * {cat} is hotel|excursion|transfer|restaurant|journal (singular or plural, e.g. "hotels").
+ * {cat} is hotel|excursion|package|transfer|restaurant|journal (singular or plural, e.g. "hotels").
  * Order of writes matters (see publishItem): the database is changed FIRST on publish, so an item is never listed on the website
  * unless the booking code in the database already knows its price; on failure the database change is rolled back.
  */
@@ -44,6 +44,7 @@ import { github, toB64, fromB64, textToB64, unutf8, fail } from './lib/github.js
 const CATS = {
   hotel:      { dir: 'hotels' },
   excursion:  { dir: 'excursions' },
+  package:    { dir: 'packages' },
   transfer:   { dir: 'transfers' },
   restaurant: { dir: 'restaurants' },
   // Site content that lives ONLY in the GitHub data repo: no database row at all, super admin only, saved as api/<dir>/{id}.json (+ the published index)
@@ -56,7 +57,7 @@ for (const [k, v] of Object.entries(CATS)) { KIND_OF[k] = k; KIND_OF[v.dir] = k;
 // keys the Worker owns: never taken from a request body
 const RESERVED = ['id', 'kind', 'ownerId', 'owner', 'published', 'status', 'createdAt', 'updatedAt', 'publishedAt', 'pendingEdit', 'sortOrder', 'featured', 'commissionRate'];
 // the part of an item the booking RPC (compute_booking_price) and the review/admin queries read from the database
-const PRICING_KEYS = ['name', 'title', 'vehicleType', 'category', 'price', 'rooms', 'unavailableDates'];
+const PRICING_KEYS = ['name', 'title', 'vehicleType', 'category', 'price', 'priceMode', 'groupSize', 'rooms', 'unavailableDates'];
 const MAX_BODY = 350_000, MAX_IMAGE = 900_000, ID_RE = /^[A-Za-z0-9_-]{1,64}$/;
 const ROOT = 'api';
 
@@ -373,9 +374,9 @@ const edge = () => (typeof caches !== 'undefined' && caches.default) || null;
 // ---- static media hosting (R2) ----------------------------------------------------------------------------------------------
 const MIME_BY_EXT = { jpg: 'image/jpeg', png: 'image/png', webp: 'image/webp' };
 const IMG_CACHE = 'public, max-age=31536000, immutable';
-const IMG_DIRS = ['hotels', 'excursions', 'transfers', 'restaurants', 'journal', 'destinations'];
+const IMG_DIRS = ['hotels', 'excursions', 'packages', 'transfers', 'restaurants', 'journal', 'destinations'];
 const IMG_NAME_RE = /^[a-f0-9]{16}\.(?:jpg|png|webp)$/;
-const MEDIA_URL_RE = /https?:\/\/[^"\\\s]*?\/img\/((?:hotels|excursions|transfers|restaurants|journal|destinations)\/[a-f0-9]{16}\.(?:jpg|png|webp))/g;
+const MEDIA_URL_RE = /https?:\/\/[^"\\\s]*?\/img\/((?:hotels|excursions|packages|transfers|restaurants|journal|destinations)\/[a-f0-9]{16}\.(?:jpg|png|webp))/g;
 const mediaBase = (env) => String(env.MEDIA_BASE || '').trim().replace(/\/+$/, '');
 const hasMedia = (env) => !!(env.MEDIA && mediaBase(env));
 // photos saved by the console carry this Worker's address; the published catalog points at the static host instead
@@ -453,8 +454,8 @@ const BUNDLE_FRESH_S = 120, BUNDLE_KEEP_S = 6 * 3600, BUNDLE_BROWSER_S = 60, REV
 // everything the pages read on load, in the exact shapes the front end keeps in CATALOG_RAW (null = "use the bundled static file")
 async function buildBundle(env) {
   const db = supabase(env);
-  const [hotels, excursions, transfers, restaurants, destinations, journal, meta, branchRows, reviewRows] = await Promise.all([
-    loadCatalog(env, 'hotel'), loadCatalog(env, 'excursion'), loadCatalog(env, 'transfer'), loadCatalog(env, 'restaurant'),
+  const [hotels, excursions, packages, transfers, restaurants, destinations, journal, meta, branchRows, reviewRows] = await Promise.all([
+    loadCatalog(env, 'hotel'), loadCatalog(env, 'excursion'), loadCatalog(env, 'package'), loadCatalog(env, 'transfer'), loadCatalog(env, 'restaurant'),
     loadCatalog(env, 'destination'), loadCatalog(env, 'journal'),
     // live star averages (only items that have reviews)
     db.rest('GET', 'properties?status=eq.published&rating_count=gt.0&select=id,rating_avg,rating_count&limit=5000').catch(() => []),
@@ -477,7 +478,7 @@ async function buildBundle(env) {
   const own = (cat) => (cat.fallback && !(cat.items || []).length) ? null : (cat.items || []);
   return {
     v: 1, builtAt: now(),
-    hotels: withLive(hotels), excursions: withLive(excursions), transfers: withLive(transfers), restaurants: withLive(restaurants, true),
+    hotels: withLive(hotels), excursions: withLive(excursions), packages: withLive(packages), transfers: withLive(transfers), restaurants: withLive(restaurants, true),
     destinations: own(destinations), articles: own(journal), reviews: real.length ? real : null,
   };
 }

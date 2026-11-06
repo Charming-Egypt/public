@@ -741,5 +741,9 @@
   "pkgType_honeymoon": "Honeymoon",
   "pkgType_friends": "Friends",
   "pkgType_family": "Family",
-  "pkgType_adventure": "Adventure & Diving"
+  "pkgType_adventure": "Adventure & Diving",
+  "pkgPerPackage": "package",
+  "pkgForPeople": "for {n} people",
+  "pkgPriceFor": "Price for",
+  "pkgFixedPrice": "one price for the whole package"
 }

@@ -1108,7 +1108,7 @@ const excursionsUi = {
     const el = document.getElementById('featuredExcursions');
     if (el) {
       el.className = 'results-scroll-snap';
-      el.innerHTML = CATALOG.excursions.filter(x => !x.packageType).slice(0, 4).map(x => this.renderSliderCard(x)).join('');
+      el.innerHTML = CATALOG.excursions.slice(0, 4).map(x => this.renderSliderCard(x)).join('');
       el.querySelectorAll('.creative-card').forEach(card => {
         card.style.scrollSnapAlign = 'center';
       });
@@ -1142,7 +1142,7 @@ const excursionsUi = {
               <div class="price-block">
                 <span class="price-from">${t('fromLabel')}</span>
                 <div class="price-value" data-price-egp="${x.price}">${price}</div>
-                <span class="price-per-person">/ ${t('perPersonLabel')}</span>
+                <span class="price-per-person">/ ${x.priceMode === 'package' ? t('pkgPerPackage', 'package') : t('perPersonLabel')}</span>
               </div>
               <button class="book-btn action-btn" onclick="event.stopPropagation(); showExcursionPage('${x.id}')">
                 <i class="fas fa-bolt"></i> ${t('bookNowBtn')}
@@ -1180,7 +1180,6 @@ const excursionsUi = {
   filteredSorted() {
     const q = (state.excursionSearchQuery || '').trim().toLowerCase();
     let list = CATALOG.excursions.filter(x => {
-      if (x.packageType) return false;   // packages live on their own page
       if (state.currentExcursionFilter !== 'all' && this.categorySlug(x.category) !== state.currentExcursionFilter) return false;
       if (q && !(`${x.title} ${x.description || ''}`.toLowerCase().includes(q))) return false;
       if (state.excursionMinPrice != null && x.price < state.excursionMinPrice) return false;
@@ -1468,9 +1467,9 @@ const restaurantsUi = {
 
 // ==================== LISTING PAGES: search + filter sheet + cards ====================
 // ==================== PACKAGES ====================
-// A package is an ordinary excursion item with `packageType` set (honeymoon | friends | family | adventure) and an optional `days`. That way it
-// reuses the whole excursion pipeline unchanged: detail page, booking flow, price check on the server, payment, voucher, reviews, owner/admin editor.
-// Packages are hidden from the excursions list (see excursionsUi) and listed here instead.
+// Packages are their own catalog (packages.json / booking type 'package', own commission + packages_owner role). Item fields: packageType
+// (honeymoon | friends | family | adventure), days, price, priceMode ('person' = price x people, 'package' = one price for the whole package), groupSize.
+// The detail page and booking flow are shared with excursions (see booking.js: showExcursionPage / startExcursionBooking).
 const PKG_TYPES = {
   honeymoon: ['fa-heart', 'Honeymoon'],
   friends: ['fa-people-group', 'Friends'],
@@ -1480,8 +1479,7 @@ const PKG_TYPES = {
 const pkgLabel = (k) => t('pkgType_' + k, (PKG_TYPES[k] || [])[1] || k);
 
 const packagesUi = {
-  all() { return (CATALOG.excursions || []).filter(x => x.packageType); },
-  isPackageId(id) { return !!(CATALOG.excursions || []).find(x => x.id === id && x.packageType); },
+  all() { return CATALOG.packages || []; },
   filtered() {
     const f = state.currentPackageFilter || 'all';
     return this.all().filter(x => f === 'all' || x.packageType === f);
@@ -1501,8 +1499,10 @@ const packagesUi = {
       rating: x.rating ? Number(x.rating).toFixed(1) : '', reviews: x.reviews, title: lf.esc(x.title), loc: lf.esc(x.meetingPoint || t('sharmElSheikhShort')),
       meta: [['fa-regular fa-clock', lf.esc(x.duration || days)]],
       tags: (x.includes || []).slice(0, 3).map(i => lf.esc(i)),
-      from: `${t('fromLabel')} ${utils.formatPrice(x.price)} / ${t('perPersonLabel')}`, price: utils.formatPrice(x.price * (state.tripPax || 2)),
-      per: t((state.tripPax || 2) === 1 ? 'forPeopleN1' : 'forPeopleN').replace('{n}', state.tripPax || 2), cta: t('bookNowBtn'),
+      ...(x.priceMode === 'package'
+        ? { from: `${t('fromLabel')} ${utils.formatPrice(x.price)} / ${t('pkgPerPackage', 'package')}`, price: utils.formatPrice(x.price), per: t('pkgForPeople', 'for {n} people').replace('{n}', Math.max(1, Number(x.groupSize) || 2)) }
+        : { from: `${t('fromLabel')} ${utils.formatPrice(x.price)} / ${t('perPersonLabel')}`, price: utils.formatPrice(x.price * (state.tripPax || 2)), per: t((state.tripPax || 2) === 1 ? 'forPeopleN1' : 'forPeopleN').replace('{n}', state.tripPax || 2) }),
+      cta: t('bookNowBtn'),
     });
   },
   render() {
@@ -1563,7 +1563,7 @@ const LF = {
     sections: () => [
       lfSort([['popular', 'sortPopular'], ['priceLow', 'sortPriceLowHigh'], ['priceHigh', 'sortPriceHighLow'], ['rating', 'sortTopRated']], () => state.excursionSortBy, (v) => excursionsUi.onSortChange(v)),
       lfChips('cat', 'categoryLabel', [{ v: 'all', label: t('all'), icon: 'fa-layer-group' }, { v: 'diving', label: t('catDiving'), icon: 'fa-person-swimming' }, { v: 'desert', label: t('catDesert'), icon: 'fa-person-hiking' }, { v: 'boat', label: t('catBoat'), icon: 'fa-sailboat' }, { v: 'city', label: t('catCity'), icon: 'fa-city' }], () => state.currentExcursionFilter, (v) => search.filterExcursionCategory(v)),
-      lfPrice(() => [state.excursionMinPrice, state.excursionMaxPrice], (a, b) => excursionsUi.onPriceChange(a, b), () => CATALOG.excursions.filter(x => !x.packageType).map(x => x.price)),
+      lfPrice(() => [state.excursionMinPrice, state.excursionMaxPrice], (a, b) => excursionsUi.onPriceChange(a, b), () => CATALOG.excursions.map(x => x.price)),
       lfRating(() => state.excursionMinRating, (v) => excursionsUi.onMinRatingChange(v)),
     ],
   },
@@ -1859,7 +1859,7 @@ function dhRender() {
     const n = (x) => (x && x > 0 ? x : '—');
     const rv = revs[0];
     stats.innerHTML = `<div class="dh-nums">
-        <div><b>${n((CATALOG.excursions || []).filter(x => !x.packageType).length)}</b><span>${esc(t('dhStatExc'))}</span></div>
+        <div><b>${n((CATALOG.excursions || []).length)}</b><span>${esc(t('dhStatExc'))}</span></div>
         <div><b>${n((CATALOG.destinations || []).length)}</b><span>${esc(t('dhStatDest'))}</span></div>
         <div><b>${avg}</b><span>${esc(t('dhStatRating'))}</span></div>
       </div>

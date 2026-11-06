@@ -15,7 +15,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const DIRS = { hotel: 'hotels', excursion: 'excursions', transfer: 'transfers', restaurant: 'restaurants', journal: 'journal', destination: 'destinations' };
+const DIRS = { hotel: 'hotels', excursion: 'excursions', package: 'packages', transfer: 'transfers', restaurant: 'restaurants', journal: 'journal', destination: 'destinations' };
 const STATIC_SRC = { journal: 'articles.json', destination: 'destinations.json' };   // GitHub-only kinds: seeded from the files bundled with the site
 const RESERVED = ['id', 'kind', 'ownerId', 'owner', 'published', 'status', 'createdAt', 'updatedAt', 'publishedAt', 'pendingEdit', 'sortOrder', 'featured', 'commissionRate'];
 const args = process.argv.slice(2);

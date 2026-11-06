@@ -339,8 +339,8 @@ const FL = { id: 'رقم الحجز', name: 'الاسم', email: 'الإيميل
 const bItem = b => tr(b.hotelName || b.title || b.vehicleType) || '—';
 const bWhen = b => b.checkin ? `${b.checkin} ← ${b.checkout || ''}` : `${b.date || ''} ${b.time || ''}`;
 const bQty = b => b.type === 'hotel' ? `${b.adults || 0} + ${b.children || 0}` : (b.participants || b.passengers || '');
-const TYPE_L = { hotel: 'فندق', excursion: 'رحلة', transfer: 'ترانسفير' };
-const DONE_L = { hotel: 'النزيل وصل وسكن ✔', excursion: 'الرحلة تمت ✔', transfer: 'التوصيل تم ✔' };
+const TYPE_L = { hotel: 'فندق', excursion: 'رحلة', package: 'باكدج', transfer: 'ترانسفير' };
+const DONE_L = { hotel: 'النزيل وصل وسكن ✔', excursion: 'الرحلة تمت ✔', package: 'الباكدج تم ✔', transfer: 'التوصيل تم ✔' };
 const ownOpts = b => Object.entries(OWN).map(([k, v]) => `<option value="${k}" ${k === (b.ownerStatus || 'new') ? 'selected' : ''}>${k === 'done' ? DONE_L[b.type] : v[0]}</option>`).join('');
 DS.bookingsView = (o = {}) => async (m) => {
   const admin = !!o.admin, pre = admin ? '/bookings' : '/bookings';
@@ -457,7 +457,7 @@ DS.financeView = () => async (m) => {
 };
 // ---------- owner panel factory (trips / hotels / transfers) ----------
 DS.ownerPanel = (c) => {
-  const items = async () => (await DS.api('/items')).items.filter(i => c.only === 'package' ? !!i.packageType : c.only === 'trip' ? !i.packageType : true);   // trips and packages share the trips_owner role but have separate panels
+  const items = async () => (await DS.api('/items')).items;
   DS.start({ key: c.key, title: c.title, roleLabel: c.roleLabel, api: c.api, views: (me) => [
     { label: 'الرئيسية', icon: 'home', render: async m => {
       const [it, bk, fn] = await Promise.all([items(), DS.api('/bookings'), DS.api('/finance')]); const b = bk.bookings, S = fn.summary;
@@ -480,7 +480,7 @@ DS.ownerPanel = (c) => {
         DS.table([{ h: '', f: i => DS.thumb(i.image || (i.images || [])[0]) }, { h: 'الاسم', f: i => `<b>${esc(tr(c.title_of(i)))}</b><div class="muted">${esc(i.id)}${i.status && i.status !== 'published' ? ` <span class="badge b-amber">${({ draft: 'مسودة', pending_review: 'بانتظار مراجعة الإدارة' })[i.status] || esc(i.status)}</span>` : ''}</div>` }, { h: 'السعر', f: i => DS.money(i.price) + ' EGP' },
           { h: 'التقييم', f: i => i.rating ? '★ ' + Number(i.rating).toFixed(1) : '—' },
           { h: '', f: i => `<button class="btn ghost sm" data-e="${esc(i.id)}">تعديل</button> <button class="btn ghost sm" data-d="${esc(i.id)}">حذف</button>` }], list, { empty: `لسه مضفتش ${c.itemsLabel}` });
-      const TYPE = c.type || { trips: 'excursion', hotels: 'hotel', transfers: 'transfer' }[c.key];
+      const TYPE = c.type || { trips: 'excursion', packages: 'package', hotels: 'hotel', transfers: 'transfer' }[c.key];
       const edit = (it) => {   // full-page editor (editor.js) — replaces the old pop-up form
         DS.itemEditor(m, { type: TYPE, item: it || {}, onBack: () => DS.reload(),
           save: async body => { await DS.api(it ? '/items/' + encodeURIComponent(it.id) : '/items', { method: it ? 'PUT' : 'POST', body }); if (!it) me.itemCount++; } });

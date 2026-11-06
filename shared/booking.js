@@ -1012,8 +1012,13 @@ function openState(hours) {
 
 // ==================== EXCURSION (TRIP) DETAILS ====================
 // Hero -> title + facts strip -> trust pills -> sticky tabs (Overview / Included / Itinerary / Reviews) -> fixed booking bar.
+// Excursions and packages share one detail page + booking flow. A package is flagged `__pkg` (data.js) and is booked as type 'package'.
+const findExcursionOrPackage = (id) => CATALOG.excursions.find(i => i.id === id) || (CATALOG.packages || []).find(i => i.id === id);
+const pkgByPackage = (x) => !!x && x.priceMode === 'package';                                  // one price for the whole package
+const pkgPeople = (x) => Math.max(1, Math.min(50, Number(x && x.groupSize) || 2));              // head count covered by a per-package price
+const exSubtotal = (x, n) => pkgByPackage(x) ? Number(x.price) : Number(x.price) * n;
 function showExcursionPage(excursionId, opts = {}) {
-  const x = CATALOG.excursions.find(i => i.id === excursionId);
+  const x = findExcursionOrPackage(excursionId);
   if (!x) return toast(t('errExcursionNotFound'), 'error');
   state.currentExcursion = x;
   const old = document.getElementById('excursionDetailPage'); if (old) old.remove();
@@ -1023,7 +1028,9 @@ function showExcursionPage(excursionId, opts = {}) {
   const meet = x.meetingPoint || t('defaultMeetingPoint');
   const mapHref = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(meet);
   const inc = x.includes || [], exc = x.excludes || [], bring = x.whatToBring || [], steps = x.itinerary || [];
-  const priceBlock = `<p class="ex-from">${t('fromLabel')}</p><p class="ex-price">${utils.formatPrice(x.price)}<span>/${t('perPersonLabel')}</span></p>`;
+  const priceBlock = pkgByPackage(x)
+    ? `<p class="ex-from">${t('pkgPriceFor', 'Price for')} ${pkgPeople(x)} ${t('peopleLabel')}</p><p class="ex-price">${utils.formatPrice(x.price)}<span>/${t('pkgPerPackage', 'package')}</span></p>`
+    : `<p class="ex-from">${t('fromLabel')}</p><p class="ex-price">${utils.formatPrice(x.price)}<span>/${t('perPersonLabel')}</span></p>`;
   const bookingCard = `
     <div class="detail-price-row"><div>${priceBlock}</div>${ratingChip(x)}</div>
     <button onclick="startExcursionBooking('${x.id}')" class="btn-gold w-full py-3.5 rounded-2xl font-bold text-ink-900">${t('bookNowBtn')}</button>
@@ -1107,16 +1114,16 @@ function showExcursionPage(excursionId, opts = {}) {
   rdSpy(page);
 }
 
-function closeExcursionPage() { const p = document.getElementById('excursionDetailPage'); if (p) p.remove(); nav.go('excursions'); }
+function closeExcursionPage() { const p = document.getElementById('excursionDetailPage'); if (p) p.remove(); nav.go(state.currentExcursion && state.currentExcursion.__pkg ? 'packages' : 'excursions'); }
 function onGalleryScroll(el, dotsId) { const idx = Math.round(el.scrollLeft / el.clientWidth); document.querySelectorAll(`#${dotsId} .gallery-dot`).forEach((d, i) => d.classList.toggle('active', i === idx)); }
 // Back-compat alias — existing excursion markup calls this by name directly.
 function onExcursionGalleryScroll(el) { onGalleryScroll(el, 'excursionGalleryDots'); }
 function startExcursionBooking(id) {
   if (!authToken) { toast(t('errLoginToBook'), 'error'); return; }
-  const x = CATALOG.excursions.find(i => i.id === id);
+  const x = findExcursionOrPackage(id);
   if (!x) return;
   state.currentExcursion = x;
-  state.bookingDraft = { name: currentUser?.displayName || currentUser?.name || '', email: currentUser?.email || '', phone: (currentUser?.countryCode || '') + (currentUser?.phone || ''), participants: Math.min(15, state.tripPax || 2), payment: 'card', date: search.selectedCheckIn || utils.addDays(utils.todayIso(), 1) };
+  state.bookingDraft = { name: currentUser?.displayName || currentUser?.name || '', email: currentUser?.email || '', phone: (currentUser?.countryCode || '') + (currentUser?.phone || ''), participants: pkgByPackage(x) ? pkgPeople(x) : Math.min(15, state.tripPax || 2), payment: 'card', date: search.selectedCheckIn || utils.addDays(utils.todayIso(), 1) };
   renderExcursionBookingStep(2);
 }
 
@@ -1124,13 +1131,13 @@ function renderExcursionBookingStep(step) {
   state.bookingStep = step;
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const existing = document.getElementById('excursionBookingFlowPage'); if (existing) existing.remove();
-  const x = state.currentExcursion; const subtotal = x.price * state.bookingDraft.participants; const taxes = Math.round(subtotal * 0.05); const total = subtotal + taxes;
+  const x = state.currentExcursion; const subtotal = exSubtotal(x, state.bookingDraft.participants); const taxes = Math.round(subtotal * 0.05); const total = subtotal + taxes;
   const page = document.createElement('div'); page.id = 'excursionBookingFlowPage'; page.className = 'page bk-flow';
   const summary = bkSummary({
     img: x.image, title: x.title, sub: `${x.packageType ? pkgLabel(x.packageType) + ' · ' + t('pkgPackage', 'Package') : excursionsUi.categoryLabel(x.category)} · ${x.duration}`, total,
     rows: [
       [t('dateLabel'), utils.formatDate(state.bookingDraft.date)],
-      [`${x.title} × ${state.bookingDraft.participants}`, utils.formatPrice(subtotal)],
+      [pkgByPackage(x) ? `${x.title} (${state.bookingDraft.participants} ${t('peopleLabel')})` : `${x.title} × ${state.bookingDraft.participants}`, utils.formatPrice(subtotal)],
       [t('taxesFeesLabel'), utils.formatPrice(taxes)],
     ],
   });
@@ -1141,7 +1148,7 @@ function renderExcursionBookingStep(step) {
       <form id="bkForm" onsubmit="submitExcursionDetails(event)">
         ${bkCard('fa-compass', t('tripDetailsHeader'), `
           ${bkDateField('ekDate', t('dateLabel'), state.bookingDraft.date)}
-          ${bkCounter('fa-users', t('participantsLabel'), 'ekParticipantsLabel', `${state.bookingDraft.participants} ${t('peopleLabel')}`, 'adjustParticipants(-1)', 'adjustParticipants(1)')}`)}
+          ${pkgByPackage(x) ? `<p class="text-sm" style="color:var(--text-secondary)"><i class="fa-solid fa-users" aria-hidden="true"></i> ${t('pkgForPeople', 'for {n} people').replace('{n}', state.bookingDraft.participants)} — ${t('pkgFixedPrice', 'one price for the whole package')}</p>` : bkCounter('fa-users', t('participantsLabel'), 'ekParticipantsLabel', `${state.bookingDraft.participants} ${t('peopleLabel')}`, 'adjustParticipants(-1)', 'adjustParticipants(1)')}`)}
       </form>
       <div class="bk-bar">
         <div class="bk-bar-total"><small>${t('totalLabel')}</small><b id="ekBarTotal">${utils.formatPrice(total)}</b></div>
@@ -1176,8 +1183,8 @@ async function payAndConfirmExcursionBooking(subtotal, taxes, total) {
   try {
     const bookingData = {
       id: orderId,
-      type: 'excursion',
-      excursionId: state.currentExcursion.id,
+      type: state.currentExcursion.__pkg ? 'package' : 'excursion',
+      [state.currentExcursion.__pkg ? 'packageId' : 'excursionId']: state.currentExcursion.id,
       title: state.currentExcursion.title,
       image: getImageUrl(state.currentExcursion.image),
       category: state.currentExcursion.category,
@@ -1697,7 +1704,7 @@ function directionLabel(dir) { return dir === 'Airport to Hotel' ? t('directionA
 function bookingDetailBody(b) {
   const paymentLabel = b.payment === 'instapay' ? t('paymentInstapayWallet') : t('paymentCreditDebitCard');
   const paymentRow = `<div class="flex justify-between"><span>${t('paymentLabel')}</span><span>${paymentLabel}</span></div>`;
-  if (b.type === 'excursion') return `<div class="card rounded-2xl p-3 flex gap-3 mb-4"><img alt="" src="${b.image}" class="w-16 h-16 rounded-xl object-cover" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'"><div><h3 class="font-display font-bold text-sm">${b.title}</h3><p class="text-[11px]">${b.category}</p></div></div><div class="space-y-3 text-sm mb-4"><div class="flex justify-between"><span>${t('dateLabel')}</span><span>${utils.formatDate(b.date)}</span></div><div class="flex justify-between"><span>${t('participantsLabel')}</span><span>${b.participants}</span></div>${paymentRow}</div><div class="border-t pt-3 flex justify-between mb-4"><span class="font-bold">${t('totalLabel')}</span><span class="font-bold text-violet-500">${b.priceFormatted}</span></div><div class="field-box rounded-xl p-3 flex items-center justify-between mb-2"><span>${t('bookingIdLabel2')}</span><span class="font-bold">${b.id}</span></div>`;
+  if (b.type === 'excursion' || b.type === 'package') return `<div class="card rounded-2xl p-3 flex gap-3 mb-4"><img alt="" src="${b.image}" class="w-16 h-16 rounded-xl object-cover" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'"><div><h3 class="font-display font-bold text-sm">${b.title}</h3><p class="text-[11px]">${b.category}</p></div></div><div class="space-y-3 text-sm mb-4"><div class="flex justify-between"><span>${t('dateLabel')}</span><span>${utils.formatDate(b.date)}</span></div><div class="flex justify-between"><span>${t('participantsLabel')}</span><span>${b.participants}</span></div>${paymentRow}</div><div class="border-t pt-3 flex justify-between mb-4"><span class="font-bold">${t('totalLabel')}</span><span class="font-bold text-violet-500">${b.priceFormatted}</span></div><div class="field-box rounded-xl p-3 flex items-center justify-between mb-2"><span>${t('bookingIdLabel2')}</span><span class="font-bold">${b.id}</span></div>`;
   if (b.type === 'transfer') return `<div class="card rounded-2xl p-3 flex gap-3 mb-4"><div class="w-16 h-16 rounded-xl bg-violet-50 flex items-center justify-center"><i class="fa-solid fa-shuttle-van text-violet-600 text-xl"></i></div><div><h3 class="font-display font-bold text-sm">${b.vehicleType} ${t('transferSuffix')}</h3><p class="text-[11px]">${directionLabel(b.direction)}</p></div></div><div class="space-y-3 text-sm mb-4"><div class="flex justify-between"><span>${t('dateLabel')}</span><span>${utils.formatDate(b.date)}</span></div><div class="flex justify-between"><span>${t('timeLabel')}</span><span>${b.time}</span></div><div class="flex justify-between"><span>${t('flightNoLabel')}</span><span>${b.flightNo || '—'}</span></div><div class="flex justify-between"><span>${t('pickupDropoffLabel')}</span><span class="text-right max-w-[60%]">${b.address}</span></div><div class="flex justify-between"><span>${t('passengersLabel')}</span><span>${b.passengers}</span></div>${paymentRow}</div><div class="border-t pt-3 flex justify-between mb-4"><span class="font-bold">${t('totalLabel')}</span><span class="font-bold text-violet-500">${b.priceFormatted}</span></div><div class="field-box rounded-xl p-3 flex items-center justify-between mb-2"><span>${t('bookingIdLabel2')}</span><span class="font-bold">${b.id}</span></div>`;
   return `<div class="card rounded-2xl p-3 flex gap-3 mb-4"><img alt="" src="${b.image}" class="w-16 h-16 rounded-xl object-cover" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'"><div><h3 class="font-display font-bold text-sm">${b.hotelName}</h3><div class="flex items-center gap-1 mb-1">${utils.renderStars(b.rating)}</div><p class="text-[10px]">${b.location}</p></div></div><div class="space-y-3 text-sm mb-4"><div class="flex justify-between"><span>${t('checkinLabel')}</span><span>${utils.formatDate(b.checkin)}</span></div><div class="flex justify-between"><span>${t('checkoutLabel')}</span><span>${utils.formatDate(b.checkout)}</span></div><div class="flex justify-between"><span>${t('guests')}</span><span>${b.guests} ${t('guestsCountSuffix')}, ${b.rooms} ${t('roomsCountSuffix')}</span></div><div class="flex justify-between"><span>${t('roomTypeLabel')}</span><span>${b.roomType}</span></div>${b.requests ? `<div class="flex justify-between"><span>${t('requestsLabel')}</span><span class="text-right max-w-[60%]">${b.requests}</span></div>` : ''}${paymentRow}</div><div class="border-t pt-3 flex justify-between mb-4"><span class="font-bold">${t('totalLabel')}</span><span class="font-bold text-violet-500">${b.priceFormatted}</span></div><div class="field-box rounded-xl p-3 flex items-center justify-between mb-2"><span>${t('bookingIdLabel2')}</span><span class="font-bold">${b.id}</span></div>`;
 }

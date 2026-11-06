@@ -9,7 +9,7 @@
 -- =====================================================================
 
 create type public.user_role          as enum ('user', 'owner', 'super_admin');
-create type public.property_kind      as enum ('hotel', 'excursion', 'transfer', 'restaurant');
+create type public.property_kind      as enum ('hotel', 'excursion', 'transfer', 'restaurant', 'package');
 create type public.listing_status     as enum ('draft', 'pending_review', 'published', 'archived');
 create type public.booking_status     as enum ('pending_payment', 'completed', 'failed', 'cancelled', 'refunded');
 create type public.application_status as enum ('pending', 'contacted', 'approved', 'rejected');

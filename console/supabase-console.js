@@ -38,11 +38,11 @@
     if (!r.ok) throw Object.assign(new Error(j.error || 'فشل الطلب'), { status: r.status });
     return j;
   }
-  const KIND_OF_SCOPE = { trips: 'excursion', excursion: 'excursion', hotel: 'hotel', hotels: 'hotel', transfer: 'transfer', transfers: 'transfer', restaurant: 'restaurant', restaurants: 'restaurant' };   // owner pages pass CFG.key = trips | hotels | transfers
-  const ROLE_OF_KIND = { hotel: 'hotels_owner', excursion: 'trips_owner', transfer: 'transfers_owner', restaurant: 'restaurants_owner' };
+  const KIND_OF_SCOPE = { trips: 'excursion', excursion: 'excursion', packages: 'package', package: 'package', hotel: 'hotel', hotels: 'hotel', transfer: 'transfer', transfers: 'transfer', restaurant: 'restaurant', restaurants: 'restaurant' };   // owner pages pass CFG.key = trips | hotels | transfers
+  const ROLE_OF_KIND = { hotel: 'hotels_owner', excursion: 'trips_owner', package: 'packages_owner', transfer: 'transfers_owner', restaurant: 'restaurants_owner' };
   const SITE_KIND = { destination: 'destination', article: 'article', review: 'testimonial', promoSlide: 'promo_slide' };
-  const PROPERTY_TYPES = ['hotel', 'excursion', 'transfer', 'restaurant'];
-  const CATALOG_FILES = { 'hotels.json': 'hotel', 'excursions.json': 'excursion', 'transfers.json': 'transfer', 'restaurants.json': 'restaurant',
+  const PROPERTY_TYPES = ['hotel', 'excursion', 'package', 'transfer', 'restaurant'];
+  const CATALOG_FILES = { 'hotels.json': 'hotel', 'excursions.json': 'excursion', 'packages.json': 'package', 'transfers.json': 'transfer', 'restaurants.json': 'restaurant',
     'destinations.json': 'destination', 'articles.json': 'article', 'promoSlides.json': 'promo_slide', 'reviews.json': 'testimonial' };
 
   const AR = {
@@ -88,7 +88,7 @@
 
   async function settings() {
     const s = await run(sb.from('platform_settings').select('*').eq('id', 1).single());
-    return { rates: { hotel: pct(s.commission_hotel), excursion: pct(s.commission_excursion), transfer: pct(s.commission_transfer) }, minPayout: Number(s.min_payout), raw: s };
+    return { rates: { hotel: pct(s.commission_hotel), excursion: pct(s.commission_excursion), transfer: pct(s.commission_transfer), package: pct(s.commission_package ?? s.commission_excursion) }, minPayout: Number(s.min_payout), raw: s };
   }
 
   async function financeFor(uid, kindForRate) {
@@ -328,7 +328,7 @@
       if (a === 'finance') {
         if (b === 'settings') {
           if (method === 'GET') { const s = await settings(); return { settings: { rates: s.rates, minPayout: s.minPayout } }; }
-          const r = body.rates || {}; await rpc('admin_update_settings', { p_hotel: Number(r.hotel), p_excursion: Number(r.excursion), p_transfer: Number(r.transfer), p_min_payout: Number(body.minPayout) }); return { success: true };
+          const r = body.rates || {}; await rpc('admin_update_settings', { p_hotel: Number(r.hotel), p_excursion: Number(r.excursion), p_transfer: Number(r.transfer), p_min_payout: Number(body.minPayout), ...(r.package != null && r.package !== '' ? { p_package: Number(r.package) } : {}) }); return { success: true };
         }
         if (b === 'payouts' && c) { await rpc('admin_set_payout_status', { p_id: c, p_status: body.status, p_reference: body.reference || null, p_note: body.note || null }); return { success: true }; }
         if (b === 'payouts' && method === 'POST') { await rpc('admin_record_payout', { p_owner: body.ownerUid, p_amount: Number(body.amount), p_method: body.method || null, p_reference: body.reference || null, p_note: body.note || null }); return { success: true }; }

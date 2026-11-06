@@ -193,9 +193,11 @@ const pkgSpec = () => {
     { k: 'title', l: 'اسم الباكدج', kind: 'i18n', req: 1, max: 80, ph: 'Example: Romantic Red Sea escape — 5 days', help: 'اسم واضح — بيظهر في صفحة الباكدجات وفي البحث.' },
     { k: 'packageType', l: 'نوع الباكدج', kind: 'chips', req: 1, opts: [['honeymoon', 'شهر العسل', '💞'], ['friends', 'أصدقاء', '🎉'], ['family', 'عائلة', '👨‍👩‍👧'], ['adventure', 'مغامرات وغوص', '🤿']] },
     { k: 'days', l: 'عدد الأيام', kind: 'stepper', min: 0, max: 30, w: 'half', help: 'اتركه 0 لو الباكدج يوم واحد.' },
+    { k: 'priceMode', l: 'طريقة التسعير', kind: 'chips', req: 1, opts: [['person', 'السعر للفرد', '👤'], ['package', 'السعر للباكدج كله', '📦']], help: '"للفرد": السعر × عدد الأفراد اللي العميل يختاره. "للباكدج كله": سعر واحد ثابت للباكدج بغض النظر عن العدد (مثلاً شهر العسل للعروسين).' },
+    { k: 'groupSize', l: 'عدد الأفراد اللي الباكدج بيغطيهم', kind: 'stepper', min: 1, max: 50, w: 'half', help: 'بيظهر للعميل ("لـ 2 أفراد"). مع التسعير "للباكدج كله" ده هو عدد الأفراد في الحجز.' },
     ...ex.sections[0].f.filter(x => x.k === 'duration' || x.k === 'meetingPoint') ] };
   return { ...ex, title: 'باكدج', sections: [basic, ...ex.sections.slice(1).map(s => s.id === 'iti' ? { ...s, t: 'برنامج الباكدج', s: 'الأيام والأنشطة خطوة بخطوة' } : s)],
-    price: { k: 'price', l: 'سعر الفرد', suffix: 'EGP', help: 'سعر الباكدج للشخص البالغ — بيشمل كل اللي جواها.' },
+    price: { k: 'price', l: 'السعر', suffix: 'EGP', help: 'حسب طريقة التسعير: سعر الفرد، أو سعر الباكدج كله.' },
     checks: ex.checks.map(c => c[0] === 'نوع الرحلة' ? ['نوع الباكدج', d => !!d.packageType] : c[0] === 'اسم الرحلة' ? ['اسم الباكدج', c[1]] : c) };
 };
 
@@ -206,7 +208,7 @@ DS.itemEditor = (host, o) => {
   D.gallery = (Array.isArray(item.images) && item.images.length ? item.images : (item.image ? [item.image] : [])).slice();
   if (o.type === 'hotel') (D.rooms || (D.rooms = [])).forEach(r => { r.childPricingTiers = r.childPricingTiers || []; });
   if (o.type === 'excursion' || o.type === 'package') D.itinerary = D.itinerary || [];
-  if (o.type === 'package') { D.packageType = D.packageType || 'honeymoon'; D.category = D.category || 'Package'; }
+  if (o.type === 'package') { D.packageType = D.packageType || 'honeymoon'; D.category = D.category || 'Package'; D.priceMode = D.priceMode || 'person'; D.groupSize = D.groupSize || 2; }
   if (o.type === 'restaurant') D.menu = D.menu || [];
   const hasAr = String(tr((item[spec.nameKey] || {}).ar) || '').trim(), hasEn = String(((item[spec.nameKey] || {}).en) || '').trim();
   const cur = 'en'; let dirty = false, open = new Set([0]), mon = new Date(), anchor = null, rangeMode = false;

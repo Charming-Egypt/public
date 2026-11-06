@@ -1,13 +1,27 @@
-# Packages (Honeymoon / Friends / Family / Adventure)
-A package = an ordinary excursion item with `packageType` set (+ optional `days`). Booking, server price check, payment, voucher, reviews and owner/admin editing all reuse the excursion pipeline; no SQL migration needed.
-- Admin / owner (Trips editor): new "باكدج؟" section -> choose the package type + days. Leave "رحلة عادية" for a normal trip. Price = per person; list what is inside under "السعر يشمل".
-- App/www: new /packages/ page (type chips), "Packages" in drawer + desktop nav, home strip (auto-hidden until a package exists), "Package" pill in My Bookings, package badge on the detail page. Packages are hidden from the Excursions list.
-- Config: site.config.json `pages.packages`, `show.packages`; site setting `sections.packages` can switch it off at runtime.
-- Files: shared/frontend.js (packagesUi), shared/data.js, shared/booking.js, shared/style.css, src/pages/packages.html, src/pages/home.html, src/partials/chrome.html, console/editor.js, lang en/ar.
+# الباكدجات — قسم مستقل بعمولة وأونر مستقلين وسعر للفرد/للباكدج
 
-## Update: Packages as their own section (admin + owner)
-- Super admin: new "الباكدجات" tab in المحتوى (own list, own editor). The "الرحلات" tab now lists normal trips only.
-- Owner: new panel /owner/pkg.html (also linked from /owner/). /owner/ex.html lists trips only. Same trips_owner account works in both panels.
-- Editor: package form (name, type chips honeymoon/friends/family/adventure, days, price, includes, itinerary). The old "باكدج؟" switch inside the trips editor was removed.
-- Site settings: new "الباكدجات" on/off switch (sections.packages).
-- Still shared with trips on purpose: DB kind (excursion), booking/payment, commission rate, owner role, bookings + finance views. No SQL or Worker changes.
+## ترتيب التشغيل (مهم)
+1. على Supabase SQL Editor شغّل `supabase/migrations/20261106000100_package_kind_enum.sql` **لوحده** (إضافة قيمة `package` للـ enum).
+2. بعدها شغّل `supabase/migrations/20261106000200_packages.sql`.
+   - التثبيت من الصفر: `supabase/reset/01_install_schema.sql` (محدّث وفيه كل شيء).
+3. أعد نشر الـ content Worker (`workers/content-worker.js`).
+4. أعد بناء/نشر الموقع ولوحة الأدمن (`node tools/build.mjs`).
+
+## الجديد
+- نوع جديد `package` في قاعدة البيانات (مستقل عن الرحلات والفنادق).
+- دور أونر مستقل: `packages_owner` (اسمه "مكتب باكدجات") — يتم تعيينه من الأدمن، ولوحة الأونر على `/owner/pkg.html`.
+- عمولة مستقلة للباكدجات: `commission_package` (الافتراضي 10%) — تتغير من الإعدادات المالية "عمولة الباكدجات %". تتثبت عند إتمام الحجز كباقي الأنواع.
+- اختيار طريقة السعر لكل باكدج من المحرر:
+  - `priceMode = person` (الافتراضي): السعر × عدد الأفراد.
+  - `priceMode = package`: سعر واحد للباكدج كله (مثلاً الهني مون للزوجين) + `groupSize` عدد الأشخاص المشمولين.
+  - الحساب يتم على السيرفر (`compute_booking_price`) فلا يمكن التلاعب به من المتصفح.
+- قسم "الباكدجات" مستقل في الأدمن والموقع/التطبيق، وسكشن في الصفحة الرئيسية، وبادج في "حجوزاتي".
+- أنواع الباكدج: Honeymoon / Friends / Family / Adventure & Diving.
+
+## تم اختباره
+- ترقية قاعدة بيانات قديمة بالملفين بالترتيب + تثبيت من الصفر على Postgres 16.
+- التسعير: باكدج كامل 1000 ثابت مع 5 أفراد، للفرد 3×1000=3000، الرحلات بدون تغيير.
+- اختبارات الـ Workers (content, settings, payments) ناجحة، والبناء كامل بدون أخطاء.
+
+## ملاحظة
+`tools/make-seed.mjs` فيه مسار قديم (`data/hotels.json`) كان موجود قبل التعديلات ولم يتم تغييره.

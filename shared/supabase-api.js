@@ -160,7 +160,7 @@
   };
 
   // ---- catalog ---------------------------------------------------------------------
-  const PROPERTY_FILES = { 'hotels.json': 'hotel', 'excursions.json': 'excursion', 'transfers.json': 'transfer', 'restaurants.json': 'restaurant' };
+  const PROPERTY_FILES = { 'hotels.json': 'hotel', 'excursions.json': 'excursion', 'packages.json': 'package', 'transfers.json': 'transfer', 'restaurants.json': 'restaurant' };
   const CONTENT_FILES = { 'destinations.json': 'destination', 'articles.json': 'article', 'promoSlides.json': 'promo_slide', 'reviews.json': 'testimonial' };
 
   // Items live as JSON files in the private GitHub data repo; the content Worker serves the published ones (cfg.contentBase).

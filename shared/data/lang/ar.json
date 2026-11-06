@@ -741,5 +741,9 @@
   "pkgType_honeymoon": "شهر العسل",
   "pkgType_friends": "أصدقاء",
   "pkgType_family": "عائلة",
-  "pkgType_adventure": "مغامرات وغوص"
+  "pkgType_adventure": "مغامرات وغوص",
+  "pkgPerPackage": "باكدج",
+  "pkgForPeople": "لـ {n} أشخاص",
+  "pkgPriceFor": "السعر لـ",
+  "pkgFixedPrice": "سعر واحد للباكدج كله"
 }

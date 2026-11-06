@@ -1,13 +1,13 @@
 /* Discover Sharm — Super Admin console (uses /console/console.js). Talks only to /api/admin/* */
 (function () {
 const { esc, tr, money, dt, badge, PAY, table, modal, form, collect, api, toast, thumb } = DS;
-const ROLE_L = { super_admin: 'سوبر أدمن', trips_owner: 'مكتب رحلات', hotels_owner: 'مالك فنادق', restaurants_owner: 'مالك مطعم / كافيه', transfers_owner: 'ترانسفير' };
+const ROLE_L = { super_admin: 'سوبر أدمن', trips_owner: 'مكتب رحلات', hotels_owner: 'مالك فنادق', restaurants_owner: 'مالك مطعم / كافيه', transfers_owner: 'ترانسفير', packages_owner: 'مكتب باكدجات' };
 const ROLE_OPTS = Object.entries(ROLE_L).filter(([k]) => k !== 'super_admin');
 const STATIC_TYPES = ['article', 'review', 'promoSlide'];   // now plain JSON in the repo (shared/data/*.json), no longer managed here
 const TYPES = { hotel: 'الفنادق', excursion: 'الرحلات', package: 'الباكدجات', transfer: 'الترانسفير', destination: 'الوجهات', restaurant: 'المطاعم', article: 'المقالات', review: 'تقييمات الموقع', promoSlide: 'شرائح الصفحة الرئيسية', journal: 'التدوينات' };
 const GH_ONLY = ['journal', 'destination'];   // stored only in the GitHub data repo: no owner, just draft / published
 const STL_GH = { draft: 'مسودة', published: 'منشور' };
-const OWNER_ROLE = { hotel: 'hotels_owner', excursion: 'trips_owner', package: 'trips_owner', transfer: 'transfers_owner', restaurant: 'restaurants_owner' };
+const OWNER_ROLE = { hotel: 'hotels_owner', excursion: 'trips_owner', package: 'packages_owner', transfer: 'transfers_owner', restaurant: 'restaurants_owner' };
 const STL = { draft: 'مسودة', pending_review: 'بانتظار المراجعة', published: 'منشور', archived: 'مؤرشف' };
 const PROP_TYPES = ['hotel', 'excursion', 'package', 'transfer', 'restaurant', 'journal', 'destination'];   // items stored as JSON files in the private GitHub data repo (via the content Worker)
 const nameOf = i => tr(i.name || i.title || i.vehicleType || i.itemName) || i.id;
@@ -26,11 +26,11 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', roleLabel: 'س
   { label: 'الرئيسية', icon: 'home', render: async m => {
     const [s, bk] = await Promise.all([api('/stats'), api('/bookings')]), rs = await roles();
     const owners = Object.entries(s.roleCounts).filter(([k]) => k !== 'super_admin').reduce((a, [, v]) => a + v, 0), rev = Object.values(s.revenue).reduce((a, v) => a + v, 0);
-    const TL = { hotel: 'فنادق', excursion: 'رحلات', transfer: 'ترانسفير' }, TC = { hotel: 'var(--blue)', excursion: 'var(--gold)', transfer: 'var(--green)' };
+    const TL = { hotel: 'فنادق', excursion: 'رحلات', package: 'باكدجات', transfer: 'ترانسفير' }, TC = { hotel: 'var(--blue)', excursion: 'var(--gold)', package: 'var(--purple, #a78bfa)', transfer: 'var(--green)' };
     const lab = s.series.map(x => x.d.slice(5).replace('-', '/')), todo = s.needsRefund + s.payoutsOpen.count + s.applications;
     m.innerHTML = DS.hero('لوحة التحكم', new Date().toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }), `<button class="btn" data-go="المحاسبة">${DS.ic('wallet')} المحاسبة</button><button class="btn ghost" data-go="الأونرز">${DS.ic('plus')} حساب أونر</button>`) +
       `<div class="stats">${DS.stat(money(rev), 'إجمالي المبيعات المدفوعة (جنيه)', { icon: 'coins', tone: 'gold' })}${DS.stat(s.bookings, 'إجمالي الحجوزات', { icon: 'cal', sub: s.last30 + ' آخر 30 يوم' })}${DS.stat(s.payoutsOpen.count, 'طلبات صرف مفتوحة', { icon: 'wallet', tone: s.payoutsOpen.count ? 'red' : 'green', sub: money(s.payoutsOpen.amount) + ' جنيه' })}${DS.stat(s.needsRefund, 'استرداد مطلوب', { icon: 'alert', tone: s.needsRefund ? 'red' : 'green' })}
-      ${DS.stat(owners, 'حسابات الأونرز', { icon: 'shield', tone: 'purple' })}${DS.stat((s.items.hotel ?? 0) + (s.items.excursion ?? 0) + (s.items.transfer ?? 0), 'عناصر على الموقع', { icon: 'layers', sub: `${s.items.hotel ?? '؟'} فندق · ${s.items.excursion ?? '؟'} رحلة · ${s.items.transfer ?? '؟'} ترانسفير` })}${DS.stat(s.applications, 'طلبات شركاء', { icon: 'brief', tone: 'gold' })}${DS.stat(s.messages, 'رسائل تواصل', { icon: 'mail' })}</div>
+      ${DS.stat(owners, 'حسابات الأونرز', { icon: 'shield', tone: 'purple' })}${DS.stat((s.items.hotel ?? 0) + (s.items.excursion ?? 0) + (s.items.package ?? 0) + (s.items.transfer ?? 0), 'عناصر على الموقع', { icon: 'layers', sub: `${s.items.hotel ?? '؟'} فندق · ${s.items.excursion ?? '؟'} رحلة · ${s.items.package ?? '؟'} باكدج · ${s.items.transfer ?? '؟'} ترانسفير` })}${DS.stat(s.applications, 'طلبات شركاء', { icon: 'brief', tone: 'gold' })}${DS.stat(s.messages, 'رسائل تواصل', { icon: 'mail' })}</div>
       <div class="g2"><div class="card"><span class="ct">الإيراد اليومي — آخر 30 يوم (جنيه)</span>${DS.area(lab, s.series.map(x => x.rev), 'var(--gold)', 'r1')}</div>
         <div class="card"><span class="ct">المبيعات حسب النوع</span>${DS.donut(Object.entries(s.revenueByType).map(([k, v]) => ({ l: TL[k] || k, v: Math.round(v), c: TC[k] || '#999' })))}</div></div>
       <div class="g2"><div class="card"><span class="ct">عدد الحجوزات اليومي</span>${DS.bars(lab, s.series.map(x => x.n), 'var(--blue)')}</div>
@@ -79,9 +79,8 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', roleLabel: 'س
   { label: 'المحتوى', icon: 'layers', render: async m => {
     let type = 'hotel', q = '', rs = await roles();
     const draw = async () => {
-      const apiType = type === 'package' ? 'excursion' : type;   // packages are excursion items with a packageType
-      window.DS_UPLOAD_CAT = apiType;   // photos go to api/<category>/img/ in the data repo
-      const d = await api('/items/' + apiType), owned = !!OWNER_ROLE[type], schema = DS.SCH_ADMIN[type], items = d.items.filter(i => type === 'package' ? !!i.packageType : type === 'excursion' ? !i.packageType : true);
+      window.DS_UPLOAD_CAT = type;   // photos go to api/<category>/img/ in the data repo
+      const d = await api('/items/' + type), owned = !!OWNER_ROLE[type], schema = DS.SCH_ADMIN[type], items = d.items;
       const list = items.filter(i => !q || (nameOf(i) + ' ' + i.id).toLowerCase().includes(q.toLowerCase()));
       m.innerHTML = `<h2 class="pt">المحتوى <span class="muted">${items.length}</span></h2><div class="chips">${Object.entries(TYPES).filter(([k]) => !STATIC_TYPES.includes(k)).map(([k, v]) => `<span class="chip ${k === type ? 'on' : ''}" data-t="${k}">${v}</span>`).join('')}</div>
         <div class="tools"><input type="search" id="qs" placeholder="بحث بالاسم..." value="${esc(q)}"><button class="btn" id="add">${DS.ic('plus')} إضافة</button></div>` +
@@ -107,7 +106,7 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', roleLabel: 'س
               const owEl = sideEl.querySelector('#ow'), ow = owEl ? owEl.value : ''; if (ow) out.owner = ow; else delete out.owner;
               out.status = sideEl.querySelector('#ps').value;
               const force = sideEl.querySelector('#fc') && sideEl.querySelector('#fc').checked ? '?force=1' : '';
-              await api('/items/' + apiType + (it ? '/' + encodeURIComponent(it.id) : '') + force, { method: it ? 'PUT' : 'POST', body: out });
+              await api('/items/' + type + (it ? '/' + encodeURIComponent(it.id) : '') + force, { method: it ? 'PUT' : 'POST', body: out });
             } });
           return;
         }
@@ -121,7 +120,7 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', roleLabel: 'س
           if (owned) { const ow = b.querySelector('#ow').value; if (ow) o.owner = ow; else delete o.owner; }
           const ps = b.querySelector('#ps'); if (ps) o.status = ps.value;
           const force = b.querySelector('#fc') && b.querySelector('#fc').checked ? '?force=1' : '';
-          await api('/items/' + apiType + (it ? '/' + encodeURIComponent(it.id) : '') + force, { method: it ? 'PUT' : 'POST', body: o }); toast('اتحفظ'); setTimeout(draw, 100);
+          await api('/items/' + type + (it ? '/' + encodeURIComponent(it.id) : '') + force, { method: it ? 'PUT' : 'POST', body: o }); toast('اتحفظ'); setTimeout(draw, 100);
         } }] });
       };
       m.querySelector('#add').onclick = () => edit(null);
@@ -129,10 +128,10 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', roleLabel: 'س
       m.onclick = async e => {
         const c = e.target.closest('[data-t]'); if (c) { type = c.dataset.t; q = ''; return draw(); }
         const pub = e.target.closest('[data-pub]');
-        if (pub) { try { await api('/items/' + apiType + '/' + encodeURIComponent(pub.dataset.pub) + '/publish', { method: 'POST', body: {} }); toast('اتنشر ✓'); draw(); } catch (er) { toast(er.message, true); } return; }
+        if (pub) { try { await api('/items/' + type + '/' + encodeURIComponent(pub.dataset.pub) + '/publish', { method: 'POST', body: {} }); toast('اتنشر ✓'); draw(); } catch (er) { toast(er.message, true); } return; }
         const ed = e.target.closest('[data-e]'), de = e.target.closest('[data-d]');
         if (ed) edit(items.find(i => i.id === ed.dataset.e));
-        if (de && confirm('حذف نهائي؟')) { try { await api('/items/' + apiType + '/' + encodeURIComponent(de.dataset.d), { method: 'DELETE' }); draw(); } catch (er) { toast(er.message, true); } }
+        if (de && confirm('حذف نهائي؟')) { try { await api('/items/' + type + '/' + encodeURIComponent(de.dataset.d), { method: 'DELETE' }); draw(); } catch (er) { toast(er.message, true); } }
       };
     };
     await draw();
@@ -152,7 +151,7 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', roleLabel: 'س
         const qs = Object.entries(q).filter(([, v]) => v).map(([k, v]) => k + '=' + encodeURIComponent(v)).join('&'), d = await api('/finance/report?' + qs), t = d.totals;
         box.innerHTML = `<div class="card"><div class="row"><label class="muted">من</label><input type="date" id="qf" value="${q.from}" style="max-width:150px"><label class="muted">إلى</label><input type="date" id="qt" value="${q.to}" style="max-width:150px">
           <select id="qb" style="max-width:190px"><option value="booked" ${q.basis === 'booked' ? 'selected' : ''}>بتاريخ الحجز (المبيعات)</option><option value="realized" ${q.basis === 'realized' ? 'selected' : ''}>بتاريخ التنفيذ (المحقق)</option></select>
-          <select id="qy" style="max-width:130px"><option value="">كل الأنواع</option><option value="hotel" ${q.type === 'hotel' ? 'selected' : ''}>فنادق</option><option value="excursion" ${q.type === 'excursion' ? 'selected' : ''}>رحلات</option><option value="transfer" ${q.type === 'transfer' ? 'selected' : ''}>ترانسفير</option></select>${ownerSel('qo', q.owner, true)}<button class="btn" id="qg">تحديث</button></div></div>
+          <select id="qy" style="max-width:130px"><option value="">كل الأنواع</option><option value="hotel" ${q.type === 'hotel' ? 'selected' : ''}>فنادق</option><option value="excursion" ${q.type === 'excursion' ? 'selected' : ''}>رحلات</option><option value="package" ${q.type === 'package' ? 'selected' : ''}>باكدجات</option><option value="transfer" ${q.type === 'transfer' ? 'selected' : ''}>ترانسفير</option></select>${ownerSel('qo', q.owner, true)}<button class="btn" id="qg">تحديث</button></div></div>
           <div class="stats">${DS.stat(money(t.gross), 'مبيعات مدفوعة (قبل الضرائب)')}${DS.stat(money(t.taxes), 'ضرائب/رسوم محصّلة (للمنصة)')}${DS.stat(money(t.commissionRealized), 'عمولتك المحققة (خدمات اتنفّذت)')}${DS.stat(money(t.commissionPending), 'عمولة معلّقة (لسه الخدمة ماتمتش)')}${DS.stat(money(t.netRealized), 'صافي الأونرز المحقق')}${DS.stat(money(t.owed), 'مستحق للأونرز دلوقتي')}${DS.stat(money(t.paidOut), 'اتحوّل للأونرز')}${DS.stat(money(t.pendingPayouts), 'طلبات صرف مفتوحة')}${t.unowned ? DS.stat(money(t.unowned), 'مبيعات بدون أونر') : ''}</div>
           <h2 class="pt">حسب الأونر <button class="btn ghost sm" id="c1">CSV</button></h2>` + table([{ h: 'الأونر', f: o => `<b>${esc(o.name)}</b><div class="muted">${ROLE_L[o.role]}</div>` }, { h: 'حجوزات', f: o => o.bookings }, { h: 'مبيعات', f: o => money(o.gross) }, { h: 'عمولة محققة', f: o => money(o.commissionRealized) }, { h: 'عمولة معلّقة', f: o => money(o.commissionPending) }, { h: 'صافي محقق', f: o => money(o.netRealized) }, { h: 'رصيده المتاح', f: o => `<b>${money(o.balance.available)}</b>` }, { h: 'اتحوّل له', f: o => money(o.balance.paid) }], d.owners) +
           `<h2 class="pt" style="margin-top:16px">تفاصيل الحجوزات ${d.truncated ? '<span class="muted">(أول 1500)</span>' : ''} <button class="btn ghost sm" id="c2">CSV</button></h2>` + table([{ h: 'الحجز', f: r => esc(r.id) }, { h: 'الأونر', f: r => oname(r.ownerUid) }, { h: 'العنصر', f: r => esc(r.item) }, { h: 'الحجز', f: r => dt(r.createdAt) }, { h: 'الخدمة', f: r => esc(r.serviceDate) }, { h: 'المبلغ', f: r => money(r.gross) }, { h: '%', f: r => r.rate ?? '' }, { h: 'العمولة', f: r => r.commission == null ? '' : money(r.commission) }, { h: 'الحالة', f: r => r.realized ? '<span class="badge b-green">محقق</span>' : '<span class="badge b-amber">معلّق</span>' }], d.rows.slice(0, 200));
@@ -195,10 +194,10 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', roleLabel: 'س
       },
       // ---- settings ----
       settings: async box => {
-        const d = await api('/finance/settings'), S = [{ k: 'hotel', l: 'عمولة الفنادق %', t: 'num' }, { k: 'excursion', l: 'عمولة الرحلات %', t: 'num' }, { k: 'transfer', l: 'عمولة الترانسفير %', t: 'num' }, { k: 'minPayout', l: 'أقل مبلغ للصرف (جنيه)', t: 'num' }], f = form(S, { ...d.settings.rates, minPayout: d.settings.minPayout });
+        const d = await api('/finance/settings'), S = [{ k: 'hotel', l: 'عمولة الفنادق %', t: 'num' }, { k: 'excursion', l: 'عمولة الرحلات %', t: 'num' }, { k: 'transfer', l: 'عمولة الترانسفير %', t: 'num' }, { k: 'package', l: 'عمولة الباكدجات %', t: 'num' }, { k: 'minPayout', l: 'أقل مبلغ للصرف (جنيه)', t: 'num' }], f = form(S, { ...d.settings.rates, minPayout: d.settings.minPayout });
         box.innerHTML = '<div class="card"><b>النسب الافتراضية</b><p class="muted" style="margin:6px 0 12px">بتتطبق وقت تسجيل تنفيذ الخدمة. تغييرها مبيأثرش على أرباح اتسجّلت قبل كده. لأونر معيّن: من تبويب الأونرز ← تعديل ← نسبة عمولة خاصة.</p></div>';
         box.firstChild.appendChild(f); const b = document.createElement('button'); b.className = 'btn'; b.textContent = 'حفظ'; box.firstChild.appendChild(b);
-        b.onclick = async () => { const v = collect(f, S); try { await api('/finance/settings', { method: 'PUT', body: { rates: { hotel: v.hotel, excursion: v.excursion, transfer: v.transfer }, minPayout: v.minPayout } }); toast('اتحفظ'); } catch (e) { toast(e.message, true); } };
+        b.onclick = async () => { const v = collect(f, S); try { await api('/finance/settings', { method: 'PUT', body: { rates: { hotel: v.hotel, excursion: v.excursion, transfer: v.transfer, package: v.package }, minPayout: v.minPayout } }); toast('اتحفظ'); } catch (e) { toast(e.message, true); } };
       },
     };
     const draw = async () => {
@@ -210,7 +209,7 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', roleLabel: 'س
   } },
   // ================= partner applications =================
   { label: 'طلبات الشركاء', icon: 'brief', render: async m => {
-    const list = (await api('/applications')).applications, R = { Hotel: 'hotels_owner', 'Trip Supplier': 'trips_owner', Transfer: 'transfers_owner', Restaurant: 'restaurants_owner' };
+    const list = (await api('/applications')).applications, R = { Hotel: 'hotels_owner', 'Trip Supplier': 'trips_owner', 'Package Partner': 'packages_owner', Transfer: 'transfers_owner', Restaurant: 'restaurants_owner' };
     const ST = { new: ['جديد', 'blue'], contacted: ['اتواصلنا', 'amber'], approved: ['مقبول', 'green'], rejected: ['مرفوض', 'red'] };
     m.innerHTML = '<h2 class="pt">طلبات الانضمام كشريك</h2>' + table([{ h: 'النشاط', f: a => `<b>${esc(a.businessName)}</b><div class="muted">${esc(a.partnerType)}</div>` }, { h: 'التواصل', f: a => `${esc(a.contactName)}<div class="muted">${esc(a.phone)} · ${esc(a.email)}</div>` }, { h: 'الحالة', f: a => DS.badge(ST, a.status) }, { h: 'التاريخ', f: a => dt(a.createdAt) }], list, { click: true, empty: 'مفيش طلبات' });
     m.onclick = e => {

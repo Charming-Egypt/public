@@ -63,8 +63,8 @@ const state = {
   userStats: { completedBookings: 0, totalSpent: 0 },
 };
 
-const CATALOG = { hotels: [], excursions: [], transfers: [], destinations: [], restaurants: [], reviews: [], articles: [] };
-const CATALOG_RAW = { hotels: [], excursions: [], transfers: [], destinations: [], restaurants: [], reviews: [], articles: [] };
+const CATALOG = { hotels: [], excursions: [], packages: [], transfers: [], destinations: [], restaurants: [], reviews: [], articles: [] };
+const CATALOG_RAW = { hotels: [], excursions: [], packages: [], transfers: [], destinations: [], restaurants: [], reviews: [], articles: [] };
 
 // ==================== MULTILANG FIELDS ====================
 const MULTILANG_FIELDS = [
@@ -520,6 +520,7 @@ function localizeCatalog(lang) {
   CATALOG.hotels = CATALOG_RAW.hotels.map(item => localizeItem(item, lang));
   CATALOG.excursions = CATALOG_RAW.excursions.map(item => localizeItem(item, lang));
   CATALOG.transfers = CATALOG_RAW.transfers.map(item => localizeItem(item, lang));
+  CATALOG.packages = (CATALOG_RAW.packages || []).map(item => ({ ...localizeItem(item, lang), __pkg: true }));   // packages are their own kind (booking type 'package')
   CATALOG.destinations = CATALOG_RAW.destinations.map(item => localizeItem(item, lang));
   CATALOG.restaurants = CATALOG_RAW.restaurants.map(item => localizeItem(item, lang));
   CATALOG.reviews = CATALOG_RAW.reviews.map(item => localizeItem(item, lang));
@@ -532,8 +533,8 @@ function localizeCatalog(lang) {
 //   2. The last good copy lives in localStorage with a timestamp. Younger than FRESH (20 s / 3 min) → shown, NO request at all.
 //      Older → shown instantly, refreshed once in the background. Nothing cached → one blocking request.
 //   3. Only the few files the bundle marks "null" (destinations / journal / testimonials not exported yet) fall back to the static /data/*.json.
-const CATALOG_FILES = ['hotels', 'excursions', 'transfers', 'destinations', 'restaurants', 'reviews', 'articles'];
-const CATALOG_KEY = 'ds_catalog_v4';
+const CATALOG_FILES = ['hotels', 'excursions', 'packages', 'transfers', 'destinations', 'restaurants', 'reviews', 'articles'];
+const CATALOG_KEY = 'ds_catalog_v5';
 // false until the catalog (cached copy or fresh answer) is in: the list renderers wait for it and the pages show skeleton placeholders meanwhile (see frontend.js "SKELETON GUARD")
 window.__catalogReady = false;
 // with static hosting a recheck costs almost nothing (a 304 from the CDN), so edits made in the admin show up within ~20 s; without it keep the gentler 3 min
@@ -1292,8 +1293,8 @@ const bookings = {
       <div onclick="showBookingDetails('${b.id}')" class="hotel-card rounded-xl p-3 flex gap-3 cursor-pointer">
         <img alt="" src="${getImageUrl(b.image)}" class="w-20 h-20 rounded-lg object-cover" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
         <div class="flex-1">
-          ${(typeof packagesUi !== 'undefined' && b.type === 'excursion' && packagesUi.isPackageId(b.excursionId)) ? `<span class="pkg-pill"><i class="fa-solid fa-gift" aria-hidden="true"></i>${t('pkgPackage', 'Package')}</span>` : ''}
-          <h3 class="font-display font-bold text-sm">${b.type === 'hotel' ? b.hotelName : b.type === 'excursion' ? b.title : b.vehicleType + ' Transfer'}</h3>
+          ${b.type === 'package' ? `<span class="pkg-pill"><i class="fa-solid fa-gift" aria-hidden="true"></i>${t('pkgPackage', 'Package')}</span>` : ''}
+          <h3 class="font-display font-bold text-sm">${b.type === 'hotel' ? b.hotelName : (b.type === 'excursion' || b.type === 'package') ? b.title : b.vehicleType + ' Transfer'}</h3>
           <p class="text-[10px]">${utils.formatDate(b.checkin || b.date)}</p>
           <p class="font-bold text-violet-500 text-sm">${b.priceFormatted || utils.formatPrice(b.total)}</p>
           ${this.balanceStatusBlock(b)}
