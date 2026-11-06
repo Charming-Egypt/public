@@ -635,3 +635,4 @@ export default {
 };
 
 export { CATS, RESERVED, PRICING_KEYS, assemble, sortItems, publicItem };
+  
