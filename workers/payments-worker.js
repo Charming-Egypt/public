@@ -12,6 +12,7 @@
  */
 
 
+import { sendSmtp } from './lib/smtp.js';
 const ALLOWED_ORIGINS = new Set([
   'https://www.discover-sharm.com',
   'https://discover-sharm.com',
@@ -199,7 +200,9 @@ const _nameOf = (v) => (v && typeof v === 'object') ? (v.en || v.ar || Object.va
 function voucherUrl(orderId, env) { return `${(env.SITE_URL || 'https://app.discover-sharm.com').replace(/\/$/, '')}/voucher/?id=${encodeURIComponent(orderId)}`; }
 
 async function sendBookingEmail(orderId, env) {
-  if (!env.RESEND_API_KEY || !env.MAIL_FROM) { console.log('RESEND_API_KEY / MAIL_FROM missing: e-mail skipped'); return false; }
+  const canResend = !!(env.RESEND_API_KEY && env.MAIL_FROM);
+  const canSmtp = !!(env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASS && (env.MAIL_FROM || env.SMTP_USER));
+  if (!canResend && !canSmtp) { console.log('No e-mail provider configured (RESEND_API_KEY + MAIL_FROM, or SMTP_HOST/SMTP_USER/SMTP_PASS): e-mail skipped'); return false; }
   const o = await getOrder(orderId, env);
   const b = o.booking;
   if (!b || o.pending || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(b.email || '')) return false;
@@ -217,13 +220,24 @@ async function sendBookingEmail(orderId, env) {
     </table>
     <p><a href="${_esc(voucherUrl(orderId, env))}" style="display:inline-block;background:#c2410c;color:#fff;padding:12px 22px;border-radius:10px;text-decoration:none;font-weight:bold">Open your voucher · افتح الفاوتشر</a></p>
     <p style="color:#888;font-size:12px">Show the voucher (printed or on your phone) at the start of the service.</p></div>`;
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ from: env.MAIL_FROM, to: [b.email], subject: `Booking confirmed · تأكيد الحجز ${b.id}`, html }),
-  });
-  if (!res.ok) { console.log('Resend failed', res.status, (await res.text()).slice(0, 200)); return false; }
-  return true;
+  // 1) Resend (primary). Any failure — quota used up (429/403), outage, bad key — falls through to SMTP below.
+  if (canResend) {
+    try {
+      const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ from: env.MAIL_FROM, to: [b.email], subject: `Booking confirmed · تأكيد الحجز ${b.id}`, html }),
+      });
+      if (res.ok) return true;
+      console.log('Resend failed', res.status, (await res.text()).slice(0, 200));
+    } catch (e) { console.log('Resend error', e && e.message); }
+  }
+  // 2) SMTP (fallback, or the only provider when Resend is not configured) — directly from this Worker, no other Worker needed.
+  if (canSmtp) {
+    try { await sendSmtp(env, { to: b.email, subject: `Booking confirmed · تأكيد الحجز ${b.id}`, html }); return true; }
+    catch (e) { console.log('SMTP failed', e && e.message); }
+  }
+  return false;
 }
 function notifyBookingConfirmed(orderId, env, ctx) {
   const job = sendBookingEmail(orderId, env).catch((e) => console.log('e-mail failed', e && e.message));
