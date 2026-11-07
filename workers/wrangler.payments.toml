@@ -7,6 +7,8 @@
 #   KASHIER_API_KEY             Kashier dashboard
 #   KASHIER_SECRET_KEY          Kashier dashboard (webhook signature)
 #   RESEND_API_KEY              resend.com (confirmation e-mails; optional)
+#   SMTP_PASS                   SMTP fallback (replaces the old "notifications" Worker): used when Resend is not set or fails / its free quota ends
+# Variables for SMTP: SMTP_HOST, SMTP_PORT (465 = TLS, 587 = STARTTLS; never 25), SMTP_USER  (+ MAIL_FROM, shared with Resend)
 name = "discover-sharm-payments"
 main = "payments-worker.js"
 compatibility_date = "2026-01-01"
