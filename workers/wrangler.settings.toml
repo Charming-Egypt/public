@@ -9,13 +9,14 @@ main = "settings-worker.js"
 compatibility_date = "2026-01-01"
 keep_vars = true
 
-[vars]
-SUPABASE_URL = "https://YOUR-PROJECT.supabase.co"
-SUPABASE_ANON_KEY = "YOUR-ANON-KEY"
-GITHUB_REPO = "YOUR-ORG/discover-sharm-data"
-GITHUB_BRANCH = "main"
-MEDIA_BASE = "https://media.discover-sharm.com"
-ALLOWED_ORIGINS = "https://admin.discover-sharm.com"
+# [vars] intentionally NOT in this file: wrangler deploy would overwrite the real values set in the Cloudflare dashboard with placeholders.
+# Set these in Cloudflare → Workers & Pages → discover-sharm-settings → Settings → Variables and Secrets (see VARIABLES.md):
+#   SUPABASE_URL = "https://YOUR-PROJECT.supabase.co"
+#   SUPABASE_ANON_KEY = "YOUR-ANON-KEY"
+#   GITHUB_REPO = "YOUR-ORG/discover-sharm-data"
+#   GITHUB_BRANCH = "main"
+#   MEDIA_BASE = "https://media.discover-sharm.com"
+#   ALLOWED_ORIGINS = "https://admin.discover-sharm.com,https://owner.discover-sharm.com"
 
 # Static copy of the public settings (same bucket as the content Worker) — see settings-worker.js
 [[r2_buckets]]

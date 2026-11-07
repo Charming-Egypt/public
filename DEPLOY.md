@@ -8,7 +8,7 @@
 ## 2) إعدادات Supabase الجديدة بسبب التقسيم ⚠️
 1. **Authentication → URL Configuration**
    - Site URL: `https://www.discover-sharm.com`
-   - Redirect URLs (التلاتة): `https://www.discover-sharm.com/**` ، `https://app.discover-sharm.com/**` ، `https://admin.discover-sharm.com/**`
+   - Redirect URLs (التلاتة): `https://www.discover-sharm.com/**` ، `https://app.discover-sharm.com/**` ، `https://admin.discover-sharm.com/**` ، `https://owner.discover-sharm.com/**`
 2. **Google Sign-In** (Google Cloud Console → OAuth client): ضيف في *Authorized JavaScript origins* الدومينين `https://www.discover-sharm.com` و `https://app.discover-sharm.com`.
 3. **Worker الدفع**: `ALLOWED_ORIGINS` فيه www و app بالفعل. الأدمن مابيكلّمش الـ Worker، فمتضيفوش.
 4. `workers/wrangler.payments.toml` → `SITE_URL` (رابط الفاوتشر في الإيميل) سيبه `https://app.discover-sharm.com` أو غيّره لـ www — صفحة `/voucher/` موجودة على الاتنين ومابتتحوّلش.
@@ -39,14 +39,15 @@ Workers & Pages ← المشروع ← **Settings ← Variables and Secrets ← 
 npm run build
 ```
 
-## 4) النشر — ثلاث مشاريع منفصلة
+## 4) النشر — أربع مشاريع منفصلة
 | المشروع | فولدر الرفع | الدومين |
 |---|---|---|
 | discover-sharm-www   | `dist/www`   | `www.discover-sharm.com` (وحوّل الـ apex `discover-sharm.com` → www) |
 | discover-sharm-app   | `dist/app`   | `app.discover-sharm.com` |
 | discover-sharm-admin | `dist/admin` | `admin.discover-sharm.com` |
+| discover-sharm-owner | `dist/owner` | `owner.discover-sharm.com` |
 
-Cloudflare Pages: Create project → Direct Upload (أو GitHub مع Build command `npm run build` و Output directory `dist/www` / `dist/app` / `dist/admin`).
+Cloudflare Pages: Create project → Direct Upload (أو GitHub مع Build command `npm run build` و Output directory `dist/www` / `dist/app` / `dist/admin` / `dist/owner`).
 
 **مهم:** الكوكيز المشتركة مضبوطة على `.discover-sharm.com`، فالموقعين العامين لازم يبقوا تحت نفس الدومين الأب (وهما كده). على `localhost` الكوكيز بتشتغل لكل منفذ لوحده — عادي للتجربة.
 
@@ -107,7 +108,7 @@ api/hotels/img/{hash}.jpg    الصور
 2. من الكمبيوتر افتح `app.discover-sharm.com` → يتحوّل لـ www.
 3. سجّل دخول على app، وبعدين افتح `?view=www` من نفس الجهاز → لازم تلاقي نفسك داخل من غير ما تسجّل تاني، واللغة/الثيم زي ما هما.
 4. احجز رحلة بكارت اختبار على app → تظهر في "حجوزاتي" على www.
-5. `admin.discover-sharm.com` → سوبر أدمن → أنشئ أونر → سجّل دخوله من `/owner/ex.html`.
+5. `admin.discover-sharm.com` → سوبر أدمن → أنشئ أونر → سجّل دخوله من `owner.discover-sharm.com/ex.html`.
 6. `www.discover-sharm.com/admin` → لازم يحوّل لـ admin.
 
 ## الرجوع للنظام القديم
@@ -186,7 +187,7 @@ curl -i -X OPTIONS https://translate.discover-sharm.com/translate -H "Origin: ht
 
 ### 2) أونر مطعم / كافيه
 - السوبر أدمن ← **الأونرز** ← إضافة أونر بدور **مالك مطعم / كافيه** (كل مطعم بيتربط بأونر من صفحة المطعم نفسها: خانة "المالك").
-- الأونر بيدخل من `admin.discover-sharm.com/owner/restaurant.html` (اتضافت في صفحة اختيار اللوحات).
+- الأونر بيدخل من `owner.discover-sharm.com/restaurant.html` (اتضافت في صفحة اختيار اللوحات).
 - لوحته: **مطاعمي** (صفحة إضافة/تعديل كاملة: النوع مطعم/كافيه، مستوى الأسعار، الصور، **منيو بالأقسام والأصناف**، الموقع والخريطة، مواعيد العمل) — بنفس نظام الإدخال بلغة واحدة والترجمة التلقائية.
 - **الفروع**: الأونر بيضيف أكتر من فرع (حد أقصى 30 للمطعم). كل فرع جديد أو معدّل بيروح **بانتظار الموافقة**، والسوبر أدمن بيعتمده أو يرفضه (بسبب) من **فروع المطاعم**. الفروع المعتمدة بس بتظهر للعملاء في صفحة المطعم.
 - **QR Code**: لكل مطعم ولكل فرع معتمد — معاينة، لون، تحميل PNG/SVG، وطباعة **بوستر A4** أو **كارت ترابيزة A6**. الـ QR بيفتح صفحة المطعم (والفرع بيتمرّر بـ `?branch=` وبيتعلّم في الصفحة). الرابط الأساسي `https://app.discover-sharm.com` وبيتعدّل من نفس الشاشة.

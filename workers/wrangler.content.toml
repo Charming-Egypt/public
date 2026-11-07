@@ -10,13 +10,14 @@ main = "content-worker.js"
 compatibility_date = "2026-01-01"
 keep_vars = true   # variables live in the Cloudflare dashboard (Settings → Variables and Secrets); see VARIABLES.md
 
-[vars]
-SUPABASE_URL = "https://YOUR-PROJECT.supabase.co"
-SUPABASE_ANON_KEY = "YOUR-ANON-KEY"
-GITHUB_REPO = "YOUR-ORG/discover-sharm-data"     # the private data repo (owner/name)
-GITHUB_BRANCH = "main"
-MEDIA_BASE = "https://media.discover-sharm.com"       # public address of the R2 bucket below (static hosting for photos + the published catalog)
-ALLOWED_ORIGINS = "https://www.discover-sharm.com,https://app.discover-sharm.com,https://admin.discover-sharm.com"
+# [vars] intentionally NOT in this file: wrangler deploy would overwrite the real values set in the Cloudflare dashboard with placeholders.
+# Set these in Cloudflare → Workers & Pages → discover-sharm-content → Settings → Variables and Secrets (see VARIABLES.md):
+#   SUPABASE_URL = "https://YOUR-PROJECT.supabase.co"
+#   SUPABASE_ANON_KEY = "YOUR-ANON-KEY"
+#   GITHUB_REPO = "YOUR-ORG/discover-sharm-data"
+#   GITHUB_BRANCH = "main"
+#   MEDIA_BASE = "https://media.discover-sharm.com"
+#   ALLOWED_ORIGINS = "https://www.discover-sharm.com,https://app.discover-sharm.com,https://admin.discover-sharm.com,https://owner.discover-sharm.com"
 
 # Static hosting: one R2 bucket shared by the content + settings Workers.
 #   npx wrangler r2 bucket create discover-sharm-media

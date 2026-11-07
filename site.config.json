@@ -12,6 +12,10 @@
     "admin": {
       "domain": "https://admin.discover-sharm.com",
       "role": "staff"
+    },
+    "owner": {
+      "domain": "https://owner.discover-sharm.com",
+      "role": "owners"
     }
   },
   "apiBase": "",

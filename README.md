@@ -3,7 +3,8 @@
 ```
 www.discover-sharm.com    ← الكمبيوتر والشاشات الكبيرة      (dist/www)
 app.discover-sharm.com    ← الموبايل والتابلت، تصميم تطبيق   (dist/app)
-admin.discover-sharm.com  ← السوبر أدمن + لوحات الأونرز      (dist/admin)
+admin.discover-sharm.com  ← السوبر أدمن فقط                         (dist/admin)
+owner.discover-sharm.com  ← لوحات الأونرز (رحلات/باكدجات/فنادق/مطاعم/انتقالات) (dist/owner)
 ```
 
 التلات بيتبنوا من نفس الكود (`npm run build`) وبيتشاركوا نفس قاعدة بيانات Supabase ونفس Worker الدفع، فهم **نظام واحد** حتى لو كل موقع على دومين لوحده.

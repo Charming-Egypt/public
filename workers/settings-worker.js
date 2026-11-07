@@ -69,7 +69,7 @@ export default {
     const normO = (o) => String(o || '').trim().replace(/\/+$/, '').toLowerCase();
     const originHdr = req.headers.get('Origin') || '';
     const allowed = String(env.ALLOWED_ORIGINS || '').split(',').map(normO).filter(Boolean);
-    if (!allowed.length) allowed.push('https://admin.discover-sharm.com');
+    if (!allowed.length) allowed.push('https://admin.discover-sharm.com', 'https://owner.discover-sharm.com');
     const cors = allowed.includes(normO(originHdr))
       ? { 'Access-Control-Allow-Origin': originHdr.trim().replace(/\/+$/, ''), Vary: 'Origin', 'Access-Control-Allow-Headers': 'Authorization, Content-Type', 'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS', 'Access-Control-Max-Age': '86400' }
       : { Vary: 'Origin' };
