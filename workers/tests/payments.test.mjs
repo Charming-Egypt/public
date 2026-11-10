@@ -40,8 +40,7 @@ globalThis.fetch = async (url, init = {}) => {
     if (h.Authorization !== 'Bearer SERVICE' || h.apikey !== 'SERVICE') return j({ message: 'forbidden' }, 401);
     calls.push(fn); const out = rpc[fn](JSON.parse(init.body)); return new Response(JSON.stringify(out), { status: 200 });
   }
-  if (url.includes('/v3/cards/tokens')) { kashier.tokenize = { url, hash: h['Kashier-Hash'], body: JSON.parse(init.body) };
-    return kashier.tokenizeFail ? j({ status: 'FAILURE' }, 400) : j({ status: 'SUCCESS', response: { paymentMethod: { card: { number: '411111******1111', cardToken: 'tok_9', agreement: { type: 'perm', id: 'agr_9' } } } } }); }
+  if (url.includes('/v3/payment/sessions')) { kashier.session = { url, headers: h, body: JSON.parse(init.body) }; return kashier.sessionFail ? j({ message: 'x' }, 400) : j({ status: 'CREATED', sessionUrl: 'https://payments.kashier.io/en/pay/cs_1' }); }
   if (url.includes('kashier.io')) { kashier.last = { url, init }; return j(kashier.next); }
   if (url.includes('api.resend.com')) { const m = JSON.parse(init.body); if (h.Authorization !== 'Bearer RESEND') return j({}, 401); notified.push(m); return j({ id: 'em1' }); }
   throw new Error('unexpected fetch ' + url);
@@ -155,25 +154,43 @@ ok('notify: no token -> 401', (await call('/api/notify/resend', { orderId: 'B-3'
 mk('B-8', { status: 'cancelled' });
 ok('voucher-link: a cancelled booking has no voucher', (await call('/api/notify/voucher-link', { orderId: 'B-8' })).status === 409);
 
-// 9b. automatic balance collection: consent is only honoured when the feature is on AND the booking is a deposit booking
-let tokenizeCalls = [];
-mk('B-AP', { paymentPlan: 'deposit', amountDueNow: 525, remainingAmount: 525, balanceStatus: 'due' });
-await call('/api/kashier/charge', { orderId: 'B-AP', amount: 525, currency: 'EGP', card, autopay: true });
-ok('autopay ignored while AUTO_BALANCE is off', !(globalThis.__autopay || {})['B-AP'] && !kashier.tokenize);
-mk('B-AP2', { paymentPlan: 'deposit', amountDueNow: 525, remainingAmount: 525 });
+// 9b. automatic balance collection: the card is saved through a hosted Payment Session (Kashier support's documented flow)
+mk('B-AP', { paymentPlan: 'deposit', amountDueNow: 525, remainingAmount: 525, balanceStatus: 'due', checkin: '2026-12-20' });
+r = await call('/api/kashier/autopay-session', { orderId: 'B-AP', amount: 525, currency: 'EGP', email: 'g@x.com', lang: 'ar' });
+ok('autopay session refused while AUTO_BALANCE is off', r.status === 403 && !kashier.session);
 env.AUTO_BALANCE = 'on';
-await call('/api/kashier/charge', { orderId: 'B-AP2', amount: 525, currency: 'EGP', card, autopay: true });
-ok('autopay: card tokenized with the documented hash, before the charge', kashier.tokenize?.hash === await hmac('/?tokenization=MID-1.u-1', 'apikey') && kashier.tokenize.body.paymentMethod.card.number === card.number, kashier.tokenize);
-ok('autopay: consent + token + agreement stored server-side', globalThis.__autopay['B-AP2']?.consent === true && globalThis.__autopay['B-AP2']?.card_token === 'tok_9' && globalThis.__autopay['B-AP2']?.agreement_id === 'agr_9', globalThis.__autopay['B-AP2']);
-ok('autopay: the deposit itself is still a normal ECOMMERCE payment', JSON.parse(kashier.last.init.body).interactionSource === 'ECOMMERCE' && !('agreement' in JSON.parse(kashier.last.init.body).paymentMethod.card));
-kashier.tokenizeFail = true; mk('B-AP4', { paymentPlan: 'deposit', amountDueNow: 525, remainingAmount: 525 });
-const rr = await call('/api/kashier/charge', { orderId: 'B-AP4', amount: 525, currency: 'EGP', card, autopay: true });
-ok('tokenize failure never blocks the payment', (await rr.json()).status === 'captured' && !globalThis.__autopay['B-AP4']?.card_token);
-kashier.tokenizeFail = false;
+r = await call('/api/kashier/autopay-session', { orderId: 'B-AP', amount: 525, currency: 'EGP', email: 'g@x.com', lang: 'ar' }); d = await r.json();
+const sb = kashier.session?.body || {};
+ok('autopay session: returns the hosted page URL', d.status === 'redirect' && d.sessionUrl === 'https://payments.kashier.io/en/pay/cs_1', d);
+ok('autopay session: test host + raw secret key + api-key header', kashier.session.url === 'https://test-api.kashier.io/v3/payment/sessions' && kashier.session.headers.Authorization === 'secret' && kashier.session.headers['api-key'] === 'apikey');
+ok('autopay session: saveCard forced, RECURRING, 3DS on, agreement present', sb.saveCard === 'forced' && sb.interactionSource === 'RECURRING' && sb.enable3DS === true && !!sb.agreement?.type, sb);
+ok('autopay session: exact deposit amount, order id, customer reference, webhook', sb.amount === '525' && sb.order === 'B-AP' && sb.customer.reference === 'u-1' && sb.serverWebhook === 'https://pay.test/api/kashier/webhook' && sb.display === 'ar' && /ds_pay=B-AP/.test(sb.merchantRedirect), sb);
+ok('autopay session: consent stored', globalThis.__autopay['B-AP']?.consent === true);
+r = await call('/api/kashier/autopay-session', { orderId: 'B-AP', amount: 1, currency: 'EGP' });
+ok('autopay session: wrong amount rejected', r.status === 400);
 mk('B-AP3', { paymentPlan: 'full' });
-delete kashier.tokenize; await call('/api/kashier/charge', { orderId: 'B-AP3', amount: 1050, currency: 'EGP', card, autopay: true });
-ok('autopay ignored for a full-payment booking', !kashier.tokenize && !globalThis.__autopay['B-AP3']);
+r = await call('/api/kashier/autopay-session', { orderId: 'B-AP3', amount: 1050, currency: 'EGP' });
+ok('autopay session: full-payment booking rejected', r.status === 400);
+kashier.sessionFail = true; r = await call('/api/kashier/autopay-session', { orderId: 'B-AP', amount: 525, currency: 'EGP' });
+ok('autopay session: gateway failure -> clean 502', r.status === 502); kashier.sessionFail = false;
+env.AUTOPAY_AGREEMENT = JSON.stringify({ type: 'RECURRING', numberOfPayments: 2 }); delete kashier.session;
+await call('/api/kashier/autopay-session', { orderId: 'B-AP', amount: 525, currency: 'EGP' });
+ok('autopay session: AUTOPAY_AGREEMENT overrides the agreement', kashier.session?.body.agreement.type === 'RECURRING'); delete env.AUTOPAY_AGREEMENT;
+// the webhook after the deposit carries the token + agreement id
+await wh({ merchantOrderId: 'B-AP', status: 'SUCCESS', amount: 525, kashierOrderId: 'K9', card: { cardInfo: { maskedCard: '411111******1111' } }, paymentMethod: { card: { cardToken: 'tok_9', agreement: { id: 'agr_9' } } } });
+ok('autopay: webhook stores token + agreement + masked card', globalThis.__autopay['B-AP']?.card_token === 'tok_9' && globalThis.__autopay['B-AP']?.agreement_id === 'agr_9' && globalThis.__autopay['B-AP']?.masked_card === '411111******1111', globalThis.__autopay['B-AP']);
+ok('autopay: the deposit booking is completed by the same webhook', bookings['B-AP'].status === 'completed');
+mk('B-AP5', { paymentPlan: 'deposit', amountDueNow: 525, remainingAmount: 525 });
+await wh({ merchantOrderId: 'B-AP5', status: 'SUCCESS', amount: 525, kashierOrderId: 'K10', cardDataToken: 'tok_z', agreementId: 'agr_z' });
+ok('autopay: flat cardDataToken / agreementId names are understood too', globalThis.__autopay['B-AP5']?.card_token === 'tok_z' && globalThis.__autopay['B-AP5']?.agreement_id === 'agr_z');
 delete env.AUTO_BALANCE;
+mk('B-AP6', { paymentPlan: 'deposit', amountDueNow: 525, remainingAmount: 525 });
+await wh({ merchantOrderId: 'B-AP6', status: 'SUCCESS', amount: 525, kashierOrderId: 'K11', cardToken: 'tok_q', agreementId: 'agr_q' });
+ok('autopay: webhook token ignored while AUTO_BALANCE is off', !globalThis.__autopay['B-AP6']);
+// automatic attempts use their own "-BAL<timestamp>" reference — the webhook must still settle the base booking
+mk('B-AP7', { paymentPlan: 'deposit', status: 'completed', amountDueNow: 525, remainingAmount: 525, balanceStatus: 'due' });
+await wh({ merchantOrderId: 'B-AP7-BAL1760000000000', status: 'SUCCESS', amount: 525, kashierOrderId: 'K12' });
+ok('balance webhook with a timestamped reference marks the booking paid', bookings['B-AP7'].balanceStatus === 'paid');
 
 // 10. the service-role key is only ever used server-side, and never leaks
 ok('no response ever contains the service key', true);

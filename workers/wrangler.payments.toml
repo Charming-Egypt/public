@@ -26,3 +26,6 @@ crons = ["0 * * * *"]
 # [[kv_namespaces]]
 # binding = "RATE_LIMIT_KV"
 # id = "…"
+# AUTOPAY_AGREEMENT  optional JSON with the Kashier agreement terms for the saved-card session (set after talking to the account manager)
+# AUTO_BALANCE=on    automatic collection of the remaining balance (needs Kashier to enable tokenization/MIT on the account)
+# AUTOPAY_INTERACTION optional override of the later-charge interactionSource (default CONTAUTH)

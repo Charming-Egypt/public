@@ -162,34 +162,69 @@ const autoBalanceOn = (env) => String(env.AUTO_BALANCE || '').toLowerCase() === 
 async function autopaySave(env, orderId, uid, patch) {
   try { await sbRpc(env, 'autopay_upsert', { p_id: orderId, p_uid: uid || null, p_patch: patch }); } catch (e) { console.log('autopay save failed', e && e.message); }
 }
-// Saves the card with Kashier's documented "Create token" API (POST /v3/cards/tokens) — it returns a reusable cardToken plus the agreement id ("perm") that
-// later merchant-initiated charges need. Done with the same card details the guest just typed, BEFORE the deposit is charged, so it also works when the
-// deposit itself goes through 3-D Secure. Best effort: any failure just means "no automatic collection" for this booking.
-async function tokenizeForAutopay(env, uid, card, nameOnCard) {
-  const merchantId = env.KASHIER_MERCHANT_ID, apiKey = env.KASHIER_API_KEY;
-  const hash = await kashierTokenizationHash(merchantId, uid, apiKey);
-  const res = await fetch(`${kashierFepBase(env)}/v3/cards/tokens`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json', accept: 'application/json', 'Kashier-Hash': hash },
-    body: JSON.stringify({ merchantId, customerReference: uid, customer: { reference: uid },
-      paymentMethod: { type: 'CARD', card: { number: card.number, expiry: { month: card.month, year: card.year }, nameOnCard: nameOnCard || '', securityCode: card.cvv } } }),
-  });
+// Saving the card — Kashier's documented flow (confirmed by Kashier support): the DEPOSIT is paid through a hosted Payment Session created with
+// saveCard=forced, interactionSource=RECURRING, enable3DS=true and an `agreement`. The saved token + agreement id then arrive on the webhook.
+// (No raw card data ever touches this Worker on this path.)
+const kashierApiBase = (env) => (env.KASHIER_MODE || 'live') === 'test' ? 'https://test-api.kashier.io' : 'https://api.kashier.io';
+const _ymd = (d) => d.toISOString().slice(0, 10);
+// The agreement terms are set per account with the Kashier account manager: override the whole object with the AUTOPAY_AGREEMENT env var (JSON).
+function autopayAgreement(env, booking) {
+  if (env.AUTOPAY_AGREEMENT) { try { return JSON.parse(env.AUTOPAY_AGREEMENT); } catch (e) { console.log('AUTOPAY_AGREEMENT is not valid JSON'); } }
+  const day = String(booking.checkin || booking.date || '').slice(0, 10);
+  const end = /^\d{4}-\d{2}-\d{2}$/.test(day) ? new Date(day + 'T00:00:00Z') : new Date();
+  end.setUTCDate(end.getUTCDate() + 1);
+  return { type: 'UNSCHEDULED', amountVariability: 'VARIABLE', maximumAmountPerPayment: String(booking.remainingAmount), numberOfPayments: 1, expiryDate: _ymd(end) };   // defaults until the account manager confirms the values
+}
+async function createAutopaySession(env, { booking, orderId, uid, email, amount, currency, lang, origin }) {
+  const merchantId = env.KASHIER_MERCHANT_ID, apiKey = env.KASHIER_API_KEY, secret = env.KASHIER_SECRET_KEY;
+  if (!merchantId || !apiKey || !secret) throw new Error('Kashier not configured');
+  const body = {
+    merchantId, order: orderId, amount: String(amount), currency, mode: (env.KASHIER_MODE || 'live') === 'test' ? 'test' : 'live',
+    type: 'one-time', display: lang === 'ar' ? 'ar' : 'en', maxFailureAttempts: 3, allowedMethods: 'card',
+    description: booking.type ? `${booking.type} booking - deposit` : 'deposit',
+    merchantRedirect: `${_appUrl(env)}/?ds_pay=${encodeURIComponent(orderId)}`,
+    serverWebhook: `${origin}/api/kashier/webhook`,
+    customer: { reference: uid, email: email || undefined },
+    saveCard: 'forced', interactionSource: 'RECURRING', enable3DS: true,
+    agreement: autopayAgreement(env, booking),
+    expireAt: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+  };
+  const res = await fetch(`${kashierApiBase(env)}/v3/payment/sessions`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: secret, 'api-key': apiKey }, body: JSON.stringify(body) });
   const data = await res.json().catch(() => null);
-  const c = data?.response?.paymentMethod?.card || {};
-  const token = c.cardToken || c.cardDataToken, agreement = c.agreement?.id;
-  if (!res.ok || !token || !agreement) { console.log('tokenize failed', res.status, JSON.stringify(data?.messages || data || '').slice(0, 200)); return null; }
-  return { card_token: token, agreement_id: agreement, masked_card: c.number || null };
+  if (!res.ok || !data?.sessionUrl) { console.log('autopay session failed', res.status, JSON.stringify(data).slice(0, 300)); throw new Error('Could not start the secure payment page'); }
+  return data.sessionUrl;
+}
+// The webhook that follows a saveCard=forced payment carries the token and the agreement id. Kashier's docs name them cardToken / cardDataToken and
+// agreement(.id|Id), so look for any of those anywhere in `data` instead of relying on one exact path.
+function extractTokenInfo(data) {
+  let token = null, agreement = null, masked = null;
+  const walk = (o, depth) => {
+    if (!o || typeof o !== 'object' || depth > 5) return;
+    for (const [k, v] of Object.entries(o)) {
+      if (typeof v === 'string' && v) {
+        if (/^(cardToken|cardDataToken)$/i.test(k)) token = token || v;
+        else if (/^agreementId$/i.test(k)) agreement = agreement || v;
+        else if (/^maskedCard$/i.test(k)) masked = masked || v;
+      } else if (v && typeof v === 'object') {
+        if (/^agreement$/i.test(k) && typeof v.id === 'string') agreement = agreement || v.id;
+        walk(v, depth + 1);
+      }
+    }
+  };
+  walk(data, 0);
+  return token && agreement ? { card_token: token, agreement_id: agreement, masked_card: masked } : null;
 }
 // Merchant-initiated charge of the remaining balance (no CVV, no 3DS). Same "{orderId}-BAL" reference as the manual flow, so the webhook handles it too.
 async function chargeAutopay(env, x) {
   const merchantId = env.KASHIER_MERCHANT_ID, apiKey = env.KASHIER_API_KEY;
   if (!merchantId || !apiKey) return 'failed';
-  const ref = `${x.id}-BAL`, amount = String(x.remaining_amount), currency = x.currency || 'EGP';
+  const ref = `${x.id}-BAL${Date.now()}`, amount = String(x.remaining_amount), currency = x.currency || 'EGP';
   const hash = await kashierPaymentHash(merchantId, ref, amount, currency, apiKey, x.uid);
   const payload = {
     apiOperation: 'PAY',
     paymentMethod: { type: 'CARD', card: { agreement: { id: x.agreement_id }, enable3DS: false, cardToken: x.card_token } },
     order: { reference: ref, amount, currency, description: 'remaining balance (automatic)' },
-    interactionSource: env.AUTOPAY_INTERACTION || 'RECURRING',   // Pay-with-token reference: allowed ECOMMERCE|MOTO|RECURRING, "RECURRING for merchant-initiated repeat charges" (no CVV needed). Their Recurring guide example shows CONTAUTH: set AUTOPAY_INTERACTION=CONTAUTH if the bank/Kashier asks for it.
+    interactionSource: env.AUTOPAY_INTERACTION || 'CONTAUTH',   // confirmed by Kashier support: RECURRING when saving the card, CONTAUTH for the later token charge
     reconciliation: { webhookUrl: `${(env.PAYMENTS_URL || 'https://pay.discover-sharm.com').replace(/\/$/, '')}/api/kashier/webhook`, merchantRedirect: '' },
     merchantId, customer: { reference: x.uid },
     timestamp: new Date().toISOString(),   // listed as required in the Pay-with-token request schema
@@ -240,8 +275,8 @@ async function getPaidBooking(orderId, env) { const o = await getOrder(orderId, 
 function payableNow(booking) { return booking.amountDueNow != null ? booking.amountDueNow : booking.total; }
 // The later balance-collection charge uses "{orderId}-BAL" as its own Kashier order reference
 // (Kashier rejects a reused one) — these map it back.
-function isBalanceRef(reference) { return typeof reference === 'string' && reference.endsWith('-BAL'); }
-function baseOrderId(reference) { return isBalanceRef(reference) ? reference.slice(0, -4) : reference; }
+function isBalanceRef(reference) { return typeof reference === 'string' && /-BAL\d*$/.test(reference); }   // '-BAL' (manual) or '-BAL<timestamp>' (automatic attempts)
+function baseOrderId(reference) { return isBalanceRef(reference) ? reference.replace(/-BAL\d*$/, '') : reference; }
 // ---------------------------------------------------------------------
 // E-mail + voucher. The confirmation e-mail goes out through Resend (RESEND_API_KEY, MAIL_FROM); the "voucher"
 // is a printable page on the site (/voucher/?id=…) that the signed-in customer opens and saves as PDF.
@@ -474,8 +509,6 @@ export default {
       const merchantId = env.KASHIER_MERCHANT_ID, apiKey = env.KASHIER_API_KEY;
       if (!merchantId || !apiKey) return json({ error: 'Kashier not configured' }, 500, request);
 
-      // The guest agreed to automatic collection of the remaining balance (deposit bookings only; feature must be switched on).
-      const wantAutopay = autoBalanceOn(env) && autopay === true && booking.paymentPlan === 'deposit' && Number(booking.remainingAmount) > 0;
       const hash = await kashierPaymentHash(merchantId, orderId, amount, currency, apiKey, save ? uid : undefined);
       const payload = {
         apiOperation: 'PAY',
@@ -486,11 +519,6 @@ export default {
         customer: { reference: uid, firstName: customer?.firstName || '', lastName: customer?.lastName || '', email: customer?.email || '' },
         merchantId,
       };
-      if (wantAutopay) {
-        await autopaySave(env, orderId, uid, { consent: true });
-        const tk = await tokenizeForAutopay(env, uid, card, card.name).catch((e) => { console.log('tokenize error', e && e.message); return null; });
-        if (tk) await autopaySave(env, orderId, uid, tk);
-      }
       let kashierRes, kashierData;
       try {
         kashierRes = await fetch(`${kashierFepBase(env)}/v3/orders/`, { method: 'POST', headers: { 'Content-Type': 'application/json', accept: 'application/json', 'Kashier-Hash': hash }, body: JSON.stringify(payload) });
@@ -505,6 +533,28 @@ export default {
       const finalStatus = await finalizeBookingPayment(orderId, r.status || r.result, env, ctx);
       if (!kashierRes.ok || (r.result && r.result !== 'SUCCESS')) return json({ ...sanitizeKashierResponse(kashierData), status: 'failed' }, 200, request);
       return json({ ...sanitizeKashierResponse(kashierData), status: finalStatus === 'completed' ? 'captured' : 'pending' }, 200, request); // our status must win over the gateway's raw one
+    }
+
+    if (path === '/api/kashier/autopay-session' && method === 'POST') {
+      if (await isRateLimited(request, env, 'kashier-charge', LIMITS.charge.limit, LIMITS.charge.window)) return json({ error: 'Too many requests' }, 429, request);
+      if (!autoBalanceOn(env)) return json({ error: 'Automatic balance collection is not enabled' }, 403, request);
+      let uid;
+      try { uid = await requireUid(request, env); } catch (e) { return json({ error: e.message }, e.status || 401, request); }
+      let body;
+      try { body = await request.json(); } catch { return json({ error: 'Invalid JSON' }, 400, request); }
+      const { orderId, amount, currency, email, lang } = body || {};
+      if (!orderId || !amount || !currency) return json({ error: 'orderId, amount and currency required' }, 400, request);
+      const { booking, pending } = await getOrder(orderId, env);
+      if (!booking || booking.uid !== uid) return json({ error: 'Booking not found' }, 404, request);
+      if (booking.status === 'completed') return json({ status: 'captured', message: 'Already paid' }, 200, request);
+      if (!pending && booking.status !== 'pending_payment') return json({ error: 'Booking is not payable' }, 409, request);
+      if (booking.paymentPlan !== 'deposit' || !(Number(booking.remainingAmount) > 0)) return json({ error: 'Not a deposit booking' }, 400, request);
+      if (String(payableNow(booking)) !== String(amount) || booking.currency !== currency) return json({ error: 'Amount/currency does not match the booking' }, 400, request);
+      await autopaySave(env, orderId, uid, { consent: true });
+      try {
+        const sessionUrl = await createAutopaySession(env, { booking, orderId, uid, email, amount, currency, lang, origin: url.origin });
+        return json({ status: 'redirect', sessionUrl }, 200, request);
+      } catch (e) { return json({ error: e.message || 'Could not start the secure payment page' }, 502, request); }
     }
 
     if (path === '/api/kashier/charge-status' && method === 'POST') {
@@ -770,6 +820,10 @@ export default {
       }
 
       const merchantOrderId = reference;
+      if (autoBalanceOn(env) && (status === 'SUCCESS' || status === 'PAID')) {
+        const tk = extractTokenInfo(payload.data);
+        if (tk) { const o = await getOrder(merchantOrderId, env); await autopaySave(env, merchantOrderId, o.booking?.uid || null, tk); }
+      }
       const { booking, pending } = await getOrder(merchantOrderId, env);
       if (!booking) return json({ status: 'received', warning: 'Booking not found' }, 200, request);
       if (status === 'SUCCESS' || status === 'PAID') {

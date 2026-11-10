@@ -2053,6 +2053,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   search.switchTab(search.activeTab);   // card follows what restoreUiState brought back (dates, category, tab)
   if (auth.isLoggedIn() || sessionStorage.getItem('ds_guest')) { enterApp(); } else { nav.showAuth(); }
   WX.init();
+  if (typeof resumeSessionPayment === 'function') resumeSessionPayment();
 });
 
 document.addEventListener('submit', (e) => {

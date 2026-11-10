@@ -13,7 +13,7 @@ DS.dt = iso => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleDateS
 // ---------- icons ----------
 const LOGO = 'https://blogger.googleusercontent.com/img/a/AVvXsEjJnB5c7R2uZzCNpzUtsow1OaJSWKAuybM2Wxux8wLk0EYV4TMA-xe1gIRXyrQ8Hw1dDVhgL94mMfLdMmB1HmsQXlI0vYYoJ83Z2o6Iu3r1UTxZxm7KbtD6jDQnZyVyInzRPr2dKnCqEdUuOW6QaVKtqC0fyVi7vJ65sWVJZSgiSRle3UXA3il3Qk6kdJwN=s150';   // Discover Sharm logo (falls back to the 'DS' mark if it cannot load)
 const logoMark = () => `<span class="lg">DS<img src="${LOGO}" alt="Discover Sharm" onerror="this.remove()"></span>`;
-const IC = { qr: 'M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h3v3h-3zM20 14v3M14 20h3M20 20v1', cog: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z', search: 'M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3', refresh: 'M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5', chevl: 'M15 18l-6-6 6-6', chevr: 'M9 18l6-6-6-6', home: 'M3 10.5 12 3l9 7.5V21H3zM9 21v-6h6v6', cal: 'M8 2v4M16 2v4M3 9h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z', wallet: 'M3 7a2 2 0 0 1 2-2h13v4M3 7v11a2 2 0 0 0 2 2h15V9H5a2 2 0 0 1-2-2zM16 14h.01',
+const IC = { globe: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z', qr: 'M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h3v3h-3zM20 14v3M14 20h3M20 20v1', cog: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z', search: 'M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3', refresh: 'M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5', chevl: 'M15 18l-6-6 6-6', chevr: 'M9 18l6-6-6-6', home: 'M3 10.5 12 3l9 7.5V21H3zM9 21v-6h6v6', cal: 'M8 2v4M16 2v4M3 9h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z', wallet: 'M3 7a2 2 0 0 1 2-2h13v4M3 7v11a2 2 0 0 0 2 2h15V9H5a2 2 0 0 1-2-2zM16 14h.01',
   users: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75', box: 'M21 8 12 3 3 8v8l9 5 9-5zM3 8l9 5 9-5M12 13v8', star: 'M12 3l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.8 6.2 20.9l1.1-6.5L2.6 9.8l6.5-.9z',
   shield: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z', layers: 'M12 3 2 8l10 5 10-5zM2 13l10 5 10-5', code: 'M8 8l-5 4 5 4M16 8l5 4-5 4M14 4l-4 16', mail: 'M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zM3 7l9 6 9-6',
   brief: 'M3 8h18v12H3zM8 8V5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v3', list: 'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01', menu: 'M4 6h16M4 12h16M4 18h16', sun: 'M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4',
@@ -258,6 +258,7 @@ async function enter() {
   try { const x = (await DS.api('/langs')).languages || []; x.forEach(l => { if (!DS.LANGS.includes(l.code)) DS.LANGS.push(l.code); DS.LN[l.code] = l.nativeName; }); } catch { /* built-in languages only */ }
   VIEWS = typeof CFG.views === 'function' ? CFG.views(ME) : CFG.views;
   $('#nav').innerHTML = VIEWS.map((v, i) => `<button data-i="${i}" data-tip="${esc(v.label)}" aria-label="${esc(v.label)}">${DS.ic(v.icon || 'home')}<span>${v.label}</span></button>`).join('');
+  buildTabbar(nm);
   if (CFG.noSide) { $('#app').classList.add('noright'); const rp = $('#rightp'); if (rp) rp.remove(); } else DS.side();
   show(0);
 }
@@ -265,9 +266,36 @@ async function enter() {
 (() => { let tip; const T = () => tip || (tip = Object.assign(document.body.appendChild(document.createElement('div')), { id: 'tip' }));
   document.addEventListener('mouseover', e => { const b = e.target.closest('#nav button'); const t = T(); if (!b) { t.classList.remove('on'); return; } t.textContent = b.dataset.tip; const r = b.getBoundingClientRect(), rtl = getComputedStyle(document.body).direction === 'rtl'; t.style.top = (r.top + r.height / 2 - t.offsetHeight / 2) + 'px'; t.style.left = (rtl ? r.left - 12 - t.offsetWidth : r.right + 12) + 'px'; t.classList.add('on'); });
   document.addEventListener('mouseleave', () => tip && tip.classList.remove('on')); document.addEventListener('scroll', () => tip && tip.classList.remove('on'), true); })();
+// ---- phones: curved bottom bar (first four sections) + the floating logo button that opens the all-sections sheet (profile, every section, language, install, sign out) ----
+function buildTabbar(nm) {
+  const tb = $('#tabbar'), sh = $('#sheet'); if (!tb || !sh) return;
+  const ini = String(nm || '؟').trim()[0].toUpperCase(), role = CFG.roleLabel || '';
+  $('#hav').textContent = ini; $('#hav').onclick = () => document.body.classList.add('sheet-open');
+  tb.innerHTML = VIEWS.slice(0, 4).map((v, i) => `<button class="tb" data-i="${i}" aria-label="${esc(v.label)}" title="${esc(v.label)}">${DS.ic(v.icon || 'home')}<span>${esc(v.label)}</span></button>`).join('')
+    + `<button id="fab" type="button" aria-label="كل الأقسام"><img src="${LOGO}" alt="" onerror="this.replaceWith(document.createTextNode('DS'))"></button>`;
+  tb.onclick = e => { const b = e.target.closest('.tb'); if (b) show(+b.dataset.i); else if (e.target.closest('#fab')) document.body.classList.toggle('sheet-open'); };
+  const canInstall = () => window.DS_PWA && DS_PWA.canInstall && DS_PWA.canInstall(), ios = window.DS_PWA && DS_PWA.isIOS && DS_PWA.isIOS() && !(window.DS_PWA.standalone && DS_PWA.standalone());
+  sh.innerHTML = `<div class="grab"></div><div class="me"><span class="hav">${esc(ini)}</span><div><b>${esc(nm)}</b><small>${esc(role)}${ME && ME.email ? ' · ' + esc(ME.email) : ''}</small></div></div>
+    <div class="sg">${VIEWS.map((v, i) => `<button data-i="${i}"><span class="ci">${DS.ic(v.icon || 'home')}</span>${esc(v.label)}</button>`).join('')}</div>
+    <div class="sa"><button data-a="lang">${DS.ic('globe') || ''}<span>اللغة</span></button><button data-a="refresh">${DS.ic('refresh')}<span>تحديث</span></button>
+      <button data-a="install" class="${canInstall() ? '' : 'hide'}">${DS.ic('plus')}<span>تثبيت التطبيق</span></button><button data-a="out" class="out">${DS.ic('out')}<span>تسجيل الخروج</span></button></div>
+    ${ios ? '<div class="hint">لتثبيت التطبيق على الآيفون: اضغط زر المشاركة ثم "إضافة إلى الشاشة الرئيسية".</div>' : ''}`;
+  sh.onclick = e => {
+    const g = e.target.closest('.sg button'); if (g) return show(+g.dataset.i);
+    const a = e.target.closest('[data-a]'); if (!a) return;
+    if (a.dataset.a === 'out') return logout();
+    if (a.dataset.a === 'refresh') { document.body.classList.remove('sheet-open'); DS.reload(); DS.side(); return; }
+    if (a.dataset.a === 'lang') { document.body.classList.remove('sheet-open'); const lb = document.querySelector('header.top .dsl-btn-m'); if (lb) lb.click(); return; }
+    if (a.dataset.a === 'install' && window.DS_PWA) DS_PWA.install().then(ok => { if (ok) a.classList.add('hide'); });
+  };
+  $('#sheetbg').onclick = () => document.body.classList.remove('sheet-open');
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') document.body.classList.remove('sheet-open'); });
+  window.addEventListener('ds-pwa', () => { const i = sh.querySelector('[data-a=install]'); if (i) i.classList.toggle('hide', !canInstall()); });
+}
 async function show(i) {
   $('#app').classList.remove('app-ed'); window.onbeforeunload = null;
   [...$('#nav').children].forEach((b, j) => b.classList.toggle('on', i === j));
+  document.querySelectorAll('#tabbar .tb, #sheet .sg button').forEach(b => b.classList.toggle('on', +b.dataset.i === i)); document.body.classList.remove('sheet-open');
   $('#ptitle').textContent = VIEWS[i].label; document.body.classList.remove('nav-open'); window.scrollTo(0, 0);
   const gs = $('#gs'); if (gs) gs.value = '';
   const m = $('#main'); m.onclick = null; m.innerHTML = '<div class="stats"><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div></div><div class="skel" style="height:260px"></div>';
@@ -303,11 +331,13 @@ DS.side = async () => {
 };
 DS.reload = () => { const i = [...$('#nav').children].findIndex(b => b.classList.contains('on')); show(Math.max(0, i)); };
 DS.go = label => { const i = VIEWS.findIndex(v => v.label === label); if (i >= 0) show(i); };
-document.documentElement.dataset.theme = 'dark';   // consoles are dark-only
+// desktop = the dark glass console; phones & tablets = the "app" look (console/console-app.css): same look as the public app
+(() => { const mq = window.matchMedia('(max-width:1023px)'), set = () => { document.documentElement.dataset.theme = mq.matches ? 'app' : 'dark'; };
+  set(); (mq.addEventListener ? mq.addEventListener('change', set) : mq.addListener(set)); })();
 DS.start = (cfg) => {
   CFG = cfg; document.title = cfg.title;
   document.body.innerHTML = `
-  <div id="login"><div class="lbrand"><div><div class="brand">${logoMark()}<b>Discover<span>Sharm</span></b></div><h1 style="margin-top:38px">${esc(cfg.title)}</h1><p>لوحة تحكم متكاملة لإدارة الحجوزات والأرباح والمحتوى — بشكل آمن وسريع من أي جهاز.</p></div>
+  <div id="login"><div class="lbrand"><div><div class="brand">${logoMark()}<b>Discover<span>Sharm</span></b><img class="lgimg" src="/icons/splash-logo.png" alt="Discover Sharm" onerror="this.remove()"></div><h1 style="margin-top:38px">${esc(cfg.title)}</h1><p>لوحة تحكم متكاملة لإدارة الحجوزات والأرباح والمحتوى — بشكل آمن وسريع من أي جهاز.</p></div>
     <div class="lpts"><div>${DS.ic('shield')} صلاحيات محمية من السيرفر</div><div>${DS.ic('wallet')} محاسبة وأرباح شفافة</div><div>${DS.ic('trend')} تقارير وإحصائيات لحظية</div></div></div>
     <div class="lform"><form class="lcard" id="lf"><h2>تسجيل الدخول</h2><p>ادخل بحسابك للمتابعة</p><div id="lerr" class="err hide"></div>
     <div class="fld"><label>البريد الإلكتروني</label><input id="em" type="email" autocomplete="username" required></div>
@@ -318,10 +348,10 @@ DS.start = (cfg) => {
     <div id="lgoogle" class="hide" style="margin-top:16px"><div style="text-align:center;color:var(--muted);font-size:12px;margin-bottom:10px">—</div><div id="gbtn" style="display:flex;justify-content:center"></div></div></form></div></div>
   <div id="app" class="hide"><aside class="side"><div class="brand">${logoMark()}</div><nav id="nav" aria-label="القائمة"></nav>
     <div class="sfoot"><button id="out" title="خروج">${DS.ic('out')}</button></div></aside>
-    <div class="content"><header class="top"><div class="greet"><h1 id="greet"></h1><p id="ptitle"></p></div>
+    <div class="content"><header class="top"><button class="hav" id="hav" type="button" aria-label="القائمة"></button><div class="greet"><h1 id="greet"></h1><p id="ptitle"></p></div>
       <label class="sbox">${DS.ic('search')}<input id="gs" type="search" placeholder="ابحث في الصفحة..." autocomplete="off"></label>
       <button class="ib" id="rf" title="تحديث">${DS.ic('refresh')}</button><button class="ib mob" id="out2" title="خروج">${DS.ic('out')}</button></header><main id="main"></main></div>
-    <aside class="rightp" id="rightp"></aside></div><div id="scrim"></div><div id="toast"></div>`;
+    <aside class="rightp" id="rightp"></aside></div><div id="scrim"></div><div id="toast"></div><nav id="tabbar" aria-label="القائمة"></nav><div id="sheetbg"></div><div id="sheet" role="dialog" aria-label="كل الأقسام"></div>`;
   $('#rf').onclick = () => { DS.reload(); DS.side(); };
   $('#gs').oninput = e => {   // live filter of whatever the current page lists (table rows, content cards, review cards)
     const q = e.target.value.trim().toLowerCase();

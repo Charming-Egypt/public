@@ -442,6 +442,18 @@ async function processKashierPayment(orderId, amount, currency, btn) {
 }
 
 async function processKashierCard(orderId, amount, currency, btn) {
+  // The guest agreed to automatic collection of the remaining balance: the deposit is paid on Kashier's secure hosted page (3-D Secure + the card is
+  // saved there for the later charge) instead of our own card form — so no card number is typed or sent here at all.
+  const wantsAutopay = !!(window.DS_CONFIG && window.DS_CONFIG.AUTO_BALANCE) && document.getElementById('autoBalanceRow')?.style.display !== 'none' && !!document.getElementById('payAutoBalance')?.checked;
+  if (wantsAutopay) {
+    try {
+      const sres = await apiFetch('/api/kashier/autopay-session', { method: 'POST', body: JSON.stringify({ orderId, amount, currency, email: state.bookingDraft.email, lang: I18N.get() }) });
+      if (sres.status === 'captured') return true;
+      if (sres.status === 'redirect' && sres.sessionUrl) { location.href = sres.sessionUrl; return new Promise(() => {}); }   // leaves the page; ?ds_pay=<order> brings the guest back
+      toast(sres.error || sres.message || t('payStartFailed', 'Could not open the secure payment page'), 'error');
+    } catch (e) { toast(e.message || t('payStartFailed', 'Could not open the secure payment page'), 'error'); }
+    return false;
+  }
   const number = (document.getElementById('payCardNumber')?.value || '').replace(/\s+/g, '');
   const month = (document.getElementById('payCardMonth')?.value || '').trim().padStart(2, '0');
   const year = (document.getElementById('payCardYear')?.value || '').trim().padStart(2, '0');
@@ -1786,4 +1798,23 @@ function resumeBookingDraft(p) {
   else if (p.kind === 'excursion') { startExcursionBooking(p.id); if (state.currentExcursion) { Object.assign(state.bookingDraft, p.draft); renderExcursionBookingStep(2); } else return false; }
   else if (p.kind === 'transfer') { startTransferBooking(p.id); if (state.currentTransfer) { Object.assign(state.bookingDraft, p.draft); if (typeof renderTransferBookingStep === 'function') renderTransferBookingStep(2); } else return false; }
   return true;
+}
+
+
+// Back from Kashier's hosted payment page (deposit + saved card): ?ds_pay=<order id>. Confirm with our own backend (the webhook is the source of truth).
+async function resumeSessionPayment() {
+  const q = new URLSearchParams(location.search), id = q.get('ds_pay');
+  if (!id) return;
+  q.delete('ds_pay'); try { history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '') + location.hash); } catch (e) {}
+  if (!(auth.isLoggedIn && auth.isLoggedIn())) return;
+  toast(t('payConfirming', 'Confirming your payment…'), 'info');
+  for (let i = 0; i < 8; i++) {
+    try {
+      const st = await apiFetch('/api/kashier/charge-status', { method: 'POST', body: JSON.stringify({ orderId: id }) });
+      if (st.status === 'completed' || st.status === 'captured') { toast(t('payConfirmed', 'Payment confirmed — your booking is ready'), 'success'); try { nav.go('bookings'); } catch (e) {} return; }
+      if (st.status === 'failed') { toast(t('payFailedBack', 'The payment was not completed'), 'error'); return; }
+    } catch (e) {}
+    await new Promise(r => setTimeout(r, 2500));
+  }
+  toast(t('payStillPending', 'We are still confirming your payment — check My Bookings in a moment'), 'info');
 }

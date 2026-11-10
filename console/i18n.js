@@ -26,7 +26,7 @@ function build(d) {
 const tx = s => (rx && typeof s === 'string' && AR.test(s)) ? s.replace(rx, m => dict[m] || m) : s;
 window.DS_T = tx;
 
-const ATTRS = ['placeholder', 'title', 'aria-label', 'alt', 'data-ph'];
+const ATTRS = ['placeholder', 'title', 'aria-label', 'alt', 'data-ph', 'data-label'];
 function walk(root) {
   if (!rx || !root) return;
   if (root.nodeType === 3) { fixText(root); return; }

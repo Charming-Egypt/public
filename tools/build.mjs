@@ -65,7 +65,7 @@ function csp(site) {
       "font-src 'self' data: https://fonts.gstatic.com",
       "img-src 'self' data: blob: https:",
       `connect-src ${uniq(["'self'", originOf(sbc.url), wsOf(sbc.url), originOf(sbc.translateBase), originOf(sbc.contentBase), originOf(sbc.settingsBase), originOf(sbc.mediaBase), 'https://accounts.google.com'])}`,
-      "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://www.google.com https://accounts.google.com", "object-src 'none'", "base-uri 'self'", "form-action 'self'", "frame-ancestors 'none'", 'upgrade-insecure-requests',
+      "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://www.google.com https://accounts.google.com", "worker-src 'self'", "manifest-src 'self'", "object-src 'none'", "base-uri 'self'", "form-action 'self'", "frame-ancestors 'none'", 'upgrade-insecure-requests',
     ].join('; ');
   }
   return [
@@ -427,7 +427,7 @@ function buildStaff(site) {
   const isOwner = site === 'owner', out = mk(site), domain = SITES[site];
   fs.rmSync(outRoot(site), { recursive: true, force: true });
 
-  const files = ['console.css', 'i18n.js', 'console.js', 'editor.js', 'qr.js', 'restaurants.js', 'settings.js', 'schemas.js', 'supabase-console.js'];
+  const files = ['console.css', 'console-app.css', 'pwa.js', 'i18n.js', 'console.js', 'editor.js', 'qr.js', 'restaurants.js', 'settings.js', 'schemas.js', 'supabase-console.js'];
   const V = {};
   for (const f of files) { const b = fs.readFileSync(path.join(ROOT, 'console', f)); out.write(`console/${f}`, b); V[f] = sha(b); }
   if (!isOwner) { const adminJs = fs.readFileSync(path.join(ROOT, 'admin-src', 'admin.js')); out.write('admin.js', adminJs); V['admin.js'] = sha(adminJs); }
@@ -439,6 +439,33 @@ ${useSupabase ? `document.write('<script src="${SUPABASE_JS}"><\\/script>');` : 
   out.write('console/supabase-config.js', sbCfg); V['supabase-config.js'] = sha(sbCfg);
 
   // every admin-src page: absolute asset paths + cache-busting hashes
+  // ---- installable app (PWA): manifest, icons, head tags, service worker --------------------------------------------------
+  const APP_BG = '#f6f5f3';
+  const appName = isOwner ? 'Discover Sharm Owner' : 'Discover Sharm Admin', shortName = isOwner ? 'DS Owner' : 'DS Admin';
+  out.copy('shared/pwa', 'icons');
+  const pwaHead = (h) => h
+    .replace(/<meta name="theme-color"[^>]*>/, `<meta name="theme-color" content="${APP_BG}" media="(prefers-color-scheme: light)">\n<meta name="theme-color" content="#0d0d0f" media="(prefers-color-scheme: dark)">`)
+    .replace('</head>', `<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="${shortName}">
+<script src="/console/pwa.js?v=${V['pwa.js']}"></script>
+</head>`);
+  out.write('manifest.webmanifest', JSON.stringify({
+    id: '/', name: appName, short_name: shortName, lang: 'ar', dir: 'auto',
+    description: isOwner ? 'Discover Sharm — owner dashboards' : 'Discover Sharm — super admin',
+    start_url: '/', scope: '/', display: 'standalone', display_override: ['standalone', 'minimal-ui'], orientation: 'portrait',
+    background_color: APP_BG, theme_color: APP_BG, categories: ['business', 'productivity'],
+    icons: [
+      { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+      { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+      { src: '/icons/icon-maskable-192.png', sizes: '192x192', type: 'image/png', purpose: 'maskable' },
+      { src: '/icons/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+    ],
+  }, null, 2));
   const page = (srcRel, outRel) => {
     let h = read(`admin-src/${srcRel}`)
       .replace('<link rel="stylesheet" href="../console/console.css">', `<script src="/console/i18n.js?v=${V['i18n.js']}"></script>\n<link rel="stylesheet" href="../console/console.css">`)
@@ -448,17 +475,25 @@ ${useSupabase ? `document.write('<script src="${SUPABASE_JS}"><\\/script>');` : 
       .replace('src="../console/console.js"', `src="/console/console.js?v=${V['console.js']}"`)
       // schemas + the console modules (editor, QR, restaurants, settings) load right after console.js, before any inline script
       .replace('src="../console/schemas.js"></script>', `src="/console/schemas.js?v=${V['schemas.js']}"></script>\n` + ['editor', 'qr', 'restaurants', 'settings'].map(f => `<script src="/console/${f}.js?v=${V[f + '.js']}"></script>`).join('\n'))
-      .replace('src="admin.js"', `src="/admin.js?v=${V['admin.js']}"`);
+      .replace('src="admin.js"', `src="/admin.js?v=${V['admin.js']}"`)
+      .replace(/(<link rel="stylesheet" href="\/console\/console\.css\?v=[^"]+">)/, `$1\n<link rel="stylesheet" href="/console/console-app.css?v=${V['console-app.css']}">`);
+    h = pwaHead(h);
     out.write(outRel, h);
   };
   if (isOwner) {   // owner.discover-sharm.com/ = the picker, /ex.html /pkg.html /hotel.html … = the consoles (no super-admin code at all on this origin)
     for (const f of fs.readdirSync(path.join(ROOT, 'admin-src', 'owner'))) page(`owner/${f}`, f);
-    out.write('index.html', read('admin-src/owner-index.html').replace('</head>', `<script src="/console/i18n.js?v=${V['i18n.js']}"></script>\n</head>`));
+    out.write('index.html', pwaHead(read('admin-src/owner-index.html').replace('</head>', `<script src="/console/i18n.js?v=${V['i18n.js']}"></script>\n</head>`)));
   } else page('index.html', 'index.html');
   for (const f of fs.readdirSync(path.join(ROOT, 'console', 'admin-lang'))) out.copy(`console/admin-lang/${f}`, `lang/admin-${f}`);   // console interface languages (see console/i18n.js)
   out.copy('shared/favicon.ico', 'favicon.ico');
   out.copy('shared/data/lang/en.json', 'lang/en.json');   // the English UI strings: the source text when a new language is added (console/settings.js)
 
+  {   // service worker: pre-cache the shell of this site
+    const htmlPages = isOwner ? ['/', ...fs.readdirSync(path.join(ROOT, 'admin-src', 'owner')).map((f) => '/' + f)] : ['/'];
+    const precache = [...new Set([...htmlPages, '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/icon-maskable-192.png', '/icons/apple-touch-icon.png', '/icons/splash-logo.png',
+      ...files.map((f) => `/console/${f}?v=${V[f]}`), `/console/supabase-config.js?v=${V['supabase-config.js']}`, ...(isOwner ? [] : [`/admin.js?v=${V['admin.js']}`])])];
+    out.write('sw.js', read('shared/sw-staff.template.js').replaceAll('__VERSION__', sha(JSON.stringify([V, precache]))).replace('__PRECACHE__', JSON.stringify(precache, null, 2)));
+  }
   out.write('404.html', `<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>404</title>
 <style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0f1b44;color:#fff;font-family:system-ui,sans-serif;text-align:center}a{color:#fbbf24}</style></head>
 <body><main><h1>404</h1><p>الصفحة دي مش موجودة</p><a href="/">${isOwner ? 'لوحات الأونرز' : 'لوحة الإدارة'}</a></main></body></html>\n`);
@@ -477,6 +512,9 @@ ${useSupabase ? `document.write('<script src="${SUPABASE_JS}"><\\/script>');` : 
     '  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()',
     '  Cross-Origin-Opener-Policy: same-origin',
     '',
+    '/sw.js', '  Cache-Control: no-cache', '  Service-Worker-Allowed: /', '',
+    '/manifest.webmanifest', '  Content-Type: application/manifest+json', '  Cache-Control: public, max-age=3600', '',
+    '/icons/*', '  Cache-Control: public, max-age=2592000', '',
     '/console/*',
     '  Cache-Control: public, max-age=31536000, immutable',
     ...(isOwner ? [] : ['/admin.js', '  Cache-Control: public, max-age=31536000, immutable', '']),
