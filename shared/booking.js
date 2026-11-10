@@ -299,6 +299,12 @@ function bkDateField(id, label, value, icon = 'fa-calendar-days') {
     </div>`;
 }
 
+// Optional "charge the remaining balance automatically" consent — only when the feature is switched on at build time (DS_AUTO_BALANCE=on) and the deposit plan is selected.
+function autoBalanceRow() {
+  if (!(window.DS_CONFIG && window.DS_CONFIG.AUTO_BALANCE)) return '';
+  const dep = Object.values(state.bookingDraft.paymentPlan || {}).includes('deposit');
+  return `<label class="bk-check" id="autoBalanceRow" style="${dep ? '' : 'display:none'}"><input type="checkbox" id="payAutoBalance"><span class="bk-check-box" aria-hidden="true"><i class="fa-solid fa-check"></i></span><span>${t('autoBalanceLabel', 'I authorize Discover Sharm to charge the remaining balance to this card automatically, about 24 hours before the payment deadline.')}</span></label>`;
+}
 function paymentMethodsBlock(currentMethod, onchangeFn) {
   const methods = [
     { id: 'card', label: t('payMethodCard'), icon: '<i class="fa-brands fa-cc-visa"></i><i class="fa-brands fa-cc-mastercard"></i>' },
@@ -339,6 +345,7 @@ function paymentMethodsBlock(currentMethod, onchangeFn) {
           <input type="text" id="payCardName" autocomplete="cc-name" placeholder="${t('phNameOnCard')}" class="bk-input">
         </div>
         <label class="bk-check"><input type="checkbox" id="payCardSave"><span class="bk-check-box" aria-hidden="true"><i class="fa-solid fa-check"></i></span><span>${t('saveCardLabel')}</span></label>
+        ${autoBalanceRow()}
       </div>`;
   } else if (currentMethod === 'instapay') {
     detailFields = `
@@ -370,11 +377,23 @@ function depositOf(total) { return Math.round(total * DEPOSIT_RATIO); }
 // amountDueNow() is the single source of truth both the summary UI and the
 // actual charge call read from — keeps them impossible to drift apart.
 function amountDueNow(type, total) {
+  return planOf(type) === 'deposit' ? depositOf(total) : total;
+}
+// A deposit is only offered while there is time to collect the rest: a service dated tomorrow (or sooner) must be paid in full.
+// (The balance deadline is 24h before the service — see the DB setting balance_due_hours; create_booking enforces the same rule.)
+function serviceDayOf(type) { const d = state.bookingDraft || {}; return type === 'hotel' ? d.checkin : d.date; }
+function depositAllowed(type) {
+  const day = String(serviceDayOf(type) || '').slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return true;                     // date not chosen yet — the server re-checks
+  const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Africa/Cairo' }).format(new Date());   // YYYY-MM-DD in Egypt
+  const days = Math.round((Date.parse(day + 'T00:00:00Z') - Date.parse(today + 'T00:00:00Z')) / 86400000);
+  return days >= 2;
+}
+function planOf(type) {
   const plan = (state.bookingDraft.paymentPlan && state.bookingDraft.paymentPlan[type]) || 'full';
-  return plan === 'deposit' ? depositOf(total) : total;
+  return plan === 'deposit' && !depositAllowed(type) ? 'full' : plan;
 }
 function payBtnLabel(type, total) {
-  const plan = (state.bookingDraft.paymentPlan && state.bookingDraft.paymentPlan[type]) || 'full';
   return `${t('bookNowBtn')} — ${utils.formatPrice(amountDueNow(type, total))}`;
 }
 // Two radio options the guest actively picks between — full amount (nothing
@@ -382,7 +401,8 @@ function payBtnLabel(type, total) {
 // is charged until they choose; 'full' is the default.
 function paymentPlanSelector(total, type) {
   if (!state.bookingDraft.paymentPlan) state.bookingDraft.paymentPlan = {};
-  const cur = state.bookingDraft.paymentPlan[type] || 'full';     // keep the guest's choice when the step re-renders
+  const allowed = depositAllowed(type);
+  const cur = planOf(type);     // keep the guest's choice when the step re-renders (forced to 'full' when a deposit is not allowed)
   state.bookingDraft.paymentPlan[type] = cur;
   const deposit = depositOf(total);
   const opt = (val, label, amount) => `
@@ -396,8 +416,9 @@ function paymentPlanSelector(total, type) {
     <div class="payment-plan-selector">
       <div class="pay-options">
         ${opt('full', t('payFullAmountLabel'), total)}
-        ${opt('deposit', t('payDepositOptionLabel'), deposit)}
+        ${allowed ? opt('deposit', t('payDepositOptionLabel'), deposit) : ''}
       </div>
+      ${allowed ? '' : `<p class="bk-note"><i class="fa-solid fa-circle-info" aria-hidden="true"></i><span>${t('payFullRequiredNote')}</span></p>`}
       <p class="bk-note" id="paymentPlanNote_${type}"><i class="fa-solid fa-circle-info" aria-hidden="true"></i><span>${cur === 'deposit' ? t('payDepositNoteLabel').replace('{n}', utils.formatPrice(total - deposit)) : t('payFullNoteLabel')}</span></p>
     </div>`;
 }
@@ -405,6 +426,7 @@ function updatePaymentPlan(type, total, plan) {
   if (!state.bookingDraft.paymentPlan) state.bookingDraft.paymentPlan = {};
   state.bookingDraft.paymentPlan[type] = plan;
   document.querySelectorAll(`input[name="paymentPlan_${type}"]`).forEach(i => i.closest('.pay-option')?.classList.toggle('is-selected', i.value === plan));
+  const abr = document.getElementById('autoBalanceRow'); if (abr) abr.style.display = plan === 'deposit' ? '' : 'none';
   const btn = document.getElementById(type + 'PayBtn');
   if (btn) btn.innerHTML = `<i class="fa-solid fa-lock" aria-hidden="true"></i>${payBtnLabel(type, total)}`;
   const note = document.querySelector('#paymentPlanNote_' + type + ' span');
@@ -441,6 +463,7 @@ async function processKashierCard(orderId, amount, currency, btn) {
         orderId, amount, currency,
         card: { number, month, year, cvv, name },
         save,
+        autopay: !!(document.getElementById('autoBalanceRow')?.style.display !== 'none' && document.getElementById('payAutoBalance')?.checked),
         customer: { firstName: firstName || '', lastName: rest.join(' '), email: state.bookingDraft.email },
       }),
     });
@@ -934,7 +957,7 @@ async function payAndConfirmHotelBooking(roomTotal, taxes, total, nights) {
       nights,
       payment: state.bookingDraft.payment,
       total,
-      paymentPlan: (state.bookingDraft.paymentPlan && state.bookingDraft.paymentPlan.hotel) || 'full',
+      paymentPlan: planOf('hotel'),
       currency: 'EGP',
       priceFormatted: utils.formatPrice(total),
       status: 'pending_payment',
@@ -1195,7 +1218,7 @@ async function payAndConfirmExcursionBooking(subtotal, taxes, total) {
       participants: state.bookingDraft.participants,
       payment: state.bookingDraft.payment,
       total,
-      paymentPlan: (state.bookingDraft.paymentPlan && state.bookingDraft.paymentPlan.excursion) || 'full',
+      paymentPlan: planOf('excursion'),
       currency: 'EGP',
       priceFormatted: utils.formatPrice(total),
       status: 'pending_payment',
@@ -1352,7 +1375,7 @@ async function payAndConfirmTransferBooking(subtotal, taxes, total) {
       passengers: state.bookingDraft.passengers,
       payment: state.bookingDraft.payment,
       total,
-      paymentPlan: (state.bookingDraft.paymentPlan && state.bookingDraft.paymentPlan.transfer) || 'full',
+      paymentPlan: planOf('transfer'),
       currency: 'EGP',
       priceFormatted: utils.formatPrice(total),
       status: 'pending_payment',

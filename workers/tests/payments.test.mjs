@@ -20,6 +20,7 @@ const rpc = {
     if (['FAILED','FAILURE','DECLINED'].includes(s) && b.status === 'pending_payment') { b.lastPaymentStatus = 'failed'; return { status: 'failed', created: false }; }
     return { status: b.status, created: false };
   },
+  autopay_upsert: ({ p_id, p_uid, p_patch }) => { (globalThis.__autopay ||= {})[p_id] = { ...(globalThis.__autopay[p_id] || {}), ...p_patch, uid: p_uid }; return null; },
   finalize_balance_payment: ({ p_id, p_gateway_status }) => { const b = bookings[p_id]; if (!b) return null;
     if (b.balanceStatus !== 'due') return b.balanceStatus || 'paid';
     const s = p_gateway_status.toUpperCase();
@@ -39,6 +40,8 @@ globalThis.fetch = async (url, init = {}) => {
     if (h.Authorization !== 'Bearer SERVICE' || h.apikey !== 'SERVICE') return j({ message: 'forbidden' }, 401);
     calls.push(fn); const out = rpc[fn](JSON.parse(init.body)); return new Response(JSON.stringify(out), { status: 200 });
   }
+  if (url.includes('/v3/cards/tokens')) { kashier.tokenize = { url, hash: h['Kashier-Hash'], body: JSON.parse(init.body) };
+    return kashier.tokenizeFail ? j({ status: 'FAILURE' }, 400) : j({ status: 'SUCCESS', response: { paymentMethod: { card: { number: '411111******1111', cardToken: 'tok_9', agreement: { type: 'perm', id: 'agr_9' } } } } }); }
   if (url.includes('kashier.io')) { kashier.last = { url, init }; return j(kashier.next); }
   if (url.includes('api.resend.com')) { const m = JSON.parse(init.body); if (h.Authorization !== 'Bearer RESEND') return j({}, 401); notified.push(m); return j({ id: 'em1' }); }
   throw new Error('unexpected fetch ' + url);
@@ -151,6 +154,26 @@ ok('resend: e-mail sent again on request', r.status === 200 && notified.length =
 ok('notify: no token -> 401', (await call('/api/notify/resend', { orderId: 'B-3' }, null)).status === 401);
 mk('B-8', { status: 'cancelled' });
 ok('voucher-link: a cancelled booking has no voucher', (await call('/api/notify/voucher-link', { orderId: 'B-8' })).status === 409);
+
+// 9b. automatic balance collection: consent is only honoured when the feature is on AND the booking is a deposit booking
+let tokenizeCalls = [];
+mk('B-AP', { paymentPlan: 'deposit', amountDueNow: 525, remainingAmount: 525, balanceStatus: 'due' });
+await call('/api/kashier/charge', { orderId: 'B-AP', amount: 525, currency: 'EGP', card, autopay: true });
+ok('autopay ignored while AUTO_BALANCE is off', !(globalThis.__autopay || {})['B-AP'] && !kashier.tokenize);
+mk('B-AP2', { paymentPlan: 'deposit', amountDueNow: 525, remainingAmount: 525 });
+env.AUTO_BALANCE = 'on';
+await call('/api/kashier/charge', { orderId: 'B-AP2', amount: 525, currency: 'EGP', card, autopay: true });
+ok('autopay: card tokenized with the documented hash, before the charge', kashier.tokenize?.hash === await hmac('/?tokenization=MID-1.u-1', 'apikey') && kashier.tokenize.body.paymentMethod.card.number === card.number, kashier.tokenize);
+ok('autopay: consent + token + agreement stored server-side', globalThis.__autopay['B-AP2']?.consent === true && globalThis.__autopay['B-AP2']?.card_token === 'tok_9' && globalThis.__autopay['B-AP2']?.agreement_id === 'agr_9', globalThis.__autopay['B-AP2']);
+ok('autopay: the deposit itself is still a normal ECOMMERCE payment', JSON.parse(kashier.last.init.body).interactionSource === 'ECOMMERCE' && !('agreement' in JSON.parse(kashier.last.init.body).paymentMethod.card));
+kashier.tokenizeFail = true; mk('B-AP4', { paymentPlan: 'deposit', amountDueNow: 525, remainingAmount: 525 });
+const rr = await call('/api/kashier/charge', { orderId: 'B-AP4', amount: 525, currency: 'EGP', card, autopay: true });
+ok('tokenize failure never blocks the payment', (await rr.json()).status === 'captured' && !globalThis.__autopay['B-AP4']?.card_token);
+kashier.tokenizeFail = false;
+mk('B-AP3', { paymentPlan: 'full' });
+delete kashier.tokenize; await call('/api/kashier/charge', { orderId: 'B-AP3', amount: 1050, currency: 'EGP', card, autopay: true });
+ok('autopay ignored for a full-payment booking', !kashier.tokenize && !globalThis.__autopay['B-AP3']);
+delete env.AUTO_BALANCE;
 
 // 10. the service-role key is only ever used server-side, and never leaks
 ok('no response ever contains the service key', true);

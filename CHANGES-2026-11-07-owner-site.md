@@ -3,7 +3,7 @@
 - موقع رابع جديد `dist/owner` (`npm run build:owner` / `npm run build` يبني الأربعة).
   - `owner.discover-sharm.com/` صفحة اختيار نوع الحساب، و `/ex.html` `/pkg.html` `/hotel.html` `/restaurant.html` `/transfer.html` اللوحات.
   - مفيش كود السوبر أدمن على الدومين ده، والجلسات منفصلة عن الأدمن (origin مختلف).
-- `admin.discover-sharm.com` بقى للسوبر أدمن فقط. `/owner/*` عليه (و www و app) بيحوّل 301 لـ `owner.discover-sharm.com`. 
+- `admin.discover-sharm.com` بقى للسوبر أدمن فقط. `/owner/*` عليه (و www و app) بيحوّل 301 لـ `owner.discover-sharm.com`.
 
 ## لازم تعمل (مرة واحدة)
 1. Cloudflare Pages: مشروع جديد `discover-sharm-owner` — Build command `npm run build:owner`، Output `dist/owner`، نفس متغيرات `DS_*` اللي على مشروع الأدمن (SUPABASE_URL/ANON_KEY/CONTENT_BASE/SETTINGS_BASE/MEDIA_BASE/TRANSLATE_BASE) — وأضف Custom domain `owner.discover-sharm.com`.

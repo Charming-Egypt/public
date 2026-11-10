@@ -15,6 +15,7 @@
     "seed": "node tools/make-seed.mjs",
     "test:payments": "node workers/tests/payments.test.mjs",
     "test:smtp": "node workers/tests/smtp.test.mjs",
+    "test:balance": "node workers/tests/balance-job.test.mjs",
     "import:bookings": "node tools/import-firebase-bookings.mjs",
     "test:translate": "node workers/tests/translate.test.mjs",
     "test:content": "node workers/tests/content.test.mjs",

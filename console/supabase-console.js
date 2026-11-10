@@ -48,6 +48,7 @@
   const AR = {
     limit_reached: 'وصلت للحد الأقصى من العناصر المسموح بيه لحسابك',
     too_early: 'ميعاد الخدمة لسه ماجاش — تقدر تسجّل التنفيذ بعده',
+    balance_due: 'العميل لسه ما سدّدش المتبقي من الحجز — تقدر تسجّل التنفيذ بعد ما يدفعه أونلاين',
     account_locked: 'طلبات الصرف متوقفة 24 ساعة بعد تغيير حساب الاستلام (حماية لحسابك)',
     price_changed: 'السعر اتغيّر',
   };
@@ -457,6 +458,27 @@
     async login(email, password) {
       const { error } = await sb.auth.signInWithPassword({ email, password });
       if (error) throw new Error('الإيميل أو الباسورد غلط');
+    },
+    googleClientId: cfg.googleClientId || '',
+    async loginGoogle(idToken) {
+      const { error } = await sb.auth.signInWithIdToken({ provider: 'google', token: idToken });
+      if (error) throw new Error('تعذّر الدخول بجوجل');
+    },
+    async forgot(email) {   // sends the "set a new password" e-mail (works for accounts created through Google too)
+      const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + '/' });
+      if (error) throw new Error('تعذّر إرسال رابط إعادة الضبط — جرّب بعد شوية');
+    },
+    async recovery() {      // the reset link lands on "/#access_token=…&type=recovery": open that session, then ask for the new password
+      const h = new URLSearchParams(location.hash.replace(/^#/, ''));
+      if (h.get('type') !== 'recovery' || !h.get('access_token')) return false;
+      const { error } = await sb.auth.setSession({ access_token: h.get('access_token'), refresh_token: h.get('refresh_token') || '' });
+      history.replaceState(null, '', location.pathname + location.search);
+      if (error) throw new Error('رابط إعادة الضبط انتهت صلاحيته — اطلب رابط جديد');
+      return true;
+    },
+    async setPassword(pw) {
+      const { error } = await sb.auth.updateUser({ password: pw });
+      if (error) throw new Error(/same|different/i.test(error.message) ? 'اختار كلمة مرور مختلفة عن القديمة' : 'تعذّر حفظ كلمة المرور (٨ حروف على الأقل)');
     },
     async session() { const { data: { session } } = await sb.auth.getSession(); return !!session; },
     async logout() { meCache = { t: 0, uid: null, v: null }; try { await sb.auth.signOut(); } catch {} },

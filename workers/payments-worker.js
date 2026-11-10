@@ -157,6 +157,57 @@ async function kashierTokenizationHash(mid, customerReference, apiKey) {
 function kashierFepBase(env) {
   return (env.KASHIER_MODE || 'live') === 'test' ? 'https://test-fep.kashier.io' : 'https://fep.kashier.io';
 }
+// Automatic collection of the remaining balance (Kashier agreement + saved token, merchant-initiated charge). OFF unless AUTO_BALANCE=on.
+const autoBalanceOn = (env) => String(env.AUTO_BALANCE || '').toLowerCase() === 'on';
+async function autopaySave(env, orderId, uid, patch) {
+  try { await sbRpc(env, 'autopay_upsert', { p_id: orderId, p_uid: uid || null, p_patch: patch }); } catch (e) { console.log('autopay save failed', e && e.message); }
+}
+// Saves the card with Kashier's documented "Create token" API (POST /v3/cards/tokens) — it returns a reusable cardToken plus the agreement id ("perm") that
+// later merchant-initiated charges need. Done with the same card details the guest just typed, BEFORE the deposit is charged, so it also works when the
+// deposit itself goes through 3-D Secure. Best effort: any failure just means "no automatic collection" for this booking.
+async function tokenizeForAutopay(env, uid, card, nameOnCard) {
+  const merchantId = env.KASHIER_MERCHANT_ID, apiKey = env.KASHIER_API_KEY;
+  const hash = await kashierTokenizationHash(merchantId, uid, apiKey);
+  const res = await fetch(`${kashierFepBase(env)}/v3/cards/tokens`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json', accept: 'application/json', 'Kashier-Hash': hash },
+    body: JSON.stringify({ merchantId, customerReference: uid, customer: { reference: uid },
+      paymentMethod: { type: 'CARD', card: { number: card.number, expiry: { month: card.month, year: card.year }, nameOnCard: nameOnCard || '', securityCode: card.cvv } } }),
+  });
+  const data = await res.json().catch(() => null);
+  const c = data?.response?.paymentMethod?.card || {};
+  const token = c.cardToken || c.cardDataToken, agreement = c.agreement?.id;
+  if (!res.ok || !token || !agreement) { console.log('tokenize failed', res.status, JSON.stringify(data?.messages || data || '').slice(0, 200)); return null; }
+  return { card_token: token, agreement_id: agreement, masked_card: c.number || null };
+}
+// Merchant-initiated charge of the remaining balance (no CVV, no 3DS). Same "{orderId}-BAL" reference as the manual flow, so the webhook handles it too.
+async function chargeAutopay(env, x) {
+  const merchantId = env.KASHIER_MERCHANT_ID, apiKey = env.KASHIER_API_KEY;
+  if (!merchantId || !apiKey) return 'failed';
+  const ref = `${x.id}-BAL`, amount = String(x.remaining_amount), currency = x.currency || 'EGP';
+  const hash = await kashierPaymentHash(merchantId, ref, amount, currency, apiKey, x.uid);
+  const payload = {
+    apiOperation: 'PAY',
+    paymentMethod: { type: 'CARD', card: { agreement: { id: x.agreement_id }, enable3DS: false, cardToken: x.card_token } },
+    order: { reference: ref, amount, currency, description: 'remaining balance (automatic)' },
+    interactionSource: env.AUTOPAY_INTERACTION || 'RECURRING',   // Pay-with-token reference: allowed ECOMMERCE|MOTO|RECURRING, "RECURRING for merchant-initiated repeat charges" (no CVV needed). Their Recurring guide example shows CONTAUTH: set AUTOPAY_INTERACTION=CONTAUTH if the bank/Kashier asks for it.
+    reconciliation: { webhookUrl: `${(env.PAYMENTS_URL || 'https://pay.discover-sharm.com').replace(/\/$/, '')}/api/kashier/webhook`, merchantRedirect: '' },
+    merchantId, customer: { reference: x.uid },
+    timestamp: new Date().toISOString(),   // listed as required in the Pay-with-token request schema
+  };
+  let res, data;
+  try {
+    res = await fetch(`${kashierFepBase(env)}/v3/orders/`, { method: 'POST', headers: { 'Content-Type': 'application/json', accept: 'application/json', 'Kashier-Hash': hash }, body: JSON.stringify(payload) });
+    data = await res.json();
+  } catch (e) { await autopaySave(env, x.id, x.uid, { last_error: 'gateway unreachable - unconfirmed, not retried', stop: true }); return 'failed'; }
+  const r = data?.response || {};
+  if (r.authentication?.redirectUrl) { await autopaySave(env, x.id, x.uid, { last_error: '3ds requested' }); return 'failed'; }   // a customer-absent charge cannot complete 3DS
+  const final = await finalizeBalancePayment(x.id, r.status || r.result, env);
+  if (res.ok && final === 'paid') return 'paid';
+  const st = String(r.status || r.result || '').toUpperCase();
+  if (st === 'PENDING' || st === 'INITIATED' || st === 'UNKNOWN') { await autopaySave(env, x.id, x.uid, { last_error: 'unconfirmed (' + st + ') - not retried', stop: true }); return 'failed'; }   // never retry an unknown outcome
+  await autopaySave(env, x.id, x.uid, { last_error: String(r.transactionResponseMessage?.en || r.status || r.result || res.status).slice(0, 200) });
+  return 'failed';
+}
 function sanitizeKashierResponse(resp) {
   const r = resp?.response || {};
   const card = r.paymentMethod?.card;
@@ -199,10 +250,29 @@ const _esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', 
 const _nameOf = (v) => (v && typeof v === 'object') ? (v.en || v.ar || Object.values(v)[0] || '') : (v || '');
 function voucherUrl(orderId, env) { return `${(env.SITE_URL || 'https://app.discover-sharm.com').replace(/\/$/, '')}/voucher/?id=${encodeURIComponent(orderId)}`; }
 
+const mailConfigured = (env) => !!((env.RESEND_API_KEY && env.MAIL_FROM) || (env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASS && (env.MAIL_FROM || env.SMTP_USER)));
+// Resend first; if it is not set up or fails (quota used up, outage) → SMTP straight from this Worker. Returns true when one of them accepted the message.
+async function deliverMail(env, { to, subject, html }) {
+  if (env.RESEND_API_KEY && env.MAIL_FROM) {
+    try {
+      const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ from: env.MAIL_FROM, to: [to], subject, html }),
+      });
+      if (res.ok) return true;
+      console.log('Resend failed', res.status, (await res.text()).slice(0, 200));
+    } catch (e) { console.log('Resend error', e && e.message); }
+  }
+  if (env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASS && (env.MAIL_FROM || env.SMTP_USER)) {
+    try { await sendSmtp(env, { to, subject, html }); return true; }
+    catch (e) { console.log('SMTP failed', e && e.message); }
+  }
+  return false;
+}
+
 async function sendBookingEmail(orderId, env) {
-  const canResend = !!(env.RESEND_API_KEY && env.MAIL_FROM);
-  const canSmtp = !!(env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASS && (env.MAIL_FROM || env.SMTP_USER));
-  if (!canResend && !canSmtp) { console.log('No e-mail provider configured (RESEND_API_KEY + MAIL_FROM, or SMTP_HOST/SMTP_USER/SMTP_PASS): e-mail skipped'); return false; }
+  if (!mailConfigured(env)) { console.log('No e-mail provider configured (RESEND_API_KEY + MAIL_FROM, or SMTP_HOST/SMTP_USER/SMTP_PASS): e-mail skipped'); return false; }
   const o = await getOrder(orderId, env);
   const b = o.booking;
   if (!b || o.pending || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(b.email || '')) return false;
@@ -220,24 +290,7 @@ async function sendBookingEmail(orderId, env) {
     </table>
     <p><a href="${_esc(voucherUrl(orderId, env))}" style="display:inline-block;background:#c2410c;color:#fff;padding:12px 22px;border-radius:10px;text-decoration:none;font-weight:bold">Open your voucher · افتح الفاوتشر</a></p>
     <p style="color:#888;font-size:12px">Show the voucher (printed or on your phone) at the start of the service.</p></div>`;
-  // 1) Resend (primary). Any failure — quota used up (429/403), outage, bad key — falls through to SMTP below.
-  if (canResend) {
-    try {
-      const res = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ from: env.MAIL_FROM, to: [b.email], subject: `Booking confirmed · تأكيد الحجز ${b.id}`, html }),
-      });
-      if (res.ok) return true;
-      console.log('Resend failed', res.status, (await res.text()).slice(0, 200));
-    } catch (e) { console.log('Resend error', e && e.message); }
-  }
-  // 2) SMTP (fallback, or the only provider when Resend is not configured) — directly from this Worker, no other Worker needed.
-  if (canSmtp) {
-    try { await sendSmtp(env, { to: b.email, subject: `Booking confirmed · تأكيد الحجز ${b.id}`, html }); return true; }
-    catch (e) { console.log('SMTP failed', e && e.message); }
-  }
-  return false;
+  return deliverMail(env, { to: b.email, subject: `Booking confirmed · تأكيد الحجز ${b.id}`, html });
 }
 function notifyBookingConfirmed(orderId, env, ctx) {
   const job = sendBookingEmail(orderId, env).catch((e) => console.log('e-mail failed', e && e.message));
@@ -318,7 +371,61 @@ const LIMITS = {
   webhook: { limit: 120, window: 60 }, // Kashier's own servers call this
 };
 
+// ---- Remaining-balance deadline (hourly cron) -------------------------------------------------------------
+// The database decides who gets a reminder (72h / 24h before the deadline) and who is cancelled because the deadline passed
+// (public.balance_job); this only sends the e-mails. The deposit of a cancelled booking is kept — the admin can still refund it by hand.
+const _validEmail = (e) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e || '');
+const _appUrl = (env) => (env.APP_URL || 'https://app.discover-sharm.com').replace(/\/$/, '');
+function balanceMail(kind, x, env) {
+  const amt = `${_esc(x.remaining_amount)} ${_esc(x.currency || 'EGP')}`;
+  const due = x.due_at ? new Date(x.due_at).toLocaleString('en-GB', { timeZone: 'Africa/Cairo', dateStyle: 'medium', timeStyle: 'short' }) : '';
+  const btn = `<p><a href="${_esc(_appUrl(env))}" style="display:inline-block;background:#c2410c;color:#fff;padding:12px 22px;border-radius:10px;text-decoration:none;font-weight:bold">Open My Bookings · افتح حجوزاتي</a></p>`;
+  const wrap = (h, body) => `<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;color:#111"><h2 style="color:#c2410c;margin-bottom:4px">${h}</h2><p style="margin-top:0">Hi ${_esc(x.name || '')} · أهلاً ${_esc(x.name || '')}</p>${body}</div>`;
+  const card = x.autopay_card || x.masked_card ? ` (${_esc(x.autopay_card || x.masked_card)})` : '';
+  if (kind === 'charged') return {
+    subject: `Remaining balance paid · تم سداد المتبقي ${x.id}`,
+    html: wrap('Remaining balance paid · تم سداد المتبقي', `<p>We charged the remaining <b>${amt}</b> to your card${card} for booking <b>${_esc(x.id)}</b>. You're all set.</p><p>تم سحب المتبقي <b>${amt}</b> من كارتك${card} للحجز <b>${_esc(x.id)}</b>. حجزك مكتمل.</p>`) };
+  if (kind === 'chargefailed') return {
+    subject: `We could not charge your card · تعذّر سحب المتبقي ${x.id}`,
+    html: wrap('Payment failed · تعذّر السحب', `<p>We tried to charge the remaining <b>${amt}</b> to your card${card} but it did not go through. Please pay it manually before <b>${_esc(due)}</b> (Cairo time) or the booking will be cancelled.</p>
+      <p>حاولنا سحب المتبقي <b>${amt}</b> من كارتك${card} لكن العملية لم تنجح. من فضلك سدّده يدوياً قبل <b>${_esc(due)}</b> (بتوقيت القاهرة) وإلا سيتم إلغاء الحجز.</p>${btn}`) };
+  if (kind === 'reminder' && x.autopay_card) return {
+    subject: `Heads-up: we will charge the remaining balance · تنبيه: سيتم سحب المتبقي ${x.id}`,
+    html: wrap('Automatic payment scheduled · سحب تلقائي قادم', `<p>As you agreed at checkout, we will charge the remaining <b>${amt}</b> to your card${card} for booking <b>${_esc(x.id)}</b> around <b>${_esc(due)}</b> (Cairo time). Nothing to do — just keep enough balance on the card, or pay now from My Bookings.</p>
+      <p>زي ما وافقت وقت الحجز، هنسحب المتبقي <b>${amt}</b> من كارتك${card} للحجز <b>${_esc(x.id)}</b> حوالي <b>${_esc(due)}</b> (بتوقيت القاهرة). مش مطلوب منك حاجة — تأكد بس إن الرصيد كافي، أو ادفع دلوقتي من حجوزاتي.</p>${btn}`) };
+  if (kind === 'cancelled') return {
+    subject: `Booking cancelled · تم إلغاء الحجز ${x.id}`,
+    html: wrap('Booking cancelled · تم إلغاء الحجز', `<p>Your booking <b>${_esc(x.id)}</b> was cancelled because the remaining balance (${amt}) was not paid before the deadline. Your deposit is not refunded automatically — contact us if you need help.</p>
+      <p>تم إلغاء حجزك <b>${_esc(x.id)}</b> لأن المتبقي (${amt}) لم يُسدَّد قبل الموعد النهائي. العربون لا يُسترد تلقائياً — تواصل معنا لو محتاج مساعدة.</p>`) };
+  return {
+    subject: `${x.n >= 2 ? 'Last reminder' : 'Reminder'}: pay the remaining balance · ${x.n >= 2 ? 'تذكير أخير' : 'تذكير'}: سدّد المتبقي ${x.id}`,
+    html: wrap('Remaining balance due · المتبقي مطلوب', `<p>Please pay the remaining <b>${amt}</b> for booking <b>${_esc(x.id)}</b> before <b>${_esc(due)}</b> (Cairo time), otherwise the booking will be cancelled automatically.</p>
+      <p>من فضلك سدّد المتبقي <b>${amt}</b> للحجز <b>${_esc(x.id)}</b> قبل <b>${_esc(due)}</b> (بتوقيت القاهرة)، وإلا سيتم إلغاء الحجز تلقائياً.</p>${btn}`) };
+}
+async function runBalanceJob(env) {
+  const r = await sbRpc(env, 'balance_job', {});
+  const out = { reminders: 0, cancelled: 0, emailed: 0 };
+  if (!r) return out;
+  const batches = [['reminder', r.reminders || []], ['cancelled', r.cancelled || []]];
+  if (autoBalanceOn(env)) for (const x of r.autopay || []) {
+    const res = await chargeAutopay(env, x);
+    out[res === 'paid' ? 'charged' : 'chargeFailed'] = (out[res === 'paid' ? 'charged' : 'chargeFailed'] || 0) + 1;
+    if (_validEmail(x.email) && mailConfigured(env)) { const m = balanceMail(res === 'paid' ? 'charged' : 'chargefailed', x, env); await deliverMail(env, { to: x.email, subject: m.subject, html: m.html }); }
+  }
+  for (const [kind, list] of batches) {
+    for (const x of list) {
+      out[kind === 'reminder' ? 'reminders' : 'cancelled']++;
+      if (!_validEmail(x.email) || !mailConfigured(env)) continue;
+      const m = balanceMail(kind, x, env);
+      if (await deliverMail(env, { to: x.email, subject: m.subject, html: m.html })) out.emailed++;
+    }
+  }
+  console.log('balance job', JSON.stringify(out));
+  return out;
+}
+
 export default {
+  async scheduled(event, env, ctx) { ctx.waitUntil(runBalanceJob(env).catch((e) => console.log('balance job failed', e && e.message))); },
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const path = url.pathname;
@@ -353,7 +460,7 @@ export default {
       try { uid = await requireUid(request, env); } catch (e) { return json({ error: e.message }, e.status || 401, request); }
       let body;
       try { body = await request.json(); } catch { return json({ error: 'Invalid JSON' }, 400, request); }
-      const { orderId, amount, currency, card, save, customer } = body || {};
+      const { orderId, amount, currency, card, save, customer, autopay } = body || {};
       if (!orderId || !amount || !currency) return json({ error: 'orderId, amount and currency required' }, 400, request);
       if (!card || !card.number || !card.month || !card.year || !card.cvv) return json({ error: 'Card details required' }, 400, request);
 
@@ -367,6 +474,8 @@ export default {
       const merchantId = env.KASHIER_MERCHANT_ID, apiKey = env.KASHIER_API_KEY;
       if (!merchantId || !apiKey) return json({ error: 'Kashier not configured' }, 500, request);
 
+      // The guest agreed to automatic collection of the remaining balance (deposit bookings only; feature must be switched on).
+      const wantAutopay = autoBalanceOn(env) && autopay === true && booking.paymentPlan === 'deposit' && Number(booking.remainingAmount) > 0;
       const hash = await kashierPaymentHash(merchantId, orderId, amount, currency, apiKey, save ? uid : undefined);
       const payload = {
         apiOperation: 'PAY',
@@ -377,6 +486,11 @@ export default {
         customer: { reference: uid, firstName: customer?.firstName || '', lastName: customer?.lastName || '', email: customer?.email || '' },
         merchantId,
       };
+      if (wantAutopay) {
+        await autopaySave(env, orderId, uid, { consent: true });
+        const tk = await tokenizeForAutopay(env, uid, card, card.name).catch((e) => { console.log('tokenize error', e && e.message); return null; });
+        if (tk) await autopaySave(env, orderId, uid, tk);
+      }
       let kashierRes, kashierData;
       try {
         kashierRes = await fetch(`${kashierFepBase(env)}/v3/orders/`, { method: 'POST', headers: { 'Content-Type': 'application/json', accept: 'application/json', 'Kashier-Hash': hash }, body: JSON.stringify(payload) });

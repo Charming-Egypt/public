@@ -53,6 +53,13 @@ DS.STC = { pending_payment: 'var(--amber)', completed: 'var(--green)', failed: '
 // ---------- badges ----------
 const PAY = { pending_payment: ['بانتظار الدفع', 'amber'], completed: ['مدفوع', 'green'], failed: ['فشل', 'red'], cancelled: ['ملغي', 'gray'], refunded: ['مسترد', 'purple'] };
 const OWN = { new: ['جديد', 'blue'], confirmed: ['مؤكد', 'green'], done: ['تم', 'green'], no_show: ['لم يحضر', 'red'] };
+// A booking paid with the 50% deposit is "completed" (confirmed) but NOT fully paid: show the deposit state + what is still due, not "مدفوع".
+DS.payBadge = (b) => {
+  if (b && b.status === 'completed' && b.paymentPlan === 'deposit' && Number(b.remainingAmount) > 0)
+    return b.balanceStatus === 'paid' ? '<span class="badge b-green">مدفوع بالكامل</span>'
+      : `<span class="badge b-amber">عربون مدفوع — متبقي ${DS.money(b.remainingAmount)} ${esc(b.currency || '')}</span>`;
+  return DS.badge(PAY, b && b.status);
+};
 DS.PAY = PAY; DS.OWN = OWN;
 DS.badge = (map, k) => { const v = map[k]; return v ? `<span class="badge b-${v[1]}">${v[0]}</span>` : `<span class="badge b-gray">${esc(k || '—')}</span>`; };
 DS.opts = (map, cur) => Object.entries(map).map(([k, v]) => `<option value="${k}" ${k === cur ? 'selected' : ''}>${v[0]}</option>`).join('');
@@ -305,7 +312,10 @@ DS.start = (cfg) => {
     <div class="lform"><form class="lcard" id="lf"><h2>تسجيل الدخول</h2><p>ادخل بحسابك للمتابعة</p><div id="lerr" class="err hide"></div>
     <div class="fld"><label>البريد الإلكتروني</label><input id="em" type="email" autocomplete="username" required></div>
     <div class="fld"><label>كلمة المرور</label><input id="pw" type="password" autocomplete="current-password" required></div>
-    <button class="btn" style="width:100%;padding:13px" id="lb">دخول</button></form></div></div>
+    <button class="btn" style="width:100%;padding:13px" id="lb">دخول</button>
+    <div id="lok" class="hide" style="background:#e8f7ee;color:#157347;padding:11px 14px;border-radius:14px;font-size:13px;margin-top:14px;font-weight:600"></div>
+    <p style="margin:14px 0 0;text-align:center"><a href="#" id="lforgot" style="color:var(--accent,#e8590c);font-weight:700;font-size:13px">نسيت كلمة المرور؟</a></p>
+    <div id="lgoogle" class="hide" style="margin-top:16px"><div style="text-align:center;color:var(--muted);font-size:12px;margin-bottom:10px">—</div><div id="gbtn" style="display:flex;justify-content:center"></div></div></form></div></div>
   <div id="app" class="hide"><aside class="side"><div class="brand">${logoMark()}</div><nav id="nav" aria-label="القائمة"></nav>
     <div class="sfoot"><button id="out" title="خروج">${DS.ic('out')}</button></div></aside>
     <div class="content"><header class="top"><div class="greet"><h1 id="greet"></h1><p id="ptitle"></p></div>
@@ -328,9 +338,49 @@ DS.start = (cfg) => {
     } catch (er) { $('#lerr').textContent = er.message; $('#lerr').classList.remove('hide'); }
     b.disabled = false;
   };
+  const lerr = (m) => { $('#lok').classList.add('hide'); $('#lerr').textContent = m; $('#lerr').classList.remove('hide'); };
+  if (window.DSX && DSX.forgot) {
+    $('#lforgot').onclick = async (e) => {
+      e.preventDefault(); const em = $('#em').value.trim();
+      if (!em) return lerr('اكتب بريدك الإلكتروني الأول ثم اضغط "نسيت كلمة المرور"');
+      try { await DSX.forgot(em); $('#lerr').classList.add('hide'); $('#lok').textContent = 'لو الإيميل مسجّل، هيوصلك رابط لتعيين كلمة مرور جديدة. شوف الـ Inbox والـ Spam.'; $('#lok').classList.remove('hide'); }
+      catch (er) { lerr(er.message); }
+    };
+    if (DSX.googleClientId) {   // "Continue with Google" — same Google Identity Services flow as the public site
+      const sc = document.createElement('script'); sc.src = 'https://accounts.google.com/gsi/client'; sc.async = true;
+      sc.onload = () => {
+        if (!window.google || !google.accounts) return;
+        google.accounts.id.initialize({ client_id: DSX.googleClientId, callback: async (r) => {
+          try { await DSX.loginGoogle(r.credential); TOKEN = 'sb'; await enter(); } catch (er) { lerr(er.message); }
+        } });
+        google.accounts.id.renderButton($('#gbtn'), { theme: 'outline', size: 'large', width: 300, text: 'continue_with' });
+        $('#lgoogle').classList.remove('hide');
+      };
+      document.head.appendChild(sc);
+    }
+  } else $('#lforgot').parentNode.classList.add('hide');
+  const askNewPassword = () => {   // shown after the user opens the reset link from the e-mail
+    $('#lf').innerHTML = '<h2>كلمة مرور جديدة</h2><p>اختار كلمة مرور جديدة لحسابك</p><div id="lerr" class="err hide"></div>'
+      + '<div class="fld"><label>كلمة المرور الجديدة</label><input id="np1" type="password" autocomplete="new-password" minlength="8" required></div>'
+      + '<div class="fld"><label>تأكيد كلمة المرور</label><input id="np2" type="password" autocomplete="new-password" minlength="8" required></div>'
+      + '<button class="btn" style="width:100%;padding:13px" id="nb">حفظ والدخول</button>';
+    $('#lf').onsubmit = async (e) => {
+      e.preventDefault(); const b = $('#nb'); b.disabled = true;
+      try {
+        if ($('#np1').value.length < 8) throw new Error('كلمة المرور لازم تكون ٨ حروف على الأقل');
+        if ($('#np1').value !== $('#np2').value) throw new Error('كلمتا المرور غير متطابقتين');
+        await DSX.setPassword($('#np1').value); TOKEN = 'sb'; await enter();
+      } catch (er) { $('#lerr').textContent = er.message; $('#lerr').classList.remove('hide'); }
+      b.disabled = false;
+    };
+  };
   $('#out').onclick = () => logout(); $('#out2').onclick = () => logout();
   $('#nav').onclick = e => { const b = e.target.closest('button'); if (b) show(+b.dataset.i); };
-  if (window.DSX) { DSX.session().then(ok => { if (ok) { TOKEN = 'sb'; enter(); } }); return; }
+  if (window.DSX) {
+    (DSX.recovery ? DSX.recovery() : Promise.resolve(false)).then((rec) => { if (rec) { askNewPassword(); return; } return DSX.session().then(ok => { if (ok) { TOKEN = 'sb'; enter(); } }); })
+      .catch((er) => lerr(er.message));
+    return;
+  }
   try { const s = JSON.parse(localStorage.getItem(sk()) || 'null'); if (s && tokenExp(s.t) > Date.now() + 60000) { TOKEN = s.t; enter(); } } catch {}
 };
 
@@ -353,7 +403,7 @@ DS.bookingsView = (o = {}) => async (m) => {
     const own = admin ? `<select id="fo" style="max-width:200px"><option value="">كل الأونرز</option>${o.roles.filter(r => r.role !== 'super_admin').map(r => `<option value="${r.uid}" ${f.own === r.uid ? 'selected' : ''}>${esc(r.name || r.email)}</option>`).join('')}</select><select id="ft" style="max-width:130px"><option value="">كل الأنواع</option>${Object.entries(TYPE_L).map(([k, v]) => `<option value="${k}" ${f.t === k ? 'selected' : ''}>${v}</option>`).join('')}</select>` : '';
     const cols = [{ h: 'الحجز', f: b => `<b>${esc(b.id)}</b><div class="muted">${DS.dt(b.createdAt)}</div>` }, ...(admin ? [{ h: 'النوع', f: b => TYPE_L[b.type] || b.type }] : []),
       { h: 'العميل', f: b => `${esc(b.name || '')}<div class="muted">${esc(b.phone || '')}</div>` }, { h: 'الحجز على', f: b => `${esc(bItem(b))}<div class="muted">${esc(bWhen(b))}</div>` }, { h: 'العدد', f: bQty },
-      { h: 'الإجمالي', f: b => DS.money(b.total) + ' ' + esc(b.currency || '') }, { h: 'الدفع', f: b => DS.badge(PAY, b.status) + (b.needsRefund && b.status !== 'refunded' ? ' <span class="badge b-red">استرداد مطلوب</span>' : '') }, { h: 'التنفيذ', f: b => DS.badge(OWN, b.ownerStatus || 'new') }, { h: admin ? 'العمولة' : 'صافي ربحك', f: b => !b.earning || b.earning.void ? '<span class="muted">—</span>' : DS.money(admin ? b.earning.commission : b.earning.net) }];
+      { h: 'الإجمالي', f: b => DS.money(b.total) + ' ' + esc(b.currency || '') }, { h: 'الدفع', f: b => DS.payBadge(b) + (b.needsRefund && b.status !== 'refunded' ? ' <span class="badge b-red">استرداد مطلوب</span>' : '') }, { h: 'التنفيذ', f: b => DS.badge(OWN, b.ownerStatus || 'new') }, { h: admin ? 'العمولة' : 'صافي ربحك', f: b => !b.earning || b.earning.void ? '<span class="muted">—</span>' : DS.money(admin ? b.earning.commission : b.earning.net) }];
     m.innerHTML = `<h2 class="pt">الحجوزات <span class="muted">${rows.length}</span></h2><div class="chips">${chips}</div><div class="row" style="margin-bottom:12px"><input id="fq" placeholder="ابحث بالاسم / التليفون / رقم الحجز" value="${esc(f.q)}" style="max-width:320px">${own}</div>` + DS.table(cols, rows, { click: true, empty: 'مفيش حجوزات' });
     m.onclick = async e => {
       const c = e.target.closest('.chip'); if (c) { f.s = c.dataset.s; if (admin) await load(); view(); return; }
@@ -366,8 +416,12 @@ DS.bookingsView = (o = {}) => async (m) => {
     const kv = Object.keys(FL).filter(k => b[k] !== undefined && b[k] !== '' && !(Array.isArray(b[k]) && !b[k].length)).map(k => `<b>${FL[k]}</b><span>${esc(Array.isArray(b[k]) ? b[k].join(', ') : k === 'createdAt' ? DS.dt(b[k]) : k === 'roomType' ? tr(b[k]) : b[k])}</span>`).join('');
     const body = document.createElement('div');
     const vch = admin && b.voucher ? `<b>الفاوتشر</b><span>${b.voucher.status === 'sent' ? 'اتبعت على ' + esc(b.voucher.to) : 'فشل الإرسال: ' + esc(b.voucher.error || '')}</span>` : '';
-    body.innerHTML = `<div class="kv"><b>الحجز على</b><span>${esc(bItem(b))}</span>${kv}${vch}</div>
+    const dep = b.paymentPlan === 'deposit' && Number(b.remainingAmount) > 0
+      ? `<b>حالة الدفع</b><span>${DS.payBadge(b)}</span><b>العربون المدفوع</b><span>${DS.money(b.depositAmount)} ${esc(b.currency || '')}</span><b>المتبقي (يُدفع لاحقاً)</b><span>${DS.money(b.remainingAmount)} ${esc(b.currency || '')}</span>` : '';
+    body.innerHTML = `<div class="kv"><b>الحجز على</b><span>${esc(bItem(b))}</span>${kv}${dep}${vch}</div>
       ${admin ? `<div class="fld"><label>حالة الدفع</label><select id="bs">${DS.opts(PAY, b.status)}</select></div><div class="fld"><label>ملاحظة الإدارة</label><textarea id="ba">${esc(b.adminNote || '')}</textarea></div>` : ''}
+      ${!admin && b.status === 'completed' && b.paymentPlan === 'deposit' && Number(b.remainingAmount) > 0 && b.balanceStatus !== 'paid'
+        ? `<div class="err" style="background:#fff4e0;color:#9a5b00">العميل دفع العربون بس. المتبقي (${DS.money(b.remainingAmount)} ${esc(b.currency || '')}) بيدفعه أونلاين للمنصة قبل الخدمة — <b>ما تحصّلوش منه نقداً</b>، وتسجيل التنفيذ هيتفتح بعد ما يتدفع.</div>` : ''}
       <div class="fld"><label>حالة التنفيذ</label><select id="bo" ${b.earning && !admin ? 'disabled' : ''}>${ownOpts(b)}</select>
         <small>${b.earning ? (b.earning.void ? 'الأرباح اتلغت (استرداد/تعديل).' : `الأرباح اتسجّلت: صافي ${DS.money(b.earning.net)} جنيه بعد عمولة ${b.earning.rate}%` + (admin ? ` (${DS.money(b.earning.commission)})` : '') + ' — مينفعش تتغيّر.') : 'اختيار "' + DONE_L[b.type] + '" بيسجّل أرباحك (بعد عمولة المنصة) ومينفعش يتراجع. بيتفتح بعد ميعاد الخدمة وبعد الدفع.'}</small></div>
       <div class="fld"><label>ملاحظة (بتظهر لك${admin ? ' وللأونر' : ' بس'})</label><textarea id="bn">${esc(b.ownerNote || '')}</textarea></div>`;
@@ -471,7 +525,7 @@ DS.ownerPanel = (c) => {
           <div class="card"><span class="ct">حالة الحجوزات</span>${DS.donut(Object.entries(st).map(([k, v]) => ({ l: DS.PAY[k] ? DS.PAY[k][0] : k, v, c: DS.STC[k] || '#999' })))}</div></div>
         <div class="g2"><div class="card"><span class="ct">صافي أرباحك بالشهر (جنيه)</span>${mk.length ? DS.bars(mk, mk.map(k => Math.round(mon[k])), 'var(--green)') : '<div class="empty">الأرباح بتظهر بعد تسجيل تنفيذ الخدمات</div>'}</div>
           <div class="card"><span class="ct">تنبيهات</span>${wait ? `<p>عندك <b>${wait}</b> حجز مدفوع بانتظار تسجيل التنفيذ — سجّله بعد ميعاد الخدمة عشان أرباحك تظهر.</p><button class="btn sm" style="margin-top:10px" data-go="الحجوزات">فتح الحجوزات</button>` : '<p class="muted">كل حاجة تمام ✔ مفيش حاجة معلّقة.</p>'}<p class="muted" style="margin-top:12px">نسبة عمولة المنصة عليك: <b>${fn.rate}%</b> (على السعر قبل الضرائب).</p></div></div>
-        <h2 class="pt">آخر الحجوزات</h2>` + DS.table([{ h: 'الحجز', f: x => `<b>${esc(x.id)}</b><div class="muted">${DS.dt(x.createdAt)}</div>` }, { h: 'العميل', f: x => esc(x.name || '') }, { h: 'على', f: x => esc(bItem(x)) }, { h: 'الإجمالي', f: x => DS.money(x.total) }, { h: 'الدفع', f: x => DS.badge(PAY, x.status) }], b.slice(0, 6), { empty: 'مفيش حجوزات لسه' });
+        <h2 class="pt">آخر الحجوزات</h2>` + DS.table([{ h: 'الحجز', f: x => `<b>${esc(x.id)}</b><div class="muted">${DS.dt(x.createdAt)}</div>` }, { h: 'العميل', f: x => esc(x.name || '') }, { h: 'على', f: x => esc(bItem(x)) }, { h: 'الإجمالي', f: x => DS.money(x.total) }, { h: 'الدفع', f: x => DS.payBadge(x) }], b.slice(0, 6), { empty: 'مفيش حجوزات لسه' });
       m.onclick = e => { const g = e.target.closest('[data-go]'); if (g) DS.go(g.dataset.go); };
     } },
     { label: c.itemsLabel, icon: 'box', render: async m => {

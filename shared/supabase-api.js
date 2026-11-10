@@ -94,6 +94,7 @@
     const msg = error.message || 'Request failed';
     if (error.details === 'price_changed' || msg === 'price_changed')
       return fail('السعر اتغيّر — حدّث الصفحة وحاول تاني (Price changed, please refresh)', { total: Number(error.hint), status: 409 });
+    if (error.details === 'deposit_not_allowed') return fail('الحجز لليوم التالي أو لموعد أقرب لازم يتدفع بالكامل (Bookings for tomorrow or sooner must be paid in full)', { status: 409 });
     if (error.details === 'rate_limited') return fail('Too many requests — please wait a few minutes.', { status: 429 });
     if (error.code === '28000') return fail('Authentication failed', { status: 401 });
     if (error.code === '42501') return fail('Not allowed', { status: 403 });
@@ -315,7 +316,12 @@
       if ('countryCode' in src) patch.country_code = String(src.countryCode || '').slice(0, 8);
       if (src.photoURL) {
         if (/^data:image\//.test(src.photoURL)) {            // avatars live in Storage, not in the table row
-          const blob = await (await fetch(src.photoURL)).blob();
+          // decode the data: URL by hand — fetch('data:…') is blocked by the page's CSP (connect-src), which made every upload fail with "Failed to fetch"
+          const m = /^data:(image\/[a-z0-9.+-]+);base64,(.+)$/i.exec(src.photoURL);
+          if (!m) throw fail('Unsupported image', { status: 400 });
+          const bin = atob(m[2]), bytes = new Uint8Array(bin.length);
+          for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+          const blob = new Blob([bytes], { type: m[1].toLowerCase() });
           const ext = blob.type === 'image/png' ? 'png' : blob.type === 'image/webp' ? 'webp' : 'jpg';
           const key = `${session.user.id}/avatar.${ext}`;
           await run(sb.storage.from('avatars').upload(key, blob, { upsert: true, contentType: blob.type, cacheControl: '3600' }));

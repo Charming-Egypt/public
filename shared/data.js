@@ -1307,7 +1307,7 @@ const bookings = {
     if (b.balanceStatus === 'due' && b.remainingAmount > 0) {
       return `
         <div class="mt-2 flex items-center justify-between gap-2 p-2 rounded-lg" style="background:var(--bg-field)">
-          <span class="text-[10px] font-semibold" style="color:var(--brand-violet)"><i class="fa-solid fa-clock"></i> ${t('balanceDueLabel').replace('{n}', utils.formatPrice(b.remainingAmount))}</span>
+          <span class="text-[10px] font-semibold" style="color:var(--brand-violet)"><i class="fa-solid fa-clock"></i> ${t('balanceDueLabel').replace('{n}', utils.formatPrice(b.remainingAmount))}${b.balanceDueAt ? `<br><span style="font-weight:500;opacity:.85">${t('balancePayBy', 'Pay before')} ${new Date(b.balanceDueAt).toLocaleString('en-GB', { timeZone: 'Africa/Cairo', dateStyle: 'medium', timeStyle: 'short' })}</span>` : ''}</span>
           <button onclick="event.stopPropagation(); openPayBalanceModal('${b.id}', ${b.remainingAmount})" class="text-[10px] font-bold px-3 py-1.5 rounded-lg btn-gold text-ink-900">${t('payRemainingBtn')}</button>
         </div>`;
     }

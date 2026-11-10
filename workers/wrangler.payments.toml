@@ -18,6 +18,10 @@ compatibility_date = "2026-01-01"
 
 keep_vars = true   # variables/secrets live in the Cloudflare dashboard (see VARIABLES.md); a deploy must not wipe them
 
+# Hourly: reminders (72h / 24h) for unpaid remaining balances + auto-cancel after the deadline (public.balance_job). Optional var APP_URL (default https://app.discover-sharm.com) is the link in those e-mails.
+[triggers]
+crons = ["0 * * * *"]
+
 # Optional but recommended: a shared rate limit across Cloudflare locations
 # [[kv_namespaces]]
 # binding = "RATE_LIMIT_KV"

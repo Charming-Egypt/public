@@ -475,7 +475,10 @@
   "payFullAmountLabel": "Pay full amount",
   "payDepositOptionLabel": "Pay 50% deposit now",
   "payFullNoteLabel": "No balance due later.",
-  "payDepositNoteLabel": "Remaining {n} due on arrival, non-refundable deposit.",
+  "payDepositNoteLabel": "Remaining {n} must be paid at least 24 hours before your trip or the booking is cancelled. The deposit is non-refundable.",
+  "payFullRequiredNote": "Bookings for tomorrow or sooner must be paid in full.",
+  "depositPolicyTitle": "Deposit Bookings",
+  "depositPolicyBody": "If you booked with a deposit, the remaining balance must be paid in full at least 24 hours before your trip date (the deadline is shown on your booking). If it is not paid by then, the booking is automatically cancelled and the deposit is non-refundable. Bookings for tomorrow or sooner must be paid in full.",
   "choosePaymentOptionLabel": "Choose how you'd like to pay",
   "balanceDueLabel": "Balance due: {n}",
   "payRemainingBtn": "Pay the rest",
@@ -745,5 +748,7 @@
   "pkgPerPackage": "package",
   "pkgForPeople": "for {n} people",
   "pkgPriceFor": "Price for",
-  "pkgFixedPrice": "one price for the whole package"
+  "pkgFixedPrice": "one price for the whole package",
+  "balancePayBy": "Pay before",
+  "autoBalanceLabel": "I authorize Discover Sharm to charge the remaining balance to this card automatically, about 24 hours before the payment deadline."
 }
