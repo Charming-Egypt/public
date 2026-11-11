@@ -69,7 +69,7 @@
   const itemName = (b) => nameOf(b.hotelName || b.title || b.vehicleType);
   const iso = (v) => v || null;
   const pct = (f) => (f == null ? null : Math.round(Number(f) * 10000) / 100);
-  const roleOf = (p) => p.role === 'super_admin' ? 'super_admin' : (ROLE_OF_KIND[(p.owner_kinds || [])[0]] || 'restaurants_owner');
+  const roleOf = (p) => p.role === 'super_admin' ? 'super_admin' : p.is_seller ? 'seller' : (ROLE_OF_KIND[(p.owner_kinds || [])[0]] || 'restaurants_owner');
   const withData = (r, extra) => ({ ...r.data, id: r.id, status: r.status, ...(r.rating_count > 0 ? { rating: Number(r.rating_avg) } : {}), ...(extra || {}) });
 
   // ---------- session ------------------------------------------------------------------------------
@@ -78,7 +78,7 @@
     const { data: { session } } = await sb.auth.getSession();
     if (!session) { meCache = { t: 0, uid: null, v: null }; throw fail('الجلسة انتهت — سجّل دخول تاني', 401); }
     if (meCache.v && meCache.uid === session.user.id && Date.now() - meCache.t < 30000) return meCache.v;
-    const p = await run(sb.from('profiles').select('id, display_name, email, role, owner_kinds, max_items, commission_rate, is_active').eq('id', session.user.id).single());
+    const p = await run(sb.from('profiles').select('id, display_name, email, role, owner_kinds, max_items, commission_rate, is_active, is_seller, seller_code').eq('id', session.user.id).single());
     if (!p.is_active) throw fail('الحساب موقوف', 403);
     meCache = { t: Date.now(), uid: session.user.id, v: { ...p, session } };
     return meCache.v;
@@ -89,21 +89,30 @@
 
   async function settings() {
     const s = await run(sb.from('platform_settings').select('*').eq('id', 1).single());
-    return { rates: { hotel: pct(s.commission_hotel), excursion: pct(s.commission_excursion), transfer: pct(s.commission_transfer), package: pct(s.commission_package ?? s.commission_excursion) }, minPayout: Number(s.min_payout), gatewayFee: Math.round(Number(s.gateway_fee_rate || 0) * 10000) / 100, gatewayFixed: Number(s.gateway_fixed_fee || 0), gatewayVat: Math.round(Number(s.gateway_fee_vat || 0) * 10000) / 100, raw: s };
+    return { rates: { hotel: pct(s.commission_hotel), excursion: pct(s.commission_excursion), transfer: pct(s.commission_transfer), package: pct(s.commission_package ?? s.commission_excursion) }, minPayout: Number(s.min_payout), gatewayFee: Math.round(Number(s.gateway_fee_rate || 0) * 10000) / 100, sellerRate: pct(s.seller_commission_rate ?? 0.02), gatewayFixed: Number(s.gateway_fixed_fee || 0), gatewayVat: Math.round(Number(s.gateway_fee_vat || 0) * 10000) / 100, raw: s };
   }
 
   async function financeFor(uid, kindForRate) {
+    const sellerMode = !!(await run(sb.from('profiles').select('is_seller, role').eq('id', uid).single()).then(p => p.is_seller && p.role !== 'owner'));
     const [bal, payouts, adjustments, account, earned, st, prof] = await Promise.all([
       rpc('owner_balance', { p_owner: uid }),
       run(sb.from('payouts').select('id, amount, status, method, account, reference, note, requested_at, paid_at').eq('owner_id', uid).order('requested_at', { ascending: false }).limit(200)),
       run(sb.from('adjustments').select('amount, reason, created_at').eq('owner_id', uid).order('created_at', { ascending: false }).limit(200)),
       run(sb.from('payout_accounts').select('method, details, locked_until').eq('owner_id', uid).maybeSingle()),
-      run(sb.from('bookings').select('id, kind, created_at, service_date, check_in, subtotal, remaining_amount, pricing_model, commission_rate, commission_amount, owner_amount, earned_at, guest_name, hotelName:data->hotelName, title:data->title, vehicleType:data->vehicleType')
+      // a seller's "earnings" are his share of the commission on his bookings (owners: their own bookings)
+      sellerMode ? rpc('seller_bookings', { p_seller: uid, p_limit: 1000 }) : run(sb.from('bookings').select('id, kind, created_at, service_date, check_in, subtotal, remaining_amount, pricing_model, commission_rate, commission_amount, owner_amount, earned_at, guest_name, hotelName:data->hotelName, title:data->title, vehicleType:data->vehicleType')
         .eq('owner_id', uid).not('earned_at', 'is', null).eq('earning_void', false).order('earned_at', { ascending: false }).limit(1000)),
       settings(),
       run(sb.from('profiles').select('commission_rate').eq('id', uid).single()),
     ]);
-    const rate = prof.commission_rate != null ? pct(prof.commission_rate) : (st.rates[kindForRate] ?? 10);
+    const rate = sellerMode ? (prof.commission_rate != null ? pct(prof.commission_rate) : st.sellerRate) : prof.commission_rate != null ? pct(prof.commission_rate) : (st.rates[kindForRate] ?? 10);
+    if (sellerMode) {
+      const rows = earned.filter(r => r.earnedAt && !r.void);
+      return { seller: true, summary: bal, rate, minPayout: st.minPayout, account: accountView(account), accountLockMs: account && account.locked_until ? Math.max(0, new Date(account.locked_until) - Date.now()) : 0,
+        payouts: payouts.map(p => ({ id: p.id, amount: Number(p.amount), status: p.status, method: p.method, account: p.account ? { method: p.method, ...p.account } : null, reference: p.reference, note: p.note, requestedAt: p.requested_at, paidAt: p.paid_at, ownerUid: uid })),
+        adjustments: adjustments.map(a => ({ amount: Number(a.amount), reason: a.reason, createdAt: a.created_at })),
+        earnings: rows.map(r => ({ id: r.id, item: r.item, customer: r.customer, serviceDate: r.serviceDate, at: r.earnedAt, gross: Number(r.subtotal), rate: Number(r.rate), commission: Number(r.amount), net: Number(r.amount), share: Number(r.amount), onSite: 0 })) };
+    }
     return {
       summary: bal, rate, minPayout: st.minPayout,
       account: accountView(account), accountLockMs: account && account.locked_until ? Math.max(0, new Date(account.locked_until) - Date.now()) : 0,
@@ -144,6 +153,11 @@
 
     if (a === 'me') {
       if (scope === 'admin') { if (!isAdmin) throw fail('الحساب ده مش سوبر أدمن', 403); return { uid: who.id, name: who.display_name, email: who.email, role: 'super_admin' }; }
+      if (scope === 'seller') {
+        if (!who.is_seller) throw fail('الحساب ده مش مسجّل كسيلر', 403);
+        const st = await settings();
+        return { uid: who.id, name: who.display_name, email: who.email, role: 'seller', code: who.seller_code, rate: who.commission_rate != null ? pct(who.commission_rate) : st.sellerRate, sites: window.DS_SITES || {}, noSide: true };
+      }
       if (who.role !== 'owner' || !(who.owner_kinds || []).includes(kind)) throw fail('الحساب ده مش مسجّل كأونر للنوع ده', 403);
       const { count } = await sb.from('properties').select('id', { count: 'exact', head: true }).eq('owner_id', who.id).eq('kind', kind).neq('status', 'archived');
       return { uid: who.id, name: who.display_name, email: who.email, role: ROLE_OF_KIND[kind], maxItems: who.max_items ?? (kind === 'hotel' ? 2 : null), itemCount: count || 0, hasReviews: true };
@@ -158,6 +172,10 @@
     }
 
     // ===== bookings (owner + admin) =====
+    if (a === 'bookings' && scope === 'seller') {
+      if (!who.is_seller) throw fail('مش مسموح', 403);
+      return { bookings: await rpc('seller_bookings', { p_limit: 1000 }) };
+    }
     if (a === 'bookings') {
       if (!b && method === 'GET') {
         const bookings = isAdmin && scope === 'admin'
@@ -241,14 +259,14 @@
       if (a === 'roles') {
         if (!b && method === 'GET') {
           const [profs, accts, props] = await Promise.all([
-            run(sb.from('profiles').select('id, display_name, email, phone, role, owner_kinds, is_active, commission_rate').neq('role', 'user').order('created_at', { ascending: false }).limit(500)),
+            run(sb.from('profiles').select('id, display_name, email, phone, role, owner_kinds, is_active, commission_rate, is_seller, seller_code').or('role.neq.user,is_seller.eq.true').order('created_at', { ascending: false }).limit(500)),
             run(sb.from('payout_accounts').select('owner_id, method')),
             run(sb.from('properties').select('owner_id, kind').not('owner_id', 'is', null).neq('status', 'archived').limit(5000)),
           ]);
           const acc = Object.fromEntries(accts.map(x => [x.owner_id, x.method]));
           const counts = {}; props.forEach(p => { const m = counts[p.owner_id] = counts[p.owner_id] || {}; m[p.kind] = (m[p.kind] || 0) + 1; });
           return { roles: profs.map(p => ({ uid: p.id, name: p.display_name, email: p.email, phone: p.phone, role: roleOf(p), status: p.is_active ? 'active' : 'suspended',
-            commissionRate: pct(p.commission_rate), hasPayout: !!acc[p.id], payoutMethod: acc[p.id], itemCounts: counts[p.id] || {} })) };
+            commissionRate: pct(p.commission_rate), sellerCode: p.is_seller ? p.seller_code : undefined, hasPayout: !!acc[p.id], payoutMethod: acc[p.id], itemCounts: counts[p.id] || {} })) };
         }
         if (!b && method === 'POST') {
           let uid = body.uid;
@@ -275,7 +293,7 @@
             p_commission: body.commissionRate === '' || body.commissionRate == null ? null : Number(body.commissionRate), p_set_commission: 'commissionRate' in body });
           return { success: true };
         }
-        if (method === 'DELETE') { await rpc('admin_set_user_role', { p_user: uid, p_role: 'user' }); return { success: true }; }
+        if (method === 'DELETE') { await rpc('admin_set_user_role', { p_user: uid, p_role: 'user' }); await rpc('admin_remove_seller', { p_user: uid }); return { success: true }; }
       }
 
       if (a === 'customers') {
@@ -329,8 +347,9 @@
 
       if (a === 'finance') {
         if (b === 'settings') {
-          if (method === 'GET') { const s = await settings(); return { settings: { rates: s.rates, minPayout: s.minPayout, gatewayFee: s.gatewayFee, gatewayFixed: s.gatewayFixed, gatewayVat: s.gatewayVat } }; }
+          if (method === 'GET') { const s = await settings(); return { settings: { rates: s.rates, minPayout: s.minPayout, sellerRate: s.sellerRate, gatewayFee: s.gatewayFee, gatewayFixed: s.gatewayFixed, gatewayVat: s.gatewayVat } }; }
           const r = body.rates || {}; await rpc('admin_update_settings', { p_hotel: Number(r.hotel), p_excursion: Number(r.excursion), p_transfer: Number(r.transfer), p_min_payout: Number(body.minPayout), ...(r.package != null && r.package !== '' ? { p_package: Number(r.package) } : {}) });
+          if (body.sellerRate != null && body.sellerRate !== '') await rpc('admin_set_seller_rate', { p_percent: Number(body.sellerRate) });
           if (body.gatewayFee != null && body.gatewayFee !== '') await rpc('admin_set_gateway_fee', { p_percent: Number(body.gatewayFee), p_fixed: Number(body.gatewayFixed ?? 3), p_vat: Number(body.gatewayVat ?? 14) });
           return { success: true };
         }

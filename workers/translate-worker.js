@@ -192,7 +192,7 @@ export default {
     const origin = norm(req.headers.get('Origin'));
     // Staff console origin(s). ALLOWED_ORIGINS may be a comma list; empty/missing falls back to the admin site (never "allow nobody": that breaks the browser preflight).
     const allowed = String(env.ALLOWED_ORIGINS || '').split(',').map(norm).filter(Boolean);
-    if (!allowed.length) allowed.push('https://admin.discover-sharm.com', 'https://owner.discover-sharm.com');
+    if (!allowed.length) allowed.push('https://admin.discover-sharm.com', 'https://owner.discover-sharm.com', 'https://seller.discover-sharm.com');
     const ok = allowed.includes(origin);
     const cors = ok ? { 'Access-Control-Allow-Origin': req.headers.get('Origin').trim().replace(/\/+$/, ''), Vary: 'Origin', 'Access-Control-Allow-Headers': 'Authorization, Content-Type', 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Access-Control-Max-Age': '86400' } : { Vary: 'Origin' };
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });

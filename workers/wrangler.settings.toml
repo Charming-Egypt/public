@@ -16,7 +16,7 @@ keep_vars = true
 #   GITHUB_REPO = "YOUR-ORG/discover-sharm-data"
 #   GITHUB_BRANCH = "main"
 #   MEDIA_BASE = "https://media.discover-sharm.com"
-#   ALLOWED_ORIGINS = "https://admin.discover-sharm.com,https://owner.discover-sharm.com"
+#   ALLOWED_ORIGINS = "https://admin.discover-sharm.com,https://owner.discover-sharm.com,https://seller.discover-sharm.com"
 
 # Static copy of the public settings (same bucket as the content Worker) — see settings-worker.js
 [[r2_buckets]]

@@ -16,6 +16,10 @@
     "owner": {
       "domain": "https://owner.discover-sharm.com",
       "role": "owners"
+    },
+    "seller": {
+      "domain": "https://seller.discover-sharm.com",
+      "role": "sellers"
     }
   },
   "apiBase": "",

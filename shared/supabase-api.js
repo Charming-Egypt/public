@@ -7,6 +7,15 @@
 // It plugs in under the existing apiFetch('/api/...') calls, so the pages did not change.
 // Payment endpoints (/api/kashier/*, /api/notify/*) still go to the payments worker —
 // that worker holds the gateway secret and must be called with the Supabase token.
+// ---- seller referral: ?ref=CODE on any page is remembered for 30 days and sent with the booking (the server validates it) ----
+const DS_REF_KEY = 'ds_ref', DS_REF_DAYS = 30;
+try {
+  const r = new URLSearchParams(location.search).get('ref');
+  if (r && /^[A-Za-z0-9]{4,12}$/.test(r)) localStorage.setItem(DS_REF_KEY, JSON.stringify({ c: r.toUpperCase(), t: Date.now() }));
+} catch (e) { /* storage blocked: referral just isn't remembered */ }
+function dsRefCode() {
+  try { const v = JSON.parse(localStorage.getItem(DS_REF_KEY) || 'null'); return v && v.c && Date.now() - v.t < DS_REF_DAYS * 864e5 ? v.c : ''; } catch (e) { return ''; }
+}
 (function () {
   const cfg = window.DS_SUPABASE;
   if (!cfg || !cfg.url || !cfg.anonKey || !window.supabase) { window.SB = null; return; }
@@ -339,7 +348,7 @@
     }
     if (path === '/api/user/bookings' && method === 'POST') {
       need();
-      return await run(sb.rpc('create_booking', { p: body.booking }));
+      { const ref = dsRefCode(); return await run(sb.rpc('create_booking', { p: ref ? { ...body.booking, ref } : body.booking })); }
     }
     if (path.startsWith('/api/hotels/booking/')) {
       need();

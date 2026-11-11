@@ -1,7 +1,7 @@
 /* Discover Sharm — Super Admin console (uses /console/console.js). Talks only to /api/admin/* */
 (function () {
 const { esc, tr, money, dt, badge, PAY, table, modal, form, collect, api, toast, thumb } = DS;
-const ROLE_L = { super_admin: 'سوبر أدمن', trips_owner: 'مكتب رحلات', hotels_owner: 'مالك فنادق', restaurants_owner: 'مالك مطعم / كافيه', transfers_owner: 'ترانسفير', packages_owner: 'مكتب باكدجات' };
+const ROLE_L = { super_admin: 'سوبر أدمن', trips_owner: 'مكتب رحلات', hotels_owner: 'مالك فنادق', restaurants_owner: 'مالك مطعم / كافيه', transfers_owner: 'ترانسفير', packages_owner: 'مكتب باكدجات', seller: 'سيلر' };
 const ROLE_OPTS = Object.entries(ROLE_L).filter(([k]) => k !== 'super_admin');
 const STATIC_TYPES = ['article', 'review', 'promoSlide'];   // now plain JSON in the repo (shared/data/*.json), no longer managed here
 const TYPES = { hotel: 'الفنادق', excursion: 'الرحلات', package: 'الباكدجات', transfer: 'الترانسفير', destination: 'الوجهات', restaurant: 'المطاعم', article: 'المقالات', review: 'تقييمات الموقع', promoSlide: 'شرائح الصفحة الرئيسية', journal: 'التدوينات' };
@@ -43,7 +43,7 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', roleLabel: 'س
     const list = (await roles());
     m.innerHTML = `<h2 class="pt">حسابات الأونرز <button class="btn" id="add">+ حساب جديد</button></h2>` + table([
       { h: 'الاسم', f: r => `<b>${esc(r.name || '—')}</b><div class="muted">${esc(r.email || '')}</div>` }, { h: 'النوع', f: r => ROLE_L[r.role] || r.role },
-      { h: 'العمولة', f: r => r.commissionRate != null ? r.commissionRate + '%' : '<span class="muted">افتراضي</span>' }, { h: 'حساب الاستلام', f: r => r.hasPayout ? DS.METHOD[r.payoutMethod] : '<span class="muted">—</span>' },
+      { h: 'العمولة', f: r => (r.commissionRate != null ? r.commissionRate + '%' : '<span class="muted">افتراضي</span>') + (r.sellerCode ? `<div class="muted" dir="ltr">كود: ${esc(r.sellerCode)}</div>` : '') }, { h: 'حساب الاستلام', f: r => r.hasPayout ? DS.METHOD[r.payoutMethod] : '<span class="muted">—</span>' },
       { h: 'الحالة', f: r => r.status === 'suspended' ? '<span class="badge b-red">موقوف</span>' : '<span class="badge b-green">نشط</span>' },
       { h: 'العناصر', f: r => Object.entries(r.itemCounts || {}).map(([t, n]) => (TYPES[t] || t) + ': ' + n).join('<br>') || '—' },
       { h: '', f: r => `<button class="btn ghost sm" data-a="edit" data-u="${r.uid}">تعديل</button> <button class="btn ghost sm" data-a="tog" data-u="${r.uid}">${r.status === 'suspended' ? 'تفعيل' : 'إيقاف'}</button> <button class="btn ghost sm" data-a="pw" data-u="${r.uid}">باسورد</button> <button class="btn ghost sm" data-a="del" data-u="${r.uid}">حذف</button>` }],
@@ -194,10 +194,10 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', roleLabel: 'س
       },
       // ---- settings ----
       settings: async box => {
-        const d = await api('/finance/settings'), S = [{ k: 'hotel', l: 'عمولة الفنادق %', t: 'num' }, { k: 'excursion', l: 'عمولة الرحلات %', t: 'num' }, { k: 'transfer', l: 'عمولة الترانسفير %', t: 'num' }, { k: 'package', l: 'عمولة الباكدجات %', t: 'num' }, { k: 'gatewayFee', l: 'رسوم كاشير % (بتتضاف على العميل)', t: 'num' }, { k: 'gatewayFixed', l: 'رسوم كاشير الثابتة (جنيه/عملية)', t: 'num' }, { k: 'gatewayVat', l: 'ضريبة القيمة المضافة على رسوم كاشير %', t: 'num' }, { k: 'minPayout', l: 'أقل مبلغ للصرف (جنيه)', t: 'num' }], f = form(S, { ...d.settings.rates, minPayout: d.settings.minPayout, gatewayFee: d.settings.gatewayFee, gatewayFixed: d.settings.gatewayFixed, gatewayVat: d.settings.gatewayVat });
+        const d = await api('/finance/settings'), S = [{ k: 'hotel', l: 'عمولة الفنادق %', t: 'num' }, { k: 'excursion', l: 'عمولة الرحلات %', t: 'num' }, { k: 'transfer', l: 'عمولة الترانسفير %', t: 'num' }, { k: 'package', l: 'عمولة الباكدجات %', t: 'num' }, { k: 'gatewayFee', l: 'رسوم كاشير % (بتتضاف على العميل)', t: 'num' }, { k: 'gatewayFixed', l: 'رسوم كاشير الثابتة (جنيه/عملية)', t: 'num' }, { k: 'gatewayVat', l: 'ضريبة القيمة المضافة على رسوم كاشير %', t: 'num' }, { k: 'sellerRate', l: 'عمولة السيلر % (من سعر الحجز، بتتخصم من عمولة المنصة)', t: 'num' }, { k: 'minPayout', l: 'أقل مبلغ للصرف (جنيه)', t: 'num' }], f = form(S, { ...d.settings.rates, sellerRate: d.settings.sellerRate, minPayout: d.settings.minPayout, gatewayFee: d.settings.gatewayFee, gatewayFixed: d.settings.gatewayFixed, gatewayVat: d.settings.gatewayVat });
         box.innerHTML = '<div class="card"><b>النسب الافتراضية</b><p class="muted" style="margin:6px 0 12px">بتتثبّت على كل حجز وقت الحجز (على السعر قبل الضرائب) وبتتخصم من اللي المنصة حصّلته، فتغييرها مبيأثرش على حجوزات قديمة. رسوم كاشير بتتحسب على المبلغ المحصّل أونلاين بس. لأونر معيّن: من تبويب الأونرز ← تعديل ← نسبة عمولة خاصة.</p></div>';
         box.firstChild.appendChild(f); const b = document.createElement('button'); b.className = 'btn'; b.textContent = 'حفظ'; box.firstChild.appendChild(b);
-        b.onclick = async () => { const v = collect(f, S); try { await api('/finance/settings', { method: 'PUT', body: { rates: { hotel: v.hotel, excursion: v.excursion, transfer: v.transfer, package: v.package }, minPayout: v.minPayout }, gatewayFee: v.gatewayFee, gatewayFixed: v.gatewayFixed, gatewayVat: v.gatewayVat }); toast('اتحفظ'); } catch (e) { toast(e.message, true); } };
+        b.onclick = async () => { const v = collect(f, S); try { await api('/finance/settings', { method: 'PUT', body: { rates: { hotel: v.hotel, excursion: v.excursion, transfer: v.transfer, package: v.package }, minPayout: v.minPayout }, gatewayFee: v.gatewayFee, gatewayFixed: v.gatewayFixed, gatewayVat: v.gatewayVat, sellerRate: v.sellerRate }); toast('اتحفظ'); } catch (e) { toast(e.message, true); } };
       },
     };
     const draw = async () => {

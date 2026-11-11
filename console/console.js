@@ -458,7 +458,7 @@ DS.bookingsView = (o = {}) => async (m) => {
     const dep = isDep ? (v2 ? row('العربون المدفوع أونلاين', DS.money(b.amountDueNow) + ' ' + cur) + row('المتبقي (يُدفع في مكان الخدمة)', DS.money(b.remainingAmount) + ' ' + cur)
       : row('العربون المدفوع', DS.money(b.depositAmount) + ' ' + cur) + row('المتبقي (يُدفع لاحقاً)', DS.money(b.remainingAmount) + ' ' + cur)) : '';
     const share = b.ownerShare ? row('حصتك الإجمالية', DS.money(b.ownerShare.total) + ' ' + cur) + (b.ownerShare.onSite > 0 ? row('تحصّلها من العميل في المكان', DS.money(b.ownerShare.onSite) + ' ' + cur) : '') + row('تحوّلها المنصة لك', DS.money(b.ownerShare.fromPlatform) + ' ' + cur) : '';
-    const adm = admin && b.commission != null ? row('عمولة المنصة (' + b.commissionRate + '%)', DS.money(b.commission) + ' ' + cur) + (b.gatewayFee ? row('رسوم البوابة (على العميل)', DS.money(b.gatewayFee) + ' ' + cur) : '') : '';
+    const adm = admin && b.commission != null ? row('عمولة المنصة (' + b.commissionRate + '%)', DS.money(b.commission) + ' ' + cur) + (b.gatewayFee ? row('رسوم البوابة (على العميل)', DS.money(b.gatewayFee) + ' ' + cur) : '') + (b.sellerName ? row('السيلر: ' + esc(b.sellerName), DS.money(b.sellerAmount) + ' ' + cur) + row('صافي المنصة بعد السيلر', DS.money(b.platformNet) + ' ' + cur) : '') : '';
     const head = `<div class="bkh"><div class="bkt">${esc(bItem(b))}</div><div class="bkb">${DS.payBadge(b)}${b.ownerStatus ? ' ' + DS.badge(OWN, b.ownerStatus) : ''}</div>
       <div class="bktot"><small>الإجمالي</small><b>${DS.money(b.total)} <i>${esc(b.currency || '')}</i></b></div></div>`;
     body.innerHTML = `${head}<div class="bkrows">${kv}${dep}${vch}</div>${share || adm ? `<div class="bkrows bkmine">${share}${adm}</div>` : ''}
@@ -528,12 +528,12 @@ DS.reviewsView = (o = {}) => async (m) => {
 };
 // ---------- owner finance view ----------
 DS.financeView = () => async (m) => {
-  const d = await DS.api('/finance'), S = d.summary, open = d.payouts.find(p => p.status === 'requested');
+  const d = await DS.api('/finance'), S = d.summary, open = d.payouts.find(p => p.status === 'requested'), sel = !!d.seller;
   const PS = { requested: ['قيد المراجعة', 'amber'], paid: ['اتحوّل', 'green'], rejected: ['مرفوض', 'red'], cancelled: ['ملغي', 'gray'] };
   const a = d.account || {}, ip = a.instapay || {}, bk = a.bank || {};
   const byMonth = {}; d.earnings.forEach(e => { const k = String(e.serviceDate || e.at).slice(0, 7); const x = byMonth[k] = byMonth[k] || { n: 0, s: 0, o: 0, net: 0 }; x.n++; x.s += e.share; x.o += e.onSite; x.net += e.net; });
-  m.innerHTML = `<h2 class="pt">المحاسبة</h2><div class="stats">${DS.stat(DS.money(S.available), 'متاح للصرف (جنيه)')}${DS.stat(DS.money(S.earned), 'إجمالي ما تحوّله المنصة لك (مسجّل)')}${DS.stat(DS.money(S.paid), 'اتحوّل لك')}${DS.stat(DS.money(S.pending), 'طلب صرف قيد المراجعة')}</div>
-    <div class="card muted" style="line-height:1.9">• الأرباح بتظهر بعد ما تسجّل الحجز "تم" (وصول النزيل / الرحلة / التوصيل) بعد ميعاد الخدمة.<br>• حجز بعربون: العميل بيدفع باقي المبلغ <b>ليك مباشرة في مكان الخدمة</b>، والمنصة بتحوّل لك الباقي لحد حصتك الكاملة.<br>• حجز مدفوع بالكامل: المنصة بتحوّل لك حصتك كاملة بعد تسجيل التنفيذ. • أقل مبلغ للصرف: <b>${DS.money(d.minPayout)}</b> جنيه.</div>
+  m.innerHTML = `<h2 class="pt">المحاسبة</h2><div class="stats">${DS.stat(DS.money(S.available), 'متاح للصرف (جنيه)')}${DS.stat(DS.money(S.earned), sel ? 'إجمالي عمولاتك (مسجّلة)' : 'إجمالي ما تحوّله المنصة لك (مسجّل)')}${DS.stat(DS.money(S.paid), 'اتحوّل لك')}${DS.stat(DS.money(S.pending), 'طلب صرف قيد المراجعة')}</div>
+    <div class="card muted" style="line-height:1.9">${sel ? `• عمولتك <b>${d.rate}%</b> من سعر كل حجز (قبل الضرائب) جه من لينكك أو من حسابك، بتتسجّل بعد ما مقدّم الخدمة يأكّد التنفيذ، وبتتلغي لو الحجز اتلغى أو اتردّ.<br>• أقل مبلغ للصرف: <b>${DS.money(d.minPayout)}</b> جنيه.` : `• الأرباح بتظهر بعد ما تسجّل الحجز "تم" (وصول النزيل / الرحلة / التوصيل) بعد ميعاد الخدمة.<br>• حجز بعربون: العميل بيدفع باقي المبلغ <b>ليك مباشرة في مكان الخدمة</b>، والمنصة بتحوّل لك الباقي لحد حصتك الكاملة.<br>• حجز مدفوع بالكامل: المنصة بتحوّل لك حصتك كاملة بعد تسجيل التنفيذ. • أقل مبلغ للصرف: <b>${DS.money(d.minPayout)}</b> جنيه.`}</div>
     <div class="card"><b>حساب استلام الأرباح</b><div class="muted" style="margin:6px 0 12px">${d.account ? 'الحالي: ' + DS.METHOD[a.method] + ' — ' + esc(DS.acctText(a)) : 'لسه مضفتش حساب'}</div>
       ${d.accountLockMs ? `<div class="err" style="background:var(--abg);color:var(--amber)">اتغيّر الحساب حديثًا — طلب الصرف يتفتح بعد ${Math.ceil(d.accountLockMs / 3600000)} ساعة (حماية لحسابك).</div>` : ''}
       <div class="fld"><label>طريقة الاستلام</label><select id="pm"><option value="instapay" ${a.method !== 'bank' ? 'selected' : ''}>إنستا باي</option><option value="bank" ${a.method === 'bank' ? 'selected' : ''}>تحويل بنكي</option></select></div>
@@ -542,9 +542,9 @@ DS.financeView = () => async (m) => {
       <button class="btn" id="sa">حفظ حساب الاستلام</button></div>
     <div class="card"><b>طلب صرف</b>${open ? `<div class="row" style="margin-top:10px">${DS.money(open.amount)} جنيه — ${DS.badge(PS, 'requested')} <button class="btn ghost sm" id="cx">إلغاء الطلب</button></div>` :
       `<div class="row" style="margin-top:10px"><input id="am" type="number" min="0" placeholder="المبلغ" style="max-width:180px"><button class="btn" id="rq" ${S.available >= d.minPayout ? '' : 'disabled'}>اطلب الصرف</button><span class="muted">المتاح ${DS.money(S.available)}</span></div>`}</div>
-    <h2 class="pt" style="margin-top:18px">الأرباح المسجّلة <button class="btn ghost sm" id="ce">تصدير CSV</button></h2>` +
-    DS.table([{ h: 'الحجز', f: e => esc(e.id) }, { h: 'العنصر', f: e => `${esc(e.item)}<div class="muted">${esc(e.customer)}</div>` }, { h: 'تاريخ الخدمة', f: e => esc(e.serviceDate) }, { h: 'حصتك الإجمالية', f: e => DS.money(e.share) }, { h: 'تحصّلها في المكان', f: e => e.onSite ? DS.money(e.onSite) : '<span class="muted">—</span>' }, { h: 'تحوّلها المنصة لك', f: e => `<b>${DS.money(e.net)}</b>` }], d.earnings, { empty: 'مفيش أرباح لسه — هتظهر بعد تسجيل تنفيذ الخدمات' }) +
-    `<h2 class="pt" style="margin-top:18px">ملخص شهري</h2>` + DS.table([{ h: 'الشهر', f: r => r[0] }, { h: 'خدمات', f: r => r[1].n }, { h: 'حصتك الإجمالية', f: r => DS.money(r[1].s) }, { h: 'تحصّلها في المكان', f: r => DS.money(r[1].o) }, { h: 'تحوّلها المنصة', f: r => DS.money(r[1].net) }], Object.entries(byMonth).sort().reverse(), { empty: '—' }) +
+    <h2 class="pt" style="margin-top:18px">${sel ? 'العمولات المسجّلة' : 'الأرباح المسجّلة'} <button class="btn ghost sm" id="ce">تصدير CSV</button></h2>` +
+    DS.table(sel ? [{ h: 'الحجز', f: e => esc(e.id) }, { h: 'العنصر', f: e => `${esc(e.item)}<div class="muted">${esc(e.customer)}</div>` }, { h: 'تاريخ الخدمة', f: e => esc(e.serviceDate) }, { h: 'قيمة الحجز', f: e => DS.money(e.gross) }, { h: 'عمولتك', f: e => `<b>${DS.money(e.net)}</b> <span class="muted">(${e.rate}%)</span>` }] : [{ h: 'الحجز', f: e => esc(e.id) }, { h: 'العنصر', f: e => `${esc(e.item)}<div class="muted">${esc(e.customer)}</div>` }, { h: 'تاريخ الخدمة', f: e => esc(e.serviceDate) }, { h: 'حصتك الإجمالية', f: e => DS.money(e.share) }, { h: 'تحصّلها في المكان', f: e => e.onSite ? DS.money(e.onSite) : '<span class="muted">—</span>' }, { h: 'تحوّلها المنصة لك', f: e => `<b>${DS.money(e.net)}</b>` }], d.earnings, { empty: 'مفيش أرباح لسه — هتظهر بعد تسجيل تنفيذ الخدمات' }) +
+    `<h2 class="pt" style="margin-top:18px">ملخص شهري</h2>` + DS.table(sel ? [{ h: 'الشهر', f: r => r[0] }, { h: 'حجوزات', f: r => r[1].n }, { h: 'عمولتك', f: r => DS.money(r[1].net) }] : [{ h: 'الشهر', f: r => r[0] }, { h: 'خدمات', f: r => r[1].n }, { h: 'حصتك الإجمالية', f: r => DS.money(r[1].s) }, { h: 'تحصّلها في المكان', f: r => DS.money(r[1].o) }, { h: 'تحوّلها المنصة', f: r => DS.money(r[1].net) }], Object.entries(byMonth).sort().reverse(), { empty: '—' }) +
     `<h2 class="pt" style="margin-top:18px">عمليات الصرف</h2>` + DS.table([{ h: 'الرقم', f: p => esc(p.id) }, { h: 'المبلغ', f: p => DS.money(p.amount) }, { h: 'الطريقة', f: p => DS.METHOD[p.method] || '' }, { h: 'التاريخ', f: p => DS.dt(p.paidAt || p.requestedAt) }, { h: 'الحالة', f: p => DS.badge(PS, p.status) }, { h: 'مرجع / ملاحظة', f: p => esc(p.reference || p.note || '') }], d.payouts, { empty: 'مفيش عمليات صرف' }) +
     (d.adjustments.length ? `<h2 class="pt" style="margin-top:18px">تسويات من الإدارة</h2>` + DS.table([{ h: 'التاريخ', f: x => DS.dt(x.createdAt) }, { h: 'المبلغ', f: x => (x.amount > 0 ? '+' : '') + DS.money(x.amount) }, { h: 'السبب', f: x => esc(x.reason) }], d.adjustments) : '');
   const sync = () => { const b = $('#pm').value === 'bank'; $('#pi').classList.toggle('hide', b); $('#pb').classList.toggle('hide', !b); }; sync(); $('#pm').onchange = sync;
@@ -552,7 +552,7 @@ DS.financeView = () => async (m) => {
   act('#sa', async () => { const bank = $('#pm').value === 'bank'; await DS.api('/payout-account', { method: 'PUT', body: bank ? { method: 'bank', bank: { bankName: $('#b1').value, accountName: $('#b2').value, accountNumber: $('#b3').value, iban: $('#b4').value, branch: $('#b5').value } } : { method: 'instapay', instapay: { handle: $('#i1').value, name: $('#i2').value, phone: $('#i3').value } } }); DS.toast('اتحفظ'); DS.reload(); });
   act('#rq', async () => { if (!confirm('تأكيد طلب الصرف على الحساب المسجّل؟')) return; await DS.api('/payouts', { method: 'POST', body: { amount: Number($('#am').value) } }); DS.toast('اتبعت للإدارة'); DS.reload(); });
   act('#cx', async () => { await DS.api('/payouts/' + encodeURIComponent(open.id), { method: 'DELETE' }); DS.reload(); });
-  act('#ce', async () => DS.csv('earnings.csv', ['الحجز', 'العنصر', 'العميل', 'تاريخ الخدمة', 'حصتك الإجمالية', 'تحصّلها في المكان', 'تحوّلها المنصة'], d.earnings.map(e => [e.id, e.item, e.customer, e.serviceDate, e.share, e.onSite, e.net])));
+  act('#ce', async () => sel ? DS.csv('commissions.csv', ['الحجز', 'العنصر', 'العميل', 'تاريخ الخدمة', 'قيمة الحجز', 'عمولتك'], d.earnings.map(e => [e.id, e.item, e.customer, e.serviceDate, e.gross, e.net])) : DS.csv('earnings.csv', ['الحجز', 'العنصر', 'العميل', 'تاريخ الخدمة', 'حصتك الإجمالية', 'تحصّلها في المكان', 'تحوّلها المنصة'], d.earnings.map(e => [e.id, e.item, e.customer, e.serviceDate, e.share, e.onSite, e.net])));
 };
 // ---------- owner panel factory (trips / hotels / transfers) ----------
 DS.ownerPanel = (c) => {
@@ -597,3 +597,51 @@ DS.ownerPanel = (c) => {
   ] });
 };
 })();
+
+// ===================== Seller dashboard =====================
+// A seller earns a slice of the platform's commission on every booking that comes from his referral link (?ref=CODE) or is made from his own account.
+DS.sellerPanel = () => {
+  const SS = { done: ['مسجّلة', 'green'], wait: ['بانتظار تنفيذ الخدمة', 'amber'], pend: ['بانتظار دفع العميل', 'gray'], void: ['ملغية', 'red'] };
+  const state = x => x.void || x.status === 'cancelled' || x.status === 'refunded' ? 'void' : x.earnedAt ? 'done' : x.status === 'completed' ? 'wait' : 'pend';
+  const linkOf = (base, code) => (base || '').replace(/\/$/, '') + '/?ref=' + code;
+  const copy = async (t) => { try { await navigator.clipboard.writeText(t); DS.toast('اتنسخ'); } catch { prompt('انسخ الرابط:', t); } };
+  DS.start({ key: 'seller', title: 'لوحة السيلر', roleLabel: 'سيلر', api: '/api/owner/seller', views: (me) => [
+    { label: 'الرئيسية', icon: 'home', render: async m => {
+      const [bk, fn] = await Promise.all([DS.api('/bookings'), DS.api('/finance')]); const b = bk.bookings, S = fn.summary;
+      const days = DS.daysBack(14), cnt = Object.fromEntries(days.map(d => [d, 0])); b.forEach(x => { const d = String(x.createdAt).slice(0, 10); if (d in cnt) cnt[d]++; });
+      const mon = {}; fn.earnings.forEach(e => { const k = String(e.serviceDate || e.at).slice(0, 7); mon[k] = (mon[k] || 0) + e.net; }); const mk = Object.keys(mon).sort().slice(-6);
+      const wait = b.filter(x => state(x) === 'wait'), waitAmt = wait.reduce((a, x) => a + Number(x.amount), 0);
+      m.innerHTML = DS.hero('أهلاً ' + esc(me.name || ''), `عمولتك ${me.rate}% على كل حجز بيتم من لينكك أو من حسابك`, `<button class="btn" data-go="لينكي">${DS.ic('plus')} لينكي وكودي</button><button class="btn ghost" data-go="المحاسبة">${DS.ic('wallet')} المحاسبة</button>`) +
+        `<div class="stats">${DS.stat(DS.money(S.available), 'عمولات متاحة للصرف (جنيه)', { icon: 'wallet', tone: 'green' })}${DS.stat(DS.money(waitAmt), 'قيد الانتظار (جنيه)', { icon: 'alert', tone: waitAmt ? 'gold' : 'green', sub: wait.length + ' حجز بانتظار تنفيذ الخدمة' })}${DS.stat(b.length, 'كل الحجوزات', { icon: 'cal' })}${DS.stat(DS.money(S.paid), 'اتحوّل لك', { icon: 'check' })}</div>
+        <div class="grest"><div class="card"><span class="ct">حجوزاتك — آخر 14 يوم</span>${DS.area(days.map(d => d.slice(5).replace('-', '/')), days.map(d => cnt[d]), 'var(--blue)', 'o1')}</div>
+          <div class="card"><span class="ct">عمولتك بالشهر (جنيه)</span>${mk.length ? DS.bars(mk, mk.map(k => Math.round(mon[k])), 'var(--green)') : '<div class="empty">العمولة بتظهر بعد ما الخدمة تتنفّذ</div>'}</div></div>
+        <h2 class="pt">آخر الحجوزات</h2>` + DS.table([{ h: 'الحجز', f: x => `<b>${esc(x.id)}</b><div class="muted">${DS.dt(x.createdAt)}</div>` }, { h: 'على', f: x => esc(x.item || x.type) }, { h: 'عمولتك', f: x => DS.money(x.amount) }, { h: 'الحالة', f: x => DS.badge(SS, state(x)) }], b.slice(0, 6), { empty: 'مفيش حجوزات لسه — شارك لينكك!' });
+      m.onclick = e => { const g = e.target.closest('[data-go]'); if (g) DS.go(g.dataset.go); };
+    } },
+    { label: 'لينكي', icon: 'qr', render: async m => {
+      const www = (me.sites || {}).www || location.origin, app = (me.sites || {}).app || www, code = me.code || '';
+      m.innerHTML = `<h2 class="pt">لينكي وكودي</h2>
+        <div class="card"><span class="ct">كود الإحالة بتاعك</span><div class="row" style="margin-top:10px"><b style="font-size:26px;letter-spacing:3px" dir="ltr">${esc(code)}</b><button class="btn ghost sm" data-c="${esc(code)}">نسخ الكود</button></div>
+          <p class="muted" style="margin-top:8px">أي عميل يدخل من لينكك ويحجز خلال 30 يوم، الحجز بيتسجّل باسمك تلقائيًا وليك <b>${me.rate}%</b> من سعر الحجز (قبل الضرائب). مفيش أي تغيير في السعر على العميل.</p></div>
+        <div class="grid2"><div class="card"><span class="ct">لينك الموقع (كمبيوتر)</span><div class="fld"><input readonly dir="ltr" value="${esc(linkOf(www, code))}"></div><button class="btn sm" data-c="${esc(linkOf(www, code))}">نسخ</button></div>
+          <div class="card"><span class="ct">لينك التطبيق (موبايل)</span><div class="fld"><input readonly dir="ltr" value="${esc(linkOf(app, code))}"></div><button class="btn sm" data-c="${esc(linkOf(app, code))}">نسخ</button></div></div>
+        <div class="card"><span class="ct">لينك لصفحة معيّنة (رحلة / فندق ...)</span><p class="muted">الصق أي رابط من الموقع وهنضيف كودك عليه.</p>
+          <div class="row" style="margin-top:8px"><input id="pg" dir="ltr" placeholder="https://www.discover-sharm.com/..." style="flex:1"><button class="btn" id="mk">اعمل اللينك</button></div><div id="mo" class="muted" style="margin-top:8px;word-break:break-all"></div></div>
+        <div class="card"><span class="ct">QR Code للينكك</span><div id="qr" style="max-width:220px;margin-top:10px"></div></div>
+        <div class="card"><span class="ct">حجز لعميل من حسابك</span><p class="muted" style="line-height:1.9">• افتح <a href="${esc(www)}" target="_blank" rel="noopener">الموقع</a> وسجّل دخول بنفس إيميل وباسورد لوحة السيلر.<br>• اعمل الحجز وادخل بيانات العميل (الاسم والإيميل والموبايل) والفاوتشر هيوصله على إيميله.<br>• الحجز بيتسجّل ليك تلقائيًا. الحجز على إيميلك الشخصي مفيهوش عمولة.</p></div>`;
+      try { $('#qr').innerHTML = DS.qrSvg(linkOf(www, code), { ecc: 'M', border: 2 }); } catch {}
+      $('#mk').onclick = () => { try { const u = new URL($('#pg').value.trim()); u.searchParams.set('ref', code); $('#mo').innerHTML = `<b dir="ltr">${esc(u.toString())}</b> <button class="btn ghost sm" data-c="${esc(u.toString())}">نسخ</button>`; } catch { DS.toast('الرابط غير صحيح', true); } };
+      m.onclick = e => { const c = e.target.closest('[data-c]'); if (c) copy(c.dataset.c); };
+    } },
+    { label: 'الحجوزات', icon: 'cal', render: async m => {
+      const b = (await DS.api('/bookings')).bookings;
+      m.innerHTML = `<h2 class="pt">حجوزاتي <button class="btn ghost sm" id="c1">CSV</button></h2>` + DS.table([
+        { h: 'الحجز', f: x => `<b>${esc(x.id)}</b><div class="muted">${DS.dt(x.createdAt)}</div>` }, { h: 'العميل', f: x => esc(x.customer || '') },
+        { h: 'على', f: x => esc(x.item || x.type) }, { h: 'تاريخ الخدمة', f: x => esc(x.serviceDate || '') }, { h: 'قيمة الحجز', f: x => DS.money(x.subtotal) },
+        { h: 'عمولتك', f: x => `<b>${DS.money(x.amount)}</b> <span class="muted">(${x.rate}%)</span>` }, { h: 'المصدر', f: x => x.viaOwnAccount ? 'حسابي' : 'لينك' },
+        { h: 'الحالة', f: x => DS.badge(SS, state(x)) }], b, { empty: 'مفيش حجوزات لسه' });
+      $('#c1').onclick = () => DS.csv('seller-bookings.csv', ['الحجز', 'العميل', 'العنصر', 'تاريخ الخدمة', 'قيمة الحجز', 'عمولتك', 'الحالة'], b.map(x => [x.id, x.customer, x.item, x.serviceDate, x.subtotal, x.amount, SS[state(x)][0]]));
+    } },
+    { label: 'المحاسبة', icon: 'wallet', render: DS.financeView() },
+  ] });
+};

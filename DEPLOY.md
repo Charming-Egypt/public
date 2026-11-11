@@ -8,7 +8,7 @@
 ## 2) إعدادات Supabase الجديدة بسبب التقسيم ⚠️
 1. **Authentication → URL Configuration**
    - Site URL: `https://www.discover-sharm.com`
-   - Redirect URLs (التلاتة): `https://www.discover-sharm.com/**` ، `https://app.discover-sharm.com/**` ، `https://admin.discover-sharm.com/**` ، `https://owner.discover-sharm.com/**`
+   - Redirect URLs (التلاتة): `https://www.discover-sharm.com/**` ، `https://app.discover-sharm.com/**` ، `https://admin.discover-sharm.com/**` ، `https://owner.discover-sharm.com/**` ، `https://seller.discover-sharm.com/**`
 2. **Google Sign-In** (Google Cloud Console → OAuth client): ضيف في *Authorized JavaScript origins* الدومينين `https://www.discover-sharm.com` و `https://app.discover-sharm.com`.
 3. **Worker الدفع**: `ALLOWED_ORIGINS` فيه www و app بالفعل. الأدمن مابيكلّمش الـ Worker، فمتضيفوش.
 4. `workers/wrangler.payments.toml` → `SITE_URL` (رابط الفاوتشر في الإيميل) سيبه `https://app.discover-sharm.com` أو غيّره لـ www — صفحة `/voucher/` موجودة على الاتنين ومابتتحوّلش.
@@ -46,6 +46,7 @@ npm run build
 | discover-sharm-app   | `dist/app`   | `app.discover-sharm.com` |
 | discover-sharm-admin | `dist/admin` | `admin.discover-sharm.com` |
 | discover-sharm-owner | `dist/owner` | `owner.discover-sharm.com` |
+| discover-sharm-seller | `dist/seller` | `seller.discover-sharm.com` |
 
 Cloudflare Pages: Create project → Direct Upload (أو GitHub مع Build command `npm run build` و Output directory `dist/www` / `dist/app` / `dist/admin` / `dist/owner`).
 
