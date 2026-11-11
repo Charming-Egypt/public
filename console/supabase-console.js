@@ -89,7 +89,7 @@
 
   async function settings() {
     const s = await run(sb.from('platform_settings').select('*').eq('id', 1).single());
-    return { rates: { hotel: pct(s.commission_hotel), excursion: pct(s.commission_excursion), transfer: pct(s.commission_transfer), package: pct(s.commission_package ?? s.commission_excursion) }, minPayout: Number(s.min_payout), raw: s };
+    return { rates: { hotel: pct(s.commission_hotel), excursion: pct(s.commission_excursion), transfer: pct(s.commission_transfer), package: pct(s.commission_package ?? s.commission_excursion) }, minPayout: Number(s.min_payout), gatewayFee: Math.round(Number(s.gateway_fee_rate || 0) * 10000) / 100, gatewayFixed: Number(s.gateway_fixed_fee || 0), gatewayVat: Math.round(Number(s.gateway_fee_vat || 0) * 10000) / 100, raw: s };
   }
 
   async function financeFor(uid, kindForRate) {
@@ -98,7 +98,7 @@
       run(sb.from('payouts').select('id, amount, status, method, account, reference, note, requested_at, paid_at').eq('owner_id', uid).order('requested_at', { ascending: false }).limit(200)),
       run(sb.from('adjustments').select('amount, reason, created_at').eq('owner_id', uid).order('created_at', { ascending: false }).limit(200)),
       run(sb.from('payout_accounts').select('method, details, locked_until').eq('owner_id', uid).maybeSingle()),
-      run(sb.from('bookings').select('id, kind, created_at, service_date, check_in, subtotal, commission_rate, commission_amount, owner_amount, earned_at, guest_name, hotelName:data->hotelName, title:data->title, vehicleType:data->vehicleType')
+      run(sb.from('bookings').select('id, kind, created_at, service_date, check_in, subtotal, remaining_amount, pricing_model, commission_rate, commission_amount, owner_amount, earned_at, guest_name, hotelName:data->hotelName, title:data->title, vehicleType:data->vehicleType')
         .eq('owner_id', uid).not('earned_at', 'is', null).eq('earning_void', false).order('earned_at', { ascending: false }).limit(1000)),
       settings(),
       run(sb.from('profiles').select('commission_rate').eq('id', uid).single()),
@@ -110,7 +110,8 @@
       payouts: payouts.map(p => ({ id: p.id, amount: Number(p.amount), status: p.status, method: p.method, account: p.account ? { method: p.method, ...p.account } : null, reference: p.reference, note: p.note, requestedAt: p.requested_at, paidAt: p.paid_at, ownerUid: uid })),
       adjustments: adjustments.map(a => ({ amount: Number(a.amount), reason: a.reason, createdAt: a.created_at })),
       earnings: earned.map(e => ({ id: e.id, item: itemName(e), customer: e.guest_name || '', serviceDate: e.check_in || e.service_date, at: e.earned_at,
-        gross: Number(e.subtotal), commission: Number(e.commission_amount), rate: pct(e.commission_rate), net: Number(e.owner_amount) })),
+        gross: Number(e.subtotal), commission: Number(e.commission_amount), rate: pct(e.commission_rate), net: Number(e.owner_amount),
+        v2: e.pricing_model === 'v2', onSite: Number(e.remaining_amount || 0), share: Number(e.subtotal) - Number(e.commission_amount) })),
     };
   }
 
@@ -328,8 +329,10 @@
 
       if (a === 'finance') {
         if (b === 'settings') {
-          if (method === 'GET') { const s = await settings(); return { settings: { rates: s.rates, minPayout: s.minPayout } }; }
-          const r = body.rates || {}; await rpc('admin_update_settings', { p_hotel: Number(r.hotel), p_excursion: Number(r.excursion), p_transfer: Number(r.transfer), p_min_payout: Number(body.minPayout), ...(r.package != null && r.package !== '' ? { p_package: Number(r.package) } : {}) }); return { success: true };
+          if (method === 'GET') { const s = await settings(); return { settings: { rates: s.rates, minPayout: s.minPayout, gatewayFee: s.gatewayFee, gatewayFixed: s.gatewayFixed, gatewayVat: s.gatewayVat } }; }
+          const r = body.rates || {}; await rpc('admin_update_settings', { p_hotel: Number(r.hotel), p_excursion: Number(r.excursion), p_transfer: Number(r.transfer), p_min_payout: Number(body.minPayout), ...(r.package != null && r.package !== '' ? { p_package: Number(r.package) } : {}) });
+          if (body.gatewayFee != null && body.gatewayFee !== '') await rpc('admin_set_gateway_fee', { p_percent: Number(body.gatewayFee), p_fixed: Number(body.gatewayFixed ?? 3), p_vat: Number(body.gatewayVat ?? 14) });
+          return { success: true };
         }
         if (b === 'payouts' && c) { await rpc('admin_set_payout_status', { p_id: c, p_status: body.status, p_reference: body.reference || null, p_note: body.note || null }); return { success: true }; }
         if (b === 'payouts' && method === 'POST') { await rpc('admin_record_payout', { p_owner: body.ownerUid, p_amount: Number(body.amount), p_method: body.method || null, p_reference: body.reference || null, p_note: body.note || null }); return { success: true }; }

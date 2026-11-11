@@ -236,13 +236,13 @@ function bkSummary(o) {
       <button type="button" class="bk-sum-head" onclick="toggleBkSummary(this)" aria-expanded="false">
         <img alt="" src="${getImageUrl(o.img)}" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
         <span class="bk-sum-title"><b>${o.title}</b><small>${o.sub || ''}</small></span>
-        <span class="bk-sum-mini"><small>${t('totalLabel')}</small><b>${utils.formatPrice(o.total)}</b></span>
+        <span class="bk-sum-mini"><small>${t('totalLabel')}</small><b data-bk-total>${utils.formatPrice(o.total)}</b></span>
         <i class="fa-solid fa-chevron-down bk-sum-chev" aria-hidden="true"></i>
       </button>
       <div class="bk-sum-body">
         ${o.rows.map(r => `<div class="booking-summary-row"><span>${r[0]}</span><span>${r[1]}</span></div>`).join('')}
         ${o.extra || ''}
-        <div class="booking-summary-total"><span>${t('totalLabel')}</span><span>${utils.formatPrice(o.total)}</span></div>
+        <div class="booking-summary-total"><span>${t('totalLabel')}</span><span data-bk-total>${utils.formatPrice(o.total)}</span></div>
       </div>
     </aside>`;
 }
@@ -301,6 +301,7 @@ function bkDateField(id, label, value, icon = 'fa-calendar-days') {
 
 // Optional "charge the remaining balance automatically" consent — only when the feature is switched on at build time (DS_AUTO_BALANCE=on) and the deposit plan is selected.
 function autoBalanceRow() {
+  return '';   // the remaining amount is paid to the provider on site now — no automatic collection
   if (!(window.DS_CONFIG && window.DS_CONFIG.AUTO_BALANCE)) return '';
   const dep = Object.values(state.bookingDraft.paymentPlan || {}).includes('deposit');
   return `<label class="bk-check" id="autoBalanceRow" style="${dep ? '' : 'display:none'}"><input type="checkbox" id="payAutoBalance"><span class="bk-check-box" aria-hidden="true"><i class="fa-solid fa-check"></i></span><span>${t('autoBalanceLabel', 'I authorize Discover Sharm to charge the remaining balance to this card automatically, about 24 hours before the payment deadline.')}</span></label>`;
@@ -370,44 +371,51 @@ function formatCardNumberInput(el) {
   el.value = el.value.replace(/[^\d]/g, '').replace(/(.{4})/g, '$1 ').trim().slice(0, 23);
 }
 
-// Must match bookings-worker's DEPOSIT_RATIO/rounding exactly (Math.round, whole EGP) —
-// the server recomputes and rejects the charge if this ever drifts from its own figure.
-const DEPOSIT_RATIO = 0.5;
-function depositOf(total) { return Math.round(total * DEPOSIT_RATIO); }
-// amountDueNow() is the single source of truth both the summary UI and the
-// actual charge call read from — keeps them impossible to drift apart.
-function amountDueNow(type, total) {
-  return planOf(type) === 'deposit' ? depositOf(total) : total;
+// ---- Pricing (must match compute_booking_price in the database exactly — the server recomputes and rejects any other figure) ----
+// The platform collects online ONLY the deposit (50% of the pre-tax price) or the full price. Taxes and the card-gateway fee are charged on
+// top of that collected amount only; whatever is left of a deposit booking is paid straight to the hotel / trip / transfer provider on site.
+const BK_PRICING = { gatewayFeeRate: 0.0275, gatewayFixedFee: 3, gatewayFeeVat: 0.14, taxHotel: 0.10, taxOther: 0.05, depositRatio: 0.5 };   // overwritten by public_pricing() when the app starts
+let _bkPricingP = null;
+function loadBkPricing() {
+  if (!_bkPricingP) _bkPricingP = apiFetch('/api/pricing').then(r => { if (r && typeof r.gatewayFeeRate === 'number') Object.assign(BK_PRICING, r); }).catch(() => { _bkPricingP = null; });
+  return _bkPricingP;
 }
-// A deposit is only offered while there is time to collect the rest: a service dated tomorrow (or sooner) must be paid in full.
-// (The balance deadline is 24h before the service — see the DB setting balance_due_hours; create_booking enforces the same rule.)
+try { setTimeout(loadBkPricing, 0); } catch {}
+function bkQuote(type, subtotal, plan) {
+  const rate = type === 'hotel' ? BK_PRICING.taxHotel : BK_PRICING.taxOther;
+  const coll = plan === 'deposit' ? Math.round(subtotal * BK_PRICING.depositRatio) : subtotal;
+  const tax = Math.round(coll * rate);
+  const k = 1 + BK_PRICING.gatewayFeeVat;                                           // Kashier: rate x charge + fixed fee, plus VAT on the fee only
+  const pay = Math.round((coll + tax + BK_PRICING.gatewayFixedFee * k) / (1 - BK_PRICING.gatewayFeeRate * k));   // grossed up so the platform nets base + tax
+  return { coll, tax, fee: pay - coll - tax, pay, onSite: subtotal - coll, total: pay + (subtotal - coll) };
+}
+// amountDueNow() is the single source of truth both the summary UI and the actual charge call read from.
+function amountDueNow(type, subtotal) { return bkQuote(type, subtotal, planOf(type)).pay; }
+// A deposit can be taken for any date: the rest is paid on site, so nothing has to be collected online later.
 function serviceDayOf(type) { const d = state.bookingDraft || {}; return type === 'hotel' ? d.checkin : d.date; }
-function depositAllowed(type) {
-  const day = String(serviceDayOf(type) || '').slice(0, 10);
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return true;                     // date not chosen yet — the server re-checks
-  const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Africa/Cairo' }).format(new Date());   // YYYY-MM-DD in Egypt
-  const days = Math.round((Date.parse(day + 'T00:00:00Z') - Date.parse(today + 'T00:00:00Z')) / 86400000);
-  return days >= 2;
-}
+function depositAllowed(type) { return true; }
 function planOf(type) {
   const plan = (state.bookingDraft.paymentPlan && state.bookingDraft.paymentPlan[type]) || 'full';
   return plan === 'deposit' && !depositAllowed(type) ? 'full' : plan;
 }
-function payBtnLabel(type, total) {
-  return `${t('bookNowBtn')} — ${utils.formatPrice(amountDueNow(type, total))}`;
+function payBtnLabel(type, subtotal) {
+  return `${t('bookNowBtn')} — ${utils.formatPrice(amountDueNow(type, subtotal))}`;
+}
+function planNote(type, subtotal, plan) {
+  const q = bkQuote(type, subtotal, plan);
+  const incl = t('payInclLabel').replace('{tax}', utils.formatPrice(q.tax)).replace('{fee}', utils.formatPrice(q.fee));
+  return (plan === 'deposit' ? t('payDepositNoteLabel').replace('{n}', utils.formatPrice(q.onSite)) : t('payFullNoteLabel')) + ' ' + incl;
 }
 // Two radio options the guest actively picks between — full amount (nothing
 // owed later) or a 50% non-refundable deposit (rest due on arrival). Neither
 // is charged until they choose; 'full' is the default.
-function paymentPlanSelector(total, type) {
+function paymentPlanSelector(subtotal, type) {
   if (!state.bookingDraft.paymentPlan) state.bookingDraft.paymentPlan = {};
-  const allowed = depositAllowed(type);
-  const cur = planOf(type);     // keep the guest's choice when the step re-renders (forced to 'full' when a deposit is not allowed)
+  const cur = planOf(type);     // keep the guest's choice when the step re-renders
   state.bookingDraft.paymentPlan[type] = cur;
-  const deposit = depositOf(total);
   const opt = (val, label, amount) => `
     <label class="pay-option ${cur === val ? 'is-selected' : ''}">
-      <input type="radio" name="paymentPlan_${type}" value="${val}" ${cur === val ? 'checked' : ''} onchange="updatePaymentPlan('${type}', ${total}, this.value)">
+      <input type="radio" name="paymentPlan_${type}" value="${val}" ${cur === val ? 'checked' : ''} onchange="updatePaymentPlan('${type}', ${subtotal}, this.value)">
       <span class="pay-radio" aria-hidden="true"></span>
       <span class="pay-option-label">${label}</span>
       <span class="pay-option-price">${utils.formatPrice(amount)}</span>
@@ -415,22 +423,23 @@ function paymentPlanSelector(total, type) {
   return `
     <div class="payment-plan-selector">
       <div class="pay-options">
-        ${opt('full', t('payFullAmountLabel'), total)}
-        ${allowed ? opt('deposit', t('payDepositOptionLabel'), deposit) : ''}
+        ${opt('full', t('payFullAmountLabel'), bkQuote(type, subtotal, 'full').pay)}
+        ${opt('deposit', t('payDepositOptionLabel'), bkQuote(type, subtotal, 'deposit').pay)}
       </div>
-      ${allowed ? '' : `<p class="bk-note"><i class="fa-solid fa-circle-info" aria-hidden="true"></i><span>${t('payFullRequiredNote')}</span></p>`}
-      <p class="bk-note" id="paymentPlanNote_${type}"><i class="fa-solid fa-circle-info" aria-hidden="true"></i><span>${cur === 'deposit' ? t('payDepositNoteLabel').replace('{n}', utils.formatPrice(total - deposit)) : t('payFullNoteLabel')}</span></p>
+      <p class="bk-note" id="paymentPlanNote_${type}"><i class="fa-solid fa-circle-info" aria-hidden="true"></i><span>${planNote(type, subtotal, cur)}</span></p>
     </div>`;
 }
-function updatePaymentPlan(type, total, plan) {
+function updatePaymentPlan(type, subtotal, plan) {
   if (!state.bookingDraft.paymentPlan) state.bookingDraft.paymentPlan = {};
   state.bookingDraft.paymentPlan[type] = plan;
   document.querySelectorAll(`input[name="paymentPlan_${type}"]`).forEach(i => i.closest('.pay-option')?.classList.toggle('is-selected', i.value === plan));
-  const abr = document.getElementById('autoBalanceRow'); if (abr) abr.style.display = plan === 'deposit' ? '' : 'none';
+  const q = bkQuote(type, subtotal, plan);
   const btn = document.getElementById(type + 'PayBtn');
-  if (btn) btn.innerHTML = `<i class="fa-solid fa-lock" aria-hidden="true"></i>${payBtnLabel(type, total)}`;
+  if (btn) btn.innerHTML = `<i class="fa-solid fa-lock" aria-hidden="true"></i>${payBtnLabel(type, subtotal)}`;
   const note = document.querySelector('#paymentPlanNote_' + type + ' span');
-  if (note) note.textContent = plan === 'deposit' ? t('payDepositNoteLabel').replace('{n}', utils.formatPrice(total - depositOf(total))) : t('payFullNoteLabel');
+  if (note) note.textContent = planNote(type, subtotal, plan);
+  document.querySelectorAll('[data-bk-total]').forEach(e => { e.textContent = utils.formatPrice(q.total); });
+  document.querySelectorAll('[data-bk-tax]').forEach(e => { e.textContent = utils.formatPrice(q.tax + q.fee); });
 }
 
 // Dispatches to the card or wallet flow based on the selected payment
@@ -837,8 +846,8 @@ function renderBookingStep(step) {
   const h = state.currentHotel, r = state.currentRoom;
   const nights = Math.max(1, Math.round((new Date(state.bookingDraft.checkout) - new Date(state.bookingDraft.checkin)) / 86400000));
   const pricing = computeRoomPricing(r, state.guests, state.guests.rooms, nights);
-  const taxes = Math.round(pricing.roomTotal * 0.1);
-  const total = pricing.roomTotal + taxes;
+  const q0 = bkQuote('hotel', pricing.roomTotal, planOf('hotel'));
+  const taxes = q0.tax + q0.fee, total = q0.total;
   const page = document.createElement('div'); page.id = 'bookingFlowPage'; page.className = 'page bk-flow';
   const summary = bkSummary({
     img: h.image, title: h.name, sub: r.type, total,
@@ -853,7 +862,7 @@ function renderBookingStep(step) {
       <div class="booking-summary-row" style="flex-direction:column; align-items:flex-start; gap:4px;">
         <span style="font-size:11px;">${t('children')} (${pricing.freeChildrenCount} ${t('freeLabel')})</span>
         ${pricing.childrenBreakdown.map(c => `<div class="flex justify-between w-full text-[11px]"><span>${t('ageLabel')} ${c.age}</span><span>${c.fee > 0 ? utils.formatPrice(c.fee) + ' / ' + t('nightLabel') : t('freeLabel')}</span></div>`).join('')}
-      </div>` : '') + `<div class="booking-summary-row"><span>${t('taxesFeesLabel')}</span><span>${utils.formatPrice(taxes)}</span></div>`,
+      </div>` : '') + `<div class="booking-summary-row"><span>${t('taxesFeesLabel')}</span><span data-bk-tax>${utils.formatPrice(taxes)}</span></div>`,
   });
   let main = '';
   if (step === 2) {
@@ -877,10 +886,10 @@ function renderBookingStep(step) {
       </div>`;
   } else if (step === 3) {
     main = `
-      ${bkCard('fa-coins', t('choosePaymentOptionLabel'), paymentPlanSelector(total, 'hotel'))}
+      ${bkCard('fa-coins', t('choosePaymentOptionLabel'), paymentPlanSelector(pricing.roomTotal, 'hotel'))}
       ${bkCard('fa-credit-card', t('paymentMethodHeader'), paymentMethodsBlock(state.bookingDraft.payment, 'setHotelPaymentMethod'))}
       <div class="bk-bar">
-        <button onclick="payAndConfirmHotelBooking(${pricing.roomTotal}, ${taxes}, ${total}, ${nights})" id="hotelPayBtn" class="btn-violet bk-cta bk-cta-wide"><i class="fa-solid fa-lock" aria-hidden="true"></i>${payBtnLabel('hotel', total)}</button>
+        <button onclick="payAndConfirmHotelBooking(${pricing.roomTotal}, ${taxes}, ${total}, ${nights})" id="hotelPayBtn" class="btn-violet bk-cta bk-cta-wide"><i class="fa-solid fa-lock" aria-hidden="true"></i>${payBtnLabel('hotel', pricing.roomTotal)}</button>
       </div>`;
   }
   page.innerHTML = bkShell({
@@ -939,6 +948,7 @@ function computeRoomPricing(room, guests, roomsCount, nights) {
 }
 
 async function payAndConfirmHotelBooking(roomTotal, taxes, total, nights) {
+  await loadBkPricing(); total = bkQuote('hotel', roomTotal, planOf('hotel')).total;
   if (!authToken) { toast(t('errLoginToBook'), 'error'); return; }
   if (!navigator.onLine && await queueBookingDraft('hotel')) return;
   const btn = document.getElementById('hotelPayBtn'); btn.disabled = true; btn.innerHTML = 'Processing…';
@@ -984,8 +994,8 @@ async function payAndConfirmHotelBooking(roomTotal, taxes, total, nights) {
     // triggered, opens as an in-page modal rather than a redirect.
     // Charges exactly what the chosen plan owes now — bookings-worker computes
     // and stores the same deposit/full split server-side and rejects any other amount.
-    const success = await processKashierPayment(orderId, amountDueNow('hotel', total), 'EGP', btn);
-    if (!success) { btn.disabled = false; btn.innerHTML = payBtnLabel('hotel', total); return; }
+    const success = await processKashierPayment(orderId, amountDueNow('hotel', roomTotal), 'EGP', btn);
+    if (!success) { btn.disabled = false; btn.innerHTML = payBtnLabel('hotel', roomTotal); return; }
     bookingData.status = 'completed';
     state.bookings.unshift(bookingData);
     bookings.render();
@@ -1166,14 +1176,14 @@ function renderExcursionBookingStep(step) {
   state.bookingStep = step;
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const existing = document.getElementById('excursionBookingFlowPage'); if (existing) existing.remove();
-  const x = state.currentExcursion; const subtotal = exSubtotal(x, state.bookingDraft.participants); const taxes = Math.round(subtotal * 0.05); const total = subtotal + taxes;
+  const x = state.currentExcursion; const subtotal = exSubtotal(x, state.bookingDraft.participants); const q0 = bkQuote('excursion', subtotal, planOf('excursion')); const taxes = q0.tax + q0.fee; const total = q0.total;
   const page = document.createElement('div'); page.id = 'excursionBookingFlowPage'; page.className = 'page bk-flow';
   const summary = bkSummary({
     img: x.image, title: x.title, sub: `${x.packageType ? pkgLabel(x.packageType) + ' · ' + t('pkgPackage', 'Package') : excursionsUi.categoryLabel(x.category)} · ${x.duration}`, total,
     rows: [
       [t('dateLabel'), utils.formatDate(state.bookingDraft.date)],
       [pkgByPackage(x) ? `${x.title} (${state.bookingDraft.participants} ${t('peopleLabel')})` : `${x.title} × ${state.bookingDraft.participants}`, utils.formatPrice(subtotal)],
-      [t('taxesFeesLabel'), utils.formatPrice(taxes)],
+      [t('taxesFeesLabel'), `<span data-bk-tax>${utils.formatPrice(taxes)}</span>`],
     ],
   });
   let main = '';
@@ -1191,10 +1201,10 @@ function renderExcursionBookingStep(step) {
       </div>`;
   } else if (step === 3) {
     main = `
-      ${bkCard('fa-coins', t('choosePaymentOptionLabel'), paymentPlanSelector(total, 'excursion'))}
+      ${bkCard('fa-coins', t('choosePaymentOptionLabel'), paymentPlanSelector(subtotal, 'excursion'))}
       ${bkCard('fa-credit-card', t('paymentMethodHeader'), paymentMethodsBlock(state.bookingDraft.payment, 'setExcursionPaymentMethod'))}
       <div class="bk-bar">
-        <button onclick="payAndConfirmExcursionBooking(${subtotal}, ${taxes}, ${total})" id="excursionPayBtn" class="btn-violet bk-cta bk-cta-wide"><i class="fa-solid fa-lock" aria-hidden="true"></i>${payBtnLabel('excursion', total)}</button>
+        <button onclick="payAndConfirmExcursionBooking(${subtotal}, ${taxes}, ${total})" id="excursionPayBtn" class="btn-violet bk-cta bk-cta-wide"><i class="fa-solid fa-lock" aria-hidden="true"></i>${payBtnLabel('excursion', subtotal)}</button>
       </div>`;
   }
   page.innerHTML = bkShell({
@@ -1211,6 +1221,7 @@ function adjustParticipants(delta) { const v = state.bookingDraft.participants +
 function submitExcursionDetails(e) { e.preventDefault(); state.bookingDraft.date = document.getElementById('ekDate').dataset.value; renderExcursionBookingStep(3); }
 
 async function payAndConfirmExcursionBooking(subtotal, taxes, total) {
+  await loadBkPricing(); total = bkQuote('excursion', subtotal, planOf('excursion')).total;
   if (!authToken) { toast(t('errLoginToBook'), 'error'); return; }
   if (!navigator.onLine && await queueBookingDraft('excursion')) return;
   const btn = document.getElementById('excursionPayBtn'); btn.disabled = true; btn.innerHTML = 'Processing…';
@@ -1245,8 +1256,8 @@ async function payAndConfirmExcursionBooking(subtotal, taxes, total) {
     // triggered, opens as an in-page modal rather than a redirect.
     // Charges exactly what the chosen plan owes now — bookings-worker computes
     // and stores the same deposit/full split server-side and rejects any other amount.
-    const success = await processKashierPayment(orderId, amountDueNow('excursion', total), 'EGP', btn);
-    if (!success) { btn.disabled = false; btn.innerHTML = payBtnLabel('excursion', total); return; }
+    const success = await processKashierPayment(orderId, amountDueNow('excursion', subtotal), 'EGP', btn);
+    if (!success) { btn.disabled = false; btn.innerHTML = payBtnLabel('excursion', subtotal); return; }
     bookingData.status = 'completed';
     state.bookings.unshift(bookingData);
     bookings.render();
@@ -1285,8 +1296,8 @@ function renderTransferBookingStep(step) {
   const existing = document.getElementById('transferBookingFlowPage'); if (existing) existing.remove();
   const v = state.currentTransfer;
   const subtotal = v.price;
-  const taxes = Math.round(subtotal * 0.05);
-  const total = subtotal + taxes;
+  const q0 = bkQuote('transfer', subtotal, planOf('transfer'));
+  const taxes = q0.tax + q0.fee, total = q0.total;
   const page = document.createElement('div');
   page.id = 'transferBookingFlowPage';
   page.className = 'page bk-flow';
@@ -1297,7 +1308,7 @@ function renderTransferBookingStep(step) {
       [t('timeLabel'), state.bookingDraft.time],
       [t('passengersLabel'), `${state.bookingDraft.passengers} ${t('peopleLabel')}`],
       [`${v.vehicleType} ${t('transferSuffix')}`, utils.formatPrice(subtotal)],
-      [t('taxesFeesLabel'), utils.formatPrice(taxes)],
+      [t('taxesFeesLabel'), `<span data-bk-tax>${utils.formatPrice(taxes)}</span>`],
     ],
   });
   let main = '';
@@ -1333,10 +1344,10 @@ function renderTransferBookingStep(step) {
       </div>`;
   } else if (step === 3) {
     main = `
-      ${bkCard('fa-coins', t('choosePaymentOptionLabel'), paymentPlanSelector(total, 'transfer'))}
+      ${bkCard('fa-coins', t('choosePaymentOptionLabel'), paymentPlanSelector(subtotal, 'transfer'))}
       ${bkCard('fa-credit-card', t('paymentMethodHeader'), paymentMethodsBlock(state.bookingDraft.payment, 'setTransferPaymentMethod'))}
       <div class="bk-bar">
-        <button onclick="payAndConfirmTransferBooking(${subtotal}, ${taxes}, ${total})" id="transferPayBtn" class="btn-violet bk-cta bk-cta-wide"><i class="fa-solid fa-lock" aria-hidden="true"></i>${payBtnLabel('transfer', total)}</button>
+        <button onclick="payAndConfirmTransferBooking(${subtotal}, ${taxes}, ${total})" id="transferPayBtn" class="btn-violet bk-cta bk-cta-wide"><i class="fa-solid fa-lock" aria-hidden="true"></i>${payBtnLabel('transfer', subtotal)}</button>
       </div>`;
   }
   page.innerHTML = bkShell({
@@ -1365,6 +1376,7 @@ function adjustTransferPassengers(delta) { const v = state.currentTransfer, n = 
 function submitTransferDetails(e) { e.preventDefault(); state.bookingDraft.flightNo = document.getElementById('tkFlightNo').value; state.bookingDraft.address = document.getElementById('tkAddress').value; state.bookingDraft.date = document.getElementById('tkDate').dataset.value; state.bookingDraft.time = document.getElementById('tkTime').value; renderTransferBookingStep(3); }
 
 async function payAndConfirmTransferBooking(subtotal, taxes, total) {
+  await loadBkPricing(); total = bkQuote('transfer', subtotal, planOf('transfer')).total;
   if (!authToken) { toast(t('errLoginToBook'), 'error'); return; }
   if (!navigator.onLine && await queueBookingDraft('transfer')) return;
   const btn = document.getElementById('transferPayBtn'); btn.disabled = true; btn.innerHTML = 'Processing…';
@@ -1402,8 +1414,8 @@ async function payAndConfirmTransferBooking(subtotal, taxes, total) {
     // triggered, opens as an in-page modal rather than a redirect.
     // Charges exactly what the chosen plan owes now — bookings-worker computes
     // and stores the same deposit/full split server-side and rejects any other amount.
-    const success = await processKashierPayment(orderId, amountDueNow('transfer', total), 'EGP', btn);
-    if (!success) { btn.disabled = false; btn.innerHTML = payBtnLabel('transfer', total); return; }
+    const success = await processKashierPayment(orderId, amountDueNow('transfer', subtotal), 'EGP', btn);
+    if (!success) { btn.disabled = false; btn.innerHTML = payBtnLabel('transfer', subtotal); return; }
     bookingData.status = 'completed';
     state.bookings.unshift(bookingData);
     bookings.render();

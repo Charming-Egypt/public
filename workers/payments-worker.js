@@ -321,7 +321,8 @@ async function sendBookingEmail(orderId, env) {
     <table style="width:100%;border-collapse:collapse;border-top:1px solid #eee;border-bottom:1px solid #eee">
       ${row('Reference · رقم الحجز', _esc(b.id))}${row('Service · الخدمة', title)}${row('Date · التاريخ', when)}
       ${row('Total · الإجمالي', `${_esc(b.total)} ${_esc(b.currency || 'EGP')}`)}
-      ${due ? row('Due later · المتبقي', `${_esc(b.remainingAmount)} ${_esc(b.currency || 'EGP')}`) : ''}
+      ${due ? row('Paid online now · المدفوع أونلاين', `${_esc(b.amountDueNow != null ? b.amountDueNow : b.paidAmount)} ${_esc(b.currency || 'EGP')}`) : ''}
+      ${due ? row('Pay to the provider on site · المتبقي يُدفع في مكان الخدمة', `${_esc(b.remainingAmount)} ${_esc(b.currency || 'EGP')}`) : ''}
     </table>
     <p><a href="${_esc(voucherUrl(orderId, env))}" style="display:inline-block;background:#c2410c;color:#fff;padding:12px 22px;border-radius:10px;text-decoration:none;font-weight:bold">Open your voucher · افتح الفاوتشر</a></p>
     <p style="color:#888;font-size:12px">Show the voucher (printed or on your phone) at the start of the service.</p></div>`;
