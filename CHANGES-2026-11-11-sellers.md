@@ -7,3 +7,7 @@
 - صفحة جديدة: `seller.discover-sharm.com` (موقع منفصل: `dist/seller`، مشروع Cloudflare Pages جديد باسم discover-sharm-seller + دومين seller.discover-sharm.com، وأضف `https://seller.discover-sharm.com/**` في Redirect URLs بـ Supabase وفي ALLOWED_ORIGINS للـ workers) (الرئيسية، لينكي وكودي + QR، الحجوزات، المحاسبة).
 - الأدمن: نوع حساب "سيلر"، كود السيلر في جدول الحسابات، إعداد عمولة السيلر، وتفاصيل الحجز بتعرض السيلر وصافي المنصة.
 - تنبيه: الأونر مش بيشوف بيانات السيلر في الواجهة، لكن أعمدة `seller_amount`/`commission_amount` لسه قابلة للقراءة بـ select مباشر على جدول bookings.
+
+## توحيد اللغة في اللوحات
+- كل نصوص السيلر والباكدجات والعمولات/المحاسبة الجديدة اتضافت لقاموس `console/admin-lang/en.json` (كانت بتظهر عربي وسط واجهة إنجليزي).
+- وضع العربي: أكواد العملة (EGP/USD/EUR) بتتحوّل لـ جنيه/دولار/يورو في كل اللوحات، فمفيش إنجليزي وسط العربي.

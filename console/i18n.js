@@ -15,11 +15,12 @@ if (lang !== 'ar') { document.documentElement.classList.add('dsl-wait'); setTime
 const de = document.documentElement;
 de.lang = lang; de.dir = LANGS[lang].dir;
 
-const AR = /[؀-ۿ]/;
+const AR = lang === 'ar' ? /EGP|USD|EUR/ : /[؀-ۿ]/;   // what a node must contain to be worth translating (Arabic mode: only the Latin currency codes)
 let rx = null, dict = null;
 const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 function build(d) {
   dict = d;
+  if (lang === 'ar') { rx = /(?<![A-Za-z])(?:EGP|USD|EUR)(?![A-Za-z])/g; return; }
   const keys = Object.keys(d).filter(k => d[k]).sort((a, b) => b.length - a.length);
   rx = keys.length ? new RegExp('(?<![\\u0600-\\u06FF])(?:' + keys.map(esc).join('|') + ')(?![\\u0600-\\u06FF])', 'g') : null;
 }
@@ -113,7 +114,9 @@ function start() {
     });
   });
   mo.observe(document.documentElement, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ATTRS.concat('class') });
-  if (lang !== 'ar') {
+  if (lang === 'ar') {   // Arabic mode: nothing to translate, but keep the page all-Arabic — currency codes become words
+    build({ EGP: 'جنيه', USD: 'دولار', EUR: 'يورو' }); walk(document.body);
+  } else {
     fetch('/lang/admin-' + lang + '.json').then(r => r.json()).then(d => {
       build(d);
       const _c = window.confirm, _a = window.alert, _p = window.prompt;
