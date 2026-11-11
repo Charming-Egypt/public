@@ -596,8 +596,6 @@ DS.ownerPanel = (c) => {
     ...(me.hasReviews ? [{ label: 'التقييمات', icon: 'star', render: DS.reviewsView({}) }] : []),
   ] });
 };
-})();
-
 // ===================== Seller dashboard =====================
 // A seller earns a slice of the platform's commission on every booking that comes from his referral link (?ref=CODE) or is made from his own account.
 DS.sellerPanel = () => {
@@ -645,3 +643,5 @@ DS.sellerPanel = () => {
     { label: 'المحاسبة', icon: 'wallet', render: DS.financeView() },
   ] });
 };
+
+})();
