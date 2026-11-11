@@ -297,3 +297,18 @@ textarea.edi.code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13
 .wrapi>.edi[dir=ltr]~.cnt{inset-inline-end:auto;right:14px}
 .tbanner #tl{display:inline-flex;flex-wrap:wrap;gap:6px;vertical-align:middle;margin-inline:4px}
 .tlc{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700;color:var(--text,#fff);background:rgba(255,255,255,.1);border:1px solid var(--line)}
+
+/* ---------- booking details (modal) ---------- */
+.bkh{padding:16px;border-radius:22px;background:var(--soft);border:1px solid var(--line);margin-bottom:14px;display:grid;gap:10px}
+.bkt{font-weight:800;font-size:16px;line-height:1.45;overflow-wrap:anywhere}
+.bkb{display:flex;flex-wrap:wrap;gap:6px}
+.bktot{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding-top:10px;border-top:1px dashed var(--line)}
+.bktot small{color:var(--muted);font-weight:700;font-size:12.5px}
+.bktot b{font-size:22px;font-weight:800;color:var(--accent)}.bktot b i{font-style:normal;font-size:13px;color:var(--muted);font-weight:700}
+.bkrows{border:1px solid var(--line);border-radius:20px;overflow:hidden;margin-bottom:16px}
+.bkr{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:11px 14px;font-size:13px;border-bottom:1px solid var(--line)}
+.bkr:last-child{border-bottom:0}.bkr:nth-child(even){background:var(--soft)}
+.bkr b{color:var(--muted);font-weight:600;flex:none}
+.bkr span{font-weight:700;text-align:end;min-width:0;overflow-wrap:anywhere}
+.bkr.long{flex-direction:column;gap:4px}.bkr.long span{text-align:start;font-weight:600;line-height:1.7;white-space:pre-wrap}
+.greet h1 .ghi,.greet h1 .gname{display:inline}.greet h1 .grest{display:none}

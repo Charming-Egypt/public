@@ -254,7 +254,8 @@ async function enter() {
   const nm = ME.name || ME.email || '؟', first = String(nm).trim().split(/\s+/)[0];
   document.querySelectorAll('.who').forEach(e => e.textContent = nm); document.querySelectorAll('.av').forEach(e => e.textContent = nm.trim()[0].toUpperCase()); document.querySelectorAll('.rl').forEach(e => e.textContent = CFG.roleLabel || '');
   const em = $('#pem'); if (em) em.textContent = ME.email || '';
-  $('#greet').textContent = (new Date().getHours() < 12 ? 'صباح الخير، ' : 'مساء الخير، ') + first + ' 👋';
+  const rest = String(nm).trim().split(/\s+/).slice(1).join(' ');
+  $('#greet').innerHTML = `<span class="ghi">${new Date().getHours() < 12 ? 'صباح الخير،' : 'مساء الخير،'}</span> <span class="gname"><span class="gfirst">${esc(first)}</span>${rest ? `<span class="grest"> ${esc(rest)}</span>` : ''} 👋</span>`;
   try { const x = (await DS.api('/langs')).languages || []; x.forEach(l => { if (!DS.LANGS.includes(l.code)) DS.LANGS.push(l.code); DS.LN[l.code] = l.nativeName; }); } catch { /* built-in languages only */ }
   VIEWS = typeof CFG.views === 'function' ? CFG.views(ME) : CFG.views;
   $('#nav').innerHTML = VIEWS.map((v, i) => `<button data-i="${i}" data-tip="${esc(v.label)}" aria-label="${esc(v.label)}">${DS.ic(v.icon || 'home')}<span>${v.label}</span></button>`).join('');
@@ -443,12 +444,19 @@ DS.bookingsView = (o = {}) => async (m) => {
     if (admin) { $('#fo').onchange = async e => { f.own = e.target.value; await load(); view(); }; $('#ft').onchange = async e => { f.t = e.target.value; await load(); view(); }; }
   };
   const detail = (b) => {
-    const kv = Object.keys(FL).filter(k => b[k] !== undefined && b[k] !== '' && !(Array.isArray(b[k]) && !b[k].length)).map(k => `<b>${FL[k]}</b><span>${esc(Array.isArray(b[k]) ? b[k].join(', ') : k === 'createdAt' ? DS.dt(b[k]) : k === 'roomType' ? tr(b[k]) : b[k])}</span>`).join('');
+    const row = (l, v, cls = '') => `<div class="bkr ${cls}"><b>${l}</b><span>${v}</span></div>`;
+    const LONG = ['requests', 'address', 'cancelReason', 'childAges'], LTR = ['phone', 'email', 'flightNo'], SKIP = ['id', 'total', 'currency'];
+    const kv = Object.keys(FL).filter(k => !SKIP.includes(k) && b[k] !== undefined && b[k] !== '' && !(Array.isArray(b[k]) && !b[k].length)).map(k => {
+      const v = esc(Array.isArray(b[k]) ? b[k].join(', ') : k === 'createdAt' || k === 'paidAt' ? DS.dt(b[k]) : k === 'roomType' ? tr(b[k]) : b[k]);
+      return row(FL[k], LTR.includes(k) ? `<bdi dir="ltr">${v}</bdi>` : v, LONG.includes(k) ? 'long' : '');
+    }).join('');
     const body = document.createElement('div');
-    const vch = admin && b.voucher ? `<b>الفاوتشر</b><span>${b.voucher.status === 'sent' ? 'اتبعت على ' + esc(b.voucher.to) : 'فشل الإرسال: ' + esc(b.voucher.error || '')}</span>` : '';
-    const dep = b.paymentPlan === 'deposit' && Number(b.remainingAmount) > 0
-      ? `<b>حالة الدفع</b><span>${DS.payBadge(b)}</span><b>العربون المدفوع</b><span>${DS.money(b.depositAmount)} ${esc(b.currency || '')}</span><b>المتبقي (يُدفع لاحقاً)</b><span>${DS.money(b.remainingAmount)} ${esc(b.currency || '')}</span>` : '';
-    body.innerHTML = `<div class="kv"><b>الحجز على</b><span>${esc(bItem(b))}</span>${kv}${dep}${vch}</div>
+    const vch = admin && b.voucher ? row('الفاوتشر', b.voucher.status === 'sent' ? 'اتبعت على ' + esc(b.voucher.to) : 'فشل الإرسال: ' + esc(b.voucher.error || ''), 'long') : '';
+    const isDep = b.paymentPlan === 'deposit' && Number(b.remainingAmount) > 0;
+    const dep = isDep ? row('العربون المدفوع', DS.money(b.depositAmount) + ' ' + esc(b.currency || '')) + row('المتبقي (يُدفع لاحقاً)', DS.money(b.remainingAmount) + ' ' + esc(b.currency || '')) : '';
+    const head = `<div class="bkh"><div class="bkt">${esc(bItem(b))}</div><div class="bkb">${DS.payBadge(b)}${b.ownerStatus ? ' ' + DS.badge(OWN, b.ownerStatus) : ''}</div>
+      <div class="bktot"><small>الإجمالي</small><b>${DS.money(b.total)} <i>${esc(b.currency || '')}</i></b></div></div>`;
+    body.innerHTML = `${head}<div class="bkrows">${kv}${dep}${vch}</div>
       ${admin ? `<div class="fld"><label>حالة الدفع</label><select id="bs">${DS.opts(PAY, b.status)}</select></div><div class="fld"><label>ملاحظة الإدارة</label><textarea id="ba">${esc(b.adminNote || '')}</textarea></div>` : ''}
       ${!admin && b.status === 'completed' && b.paymentPlan === 'deposit' && Number(b.remainingAmount) > 0 && b.balanceStatus !== 'paid'
         ? `<div class="err" style="background:#fff4e0;color:#9a5b00">العميل دفع العربون بس. المتبقي (${DS.money(b.remainingAmount)} ${esc(b.currency || '')}) بيدفعه أونلاين للمنصة قبل الخدمة — <b>ما تحصّلوش منه نقداً</b>، وتسجيل التنفيذ هيتفتح بعد ما يتدفع.</div>` : ''}
@@ -551,9 +559,9 @@ DS.ownerPanel = (c) => {
       const wait = b.filter(x => !x.earning && x.status === 'completed').length;
       m.innerHTML = DS.hero('أهلاً ' + esc(me.name || ''), new Date().toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }), `<button class="btn" data-go="${c.itemsLabel}">${DS.ic('plus')} ${c.addLabel}</button><button class="btn ghost" data-go="المحاسبة">${DS.ic('wallet')} المحاسبة</button>`) +
         `<div class="stats">${DS.stat(it.length + (me.maxItems ? ' / ' + me.maxItems : ''), c.itemsLabel, { icon: 'box', tone: 'gold' })}${DS.stat(b.length, 'كل الحجوزات', { icon: 'cal' })}${DS.stat(wait, 'مدفوعة وبانتظار تسجيل التنفيذ', { icon: 'alert', tone: wait ? 'red' : 'green' })}${DS.stat(DS.money(S.available), 'أرباح متاحة للصرف (جنيه)', { icon: 'wallet', tone: 'green' })}${DS.stat(DS.money(S.earned), 'إجمالي أرباحك المسجّلة', { icon: 'trend', tone: 'purple' })}</div>
-        <div class="g2"><div class="card"><span class="ct">الحجوزات — آخر 14 يوم</span>${DS.area(days.map(d => d.slice(5).replace('-', '/')), days.map(d => cnt[d]), 'var(--blue)', 'o1')}</div>
+        <div class="grest"><div class="card"><span class="ct">الحجوزات — آخر 14 يوم</span>${DS.area(days.map(d => d.slice(5).replace('-', '/')), days.map(d => cnt[d]), 'var(--blue)', 'o1')}</div>
           <div class="card"><span class="ct">حالة الحجوزات</span>${DS.donut(Object.entries(st).map(([k, v]) => ({ l: DS.PAY[k] ? DS.PAY[k][0] : k, v, c: DS.STC[k] || '#999' })))}</div></div>
-        <div class="g2"><div class="card"><span class="ct">صافي أرباحك بالشهر (جنيه)</span>${mk.length ? DS.bars(mk, mk.map(k => Math.round(mon[k])), 'var(--green)') : '<div class="empty">الأرباح بتظهر بعد تسجيل تنفيذ الخدمات</div>'}</div>
+        <div class="grest"><div class="card"><span class="ct">صافي أرباحك بالشهر (جنيه)</span>${mk.length ? DS.bars(mk, mk.map(k => Math.round(mon[k])), 'var(--green)') : '<div class="empty">الأرباح بتظهر بعد تسجيل تنفيذ الخدمات</div>'}</div>
           <div class="card"><span class="ct">تنبيهات</span>${wait ? `<p>عندك <b>${wait}</b> حجز مدفوع بانتظار تسجيل التنفيذ — سجّله بعد ميعاد الخدمة عشان أرباحك تظهر.</p><button class="btn sm" style="margin-top:10px" data-go="الحجوزات">فتح الحجوزات</button>` : '<p class="muted">كل حاجة تمام ✔ مفيش حاجة معلّقة.</p>'}<p class="muted" style="margin-top:12px">نسبة عمولة المنصة عليك: <b>${fn.rate}%</b> (على السعر قبل الضرائب).</p></div></div>
         <h2 class="pt">آخر الحجوزات</h2>` + DS.table([{ h: 'الحجز', f: x => `<b>${esc(x.id)}</b><div class="muted">${DS.dt(x.createdAt)}</div>` }, { h: 'العميل', f: x => esc(x.name || '') }, { h: 'على', f: x => esc(bItem(x)) }, { h: 'الإجمالي', f: x => DS.money(x.total) }, { h: 'الدفع', f: x => DS.payBadge(x) }], b.slice(0, 6), { empty: 'مفيش حجوزات لسه' });
       m.onclick = e => { const g = e.target.closest('[data-go]'); if (g) DS.go(g.dataset.go); };
