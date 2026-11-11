@@ -194,10 +194,10 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', roleLabel: 'س
       },
       // ---- settings ----
       settings: async box => {
-        const d = await api('/finance/settings'), S = [{ k: 'hotel', l: 'عمولة الفنادق %', t: 'num' }, { k: 'excursion', l: 'عمولة الرحلات %', t: 'num' }, { k: 'transfer', l: 'عمولة الترانسفير %', t: 'num' }, { k: 'package', l: 'عمولة الباكدجات %', t: 'num' }, { k: 'minPayout', l: 'أقل مبلغ للصرف (جنيه)', t: 'num' }], f = form(S, { ...d.settings.rates, minPayout: d.settings.minPayout });
-        box.innerHTML = '<div class="card"><b>النسب الافتراضية</b><p class="muted" style="margin:6px 0 12px">بتتطبق وقت تسجيل تنفيذ الخدمة. تغييرها مبيأثرش على أرباح اتسجّلت قبل كده. لأونر معيّن: من تبويب الأونرز ← تعديل ← نسبة عمولة خاصة.</p></div>';
+        const d = await api('/finance/settings'), S = [{ k: 'hotel', l: 'عمولة الفنادق %', t: 'num' }, { k: 'excursion', l: 'عمولة الرحلات %', t: 'num' }, { k: 'transfer', l: 'عمولة الترانسفير %', t: 'num' }, { k: 'package', l: 'عمولة الباكدجات %', t: 'num' }, { k: 'gatewayFee', l: 'رسوم كاشير % (بتتضاف على العميل)', t: 'num' }, { k: 'gatewayFixed', l: 'رسوم كاشير الثابتة (جنيه/عملية)', t: 'num' }, { k: 'gatewayVat', l: 'ضريبة القيمة المضافة على رسوم كاشير %', t: 'num' }, { k: 'minPayout', l: 'أقل مبلغ للصرف (جنيه)', t: 'num' }], f = form(S, { ...d.settings.rates, minPayout: d.settings.minPayout, gatewayFee: d.settings.gatewayFee, gatewayFixed: d.settings.gatewayFixed, gatewayVat: d.settings.gatewayVat });
+        box.innerHTML = '<div class="card"><b>النسب الافتراضية</b><p class="muted" style="margin:6px 0 12px">بتتثبّت على كل حجز وقت الحجز (على السعر قبل الضرائب) وبتتخصم من اللي المنصة حصّلته، فتغييرها مبيأثرش على حجوزات قديمة. رسوم كاشير بتتحسب على المبلغ المحصّل أونلاين بس. لأونر معيّن: من تبويب الأونرز ← تعديل ← نسبة عمولة خاصة.</p></div>';
         box.firstChild.appendChild(f); const b = document.createElement('button'); b.className = 'btn'; b.textContent = 'حفظ'; box.firstChild.appendChild(b);
-        b.onclick = async () => { const v = collect(f, S); try { await api('/finance/settings', { method: 'PUT', body: { rates: { hotel: v.hotel, excursion: v.excursion, transfer: v.transfer, package: v.package }, minPayout: v.minPayout } }); toast('اتحفظ'); } catch (e) { toast(e.message, true); } };
+        b.onclick = async () => { const v = collect(f, S); try { await api('/finance/settings', { method: 'PUT', body: { rates: { hotel: v.hotel, excursion: v.excursion, transfer: v.transfer, package: v.package }, minPayout: v.minPayout }, gatewayFee: v.gatewayFee, gatewayFixed: v.gatewayFixed, gatewayVat: v.gatewayVat }); toast('اتحفظ'); } catch (e) { toast(e.message, true); } };
       },
     };
     const draw = async () => {

@@ -375,6 +375,7 @@
     // --- public forms (guests allowed)
     if (path === '/api/push/subscribe' && method === 'POST') { need(); await run(sb.rpc('save_push_subscription', { p: body })); return { success: true }; }
     if (path === '/api/push/unsubscribe' && method === 'POST') { need(); await run(sb.rpc('delete_push_subscription', { p_endpoint: body.endpoint })); return { success: true }; }
+    if (path === '/api/pricing') return await run(sb.rpc('public_pricing'));
     if (path === '/api/contact') { await run(sb.rpc('submit_contact', { p_name: body.name, p_email: body.email, p_message: body.message })); return { success: true }; }
     if (path === '/api/partner-application') { await run(sb.rpc('submit_partner_application', { p: body })); return { success: true }; }
 

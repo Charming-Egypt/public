@@ -312,3 +312,4 @@ textarea.edi.code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13
 .bkr span{font-weight:700;text-align:end;min-width:0;overflow-wrap:anywhere}
 .bkr.long{flex-direction:column;gap:4px}.bkr.long span{text-align:start;font-weight:600;line-height:1.7;white-space:pre-wrap}
 .greet h1 .ghi,.greet h1 .gname{display:inline}.greet h1 .grest{display:none}
+.bkmine{background:var(--accent-soft);border-color:transparent}.bkmine .bkr:nth-child(even){background:transparent}.bkmine .bkr:last-child b{color:var(--ink)}

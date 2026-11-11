@@ -57,6 +57,7 @@ const OWN = { new: ['جديد', 'blue'], confirmed: ['مؤكد', 'green'], done:
 DS.payBadge = (b) => {
   if (b && b.status === 'completed' && b.paymentPlan === 'deposit' && Number(b.remainingAmount) > 0)
     return b.balanceStatus === 'paid' ? '<span class="badge b-green">مدفوع بالكامل</span>'
+      : b.pricingModel === 'v2' ? `<span class="badge b-amber">عربون مدفوع — متبقي ${DS.money(b.remainingAmount)} ${esc(b.currency || '')} في المكان</span>`
       : `<span class="badge b-amber">عربون مدفوع — متبقي ${DS.money(b.remainingAmount)} ${esc(b.currency || '')}</span>`;
   return DS.badge(PAY, b && b.status);
 };
@@ -434,7 +435,7 @@ DS.bookingsView = (o = {}) => async (m) => {
     const own = admin ? `<select id="fo" style="max-width:200px"><option value="">كل الأونرز</option>${o.roles.filter(r => r.role !== 'super_admin').map(r => `<option value="${r.uid}" ${f.own === r.uid ? 'selected' : ''}>${esc(r.name || r.email)}</option>`).join('')}</select><select id="ft" style="max-width:130px"><option value="">كل الأنواع</option>${Object.entries(TYPE_L).map(([k, v]) => `<option value="${k}" ${f.t === k ? 'selected' : ''}>${v}</option>`).join('')}</select>` : '';
     const cols = [{ h: 'الحجز', f: b => `<b>${esc(b.id)}</b><div class="muted">${DS.dt(b.createdAt)}</div>` }, ...(admin ? [{ h: 'النوع', f: b => TYPE_L[b.type] || b.type }] : []),
       { h: 'العميل', f: b => `${esc(b.name || '')}<div class="muted">${esc(b.phone || '')}</div>` }, { h: 'الحجز على', f: b => `${esc(bItem(b))}<div class="muted">${esc(bWhen(b))}</div>` }, { h: 'العدد', f: bQty },
-      { h: 'الإجمالي', f: b => DS.money(b.total) + ' ' + esc(b.currency || '') }, { h: 'الدفع', f: b => DS.payBadge(b) + (b.needsRefund && b.status !== 'refunded' ? ' <span class="badge b-red">استرداد مطلوب</span>' : '') }, { h: 'التنفيذ', f: b => DS.badge(OWN, b.ownerStatus || 'new') }, { h: admin ? 'العمولة' : 'صافي ربحك', f: b => !b.earning || b.earning.void ? '<span class="muted">—</span>' : DS.money(admin ? b.earning.commission : b.earning.net) }];
+      { h: 'الإجمالي', f: b => DS.money(b.total) + ' ' + esc(b.currency || '') }, { h: 'الدفع', f: b => DS.payBadge(b) + (b.needsRefund && b.status !== 'refunded' ? ' <span class="badge b-red">استرداد مطلوب</span>' : '') }, { h: 'التنفيذ', f: b => DS.badge(OWN, b.ownerStatus || 'new') }, { h: admin ? 'العمولة' : 'حصتك', f: b => admin ? (b.commission != null && !(b.earning && b.earning.void) ? DS.money(b.commission) : '<span class="muted">—</span>') : (b.ownerShare ? DS.money(b.ownerShare.total) : !b.earning || b.earning.void ? '<span class="muted">—</span>' : DS.money(b.earning.net)) }];
     m.innerHTML = `<h2 class="pt">الحجوزات <span class="muted">${rows.length}</span></h2><div class="chips">${chips}</div><div class="row" style="margin-bottom:12px"><input id="fq" placeholder="ابحث بالاسم / التليفون / رقم الحجز" value="${esc(f.q)}" style="max-width:320px">${own}</div>` + DS.table(cols, rows, { click: true, empty: 'مفيش حجوزات' });
     m.onclick = async e => {
       const c = e.target.closest('.chip'); if (c) { f.s = c.dataset.s; if (admin) await load(); view(); return; }
@@ -453,15 +454,21 @@ DS.bookingsView = (o = {}) => async (m) => {
     const body = document.createElement('div');
     const vch = admin && b.voucher ? row('الفاوتشر', b.voucher.status === 'sent' ? 'اتبعت على ' + esc(b.voucher.to) : 'فشل الإرسال: ' + esc(b.voucher.error || ''), 'long') : '';
     const isDep = b.paymentPlan === 'deposit' && Number(b.remainingAmount) > 0;
-    const dep = isDep ? row('العربون المدفوع', DS.money(b.depositAmount) + ' ' + esc(b.currency || '')) + row('المتبقي (يُدفع لاحقاً)', DS.money(b.remainingAmount) + ' ' + esc(b.currency || '')) : '';
+    const cur = esc(b.currency || ''), v2 = b.pricingModel === 'v2';
+    const dep = isDep ? (v2 ? row('العربون المدفوع أونلاين', DS.money(b.amountDueNow) + ' ' + cur) + row('المتبقي (يُدفع في مكان الخدمة)', DS.money(b.remainingAmount) + ' ' + cur)
+      : row('العربون المدفوع', DS.money(b.depositAmount) + ' ' + cur) + row('المتبقي (يُدفع لاحقاً)', DS.money(b.remainingAmount) + ' ' + cur)) : '';
+    const share = b.ownerShare ? row('حصتك الإجمالية', DS.money(b.ownerShare.total) + ' ' + cur) + (b.ownerShare.onSite > 0 ? row('تحصّلها من العميل في المكان', DS.money(b.ownerShare.onSite) + ' ' + cur) : '') + row('تحوّلها المنصة لك', DS.money(b.ownerShare.fromPlatform) + ' ' + cur) : '';
+    const adm = admin && b.commission != null ? row('عمولة المنصة (' + b.commissionRate + '%)', DS.money(b.commission) + ' ' + cur) + (b.gatewayFee ? row('رسوم البوابة (على العميل)', DS.money(b.gatewayFee) + ' ' + cur) : '') : '';
     const head = `<div class="bkh"><div class="bkt">${esc(bItem(b))}</div><div class="bkb">${DS.payBadge(b)}${b.ownerStatus ? ' ' + DS.badge(OWN, b.ownerStatus) : ''}</div>
       <div class="bktot"><small>الإجمالي</small><b>${DS.money(b.total)} <i>${esc(b.currency || '')}</i></b></div></div>`;
-    body.innerHTML = `${head}<div class="bkrows">${kv}${dep}${vch}</div>
+    body.innerHTML = `${head}<div class="bkrows">${kv}${dep}${vch}</div>${share || adm ? `<div class="bkrows bkmine">${share}${adm}</div>` : ''}
       ${admin ? `<div class="fld"><label>حالة الدفع</label><select id="bs">${DS.opts(PAY, b.status)}</select></div><div class="fld"><label>ملاحظة الإدارة</label><textarea id="ba">${esc(b.adminNote || '')}</textarea></div>` : ''}
-      ${!admin && b.status === 'completed' && b.paymentPlan === 'deposit' && Number(b.remainingAmount) > 0 && b.balanceStatus !== 'paid'
+      ${!admin && v2 && b.status === 'completed' && isDep
+        ? `<div class="err" style="background:var(--abg,#fff4e0);color:var(--amber,#9a5b00)">العميل دفع العربون أونلاين للمنصة. <b>المتبقي (${DS.money(b.remainingAmount)} ${cur}) بتحصّله إنت منه في مكان الخدمة.</b></div>` : ''}
+      ${!admin && !v2 && b.status === 'completed' && b.paymentPlan === 'deposit' && Number(b.remainingAmount) > 0 && b.balanceStatus !== 'paid'
         ? `<div class="err" style="background:#fff4e0;color:#9a5b00">العميل دفع العربون بس. المتبقي (${DS.money(b.remainingAmount)} ${esc(b.currency || '')}) بيدفعه أونلاين للمنصة قبل الخدمة — <b>ما تحصّلوش منه نقداً</b>، وتسجيل التنفيذ هيتفتح بعد ما يتدفع.</div>` : ''}
       <div class="fld"><label>حالة التنفيذ</label><select id="bo" ${b.earning && !admin ? 'disabled' : ''}>${ownOpts(b)}</select>
-        <small>${b.earning ? (b.earning.void ? 'الأرباح اتلغت (استرداد/تعديل).' : `الأرباح اتسجّلت: صافي ${DS.money(b.earning.net)} جنيه بعد عمولة ${b.earning.rate}%` + (admin ? ` (${DS.money(b.earning.commission)})` : '') + ' — مينفعش تتغيّر.') : 'اختيار "' + DONE_L[b.type] + '" بيسجّل أرباحك (بعد عمولة المنصة) ومينفعش يتراجع. بيتفتح بعد ميعاد الخدمة وبعد الدفع.'}</small></div>
+        <small>${b.earning ? (b.earning.void ? 'الأرباح اتلغت (استرداد/تعديل).' : (admin ? `الأرباح اتسجّلت: صافي ${DS.money(b.earning.net)} جنيه بعد عمولة ${b.earning.rate}% (${DS.money(b.earning.commission)})` : `اتسجّل: المنصة هتحوّل لك ${DS.money(b.earning.net)} جنيه`) + ' — مينفعش تتغيّر.') : 'اختيار "' + DONE_L[b.type] + '" بيسجّل مستحقاتك عند المنصة ومينفعش يتراجع. بيتفتح بعد ميعاد الخدمة وبعد الدفع.'}</small></div>
       <div class="fld"><label>ملاحظة (بتظهر لك${admin ? ' وللأونر' : ' بس'})</label><textarea id="bn">${esc(b.ownerNote || '')}</textarea></div>`;
     const actions = [{ t: 'حفظ', fn: async () => {
       const body2 = { ownerNote: $('#bn', body).value }; if (!$('#bo', body).disabled) body2.ownerStatus = $('#bo', body).value;
@@ -524,9 +531,9 @@ DS.financeView = () => async (m) => {
   const d = await DS.api('/finance'), S = d.summary, open = d.payouts.find(p => p.status === 'requested');
   const PS = { requested: ['قيد المراجعة', 'amber'], paid: ['اتحوّل', 'green'], rejected: ['مرفوض', 'red'], cancelled: ['ملغي', 'gray'] };
   const a = d.account || {}, ip = a.instapay || {}, bk = a.bank || {};
-  const byMonth = {}; d.earnings.forEach(e => { const k = String(e.serviceDate || e.at).slice(0, 7); const x = byMonth[k] = byMonth[k] || { n: 0, g: 0, c: 0, net: 0 }; x.n++; x.g += e.gross; x.c += e.commission; x.net += e.net; });
-  m.innerHTML = `<h2 class="pt">المحاسبة</h2><div class="stats">${DS.stat(DS.money(S.available), 'متاح للصرف (جنيه)')}${DS.stat(DS.money(S.earned), 'إجمالي أرباحك المسجّلة')}${DS.stat(DS.money(S.paid), 'اتحوّل لك')}${DS.stat(DS.money(S.pending), 'طلب صرف قيد المراجعة')}</div>
-    <div class="card muted" style="line-height:1.9">• الأرباح بتظهر بعد ما تسجّل الحجز "تم" (وصول النزيل / الرحلة / التوصيل) بعد ميعاد الخدمة.<br>• عمولة المنصة عليك: <b>${d.rate}%</b> بتتخصم وقت تسجيل التنفيذ. • أقل مبلغ للصرف: <b>${DS.money(d.minPayout)}</b> جنيه.</div>
+  const byMonth = {}; d.earnings.forEach(e => { const k = String(e.serviceDate || e.at).slice(0, 7); const x = byMonth[k] = byMonth[k] || { n: 0, s: 0, o: 0, net: 0 }; x.n++; x.s += e.share; x.o += e.onSite; x.net += e.net; });
+  m.innerHTML = `<h2 class="pt">المحاسبة</h2><div class="stats">${DS.stat(DS.money(S.available), 'متاح للصرف (جنيه)')}${DS.stat(DS.money(S.earned), 'إجمالي ما تحوّله المنصة لك (مسجّل)')}${DS.stat(DS.money(S.paid), 'اتحوّل لك')}${DS.stat(DS.money(S.pending), 'طلب صرف قيد المراجعة')}</div>
+    <div class="card muted" style="line-height:1.9">• الأرباح بتظهر بعد ما تسجّل الحجز "تم" (وصول النزيل / الرحلة / التوصيل) بعد ميعاد الخدمة.<br>• حجز بعربون: العميل بيدفع باقي المبلغ <b>ليك مباشرة في مكان الخدمة</b>، والمنصة بتحوّل لك الباقي لحد حصتك الكاملة.<br>• حجز مدفوع بالكامل: المنصة بتحوّل لك حصتك كاملة بعد تسجيل التنفيذ. • أقل مبلغ للصرف: <b>${DS.money(d.minPayout)}</b> جنيه.</div>
     <div class="card"><b>حساب استلام الأرباح</b><div class="muted" style="margin:6px 0 12px">${d.account ? 'الحالي: ' + DS.METHOD[a.method] + ' — ' + esc(DS.acctText(a)) : 'لسه مضفتش حساب'}</div>
       ${d.accountLockMs ? `<div class="err" style="background:var(--abg);color:var(--amber)">اتغيّر الحساب حديثًا — طلب الصرف يتفتح بعد ${Math.ceil(d.accountLockMs / 3600000)} ساعة (حماية لحسابك).</div>` : ''}
       <div class="fld"><label>طريقة الاستلام</label><select id="pm"><option value="instapay" ${a.method !== 'bank' ? 'selected' : ''}>إنستا باي</option><option value="bank" ${a.method === 'bank' ? 'selected' : ''}>تحويل بنكي</option></select></div>
@@ -536,8 +543,8 @@ DS.financeView = () => async (m) => {
     <div class="card"><b>طلب صرف</b>${open ? `<div class="row" style="margin-top:10px">${DS.money(open.amount)} جنيه — ${DS.badge(PS, 'requested')} <button class="btn ghost sm" id="cx">إلغاء الطلب</button></div>` :
       `<div class="row" style="margin-top:10px"><input id="am" type="number" min="0" placeholder="المبلغ" style="max-width:180px"><button class="btn" id="rq" ${S.available >= d.minPayout ? '' : 'disabled'}>اطلب الصرف</button><span class="muted">المتاح ${DS.money(S.available)}</span></div>`}</div>
     <h2 class="pt" style="margin-top:18px">الأرباح المسجّلة <button class="btn ghost sm" id="ce">تصدير CSV</button></h2>` +
-    DS.table([{ h: 'الحجز', f: e => esc(e.id) }, { h: 'العنصر', f: e => `${esc(e.item)}<div class="muted">${esc(e.customer)}</div>` }, { h: 'تاريخ الخدمة', f: e => esc(e.serviceDate) }, { h: 'المبلغ', f: e => DS.money(e.gross) }, { h: 'العمولة', f: e => `${DS.money(e.commission)} <span class="muted">(${e.rate}%)</span>` }, { h: 'صافي ربحك', f: e => `<b>${DS.money(e.net)}</b>` }], d.earnings, { empty: 'مفيش أرباح لسه — هتظهر بعد تسجيل تنفيذ الخدمات' }) +
-    `<h2 class="pt" style="margin-top:18px">ملخص شهري</h2>` + DS.table([{ h: 'الشهر', f: r => r[0] }, { h: 'خدمات', f: r => r[1].n }, { h: 'المبلغ', f: r => DS.money(r[1].g) }, { h: 'العمولة', f: r => DS.money(r[1].c) }, { h: 'صافي', f: r => DS.money(r[1].net) }], Object.entries(byMonth).sort().reverse(), { empty: '—' }) +
+    DS.table([{ h: 'الحجز', f: e => esc(e.id) }, { h: 'العنصر', f: e => `${esc(e.item)}<div class="muted">${esc(e.customer)}</div>` }, { h: 'تاريخ الخدمة', f: e => esc(e.serviceDate) }, { h: 'حصتك الإجمالية', f: e => DS.money(e.share) }, { h: 'تحصّلها في المكان', f: e => e.onSite ? DS.money(e.onSite) : '<span class="muted">—</span>' }, { h: 'تحوّلها المنصة لك', f: e => `<b>${DS.money(e.net)}</b>` }], d.earnings, { empty: 'مفيش أرباح لسه — هتظهر بعد تسجيل تنفيذ الخدمات' }) +
+    `<h2 class="pt" style="margin-top:18px">ملخص شهري</h2>` + DS.table([{ h: 'الشهر', f: r => r[0] }, { h: 'خدمات', f: r => r[1].n }, { h: 'حصتك الإجمالية', f: r => DS.money(r[1].s) }, { h: 'تحصّلها في المكان', f: r => DS.money(r[1].o) }, { h: 'تحوّلها المنصة', f: r => DS.money(r[1].net) }], Object.entries(byMonth).sort().reverse(), { empty: '—' }) +
     `<h2 class="pt" style="margin-top:18px">عمليات الصرف</h2>` + DS.table([{ h: 'الرقم', f: p => esc(p.id) }, { h: 'المبلغ', f: p => DS.money(p.amount) }, { h: 'الطريقة', f: p => DS.METHOD[p.method] || '' }, { h: 'التاريخ', f: p => DS.dt(p.paidAt || p.requestedAt) }, { h: 'الحالة', f: p => DS.badge(PS, p.status) }, { h: 'مرجع / ملاحظة', f: p => esc(p.reference || p.note || '') }], d.payouts, { empty: 'مفيش عمليات صرف' }) +
     (d.adjustments.length ? `<h2 class="pt" style="margin-top:18px">تسويات من الإدارة</h2>` + DS.table([{ h: 'التاريخ', f: x => DS.dt(x.createdAt) }, { h: 'المبلغ', f: x => (x.amount > 0 ? '+' : '') + DS.money(x.amount) }, { h: 'السبب', f: x => esc(x.reason) }], d.adjustments) : '');
   const sync = () => { const b = $('#pm').value === 'bank'; $('#pi').classList.toggle('hide', b); $('#pb').classList.toggle('hide', !b); }; sync(); $('#pm').onchange = sync;
@@ -545,7 +552,7 @@ DS.financeView = () => async (m) => {
   act('#sa', async () => { const bank = $('#pm').value === 'bank'; await DS.api('/payout-account', { method: 'PUT', body: bank ? { method: 'bank', bank: { bankName: $('#b1').value, accountName: $('#b2').value, accountNumber: $('#b3').value, iban: $('#b4').value, branch: $('#b5').value } } : { method: 'instapay', instapay: { handle: $('#i1').value, name: $('#i2').value, phone: $('#i3').value } } }); DS.toast('اتحفظ'); DS.reload(); });
   act('#rq', async () => { if (!confirm('تأكيد طلب الصرف على الحساب المسجّل؟')) return; await DS.api('/payouts', { method: 'POST', body: { amount: Number($('#am').value) } }); DS.toast('اتبعت للإدارة'); DS.reload(); });
   act('#cx', async () => { await DS.api('/payouts/' + encodeURIComponent(open.id), { method: 'DELETE' }); DS.reload(); });
-  act('#ce', async () => DS.csv('earnings.csv', ['الحجز', 'العنصر', 'العميل', 'تاريخ الخدمة', 'المبلغ', 'نسبة العمولة %', 'العمولة', 'الصافي'], d.earnings.map(e => [e.id, e.item, e.customer, e.serviceDate, e.gross, e.rate, e.commission, e.net])));
+  act('#ce', async () => DS.csv('earnings.csv', ['الحجز', 'العنصر', 'العميل', 'تاريخ الخدمة', 'حصتك الإجمالية', 'تحصّلها في المكان', 'تحوّلها المنصة'], d.earnings.map(e => [e.id, e.item, e.customer, e.serviceDate, e.share, e.onSite, e.net])));
 };
 // ---------- owner panel factory (trips / hotels / transfers) ----------
 DS.ownerPanel = (c) => {
@@ -554,15 +561,15 @@ DS.ownerPanel = (c) => {
     { label: 'الرئيسية', icon: 'home', render: async m => {
       const [it, bk, fn] = await Promise.all([items(), DS.api('/bookings'), DS.api('/finance')]); const b = bk.bookings, S = fn.summary;
       const days = DS.daysBack(14), cnt = Object.fromEntries(days.map(d => [d, 0])); b.forEach(x => { const d = String(x.createdAt).slice(0, 10); if (d in cnt) cnt[d]++; });
-      const mon = {}; fn.earnings.forEach(e => { const k = String(e.serviceDate || e.at).slice(0, 7); mon[k] = (mon[k] || 0) + e.net; }); const mk = Object.keys(mon).sort().slice(-6);
+      const mon = {}; fn.earnings.forEach(e => { const k = String(e.serviceDate || e.at).slice(0, 7); mon[k] = (mon[k] || 0) + e.share; }); const mk = Object.keys(mon).sort().slice(-6);
       const st = {}; b.forEach(x => st[x.status] = (st[x.status] || 0) + 1);
       const wait = b.filter(x => !x.earning && x.status === 'completed').length;
       m.innerHTML = DS.hero('أهلاً ' + esc(me.name || ''), new Date().toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }), `<button class="btn" data-go="${c.itemsLabel}">${DS.ic('plus')} ${c.addLabel}</button><button class="btn ghost" data-go="المحاسبة">${DS.ic('wallet')} المحاسبة</button>`) +
         `<div class="stats">${DS.stat(it.length + (me.maxItems ? ' / ' + me.maxItems : ''), c.itemsLabel, { icon: 'box', tone: 'gold' })}${DS.stat(b.length, 'كل الحجوزات', { icon: 'cal' })}${DS.stat(wait, 'مدفوعة وبانتظار تسجيل التنفيذ', { icon: 'alert', tone: wait ? 'red' : 'green' })}${DS.stat(DS.money(S.available), 'أرباح متاحة للصرف (جنيه)', { icon: 'wallet', tone: 'green' })}${DS.stat(DS.money(S.earned), 'إجمالي أرباحك المسجّلة', { icon: 'trend', tone: 'purple' })}</div>
         <div class="grest"><div class="card"><span class="ct">الحجوزات — آخر 14 يوم</span>${DS.area(days.map(d => d.slice(5).replace('-', '/')), days.map(d => cnt[d]), 'var(--blue)', 'o1')}</div>
           <div class="card"><span class="ct">حالة الحجوزات</span>${DS.donut(Object.entries(st).map(([k, v]) => ({ l: DS.PAY[k] ? DS.PAY[k][0] : k, v, c: DS.STC[k] || '#999' })))}</div></div>
-        <div class="grest"><div class="card"><span class="ct">صافي أرباحك بالشهر (جنيه)</span>${mk.length ? DS.bars(mk, mk.map(k => Math.round(mon[k])), 'var(--green)') : '<div class="empty">الأرباح بتظهر بعد تسجيل تنفيذ الخدمات</div>'}</div>
-          <div class="card"><span class="ct">تنبيهات</span>${wait ? `<p>عندك <b>${wait}</b> حجز مدفوع بانتظار تسجيل التنفيذ — سجّله بعد ميعاد الخدمة عشان أرباحك تظهر.</p><button class="btn sm" style="margin-top:10px" data-go="الحجوزات">فتح الحجوزات</button>` : '<p class="muted">كل حاجة تمام ✔ مفيش حاجة معلّقة.</p>'}<p class="muted" style="margin-top:12px">نسبة عمولة المنصة عليك: <b>${fn.rate}%</b> (على السعر قبل الضرائب).</p></div></div>
+        <div class="grest"><div class="card"><span class="ct">حصتك بالشهر (جنيه)</span>${mk.length ? DS.bars(mk, mk.map(k => Math.round(mon[k])), 'var(--green)') : '<div class="empty">الأرباح بتظهر بعد تسجيل تنفيذ الخدمات</div>'}</div>
+          <div class="card"><span class="ct">تنبيهات</span>${wait ? `<p>عندك <b>${wait}</b> حجز مدفوع بانتظار تسجيل التنفيذ — سجّله بعد ميعاد الخدمة عشان أرباحك تظهر.</p><button class="btn sm" style="margin-top:10px" data-go="الحجوزات">فتح الحجوزات</button>` : '<p class="muted">كل حاجة تمام ✔ مفيش حاجة معلّقة.</p>'}</div></div>
         <h2 class="pt">آخر الحجوزات</h2>` + DS.table([{ h: 'الحجز', f: x => `<b>${esc(x.id)}</b><div class="muted">${DS.dt(x.createdAt)}</div>` }, { h: 'العميل', f: x => esc(x.name || '') }, { h: 'على', f: x => esc(bItem(x)) }, { h: 'الإجمالي', f: x => DS.money(x.total) }, { h: 'الدفع', f: x => DS.payBadge(x) }], b.slice(0, 6), { empty: 'مفيش حجوزات لسه' });
       m.onclick = e => { const g = e.target.closest('[data-go]'); if (g) DS.go(g.dataset.go); };
     } },

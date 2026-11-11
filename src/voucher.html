@@ -63,8 +63,8 @@
     ['Pick-up · نقطة الانطلاق', nm(b.pickup)], ['Drop-off · الوجهة', nm(b.dropoff)], ['Flight · الرحلة', b.flightNumber],
   ]);
   section('Guest · الضيف', [['Name · الاسم', b.name], ['Phone · الهاتف', b.phone], ['E-mail · الإيميل', b.email]]);
-  const due = b.balanceStatus === 'due' ? Number(b.balanceAmount || b.remainingAmount) : 0;
-  section('Payment · الدفع', [['Total · الإجمالي', money(b.total)], ['Paid online · المدفوع', money(b.paidAmount != null ? b.paidAmount : b.total)], due ? ['Pay at the service · المتبقي', money(due)] : ['', '']]);
+  const due = (b.balanceStatus === 'due' || b.balanceStatus === 'onsite') ? Number(b.balanceAmount || b.remainingAmount) : 0;
+  section('Payment · الدفع', [['Total · الإجمالي', money(b.total)], ['Paid online · المدفوع', money(b.paidAmount != null ? b.paidAmount : b.total)], due ? ['Pay to the provider at the service · المتبقي يُدفع لمقدّم الخدمة في المكان', money(due)] : ['', '']]);
   sheet.append(el('p', 'note', 'Please present this voucher (printed or on your phone) at the start of the service. Changes and cancellations follow our cancellation policy. · من فضلك اعرض الفاوتشر (مطبوع أو على الموبايل) عند بداية الخدمة. التعديل والإلغاء حسب سياسة الإلغاء.'));
   state.hidden = true; sheet.hidden = false; $('#print').hidden = false; $('#print').onclick = () => window.print();
   document.title = `Voucher ${b.id} — Discover Sharm`;
