@@ -20,6 +20,8 @@
   .badge.off { background:#fee2e2; color:#991b1b; }
   h2 { font-size:13px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:22px 0 6px; }
   .row { display:flex; justify-content:space-between; gap:16px; padding:8px 0; border-bottom:1px solid var(--line); } .row b { text-align:end; }
+  .warn { margin-top:22px; padding:12px 14px; border:1px solid #fed7aa; background:#fff7ed; border-radius:10px; font-size:14px; line-height:1.8; }
+  .warn a { color:var(--brand); font-weight:700; }
   .total { font-size:18px; } .note { margin-top:26px; color:var(--muted); font-size:12.5px; }
   #state { text-align:center; padding:60px 20px; color:var(--muted); }
   @media print { body { background:#fff; } .bar { display:none; } .sheet { border:0; padding:0; margin:0; max-width:none; } }
@@ -67,6 +69,12 @@
   section('Guest · الضيف', [['Name · الاسم', b.name], ['Phone · الهاتف', b.phone], ['E-mail · الإيميل', b.email]]);
   const due = (b.balanceStatus === 'due' || b.balanceStatus === 'onsite') ? Number(b.balanceAmount || b.remainingAmount) : 0;
   section('Payment · الدفع', [['Total · الإجمالي', money(b.total)], ['Paid online · المدفوع', money(b.paidAmount != null ? b.paidAmount : b.total)], due ? ['Pay to the provider at the service · المتبقي يُدفع لمقدّم الخدمة في المكان', money(due)] : ['', '']]);
+  if (b.viaSeller) {
+    const box = el('div', 'warn'); const paid = Number(b.paidAmount != null ? b.paidAmount : b.total);
+    box.append(el('b', '', `Paid online to Discover Sharm: ${money(paid)} · المدفوع أونلاين لديسكفر شرم: ${money(paid)}`), document.createElement('br'),
+      document.createTextNode(due ? `Only ${money(due)} remains, payable to the service provider at the service location — never to anyone else. · المتبقي ${money(due)} فقط، بتدفعه لمقدّم الخدمة في مكان الخدمة — مش لأي شخص تاني.` : 'Nothing else is due. · مفيش أي مبالغ تانية مطلوبة.'), document.createElement('br'));
+    const a = el('a', '', 'Check this booking / report a problem · تحقق من الحجز أو بلّغ عن مشكلة'); a.href = '/verify/?id=' + encodeURIComponent(b.id); box.append(a); sheet.append(box);
+  }
   sheet.append(el('p', 'note', 'Please present this voucher (printed or on your phone) at the start of the service. Changes and cancellations follow our cancellation policy. · من فضلك اعرض الفاوتشر (مطبوع أو على الموبايل) عند بداية الخدمة. التعديل والإلغاء حسب سياسة الإلغاء.'));
   state.hidden = true; sheet.hidden = false; $('#print').hidden = false; $('#print').onclick = () => window.print();
   document.title = `Voucher ${b.id} — Discover Sharm`;
