@@ -64,7 +64,7 @@ function csp(site) {
       `style-src ${uniq(["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://accounts.google.com'])}`,
       "font-src 'self' data: https://fonts.gstatic.com",
       "img-src 'self' data: blob: https:",
-      `connect-src ${uniq(["'self'", originOf(sbc.url), wsOf(sbc.url), originOf(sbc.translateBase), originOf(sbc.contentBase), originOf(sbc.settingsBase), originOf(sbc.mediaBase), 'https://accounts.google.com', 'https://fonts.googleapis.com', 'https://fonts.gstatic.com'])}`,   // fonts: the service worker fetches them (stale-while-revalidate)
+      `connect-src ${uniq(["'self'", originOf(sbc.url), wsOf(sbc.url), originOf(sbc.paymentsBase), originOf(sbc.translateBase), originOf(sbc.contentBase), originOf(sbc.settingsBase), originOf(sbc.mediaBase), 'https://accounts.google.com', 'https://fonts.googleapis.com', 'https://fonts.gstatic.com'])}`,   // fonts: the service worker fetches them (stale-while-revalidate)
       "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://www.google.com https://accounts.google.com", "worker-src 'self'", "manifest-src 'self'", "object-src 'none'", "base-uri 'self'", "form-action 'self'", "frame-ancestors 'none'", 'upgrade-insecure-requests',
     ].join('; ');
   }
