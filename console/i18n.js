@@ -117,7 +117,8 @@ function start() {
   if (lang === 'ar') {   // Arabic mode: nothing to translate, but keep the page all-Arabic — currency codes become words
     build({ EGP: 'جنيه', USD: 'دولار', EUR: 'يورو' }); walk(document.body);
   } else {
-    fetch('/lang/admin-' + lang + '.json').then(r => r.json()).then(d => {
+    const load = (n) => fetch('/lang/admin-' + lang + '.json', { cache: n ? 'reload' : 'default' }).then(r => { if (!r.ok) throw 0; return r.json(); }).catch(e => n ? Promise.reject(e) : load(1));   // one retry, bypassing the HTTP cache
+    load(0).then(d => {
       build(d);
       const _c = window.confirm, _a = window.alert, _p = window.prompt;
       window.confirm = m => _c.call(window, tx(m));

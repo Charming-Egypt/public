@@ -132,7 +132,7 @@ DS.restaurantPanel = (c) => {
   DS.start({ key: c.key, title: c.title, roleLabel: c.roleLabel, api: c.api, noSide: true, views: (me) => [
     { label: 'الرئيسية', icon: 'home', render: async m => {
       const [it, bs] = await Promise.all([items(), DS.api('/branches')]); const b = bs.branches, n = (s) => b.filter(x => x.status === s).length;
-      m.innerHTML = DS.hero('أهلًا ' + esc(me.name || ''), new Date().toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }),
+      m.innerHTML = DS.hero('أهلًا ' + esc(me.name || ''), new Date().toLocaleDateString(window.DS_ALANG === 'ar' ? 'ar-EG' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }),
         `<button class="btn" data-go="مطاعمي">${DS.ic('plus')} إضافة مطعم / كافيه</button><button class="btn ghost" data-go="QR Code">QR Code</button>`) +
         `<div class="stats">${DS.stat(it.length + (me.maxItems ? ' / ' + me.maxItems : ''), 'مطاعمي وكافيهاتي', { icon: 'box', tone: 'gold' })}${DS.stat(n('approved'), 'فروع معتمدة', { icon: 'check', tone: 'green' })}${DS.stat(n('pending'), 'فروع بانتظار الموافقة', { icon: 'alert' })}${DS.stat(n('rejected'), 'فروع مرفوضة', { icon: 'alert', tone: 'red' })}</div>
          <div class="card"><span class="ct">ابدئ من هنا</span><ol style="padding-inline-start:20px;line-height:2.1"><li>أضيف مطعمك أو الكافيه بالصور والمنيو — الإدارة بتراجعه وتنشره.</li><li>أضيف فروعك من <b>الفروع</b> (كل فرع بيتعتمد من الإدارة).</li><li>اطبع الـ <b>QR Code</b> وحطه على الترابيزات والكاشير.</li></ol></div>`;

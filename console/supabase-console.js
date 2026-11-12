@@ -51,6 +51,8 @@
     balance_due: 'العميل لسه ما سدّدش المتبقي من الحجز — تقدر تسجّل التنفيذ بعد ما يدفعه أونلاين',
     account_locked: 'طلبات الصرف متوقفة 24 ساعة بعد تغيير حساب الاستلام (حماية لحسابك)',
     price_changed: 'السعر اتغيّر',
+    deposit_not_allowed: 'الحجز لبكرة أو أقرب لازم يتدفع كامل — العربون مش متاح',
+    unavailable: 'التواريخ دي مش متاحة للحجز',
   };
   const fail = (message, status) => Object.assign(new Error(message), { status });
   const explain = (e) => {
@@ -169,6 +171,17 @@
       const key = `${who.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${blob.type === 'image/png' ? 'png' : blob.type === 'image/webp' ? 'webp' : 'jpg'}`;
       await run(sb.storage.from('listing-media').upload(key, blob, { contentType: blob.type, cacheControl: '31536000' }));
       return { url: sb.storage.from('listing-media').getPublicUrl(key).data.publicUrl };
+    }
+
+    // ===== seller desk: book for a walk-in customer from the dashboard (price + booking are both decided by the database) =====
+    if (a === 'desk' && scope === 'seller') {
+      if (!who.is_seller) throw fail('مش مسموح', 403);
+      if (b === 'catalog') {
+        const rows = await run(sb.from('properties').select('id, kind, data').eq('status', 'published').in('kind', ['hotel', 'excursion', 'package', 'transfer']).limit(1000));
+        return { items: rows.map(r => ({ id: r.id, kind: r.kind, name: nameOf(r.data?.hotelName || r.data?.title || r.data?.name || r.data?.vehicleType) || r.id, data: r.data || {} })) };
+      }
+      if (b === 'quote' && method === 'POST') return { price: await rpc('seller_quote', { p: body }) };
+      if (b === 'book' && method === 'POST') return await rpc('create_booking', { p: body });
     }
 
     // ===== bookings (owner + admin) =====

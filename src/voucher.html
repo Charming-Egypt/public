@@ -39,9 +39,11 @@
   if (!cfg || !window.supabase || !id) return say('Voucher not available · الفاوتشر غير متاح');
   const sb = window.supabase.createClient(cfg.url, cfg.anonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false, storageKey: 'ds_sb_session', ...(window.DS_SESSION_STORAGE ? { storage: window.DS_SESSION_STORAGE } : {}) } });
   const { data: { session } } = await sb.auth.getSession();
-  if (!session) { say('Please sign in on the site first, then open this link again. · سجّل دخول من الموقع الأول وبعدين افتح اللينك تاني.'); const a = document.createElement('a'); a.className = 'btn'; a.href = '/'; a.textContent = 'Sign in · تسجيل الدخول'; a.style.display = 'inline-block'; a.style.marginTop = '16px'; state.append(document.createElement('br'), a); return; }
-  const { data, error } = await sb.rpc('list_my_bookings', { p_limit: 500 });
-  const b = !error && (data || []).find((x) => x.id === id);
+  // 1) the signed-in owner of the booking  2) otherwise a booking made for a customer by a seller: the (long, random) booking id in the link is the key
+  let b = null;
+  if (session) { const { data, error } = await sb.rpc('list_my_bookings', { p_limit: 500 }); b = !error && (data || []).find((x) => x.id === id); }
+  if (!b) { const { data } = await sb.rpc('public_voucher', { p_id: id }); b = data || null; }
+  if (!b && !session) { say('Please sign in on the site first, then open this link again. · سجّل دخول من الموقع الأول وبعدين افتح اللينك تاني.'); const a = document.createElement('a'); a.className = 'btn'; a.href = '/'; a.textContent = 'Sign in · تسجيل الدخول'; a.style.display = 'inline-block'; a.style.marginTop = '16px'; state.append(document.createElement('br'), a); return; }
   if (!b || b.status !== 'completed') return say('Voucher not found · الفاوتشر غير موجود');
 
   const nm = (v) => (v && typeof v === 'object') ? (v.en || v.ar || Object.values(v)[0] || '') : (v || '');

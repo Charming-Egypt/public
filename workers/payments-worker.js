@@ -17,6 +17,7 @@ const ALLOWED_ORIGINS = new Set([
   'https://www.discover-sharm.com',
   'https://discover-sharm.com',
   'https://app.discover-sharm.com',
+  'https://seller.discover-sharm.com',   // seller dashboard: books for walk-in customers and pays with his wallet
 ]);
 
 function corsHeadersForRequest(request) {

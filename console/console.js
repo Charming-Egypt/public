@@ -91,7 +91,8 @@ DS.thumb = u => u ? `<img class="thumb" src="${esc(u)}" loading="lazy" onerror="
 
 // CSV export (UTF-8 BOM so Excel shows Arabic; leading = + - @ neutralised against formula injection)
 DS.csv = (name, head, rows) => {
-  const q = v => { let x = v == null ? '' : v; if (typeof x === 'string' && /^[=+\-@\t\r]/.test(x)) x = "'" + x; return '"' + String(x).replace(/"/g, '""') + '"'; };
+  const q = v => { let x = v == null ? '' : v; if (typeof x === 'string' && window.DS_T) x = window.DS_T(x);   // follow the interface language (headers + status words)
+    if (typeof x === 'string' && /^[=+\-@\t\r]/.test(x)) x = "'" + x; return '"' + String(x).replace(/"/g, '""') + '"'; };
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob(['\ufeff' + [head, ...rows].map(r => r.map(q).join(',')).join('\r\n')], { type: 'text/csv;charset=utf-8' }));
   a.download = name; document.body.appendChild(a); a.click(); a.remove();
@@ -564,7 +565,7 @@ DS.ownerPanel = (c) => {
       const mon = {}; fn.earnings.forEach(e => { const k = String(e.serviceDate || e.at).slice(0, 7); mon[k] = (mon[k] || 0) + e.share; }); const mk = Object.keys(mon).sort().slice(-6);
       const st = {}; b.forEach(x => st[x.status] = (st[x.status] || 0) + 1);
       const wait = b.filter(x => !x.earning && x.status === 'completed').length;
-      m.innerHTML = DS.hero('أهلاً ' + esc(me.name || ''), new Date().toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }), `<button class="btn" data-go="${c.itemsLabel}">${DS.ic('plus')} ${c.addLabel}</button><button class="btn ghost" data-go="المحاسبة">${DS.ic('wallet')} المحاسبة</button>`) +
+      m.innerHTML = DS.hero('أهلاً ' + esc(me.name || ''), new Date().toLocaleDateString(window.DS_ALANG === 'ar' ? 'ar-EG' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }), `<button class="btn" data-go="${c.itemsLabel}">${DS.ic('plus')} ${c.addLabel}</button><button class="btn ghost" data-go="المحاسبة">${DS.ic('wallet')} المحاسبة</button>`) +
         `<div class="stats">${DS.stat(it.length + (me.maxItems ? ' / ' + me.maxItems : ''), c.itemsLabel, { icon: 'box', tone: 'gold' })}${DS.stat(b.length, 'كل الحجوزات', { icon: 'cal' })}${DS.stat(wait, 'مدفوعة وبانتظار تسجيل التنفيذ', { icon: 'alert', tone: wait ? 'red' : 'green' })}${DS.stat(DS.money(S.available), 'أرباح متاحة للصرف (جنيه)', { icon: 'wallet', tone: 'green' })}${DS.stat(DS.money(S.earned), 'إجمالي أرباحك المسجّلة', { icon: 'trend', tone: 'purple' })}</div>
         <div class="grest"><div class="card"><span class="ct">الحجوزات — آخر 14 يوم</span>${DS.area(days.map(d => d.slice(5).replace('-', '/')), days.map(d => cnt[d]), 'var(--blue)', 'o1')}</div>
           <div class="card"><span class="ct">حالة الحجوزات</span>${DS.donut(Object.entries(st).map(([k, v]) => ({ l: DS.PAY[k] ? DS.PAY[k][0] : k, v, c: DS.STC[k] || '#999' })))}</div></div>
@@ -616,6 +617,7 @@ DS.sellerPanel = () => {
         <h2 class="pt">آخر الحجوزات</h2>` + DS.table([{ h: 'الحجز', f: x => `<b>${esc(x.id)}</b><div class="muted">${DS.dt(x.createdAt)}</div>` }, { h: 'على', f: x => esc(x.item || x.type) }, { h: 'عمولتك', f: x => DS.money(x.amount) }, { h: 'الحالة', f: x => DS.badge(SS, state(x)) }], b.slice(0, 6), { empty: 'مفيش حجوزات لسه — شارك لينكك!' });
       m.onclick = e => { const g = e.target.closest('[data-go]'); if (g) DS.go(g.dataset.go); };
     } },
+    ...(DS.sellerDesk ? [DS.sellerDesk(me)] : []),
     { label: 'لينكي', icon: 'qr', render: async m => {
       const www = (me.sites || {}).www || location.origin, app = (me.sites || {}).app || www, code = me.code || '';
       m.innerHTML = `<h2 class="pt">لينكي وكودي</h2>
@@ -637,7 +639,9 @@ DS.sellerPanel = () => {
         { h: 'الحجز', f: x => `<b>${esc(x.id)}</b><div class="muted">${DS.dt(x.createdAt)}</div>` }, { h: 'العميل', f: x => esc(x.customer || '') },
         { h: 'على', f: x => esc(x.item || x.type) }, { h: 'تاريخ الخدمة', f: x => esc(x.serviceDate || '') }, { h: 'قيمة الحجز', f: x => DS.money(x.subtotal) },
         { h: 'عمولتك', f: x => `<b>${DS.money(x.amount)}</b> <span class="muted">(${x.rate}%)</span>` }, { h: 'المصدر', f: x => x.viaOwnAccount ? 'حسابي' : 'لينك' },
-        { h: 'الحالة', f: x => DS.badge(SS, state(x)) }], b, { empty: 'مفيش حجوزات لسه' });
+        { h: 'الحالة', f: x => DS.badge(SS, state(x)) },
+        { h: '', f: (x, i) => x.viaOwnAccount && x.status === 'completed' ? `<button class="btn ghost sm" data-sv="${i}">الفاوتشر</button>` : '' }], b, { empty: 'مفيش حجوزات لسه' });
+      m.onclick = e => { const v = e.target.closest('[data-sv]'); if (v && DS.sellerVoucher) DS.sellerVoucher(me, b[+v.dataset.sv]); };
       $('#c1').onclick = () => DS.csv('seller-bookings.csv', ['الحجز', 'العميل', 'العنصر', 'تاريخ الخدمة', 'قيمة الحجز', 'عمولتك', 'الحالة'], b.map(x => [x.id, x.customer, x.item, x.serviceDate, x.subtotal, x.amount, SS[state(x)][0]]));
     } },
     { label: 'المحاسبة', icon: 'wallet', render: DS.financeView() },
