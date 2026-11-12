@@ -77,130 +77,225 @@ DS.sellerVoucher = (me, x) => {
   DS.modal({ title: 'فاوتشر الحجز ' + x.id, body: box });
 };
 
-// ---- the new-booking screen -------------------------------------------------------------------------------------------------
+// ---- date formatting + calendar (same rules as the app: from tomorrow on, blocked dates, one connected range for hotels) ----------------
+const LANG = () => (window.DS_ALANG === 'ar' ? 'ar' : 'en');
+const fmtDay = iso => iso ? new Date(iso + 'T00:00:00').toLocaleDateString(LANG() === 'ar' ? 'ar-EG' : 'en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }) : '';
+const addDays = (iso, n) => { const d = new Date(iso + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+const MONTHS = { en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], ar: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'] };
+const WEEK = { en: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'], ar: ['ح', 'ن', 'ث', 'ر', 'خ', 'ج', 'س'] };
+const T = (en, ar) => LANG() === 'ar' ? ar : en;           // strings of the calendar follow the interface language directly
+
+// opts: range (bool) · start/end/value · stage ('in'|'out') · min · blocked[] · title · done(a, b)
+function calendar(o) {
+  const blocked = new Set(o.blocked || []), min = o.min;
+  let a = o.range ? o.start : o.value, b = o.range ? o.end : null, stage = o.range && o.stage === 'out' && a ? 'out' : 'in';
+  let view = new Date((a || min) + 'T00:00:00'); view.setDate(1);
+  const nextBlocked = from => { let best = ''; blocked.forEach(d => { if (d >= from && (!best || d < best)) best = d; }); return best; };
+  const off = iso => {
+    if (iso < min) return true;
+    if (!(o.range && stage === 'out' && a)) return blocked.has(iso);
+    if (iso <= a || iso > addDays(a, 60)) return true;
+    const nb = nextBlocked(a); return !!nb && iso > nb;              // the check-out day itself may be a blocked day; a night may not
+  };
+  const body = document.createElement('div'); body.className = 'sd-cal';
+  const dlg = DS.modal({ title: o.title, body });
+  const draw = () => {
+    const y = view.getFullYear(), m = view.getMonth(), first = new Date(y, m, 1).getDay(), n = new Date(y, m + 1, 0).getDate();
+    const prevOff = new Date(y, m, 1) <= new Date(min.slice(0, 7) + '-01T00:00:00');
+    let cells = '<i></i>'.repeat(first);
+    for (let d = 1; d <= n; d++) {
+      const iso = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      const end = iso === a || iso === b, rng = o.range && a && b && iso > a && iso < b, dis = off(iso);
+      cells += `<button type="button" data-iso="${iso}" class="${end ? 'on' : rng ? 'rng' : ''}" ${dis ? 'disabled' : ''}>${d}</button>`;
+    }
+    const nights = a && b ? Math.round((new Date(b) - new Date(a)) / 864e5) : 0;
+    const st = !o.range ? '' : (a && b) ? `${nights} ${T(nights === 1 ? 'night' : 'nights', 'ليلة')} — ${fmtDay(a)} → ${fmtDay(b)}` : stage === 'out' ? T('Select the check-out date', 'اختر تاريخ المغادرة') : T('Select the check-in date', 'اختر تاريخ الوصول');
+    body.innerHTML = `<div class="hd"><button type="button" data-mv="-1" ${prevOff ? 'disabled' : ''}>‹</button><b>${MONTHS[LANG()][m]} ${y}</b><button type="button" data-mv="1">›</button></div>
+      <div class="st">${st}</div><div class="wd">${WEEK[LANG()].map(w => `<span>${w}</span>`).join('')}</div><div class="gr">${cells}</div>`;
+  };
+  body.onclick = e => {
+    const mv = e.target.closest('[data-mv]'); if (mv) { view.setMonth(view.getMonth() + Number(mv.dataset.mv)); draw(); return; }
+    const x = e.target.closest('[data-iso]'); if (!x || x.disabled) return; const iso = x.dataset.iso;
+    if (!o.range) { o.done(iso); dlg.close(); return; }
+    if (stage === 'in' || !a || iso <= a) { a = iso; b = null; stage = 'out'; draw(); return; }
+    b = iso; draw(); setTimeout(() => { o.done(a, b); dlg.close(); }, 300);
+  };
+  draw();
+}
+
+// ---- the new-booking wizard -------------------------------------------------------------------------------------------------
+const img = (me, u) => { u = String(u || ''); return !u ? '' : /^(https?:|data:|\/\/)/.test(u) ? u : ((me.sites || {}).app || '').replace(/\/$/, '') + '/' + u.replace(/^\//, ''); };
+const MAX = { adults: 10, children: 6, infants: 4, rooms: 5 }, CHILD_AGE_MAX = 11;
+
 DS.sellerDesk = (me) => ({ label: 'حجز جديد', icon: 'plus', render: async m => {
   m.innerHTML = '<div class="empty">جاري التحميل…</div>';
   let items; try { items = (await DS.api('/desk/catalog')).items; } catch (e) { m.innerHTML = `<div class="empty">${esc(e.message)}</div>`; return; }
   if (!items.length) { m.innerHTML = '<h2 class="pt">حجز جديد</h2><div class="card"><div class="empty">مفيش خدمات منشورة لسه</div></div>'; return; }
   const kinds = Object.keys(KINDS).filter(k => items.some(i => i.kind === k));
-  const S = { kind: kinds[0], id: '', f: { adults: 2, children: 0, rooms: 1, participants: 2, passengers: 1, childAges: [], plan: 'full', direction: 'Airport to Hotel' }, price: null, perr: '', booking: null };
-  try { S.f.wallet = localStorage.getItem('ds_seller_wallet') || ''; } catch {}
+  const fresh = () => ({ adults: 2, children: 0, infants: 0, rooms: 1, participants: 2, passengers: 1, childAges: [], plan: 'full', direction: 'Airport to Hotel', time: '14:00', room: 0, requests: '', name: '', email: '', phone: '', checkin: '', checkout: '', date: '', flightNo: '', address: '', paid: false, wallet: S0.wallet });
+  const S0 = { wallet: '' }; try { S0.wallet = localStorage.getItem('ds_seller_wallet') || ''; } catch {}
+  const S = { step: 1, kind: kinds[0], id: '', f: fresh(), q: {}, perr: '', quoting: false, booking: null, tried: false };
   const list = () => items.filter(i => i.kind === S.kind);
   const cur = () => items.find(i => i.id === S.id);
-  const rooms = () => (cur() && Array.isArray(cur().data.rooms)) ? cur().data.rooms : [];
+  const D = () => (cur() || {}).data || {};
+  const rooms = () => Array.isArray(D().rooms) ? D().rooms : [];
+  const room = () => rooms()[Number(S.f.room) || 0] || null;
+  const isPkgPrice = () => D().priceMode === 'package';
+  const pkgPeople = () => Math.max(1, Math.min(50, Number(D().groupSize) || 2));
+  const cap = () => Math.max(1, Number(D().capacity) || 4);
+  const blocked = () => Array.isArray(D().unavailableDates) ? D().unavailableDates : [];
+  const minDay = () => cairoDay(1);                                              // the app never books today
   S.id = (list()[0] || {}).id || '';
+  const fix = () => { const f = S.f;
+    if (S.kind === 'hotel') { const occ = Math.max(1, Number((room() || {}).guests) || 2), need = Math.min(MAX.rooms, Math.ceil((f.adults + f.children) / occ)); if (f.rooms < need) f.rooms = need; }
+    if (isPkgPrice()) f.participants = pkgPeople(); if (S.kind === 'transfer') f.passengers = Math.min(f.passengers, cap());
+    while (f.childAges.length < f.children) f.childAges.push(null); f.childAges.length = f.children; };
+  const reset = () => { S.booking = null; S.f.__id = null; S.f.paid = false; };
 
+  // ---- pieces ---------------------------------------------------------------------------------------------------------------
   const fld = (label, inner, hint) => `<div class="fld"><label>${label}</label>${inner}${hint ? `<small>${hint}</small>` : ''}</div>`;
   const inp = (k, type = 'text', extra = '') => `<input data-k="${k}" type="${type}" value="${esc(S.f[k] == null ? '' : S.f[k])}" ${extra}>`;
+  const dateBtn = (id, label, val, icon) => `<button type="button" class="sd-date ${S.tried && !val ? 'err' : ''}" data-pick="${id}">${DS.ic(icon || 'cal')}<span><small>${label}</small><b>${val ? esc(fmtDay(val)) : 'اختر التاريخ'}</b></span></button>`;
+  const stepper = (k, label, sub, min, max) => `<div class="sd-row"><div><b>${label}</b>${sub ? `<small>${sub}</small>` : ''}</div><div class="sd-st"><button type="button" data-st="${k}" data-d="-1" ${S.f[k] <= min ? 'disabled' : ''}>−</button><span>${S.f[k]}</span><button type="button" data-st="${k}" data-d="1" ${S.f[k] >= max ? 'disabled' : ''}>+</button></div></div>`;
+  const dayOf = () => S.kind === 'hotel' ? S.f.checkin : S.f.date;
+  const depositOk = () => depositAllowed(dayOf());
+  const nights = () => S.f.checkin && S.f.checkout ? nightsBetween(S.f.checkin, S.f.checkout) : 0;
+
+  const guestsLine = () => { const f = S.f, p = (n, one, many, ar) => `${n} ${T(n === 1 ? one : many, ar)}`;
+    if (S.kind === 'hotel') return [p(f.adults, 'adult', 'adults', 'بالغ'), f.children ? p(f.children, 'child', 'children', 'طفل') : '', f.infants ? p(f.infants, 'infant', 'infants', 'رضيع') : '', p(f.rooms, 'room', 'rooms', 'غرفة')].filter(Boolean).join(' · ');
+    if (S.kind === 'transfer') return p(f.passengers, 'passenger', 'passengers', 'راكب'); return p(f.participants, 'person', 'people', 'فرد'); };
+  const nightsTxt = n => `${n} ${T(n === 1 ? 'night' : 'nights', 'ليلة')}`;
+  const factsHtml = () => { const f = S.f;
+    if (S.kind === 'hotel') return `${f.checkin && f.checkout ? `${esc(fmtDay(f.checkin))} → ${esc(fmtDay(f.checkout))} · ${nightsTxt(nights())}` : ''}${room() ? `<br>${esc(nm(room().type))}` : ''}<br>${guestsLine()}`;
+    if (S.kind === 'transfer') return `${f.date ? esc(fmtDay(f.date)) + ' · ' + esc(f.time) : ''}<br>${f.direction === 'Airport to Hotel' ? 'من المطار للفندق' : 'من الفندق للمطار'} · ${guestsLine()}`;
+    return `${f.date ? esc(fmtDay(f.date)) : ''}<br>${guestsLine()}`; };
+  const sumHtml = (full) => { const it = cur(), q = S.q[S.f.plan], d = D(), pic = img(me, (S.kind === 'hotel' && room() && room().image) || d.image);
+    const r = (k, v, c) => `<div class="sd-ln ${c || ''}"><span>${k}</span><span dir="ltr">${v}</span></div>`;
+    let price = S.quoting ? '<div class="muted">جاري حساب السعر…</div>' : S.perr ? `<div class="sd-err">${esc(S.perr)}</div>` : !q ? '<div class="muted">كمّل البيانات علشان يظهر السعر</div>' :
+      r('سعر الخدمة', money(q.subtotal)) + r('الضرائب', money(q.taxes)) + r('رسوم الدفع الإلكتروني', money(q.fee)) + r('الإجمالي', money(q.total), 't') +
+      (full ? r(S.f.plan === 'deposit' ? 'العربون — بتاخده من العميل كاش دلوقتي' : 'بتاخده من العميل كاش دلوقتي', money(q.due), 'hi') + (Number(q.remaining) > 0 ? r('المتبقي بيدفعه العميل لمقدّم الخدمة في مكان الخدمة', money(q.remaining)) : '') +
+        `<div class="muted" style="margin-top:8px">عمولتك المتوقعة: حتى ${money(Math.round(Number(q.subtotal) * Number(me.rate || 0)) / 100)} (${me.rate}%) — بتتسجّل بعد تنفيذ الخدمة.</div>` : '');
+    return `<div class="sd-sum"><div class="hd">${pic ? `<img src="${esc(pic)}" alt="" onerror="this.remove()">` : ''}<div><b>${esc(it ? it.name : '')}</b><small>${KINDS[S.kind]}</small></div></div><div class="muted" style="line-height:1.9;margin-bottom:8px">${factsHtml()}</div>${price}</div>`; };
+  const barHtml = (label, id, dis) => { const q = S.q[S.f.plan]; return `<div class="sd-bar"><div class="tt"><small>${S.step === 3 ? 'المطلوب دفعه الآن' : 'الإجمالي'}</small><b dir="ltr">${q ? money(S.step === 3 ? q.due : q.total) : '—'}</b></div><div class="row">${S.step > 1 ? '<button type="button" class="btn ghost" data-back>رجوع</button>' : ''}<button type="button" class="btn" id="${id}" ${dis ? 'disabled' : ''}>${label}</button></div></div>`; };
+
+  // ---- steps ----------------------------------------------------------------------------------------------------------------
+  const step1 = () => { const f = S.f, hotel = S.kind === 'hotel', xfer = S.kind === 'transfer', occ = Math.max(1, Number((room() || {}).guests) || 2);
+    const svc = `<div class="card"><span class="ct">الخدمة</span>
+      <div class="sd-seg" style="margin-bottom:12px">${kinds.map(k => `<button type="button" class="sd-chip ${k === S.kind ? 'on' : ''}" data-kind="${k}">${KINDS[k]}</button>`).join('')}</div>
+      ${fld('اختر الخدمة', `<select data-k="id">${list().map(i => `<option value="${esc(i.id)}" ${i.id === S.id ? 'selected' : ''}>${esc(i.name)}</option>`).join('')}</select>`)}</div>`;
+    if (hotel) return svc + `<div class="card"><span class="ct">الغرفة</span><div class="sd-rooms">${rooms().map((r, i) => `<button type="button" class="sd-room ${i === Number(f.room) ? 'on' : ''}" data-room="${i}">${r.image ? `<img src="${esc(img(me, r.image))}" alt="" onerror="this.remove()">` : ''}<span><b>${esc(nm(r.type))}</b><small>${[r.size, nm(r.beds), `حتى ${r.guests || 2} ضيوف`].filter(Boolean).map(esc).join(' · ')}</small><span class="pr">${money(r.price)} / ليلة</span></span></button>`).join('') || '<div class="empty">مفيش غرف</div>'}</div></div>
+      <div class="card"><span class="ct">تواريخ الإقامة</span><div class="grid2">${dateBtn('checkin', 'تاريخ الوصول', f.checkin, 'cal')}${dateBtn('checkout', 'تاريخ المغادرة', f.checkout, 'cal')}</div>${nights() ? `<p class="muted" style="margin-top:8px">${nightsTxt(nights())}</p>` : ''}</div>
+      <div class="card"><span class="ct">الضيوف</span>${stepper('adults', 'البالغين', '', 1, MAX.adults)}${stepper('children', 'الأطفال', `من سن 0 لـ ${CHILD_AGE_MAX} سنة`, 0, MAX.children)}
+        ${f.children ? `<div class="sd-ages">${f.childAges.map((a, i) => `<div><label>عمر الطفل ${i + 1}</label><select data-age="${i}"><option value="">اختر السن</option>${Array.from({ length: CHILD_AGE_MAX + 1 }, (_, y) => `<option value="${y}" ${a === y ? 'selected' : ''}>${y}</option>`).join('')}</select>${S.tried && a == null ? '<div class="sd-err">مطلوب</div>' : ''}</div>`).join('')}</div>` : ''}
+        ${stepper('infants', 'الرضّع', 'أقل من سنتين — مجاني', 0, MAX.infants)}${stepper('rooms', 'عدد الغرف', `الغرفة بتستوعب حتى ${occ} ضيف`, 1, MAX.rooms)}</div>`;
+    return svc + `<div class="card"><span class="ct">${xfer ? 'تفاصيل الانتقال' : 'التاريخ والأفراد'}</span>
+      ${xfer ? `<div class="sd-seg" style="margin-bottom:12px">${[['Airport to Hotel', 'من المطار للفندق'], ['Hotel to Airport', 'من الفندق للمطار']].map(([v, l]) => `<button type="button" class="sd-chip ${f.direction === v ? 'on' : ''}" data-dir="${v}">${l}</button>`).join('')}</div>` : ''}
+      <div class="grid2">${dateBtn('date', 'تاريخ الخدمة', f.date, 'cal')}${xfer ? fld('الساعة', inp('time', 'time')) : ''}</div>
+      ${xfer ? stepper('passengers', 'الركاب', `السيارة بتاخد حتى ${cap()}`, 1, cap()) + `<div class="grid2" style="margin-top:10px">${fld('رقم الرحلة (اختياري)', inp('flightNo'))}${fld('اسم الفندق / العنوان', inp('address'), S.tried && !f.address.trim() ? '<span class="sd-err">مطلوب</span>' : '')}</div>`
+        : isPkgPrice() ? `<div class="sd-row"><div><b>عدد الأفراد</b><small>السعر ثابت للباكدج كله</small></div><b>${pkgPeople()}</b></div>` : stepper('participants', 'عدد الأفراد', '', 1, 15)}</div>`; };
+  const step2 = () => `<div class="card"><span class="ct">بيانات العميل</span><div class="grid2">
+      ${fld('الاسم', inp('name'), S.tried && S.f.name.trim().length < 2 ? '<span class="sd-err">اكتب اسم العميل</span>' : '')}
+      ${fld('رقم واتساب العميل', inp('phone', 'tel', 'dir="ltr" placeholder="01XXXXXXXXX"'), S.tried && !/^\+?[0-9 ]{8,16}$/.test(S.f.phone) ? '<span class="sd-err">رقم غير صحيح</span>' : 'الفاوتشر بيتبعت عليه لو اخترت واتساب')}
+      ${fld('إيميل العميل', inp('email', 'email', 'dir="ltr"'), S.tried && !emailOk(S.f.email) ? '<span class="sd-err">إيميل غير صحيح</span>' : 'الفاوتشر بيوصل عليه. لازم يكون إيميل العميل مش إيميلك.')}</div>
+      ${fld('طلبات خاصة (اختياري)', `<textarea data-k="requests" rows="3">${esc(S.f.requests)}</textarea>`)}</div>`;
+  const step3 = () => { const f = S.f, q = S.q, dep = depositOk(), plan = (id, title, sub, qq, ok) => `<label class="sd-plan ${f.plan === id ? 'on' : ''} ${ok ? '' : 'off'}"><input type="radio" name="plan" value="${id}" ${ok ? '' : 'disabled'} ${f.plan === id ? 'checked' : ''}><span><b>${title}</b><small>${sub}</small></span><span class="am" dir="ltr">${qq ? money(qq.due) : '—'}</span></label>`;
+    return `<div class="card"><span class="ct">اختار طريقة الدفع</span>${plan('full', 'دفع كامل', 'العميل بيدفع كل المبلغ دلوقتي', q.full, true)}
+      ${plan('deposit', 'عربون (50%)', dep ? (q.deposit && Number(q.deposit.remaining) > 0 ? `والمتبقي ${money(q.deposit.remaining)} في مكان الخدمة` : 'والباقي في مكان الخدمة') : 'مش متاح لحجز بكرة أو أقرب — لازم دفع كامل', q.deposit, dep)}</div>
+      <div class="card"><span class="ct">الدفع من محفظتك</span>${fld('رقم محفظتك الإلكترونية (اللي هتدفع منها)', inp('wallet', 'tel', 'dir="ltr" placeholder="01XXXXXXXXX"'), 'هيجيلك طلب دفع على الموبايل — وافق عليه.')}
+      ${S.tried && !walletOk(String(f.wallet || '').replace(/\s/g, '')) ? '<div class="sd-err">اكتب رقم محفظتك</div>' : ''}
+      <label class="sd-chk" style="margin-top:12px"><input type="checkbox" data-paid ${f.paid ? 'checked' : ''}><span>استلمت <b dir="ltr">${S.q[f.plan] ? money(S.q[f.plan].due) : ''}</b> كاش من العميل، وهتتسحب نفس القيمة من محفظتي دلوقتي.</span></label></div>`; };
 
   const draw = () => {
-    const it = cur(), f = S.f, hotel = S.kind === 'hotel', xfer = S.kind === 'transfer';
-    const day = hotel ? f.checkin : f.date, dep = depositAllowed(day);
-    if (f.plan === 'deposit' && !dep) f.plan = 'full';
-    m.innerHTML = `<h2 class="pt">حجز جديد لعميل</h2>
-      <p class="muted" style="margin:-6px 0 14px;line-height:1.9">استلم المبلغ كاش من العميل، وادفعه للمنصة من محفظتك الإلكترونية هنا. الحجز بيتأكد فورًا وعمولتك بتتسجّل بعد تنفيذ الخدمة.</p>
-      <div class="card"><span class="ct">1 · الخدمة</span><div class="grid2" style="margin-top:10px">
-        ${fld('النوع', `<select data-k="kind">${kinds.map(k => `<option value="${k}" ${k === S.kind ? 'selected' : ''}>${KINDS[k]}</option>`).join('')}</select>`)}
-        ${fld('الخدمة', `<select data-k="id">${list().map(i => `<option value="${esc(i.id)}" ${i.id === S.id ? 'selected' : ''}>${esc(i.name)}</option>`).join('')}</select>`)}
-        ${hotel ? `${fld('الغرفة', `<select data-k="room">${rooms().map((r, i) => `<option value="${i}" ${String(f.room ?? 0) === String(i) ? 'selected' : ''}>${esc(nm(r.type))} — ${DS.money(r.price)} EGP</option>`).join('')}</select>`)}
-          ${fld('تاريخ الوصول', inp('checkin', 'date', `min="${cairoDay()}"`))}${fld('تاريخ المغادرة', inp('checkout', 'date', `min="${f.checkin || cairoDay()}"`))}
-          ${fld('عدد الغرف', inp('rooms', 'number', 'min="1" max="5"'))}${fld('البالغين', inp('adults', 'number', 'min="1" max="10"'))}${fld('الأطفال', inp('children', 'number', 'min="0" max="6"'))}
-          ${Number(f.children) > 0 ? fld('أعمار الأطفال', Array.from({ length: Math.min(6, Number(f.children)) }, (_, i) => `<input data-age="${i}" type="number" min="0" max="17" value="${esc((f.childAges || [])[i] ?? '')}" style="width:70px;margin-inline-end:6px">`).join('')) : ''}`
-        : `${fld('تاريخ الخدمة', inp('date', 'date', `min="${cairoDay()}"`))}
-          ${xfer ? `${fld('الركاب', inp('passengers', 'number', 'min="1" max="50"'))}${fld('الاتجاه', `<select data-k="direction"><option value="Airport to Hotel" ${f.direction === 'Airport to Hotel' ? 'selected' : ''}>من المطار للفندق</option><option value="Hotel to Airport" ${f.direction === 'Hotel to Airport' ? 'selected' : ''}>من الفندق للمطار</option></select>`)}
-            ${fld('الساعة', inp('time', 'time'))}${fld('رقم الرحلة (اختياري)', inp('flightNo'))}${fld('اسم الفندق / العنوان', inp('address'))}`
-          : fld('عدد الأفراد', inp('participants', 'number', 'min="1" max="50"'))}`}
-      </div></div>
-      <div class="card"><span class="ct">2 · بيانات العميل</span><div class="grid2" style="margin-top:10px">
-        ${fld('الاسم', inp('name'))}${fld('رقم واتساب العميل', inp('phone', 'tel', 'dir="ltr" placeholder="01XXXXXXXXX"'), 'الفاوتشر بيتبعت عليه لو اخترت واتساب')}
-        ${fld('إيميل العميل', inp('email', 'email', 'dir="ltr"'), 'الفاوتشر بيوصل عليه. لازم يكون إيميل العميل مش إيميلك.')}</div></div>
-      <div class="card"><span class="ct">3 · الدفع</span>
-        <div class="row" style="margin:10px 0 4px">
-          <label class="btn ${f.plan === 'full' ? '' : 'ghost'}"><input type="radio" name="plan" value="full" ${f.plan === 'full' ? 'checked' : ''} style="display:none"> دفع كامل</label>
-          <label class="btn ${f.plan === 'deposit' ? '' : 'ghost'}" ${dep ? '' : 'style="opacity:.45;pointer-events:none"'}><input type="radio" name="plan" value="deposit" ${f.plan === 'deposit' ? 'checked' : ''} style="display:none"> عربون (50%)</label></div>
-        ${dep || !day ? '' : '<p class="muted">العربون مش متاح لحجز بكرة أو أقرب — لازم دفع كامل.</p>'}
-        <div id="pq" class="card" style="margin-top:10px"></div>
-        <div class="grid2" style="margin-top:12px">${fld('رقم محفظتك الإلكترونية (اللي هتدفع منها)', inp('wallet', 'tel', 'dir="ltr" placeholder="01XXXXXXXXX"'), 'هيجيلك طلب دفع على الموبايل — وافق عليه.')}</div>
-        <button class="btn" id="go" style="margin-top:6px">${DS.ic('wallet')} ادفع من المحفظة وأكّد الحجز</button></div>`;
-    drawPrice();
+    fix(); const t = ['الخدمة والتفاصيل', 'بيانات العميل', 'الدفع والتأكيد'];
+    m.innerHTML = `<h2 class="pt">حجز جديد لعميل</h2><div class="sd-steps">${[1, 2, 3].map(n => `<i class="${n <= S.step ? 'on' : ''}"></i>`).join('')}<b>${S.step}/3 · ${t[S.step - 1]}</b></div>
+      ${S.step === 1 ? step1() : S.step === 2 ? step2() : step3()}${sumHtml(S.step === 3)}${barHtml(S.step === 3 ? 'ادفع من المحفظة وأكّد الحجز' : 'متابعة', 'nx', S.step === 3 && !S.f.paid)}`;
   };
-
-  const drawPrice = () => {
-    const box = $('#pq', m); if (!box) return; const p = S.price;
-    if (S.perr) { box.innerHTML = `<div class="muted">${esc(S.perr)}</div>`; return; }
-    if (!p) { box.innerHTML = '<div class="muted">كمّل البيانات علشان يظهر السعر</div>'; return; }
-    const r = (k, v, b) => `<div class="row" style="justify-content:space-between;padding:4px 0">${b ? '<b>' : ''}<span>${k}</span><span dir="ltr">${v}</span>${b ? '</b>' : ''}</div>`;
-    const est = Math.round(Number(p.subtotal) * Number(me.rate || 0)) / 100;
-    box.innerHTML = r('سعر الخدمة', money(p.subtotal)) + r('الضرائب', money(p.taxes)) + r('رسوم الدفع الإلكتروني', money(p.fee)) +
-      r('المبلغ اللي تاخده من العميل كاش وتدفعه من محفظتك', money(p.due), true) +
-      (Number(p.remaining) > 0 ? r('المتبقي بيدفعه العميل لمقدّم الخدمة في مكان الخدمة', money(p.remaining)) : '') +
-      `<div class="muted" style="margin-top:6px">عمولتك المتوقعة: حتى ${money(est)} (${me.rate}%) — بتتسجّل بعد تنفيذ الخدمة.</div>`;
-  };
-
-  // ---- payload + live quote -------------------------------------------------------------------------------------------------
-  const payload = (withCustomer) => {
-    const it = cur(), f = S.f, d = it.data || {}, raw = d.hotelName || d.title || d.name || d.vehicleType || it.name;
-    const base = { id: f.__id || (f.__id = rid()), type: S.kind, currency: 'EGP', status: 'pending_payment', reviewed: false, createdAt: new Date().toISOString(),
-      [ID_KEY[S.kind]]: it.id, image: d.image || '', paymentPlan: f.plan, total: 0 };
+  const redrawSum = () => { const o = $('.sd-sum', m), b = $('.sd-bar', m); if (!o || !b) return draw(); o.outerHTML = sumHtml(S.step === 3);
+    const q = S.q[S.f.plan]; $('.tt small', b).textContent = S.step === 3 ? 'المطلوب دفعه الآن' : 'الإجمالي'; $('.tt b', b).textContent = q ? money(S.step === 3 ? q.due : q.total) : '—';
+    const nx = $('#nx', b); if (nx) nx.disabled = S.step === 3 && !S.f.paid; };   // update in place: replacing the button between mousedown and mouseup would swallow the tap
+  // ---- payload + live quote (both plans, so the customer sees what each costs) -----------------------------------------------
+  const payload = (plan, withCustomer) => {
+    const it = cur(), f = S.f, d = D(), raw = d.hotelName || d.title || d.name || d.vehicleType || it.name;
+    const base = { id: f.__id || (f.__id = rid()), type: S.kind, currency: 'EGP', status: 'pending_payment', reviewed: false, createdAt: new Date().toISOString(), [ID_KEY[S.kind]]: it.id, image: img(me, d.image), paymentPlan: plan, total: 0, requests: f.requests || '' };
     if (withCustomer) Object.assign(base, { name: f.name.trim(), email: f.email.trim(), phone: f.phone.trim() });
     if (S.kind === 'hotel') {
-      const r = rooms()[Number(f.room || 0)]; if (!r || !f.checkin || !f.checkout) return null;
-      const ages = Array.from({ length: Number(f.children) || 0 }, (_, i) => Number((f.childAges || [])[i])).map(x => isNaN(x) ? 0 : x);
-      return Object.assign(base, { hotelName: raw, location: d.location, rating: d.rating, checkin: f.checkin, checkout: f.checkout, adults: Number(f.adults), children: Number(f.children) || 0, childAges: ages,
-        guests: Number(f.adults) + (Number(f.children) || 0), infants: 0, rooms: Number(f.rooms), roomType: r.type, roomIndex: Number(f.room || 0), nights: nightsBetween(f.checkin, f.checkout) });
+      const r = room(); if (!r || !f.checkin || !f.checkout || f.childAges.some(a => a == null)) return null;
+      return Object.assign(base, { hotelName: raw, location: d.location, rating: d.rating, checkin: f.checkin, checkout: f.checkout, adults: f.adults, children: f.children, childAges: f.childAges, infants: f.infants,
+        guests: f.adults + f.children, rooms: f.rooms, roomType: r.type, roomIndex: Number(f.room) || 0, nights: nightsBetween(f.checkin, f.checkout) });
     }
     if (!f.date) return null;
-    if (S.kind === 'transfer') return Object.assign(base, { vehicleType: raw, date: f.date, time: f.time || '', passengers: Number(f.passengers), direction: f.direction, flightNo: f.flightNo || '', address: f.address || '' });
-    return Object.assign(base, { title: raw, category: d.category, date: f.date, participants: Number(f.participants) });
+    if (S.kind === 'transfer') return Object.assign(base, { vehicleType: raw, date: f.date, time: f.time || '', passengers: f.passengers, direction: f.direction, flightNo: f.flightNo || '', address: f.address || '' });
+    return Object.assign(base, { title: raw, category: d.category, date: f.date, participants: isPkgPrice() ? pkgPeople() : f.participants });
   };
-  let qt = 0;
+  let qt = 0; const seq = { n: 0 };
   const requote = () => {
-    clearTimeout(qt); S.price = null; S.perr = '';
-    const p = cur() && payload(false); if (!p) { drawPrice(); return; }
-    const my = ++requote.n;
+    clearTimeout(qt); S.q = {}; S.perr = ''; const full = cur() && payload('full', false);
+    if (!full) { S.quoting = false; redrawSum(); return; }
+    S.quoting = true; const my = ++seq.n; redrawSum();
     qt = setTimeout(async () => {
-      try { const r = await DS.api('/desk/quote', { method: 'POST', body: p }); if (my === requote.n) { S.price = r.price; S.perr = ''; } }
-      catch (e) { if (my === requote.n) { S.price = null; S.perr = e.message; } }
-      drawPrice();
+      const ask = async plan => { try { return (await DS.api('/desk/quote', { method: 'POST', body: payload(plan, false) })).price; } catch (e) { if (plan === 'full') throw e; return null; } };
+      try { const [a, b] = await Promise.all([ask('full'), depositOk() ? ask('deposit') : Promise.resolve(null)]); if (my !== seq.n) return; S.q = { full: a, deposit: b }; if (S.f.plan === 'deposit' && !b) S.f.plan = 'full'; }
+      catch (e) { if (my !== seq.n) return; S.perr = e.message; }
+      S.quoting = false; if (S.step === 3) draw(); else redrawSum();
     }, 350);
-    drawPrice();
-  }; requote.n = 0;
+  };
+  const changed = () => { reset(); requote(); };
 
-  m.onchange = m.oninput = e => {
-    const t = e.target, f = S.f;
-    if (t.name === 'plan') { f.plan = t.value; S.booking = null; f.__id = null; draw(); requote(); return; }
-    if (t.dataset.age != null) { f.childAges[Number(t.dataset.age)] = t.value; S.booking = null; f.__id = null; requote(); return; }
+  // ---- events ---------------------------------------------------------------------------------------------------------------
+  const sync = () => { if (S.kind === 'hotel' && S.f.checkin && S.f.checkout && S.f.checkout <= S.f.checkin) S.f.checkout = ''; };
+  m.onclick = e => { const f = S.f, g = s => e.target.closest(s);
+    let x;
+    if ((x = g('[data-kind]'))) { S.kind = x.dataset.kind; S.id = (list()[0] || {}).id; Object.assign(f, { room: 0, checkin: '', checkout: '', date: '' }); changed(); draw(); return; }
+    if ((x = g('[data-room]'))) { f.room = Number(x.dataset.room); changed(); draw(); return; }
+    if ((x = g('[data-dir]'))) { f.direction = x.dataset.dir; changed(); draw(); return; }
+    if ((x = g('[data-st]'))) { const k = x.dataset.st, d = Number(x.dataset.d), lim = { adults: [1, MAX.adults], children: [0, MAX.children], infants: [0, MAX.infants], rooms: [1, MAX.rooms], participants: [1, 15], passengers: [1, cap()] }[k], v = f[k] + d;
+      if (v < lim[0] || v > lim[1]) return;
+      if (k === 'rooms' && d < 0) { const occ = Math.max(1, Number((room() || {}).guests) || 2); if (v < Math.ceil((f.adults + f.children) / occ)) return DS.toast('قلّل عدد الضيوف الأول', true); }
+      f[k] = v; const before = f.rooms; fix(); if (f.rooms > before) DS.toast('عدد الغرف زاد علشان يناسب عدد الضيوف'); changed(); draw(); return; }
+    if ((x = g('[data-pick]'))) { const id = x.dataset.pick;
+      if (S.kind === 'hotel') calendar({ title: 'تواريخ الإقامة', range: true, start: f.checkin, end: f.checkout, stage: id === 'checkout' && f.checkin ? 'out' : 'in', min: minDay(), blocked: blocked(), done: (a, b) => { f.checkin = a; f.checkout = b; changed(); draw(); } });
+      else calendar({ title: 'تاريخ الخدمة', value: f.date, min: minDay(), blocked: blocked(), done: a => { f.date = a; changed(); draw(); } });
+      return; }
+    if (g('[data-back]')) { S.step--; S.tried = false; draw(); return; }
+    if (g('#nx')) next();
+  };
+  m.onchange = e => { const t = e.target, f = S.f;
+    if (t.name === 'plan') { f.plan = t.value; draw(); return; }
+    if (t.dataset.paid != null) { f.paid = t.checked; redrawSum(); return; }
+    if (t.dataset.age != null) { f.childAges[Number(t.dataset.age)] = t.value === '' ? null : Number(t.value); changed(); draw(); return; }
     const k = t.dataset.k; if (!k) return;
-    if (k !== 'wallet') { S.booking = null; f.__id = null; }           // any change of the booking = a new booking id (an unpaid old one just expires)
-    if (k === 'kind') { S.kind = t.value; S.id = (list()[0] || {}).id; f.room = 0; f.__id = null; draw(); requote(); return; }
-    if (k === 'id') { S.id = t.value; f.room = 0; f.__id = null; draw(); requote(); return; }
-    f[k] = t.value;
-    if (e.type === 'change' && ['checkin', 'checkout', 'date', 'children', 'room', 'rooms', 'adults', 'participants', 'passengers'].includes(k)) { if (k === 'checkin' || k === 'date' || k === 'children') draw(); requote(); }
+    if (k === 'id') { S.id = t.value; f.room = 0; f.checkin = f.checkout = f.date = ''; changed(); draw(); return; }
+    f[k] = t.value; if (['time', 'flightNo', 'address', 'requests', 'name', 'email', 'phone', 'wallet'].includes(k)) { if (k !== 'wallet') { S.booking = null; f.__id = null; f.paid = false; } return; } changed(); };
+  m.oninput = e => { const k = e.target.dataset && e.target.dataset.k; if (k && e.target.type !== 'select-one') { S.f[k] = e.target.value; if (k !== 'wallet') { S.booking = null; S.f.__id = null; } } };
+
+  const next = () => { const f = S.f; S.tried = true;
+    if (S.step === 1) {
+      const ok = S.kind === 'hotel' ? (room() && f.checkin && f.checkout && !f.childAges.some(a => a == null)) : (f.date && (S.kind !== 'transfer' || (f.time && f.address.trim())));
+      if (!ok) { draw(); return DS.toast('كمّل بيانات الخدمة', true); }
+      if (S.perr) return DS.toast(S.perr, true); if (!S.q.full) return DS.toast('السعر لسه ما ظهرش — استنى لحظة', true);
+      S.step = 2; S.tried = false; draw(); window.scrollTo(0, 0); return; }
+    if (S.step === 2) {
+      if (f.name.trim().length < 2 || !emailOk(f.email) || !/^\+?[0-9 ]{8,16}$/.test(f.phone)) { draw(); return DS.toast('راجع بيانات العميل', true); }
+      if (f.email.trim().toLowerCase() === String(me.email || '').toLowerCase()) return DS.toast('إيميل العميل لازم يكون غير إيميلك (الحجز على إيميلك مفيهوش عمولة)', true);
+      S.step = 3; S.tried = false; draw(); window.scrollTo(0, 0); return; }
+    run();
   };
 
   // ---- pay ------------------------------------------------------------------------------------------------------------------
   const sleep = ms => new Promise(r => setTimeout(r, ms));
   async function run() {
-    const f = S.f;
-    if (!f.name.trim() || f.name.trim().length < 2) return DS.toast('اكتب اسم العميل', true);
-    if (!emailOk(f.email)) return DS.toast('إيميل العميل غير صحيح', true);
-    if (!/^\+?[0-9 ]{8,16}$/.test(f.phone || '')) return DS.toast('رقم واتساب العميل غير صحيح', true);
-    if (String(f.email).trim().toLowerCase() === String(me.email || '').toLowerCase()) return DS.toast('إيميل العميل لازم يكون غير إيميلك (الحجز على إيميلك مفيهوش عمولة)', true);
-    if (!walletOk(String(f.wallet || '').replace(/\s/g, ''))) return DS.toast('اكتب رقم محفظتك الإلكترونية', true);
-    if (!S.price) return DS.toast(S.perr || 'السعر لسه ما ظهرش — كمّل البيانات', true);
-    f.wallet = String(f.wallet).replace(/\s/g, ''); try { localStorage.setItem('ds_seller_wallet', f.wallet); } catch {}
-    if (!confirm(`هتدفع ${money(S.price.due)} من محفظتك (${f.wallet}).\nاتأكد إنك استلمت المبلغ ده كاش من العميل.\n\nنكمّل؟`)) return;
-    const btn = $('#go', m); btn.disabled = true;
+    const f = S.f, q = S.q[f.plan]; f.wallet = String(f.wallet || '').replace(/\s/g, '');
+    if (!walletOk(f.wallet)) { S.tried = true; draw(); return DS.toast('اكتب رقم محفظتك الإلكترونية', true); }
+    if (!q) return DS.toast(S.perr || 'السعر لسه ما ظهرش — استنى لحظة', true);
+    if (!f.paid) return DS.toast('أكّد إنك استلمت المبلغ كاش من العميل', true);
+    try { localStorage.setItem('ds_seller_wallet', f.wallet); } catch {}
+    const btn = $('#nx', m); btn.disabled = true;
     try {
       let bk = S.booking;
-      if (!bk) {
-        const body = payload(true); body.total = Number(S.price.total);
-        bk = (await DS.api('/desk/book', { method: 'POST', body })).booking; S.booking = bk;
-      }
+      if (!bk) { const body = payload(f.plan, true); body.total = Number(q.total); bk = (await DS.api('/desk/book', { method: 'POST', body })).booking; S.booking = bk; }
       await walletFlow(bk, f.wallet);
-    } catch (e) { DS.toast(e.message, true); btn.disabled = false; }
+    } catch (e) { DS.toast(e.message, true); const b = $('#nx', m); if (b) b.disabled = false; }
   }
-
   async function walletFlow(bk, wallet) {
     const due = bk.amountDueNow != null ? bk.amountDueNow : bk.total;
     const dlg = DS.modal({ title: 'الدفع من المحفظة', body: '<div class="empty" id="ws">بنبعت طلب الدفع لمحفظتك…</div>', actions: [] });
@@ -208,27 +303,20 @@ DS.sellerDesk = (me) => ({ label: 'حجز جديد', icon: 'plus', render: async
     try {
       const st = await pay('/api/kashier/wallet/initiate', { orderId: bk.id, amount: due, currency: bk.currency || 'EGP', mobilePhone: wallet });
       if (st.status === 'failed') throw new Error(st.message || 'تعذّر بدء الدفع من المحفظة');
-      let status = st.status;
-      say('وافق على طلب الدفع على موبايلك (' + wallet + ')… بننتظر التأكيد');
-      for (let i = 0; i < 45 && status !== 'captured' && status !== 'completed'; i++) {
-        await sleep(4000);
-        status = (await pay('/api/kashier/wallet/reconcile', { orderId: bk.id })).status;
-        if (status === 'failed') throw new Error('الدفع ما تمش (اترفض أو انتهت مدته). جرّب تاني.');
-      }
+      let status = st.status; say('وافق على طلب الدفع على موبايلك (' + wallet + ')… بننتظر التأكيد');
+      for (let i = 0; i < 45 && status !== 'captured' && status !== 'completed'; i++) { await sleep(4000); status = (await pay('/api/kashier/wallet/reconcile', { orderId: bk.id })).status; if (status === 'failed') throw new Error('الدفع ما تمش (اترفض أو انتهت مدته). جرّب تاني.'); }
       if (status !== 'captured' && status !== 'completed') throw new Error('لسه ما وصلش تأكيد الدفع. لو اتسحب المبلغ من محفظتك هيظهر الحجز في "الحجوزات" لما يتأكد.');
       dlg.close(); success(bk);
-    } catch (e) { dlg.close(); const b = $('#go', m); if (b) b.disabled = false; throw e; }
+    } catch (e) { dlg.close(); throw e; }
   }
-
   function success(bk) {
     const f = S.f, b = { id: bk.id, name: f.name.trim(), email: f.email.trim(), phone: f.phone.trim() };
-    m.innerHTML = `<div class="card"><div class="ico green" style="width:46px;height:46px;margin-bottom:8px">${DS.ic('check')}</div><h2 class="pt" style="margin:0">الحجز اتأكد ✅</h2>
-      <p class="muted" style="margin-top:6px">رقم الحجز: <b dir="ltr">${esc(bk.id)}</b> · ${esc(b.name)} · تم دفع ${money(bk.amountDueNow != null ? bk.amountDueNow : bk.total)} من محفظتك.${Number(bk.remainingAmount) > 0 ? ` المتبقي ${money(bk.remainingAmount)} بيدفعه العميل لمقدّم الخدمة في مكان الخدمة.` : ''}</p>
+    m.innerHTML = `<div class="card"><div class="sd-ok">${DS.ic('check')}</div><h2 class="pt" style="margin:0">الحجز اتأكد ✅</h2>
+      <p class="muted" style="margin-top:6px;line-height:1.9">رقم الحجز: <b dir="ltr">${esc(bk.id)}</b> · ${esc(b.name)}<br>تم دفع ${money(bk.amountDueNow != null ? bk.amountDueNow : bk.total)} من محفظتك.${Number(bk.remainingAmount) > 0 ? ` المتبقي ${money(bk.remainingAmount)} بيدفعه العميل لمقدّم الخدمة في مكان الخدمة.` : ''}</p>
       ${shareHtml(me, b)}<div class="row" style="margin-top:16px"><button class="btn ghost" id="again">${DS.ic('plus')} حجز جديد</button></div></div>`;
     wireShare(m, me, b); $('#again', m).onclick = () => DS.reload();
   }
 
-  m.addEventListener('click', e => { if (e.target.closest('#go')) run(); });
   draw(); requote();
 } });
 

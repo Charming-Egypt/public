@@ -57,3 +57,6 @@ begin
   ), '[]'::jsonb);
 end $$;
 grant execute on function public.seller_bookings(uuid, integer) to authenticated;
+
+-- make PostgREST see the new functions right away (otherwise: "Could not find the function ... in the schema cache")
+notify pgrst, 'reload schema';
