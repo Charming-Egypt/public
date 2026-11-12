@@ -285,7 +285,6 @@ function baseOrderId(reference) { return isBalanceRef(reference) ? reference.rep
 const _esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const _nameOf = (v) => (v && typeof v === 'object') ? (v.en || v.ar || Object.values(v)[0] || '') : (v || '');
 function voucherUrl(orderId, env) { return `${(env.SITE_URL || 'https://app.discover-sharm.com').replace(/\/$/, '')}/voucher/?id=${encodeURIComponent(orderId)}`; }
-function verifyUrl(orderId, env) { return `${(env.SITE_URL || 'https://app.discover-sharm.com').replace(/\/$/, '')}/verify/?id=${encodeURIComponent(orderId)}`; }
 
 const mailConfigured = (env) => !!((env.RESEND_API_KEY && env.MAIL_FROM) || (env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASS && (env.MAIL_FROM || env.SMTP_USER)));
 // Resend first; if it is not set up or fails (quota used up, outage) → SMTP straight from this Worker. Returns true when one of them accepted the message.
@@ -327,42 +326,9 @@ async function sendBookingEmail(orderId, env) {
       ${due ? row('Pay to the provider on site · المتبقي يُدفع في مكان الخدمة', `${_esc(b.remainingAmount)} ${_esc(b.currency || 'EGP')}`) : ''}
     </table>
     <p><a href="${_esc(voucherUrl(orderId, env))}" style="display:inline-block;background:#c2410c;color:#fff;padding:12px 22px;border-radius:10px;text-decoration:none;font-weight:bold">Open your voucher · افتح الفاوتشر</a></p>
-    <p style="color:#888;font-size:12px">Show the voucher (printed or on your phone) at the start of the service.</p>
-    <div style="margin-top:14px;padding:12px 14px;border:1px solid #fed7aa;background:#fff7ed;border-radius:10px;font-size:13px;line-height:1.7">
-      <b>Paid online to Discover Sharm: ${_esc(b.amountDueNow != null ? b.amountDueNow : b.total)} ${_esc(b.currency || 'EGP')}.</b>
-      ${due ? `You only pay the remaining ${_esc(b.remainingAmount)} ${_esc(b.currency || 'EGP')} to the service provider at the service — never to anyone else.` : 'Nothing else is due.'}
-      If someone asked you for more, <a href="${_esc(verifyUrl(orderId, env))}">check this booking and report it</a>.<br>
-      <b>المدفوع أونلاين لديسكفر شرم: ${_esc(b.amountDueNow != null ? b.amountDueNow : b.total)} ${_esc(b.currency || 'EGP')}.</b>
-      ${due ? `المتبقي ${_esc(b.remainingAmount)} ${_esc(b.currency || 'EGP')} بتدفعه لمقدّم الخدمة في مكان الخدمة فقط — مش لأي شخص تاني.` : 'مفيش أي مبالغ تانية مطلوبة.'}
-      لو حد طلب منك أكتر، <a href="${_esc(verifyUrl(orderId, env))}">اتأكد من الحجز وبلّغ</a>.</div></div>`;
+    <p style="color:#888;font-size:12px">Show the voucher (printed or on your phone) at the start of the service.</p></div>`;
   return deliverMail(env, { to: b.email, subject: `Booking confirmed · تأكيد الحجز ${b.id}`, html });
 }
-
-// ---------------------------------------------------------------------
-// SELLER DESK: the customer proves the e-mail is his before the seller's wallet is charged.
-// A 6-digit code (HMAC of order + e-mail + 10-minute window; nothing is stored) is mailed to the customer; the seller types in what the customer
-// reads out. Only then is the checkout session marked contactVerified, and the payment endpoints refuse a desk booking without it.
-// ---------------------------------------------------------------------
-const OTP_WINDOW_MS = 10 * 60 * 1000;
-async function otpCode(orderId, email, env, bucket) {
-  const secret = env.OTP_SECRET || env.KASHIER_SECRET_KEY || env.KASHIER_API_KEY;
-  if (!secret) throw new Error('OTP secret not configured');
-  const hex = await hmacSha256Hex(`otp|${orderId}|${String(email).toLowerCase()}|${bucket}`, secret);
-  return String(parseInt(hex.slice(0, 8), 16) % 1000000).padStart(6, '0');
-}
-const otpBucket = () => Math.floor(Date.now() / OTP_WINDOW_MS);
-async function otpValid(orderId, email, code, env) {
-  const c = String(code || '').trim();
-  if (!/^\d{6}$/.test(c)) return false;
-  const now = otpBucket();
-  return (await otpCode(orderId, email, env, now)) === c || (await otpCode(orderId, email, env, now - 1)) === c;
-}
-// true when this order must not be charged yet: a seller's desk booking whose customer e-mail has not been confirmed
-async function deskNeedsContactProof(orderId, booking, pending, env) {
-  if (!pending || booking.contactVerified === true) return false;
-  try { return (await sbRpc(env, 'service_is_desk_booking', { p_id: orderId })) === true; } catch { return true; }
-}
-const CONTACT_PROOF_MSG = 'لازم العميل يأكّد إيميله بالكود اللي اتبعتله قبل الدفع · The customer must confirm his e-mail with the code we sent him before payment.';
 function notifyBookingConfirmed(orderId, env, ctx) {
   const job = sendBookingEmail(orderId, env).catch((e) => console.log('e-mail failed', e && e.message));
   if (ctx && ctx.waitUntil) ctx.waitUntil(job);
@@ -518,7 +484,6 @@ export default {
       if (!/^[A-Za-z0-9_-]{3,64}$/.test(String(orderId))) return json({ error: 'Invalid orderId' }, 400, request);
       const order = await getOrder(orderId, env);
       if (!order.booking || String(payableNow(order.booking)) !== String(amount) || (currency && order.booking.currency !== currency)) return json({ error: 'Order not found or amount mismatch' }, 400, request);
-      if (await deskNeedsContactProof(orderId, order.booking, order.pending, env)) return json({ error: CONTACT_PROOF_MSG, code: 'contact_proof_required' }, 403, request);
       const merchantId = env.KASHIER_MERCHANT_ID, apiKey = env.KASHIER_API_KEY;
       const cur = currency || env.KASHIER_CURRENCY || 'EGP';
       if (!merchantId || !apiKey) return json({ error: 'Kashier not configured' }, 500, request);
@@ -543,7 +508,6 @@ export default {
       if (String(payableNow(booking)) !== String(amount) || booking.currency !== currency) {
         return json({ error: 'Amount/currency does not match the booking' }, 400, request);
       }
-      if (await deskNeedsContactProof(orderId, booking, pending, env)) return json({ error: CONTACT_PROOF_MSG, code: 'contact_proof_required' }, 403, request);
       const merchantId = env.KASHIER_MERCHANT_ID, apiKey = env.KASHIER_API_KEY;
       if (!merchantId || !apiKey) return json({ error: 'Kashier not configured' }, 500, request);
 
@@ -677,37 +641,6 @@ export default {
       return json({ success: true }, 200, request);
     }
 
-    // ---- seller desk: e-mail code of the customer ---------------------------------------------------------------
-    if ((path === '/api/seller/otp/send' || path === '/api/seller/otp/verify') && method === 'POST') {
-      const send = path.endsWith('/send');
-      if (await isRateLimited(request, env, send ? 'seller-otp-send' : 'seller-otp-verify', send ? 6 : 12, 600)) return json({ error: 'Too many requests' }, 429, request);
-      let uid;
-      try { uid = await requireUid(request, env); } catch (e) { return json({ error: e.message }, e.status || 401, request); }
-      let body;
-      try { body = await request.json(); } catch { return json({ error: 'Invalid JSON' }, 400, request); }
-      const { orderId, code } = body || {};
-      if (!orderId) return json({ error: 'orderId required' }, 400, request);
-      const { booking, pending } = await getOrder(orderId, env);
-      if (!booking || booking.uid !== uid) return json({ error: 'Booking not found' }, 404, request);
-      if (!pending) return json({ error: 'Booking is not payable' }, 409, request);
-      if (!(await sbRpc(env, 'service_is_desk_booking', { p_id: orderId }))) return json({ error: 'Not a seller desk booking' }, 400, request);
-      if (!isValidEmail(booking.email || '')) return json({ error: 'Customer e-mail is invalid' }, 400, request);
-      if (send) {
-        if (!mailConfigured(env)) return json({ error: 'E-mail is not configured' }, 500, request);
-        const c = await otpCode(orderId, booking.email, env, otpBucket());
-        const ok = await deliverMail(env, { to: booking.email, subject: `Your Discover Sharm code · كود التأكيد ${c}`, html:
-          `<div style="font-family:Arial,sans-serif;max-width:520px;margin:auto;color:#111"><h2 style="color:#c2410c">Confirm your booking · أكّد حجزك</h2>
-           <p>A seller is booking <b>${_esc(_nameOf(booking.hotelName || booking.title || booking.vehicleType) || 'a service')}</b> for you with Discover Sharm. Total <b>${_esc(booking.total)} ${_esc(booking.currency || 'EGP')}</b>${booking.paymentPlan === 'deposit' ? `, of which only <b>${_esc(booking.amountDueNow)}</b> is paid online and <b>${_esc(booking.remainingAmount)}</b> you pay at the service` : ''}.</p>
-           <p style="font-size:30px;letter-spacing:6px;font-weight:bold;margin:14px 0">${c}</p>
-           <p>Give this code to the seller only if these details are right and you paid exactly this amount. It is valid for 10 minutes.</p>
-           <p dir="rtl">اعطِ الكود للسيلر فقط لو البيانات صح وإنت دفعتله المبلغ ده بالظبط. صالح 10 دقايق.</p></div>` });
-        return json({ sent: ok, to: booking.email.replace(/^(.).*(@.*)$/, '$1***$2') }, ok ? 200 : 502, request);
-      }
-      if (!(await otpValid(orderId, booking.email, code, env))) return json({ error: 'الكود غلط أو انتهى · Wrong or expired code' }, 400, request);
-      await sbRpc(env, 'service_mark_contact_verified', { p_id: orderId });
-      return json({ verified: true }, 200, request);
-    }
-
     if (path === '/api/kashier/wallet/initiate' && method === 'POST') {
       if (await isRateLimited(request, env, 'kashier-charge', LIMITS.charge.limit, LIMITS.charge.window)) return json({ error: 'Too many requests' }, 429, request);
       let uid;
@@ -721,7 +654,6 @@ export default {
       if (booking.status === 'completed') return json({ status: 'captured', message: 'Already paid' }, 200, request); // never charge twice
       if (!pending && booking.status !== 'pending_payment') return json({ error: 'Booking is not payable' }, 409, request);
       if (String(payableNow(booking)) !== String(amount) || booking.currency !== currency) return json({ error: 'Amount/currency does not match the booking' }, 400, request);
-      if (await deskNeedsContactProof(orderId, booking, pending, env)) return json({ error: CONTACT_PROOF_MSG, code: 'contact_proof_required' }, 403, request);
       const merchantId = env.KASHIER_MERCHANT_ID, apiKey = env.KASHIER_API_KEY;
       if (!merchantId || !apiKey) return json({ error: 'Kashier not configured' }, 500, request);
       const hash = await kashierPaymentHash(merchantId, orderId, amount, currency, apiKey);

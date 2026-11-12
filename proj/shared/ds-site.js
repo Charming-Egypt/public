@@ -29,7 +29,7 @@
 
   var ua = navigator.userAgent || '';
   if (/bot|crawl|spider|slurp|facebookexternalhit|bingpreview|lighthouse|headless/i.test(ua)) return;
-  if (/^\/(voucher|verify)\//.test(location.pathname)) return;
+  if (/^\/voucher\//.test(location.pathname)) return;
 
   function wanted() {
     if (choice === 'www' || choice === 'app') return choice;

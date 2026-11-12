@@ -180,7 +180,6 @@
         const rows = await run(sb.from('properties').select('id, kind, data').eq('status', 'published').in('kind', ['hotel', 'excursion', 'package', 'transfer']).limit(1000));
         return { items: rows.map(r => ({ id: r.id, kind: r.kind, name: nameOf(r.data?.hotelName || r.data?.title || r.data?.name || r.data?.vehicleType) || r.id, data: r.data || {} })) };
       }
-      if (b === 'status') return { status: await rpc('seller_desk_status') };
       if (b === 'quote' && method === 'POST') return { price: await rpc('seller_quote', { p: body }) };
       if (b === 'book' && method === 'POST') return await rpc('create_booking', { p: body });
     }
@@ -356,17 +355,6 @@
           }
           if (method === 'PUT') { await run(sb.from('site_content').update({ data: strip(body) }).eq('kind', sk).eq('id', id)); return { success: true }; }
           if (method === 'DELETE') { await run(sb.from('site_content').delete().eq('kind', sk).eq('id', id)); return { success: true }; }
-        }
-      }
-
-      // ===== sellers: risk signals, controls (verification / deposits / limits / flag) and customer reports =====
-      if (a === 'sellers') {
-        if (b === 'risk') return { sellers: await rpc('admin_seller_risk') };
-        if (b === 'reports' && !c) return { reports: await rpc('admin_list_seller_reports', { p_status: url.searchParams.get('status') || 'open' }) };
-        if (b === 'reports' && method === 'POST') { await rpc('admin_resolve_seller_report', { p_id: Number(c), p_upheld: !!body.upheld }); return { success: true }; }
-        if (b && c === 'controls' && method === 'PUT') {
-          await rpc('admin_set_seller_controls', { p_user: b, p_verified: body.verified ?? null, p_deposit_ok: body.depositOk ?? null, p_deposit_max: body.depositMax ?? null, p_daily_limit: body.dailyLimit ?? null, p_flagged: body.flagged ?? null });
-          return { success: true };
         }
       }
 

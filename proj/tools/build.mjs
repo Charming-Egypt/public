@@ -346,10 +346,6 @@ ${linkify(bottomNav)}
     out.write('voucher/index.html', read('src/voucher.html')
       .replace('{{SUPABASE_CONFIG}}', JSON.stringify({ url: sbc.url, anonKey: sbc.anonKey }))
       .replace('{{SUPABASE_JS}}', SUPABASE_JS));
-    // the customer's public "check this booking / report a problem" page (booking ids of seller bookings are long random secrets)
-    out.write('verify/index.html', read('src/verify.html')
-      .replace('{{SUPABASE_CONFIG}}', JSON.stringify({ url: sbc.url, anonKey: sbc.anonKey }))
-      .replace('{{SUPABASE_JS}}', SUPABASE_JS));
   }
 
   // ---- design system reference: desktop site only ------------------------------------------------------------------
