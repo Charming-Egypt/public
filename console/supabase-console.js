@@ -279,7 +279,7 @@
           const acc = Object.fromEntries(accts.map(x => [x.owner_id, x.method]));
           const counts = {}; props.forEach(p => { const m = counts[p.owner_id] = counts[p.owner_id] || {}; m[p.kind] = (m[p.kind] || 0) + 1; });
           return { roles: profs.map(p => ({ uid: p.id, name: p.display_name, email: p.email, phone: p.phone, role: roleOf(p), status: p.is_active ? 'active' : 'suspended',
-            commissionRate: pct(p.commission_rate), sellerCode: p.is_seller ? p.seller_code : undefined, hasPayout: !!acc[p.id], payoutMethod: acc[p.id], itemCounts: counts[p.id] || {} })) };
+            isOwner: p.role !== 'user' && p.role !== 'super_admin', commissionRate: pct(p.commission_rate), sellerCode: p.is_seller ? p.seller_code : undefined, hasPayout: !!acc[p.id], payoutMethod: acc[p.id], itemCounts: counts[p.id] || {} })) };
         }
         if (!b && method === 'POST') {
           let uid = body.uid;
@@ -311,9 +311,9 @@
 
       if (a === 'customers') {
         const off = Number(url.searchParams.get('offset') || 0), lim = Math.min(Number(url.searchParams.get('limit') || 50), 100);
-        const { data, error, count } = await sb.from('profiles').select('id, display_name, email, phone, country_code, role, owner_kinds, completed_bookings, total_spent', { count: 'exact' }).order('created_at', { ascending: false }).range(off, off + lim - 1);
+        const { data, error, count } = await sb.from('profiles').select('id, display_name, email, phone, country_code, role, owner_kinds, is_seller, completed_bookings, total_spent', { count: 'exact' }).order('created_at', { ascending: false }).range(off, off + lim - 1);
         if (error) throw explain(error);
-        return { total: count || 0, users: data.map(p => ({ uid: p.id, role: p.role === 'user' ? undefined : roleOf(p),
+        return { total: count || 0, users: data.map(p => ({ uid: p.id, role: p.role === 'user' && !p.is_seller ? undefined : roleOf(p),
           profile: { name: p.display_name, email: p.email, phone: p.phone, fullPhone: p.phone ? `${p.country_code || ''}${p.phone}` : '' }, stats: { completedBookings: p.completed_bookings, totalSpent: Number(p.total_spent) } })) };
       }
 
