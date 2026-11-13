@@ -7,7 +7,12 @@
  *      (/api/kashier/wallet/initiate → he approves on his phone → /api/kashier/wallet/reconcile until captured).
  *   5. The booking is confirmed straight away; the voucher goes to the customer by e-mail (Worker) or WhatsApp (link).
  *
- * The booking is made from the seller's own account, so create_booking records his commission by itself (no commission when the
+ * Protection of the customer (see supabase/migrations/20261112000200_seller_customer_protection.sql):
+ *   - before any charge the CUSTOMER confirms his e-mail with a 6-digit code the platform mails him (the seller types in what he reads out);
+ *   - the confirmation + voucher e-mail is sent by the platform itself, with the amount paid online and what is left for the service location;
+ *   - the account must be verified by the admin; deposits, the cap on the amount left on site and the daily limit are controlled per seller.
+ *
+  * The booking is made from the seller's own account, so create_booking records his commission by itself (no commission when the
  * customer e-mail is the seller's own). The customer has no account: the voucher opens through the public_voucher() RPC, and the
  * booking id — 22+ random characters generated here — is the secret that protects it.
  */
@@ -46,7 +51,8 @@ async function pay(path, body) {
 
 // ---- voucher sharing (shared by the new-booking screen and the bookings list) ------------------------------------------------
 const voucherUrl = (me, id) => ((me.sites || {}).app || (me.sites || {}).www || location.origin).replace(/\/$/, '') + '/voucher/?id=' + encodeURIComponent(id);
-const waText = (b, url) => `أهلاً ${b.name || ''}، تم تأكيد حجزك مع Discover Sharm ✅\nرقم الحجز: ${b.id}\nالفاوتشر: ${url}\n\nHello ${b.name || ''}, your Discover Sharm booking is confirmed. Your voucher: ${url}`;
+const verifyUrl = (me, id) => voucherUrl(me, id).replace('/voucher/', '/verify/');
+const waText = (b, url, vurl) => `أهلاً ${b.name || ''}، تم تأكيد حجزك مع Discover Sharm ✅\nرقم الحجز: ${b.id}\nالفاوتشر: ${url}\n\nتأكد من حجزك ومن المبلغ المدفوع والمتبقي من هنا: ${vurl}\nالمتبقي (لو فيه) بتدفعه لمقدّم الخدمة في مكان الخدمة فقط — مش لأي حد تاني.\n\nHello ${b.name || ''}, your Discover Sharm booking is confirmed.\nVoucher: ${url}\nCheck what was paid online and what is left to pay on site: ${vurl}`;
 function shareHtml(me, b) {
   const url = voucherUrl(me, b.id);
   return `<div class="row" style="margin-top:12px">
@@ -60,7 +66,7 @@ function wireShare(root, me, b) {
   const url = voucherUrl(me, b.id);
   root.addEventListener('click', async e => {
     const x = e.target.closest('[data-sv]'); if (!x) return;
-    if (x.dataset.sv === 'wa') window.open('https://wa.me/' + waNumber(b.phone) + '?text=' + encodeURIComponent(waText(b, url)), '_blank', 'noopener');
+    if (x.dataset.sv === 'wa') window.open('https://wa.me/' + waNumber(b.phone) + '?text=' + encodeURIComponent(waText(b, url, verifyUrl(me, b.id))), '_blank', 'noopener');
     else if (x.dataset.sv === 'copy') { try { await navigator.clipboard.writeText(url); DS.toast('اتنسخ'); } catch { prompt('انسخ الرابط:', url); } }
     else if (x.dataset.sv === 'mail') {
       x.disabled = true;
@@ -134,7 +140,8 @@ DS.sellerDesk = (me) => ({ label: 'حجز جديد', icon: 'plus', render: async
   const kinds = Object.keys(KINDS).filter(k => items.some(i => i.kind === k));
   const fresh = () => ({ adults: 2, children: 0, infants: 0, rooms: 1, participants: 2, passengers: 1, childAges: [], plan: 'full', direction: 'Airport to Hotel', time: '14:00', room: 0, requests: '', name: '', email: '', phone: '', checkin: '', checkout: '', date: '', flightNo: '', address: '', paid: false, wallet: S0.wallet });
   const S0 = { wallet: '' }; try { S0.wallet = localStorage.getItem('ds_seller_wallet') || ''; } catch {}
-  const S = { step: 1, kind: kinds[0], id: '', f: fresh(), q: {}, perr: '', quoting: false, booking: null, tried: false };
+  let st0 = {}; try { st0 = (await DS.api('/desk/status')).status || {}; } catch {}      // what the admin allows for this seller (verified, deposit, limits)
+  const S = { st: st0, step: 1, kind: kinds[0], id: '', f: fresh(), q: {}, perr: '', quoting: false, booking: null, tried: false };
   const list = () => items.filter(i => i.kind === S.kind);
   const cur = () => items.find(i => i.id === S.id);
   const D = () => (cur() || {}).data || {};
@@ -158,7 +165,7 @@ DS.sellerDesk = (me) => ({ label: 'حجز جديد', icon: 'plus', render: async
   const dateBtn = (id, label, val, icon) => `<button type="button" class="sd-date ${S.tried && !val ? 'err' : ''}" data-pick="${id}">${DS.ic(icon || 'cal')}<span><small>${label}</small><b>${val ? esc(fmtDay(val)) : 'اختر التاريخ'}</b></span></button>`;
   const stepper = (k, label, sub, min, max) => `<div class="sd-row"><div><b>${label}</b>${sub ? `<small>${sub}</small>` : ''}</div><div class="sd-st"><button type="button" data-st="${k}" data-d="-1" ${S.f[k] <= min ? 'disabled' : ''}>−</button><span>${S.f[k]}</span><button type="button" data-st="${k}" data-d="1" ${S.f[k] >= max ? 'disabled' : ''}>+</button></div></div>`;
   const dayOf = () => S.kind === 'hotel' ? S.f.checkin : S.f.date;
-  const depositOk = () => depositAllowed(dayOf());
+  const depositOk = () => depositAllowed(dayOf()) && !!(S.st || {}).depositOk;
   const nights = () => S.f.checkin && S.f.checkout ? nightsBetween(S.f.checkin, S.f.checkout) : 0;
 
   const guestsLine = () => { const f = S.f, p = (n, one, many, ar) => `${n} ${T(n === 1 ? one : many, ar)}`;
@@ -200,14 +207,17 @@ DS.sellerDesk = (me) => ({ label: 'حجز جديد', icon: 'plus', render: async
       ${fld('طلبات خاصة (اختياري)', `<textarea data-k="requests" rows="3">${esc(S.f.requests)}</textarea>`)}</div>`;
   const step3 = () => { const f = S.f, q = S.q, dep = depositOk(), plan = (id, title, sub, qq, ok) => `<label class="sd-plan ${f.plan === id ? 'on' : ''} ${ok ? '' : 'off'}"><input type="radio" name="plan" value="${id}" ${ok ? '' : 'disabled'} ${f.plan === id ? 'checked' : ''}><span><b>${title}</b><small>${sub}</small></span><span class="am" dir="ltr">${qq ? money(qq.due) : '—'}</span></label>`;
     return `<div class="card"><span class="ct">اختار طريقة الدفع</span>${plan('full', 'دفع كامل', 'العميل بيدفع كل المبلغ دلوقتي', q.full, true)}
-      ${plan('deposit', 'عربون (50%)', dep ? (q.deposit && Number(q.deposit.remaining) > 0 ? `والمتبقي ${money(q.deposit.remaining)} في مكان الخدمة` : 'والباقي في مكان الخدمة') : 'مش متاح لحجز بكرة أو أقرب — لازم دفع كامل', q.deposit, dep)}</div>
+      ${plan('deposit', 'عربون (50%)', dep ? (q.deposit && Number(q.deposit.remaining) > 0 ? `والمتبقي ${money(q.deposit.remaining)} في مكان الخدمة` : 'والباقي في مكان الخدمة') : !(S.st || {}).depositOk ? 'العربون مش مفعّل لحسابك — الدفع كامل بس.' : 'مش متاح لحجز بكرة أو أقرب — لازم دفع كامل', q.deposit, dep)}</div>
       <div class="card"><span class="ct">الدفع من محفظتك</span>${fld('رقم محفظتك الإلكترونية (اللي هتدفع منها)', inp('wallet', 'tel', 'dir="ltr" placeholder="01XXXXXXXXX"'), 'هيجيلك طلب دفع على الموبايل — وافق عليه.')}
       ${S.tried && !walletOk(String(f.wallet || '').replace(/\s/g, '')) ? '<div class="sd-err">اكتب رقم محفظتك</div>' : ''}
-      <label class="sd-chk" style="margin-top:12px"><input type="checkbox" data-paid ${f.paid ? 'checked' : ''}><span>استلمت <b dir="ltr">${S.q[f.plan] ? money(S.q[f.plan].due) : ''}</b> كاش من العميل، وهتتسحب نفس القيمة من محفظتي دلوقتي.</span></label></div>`; };
+      <label class="sd-chk" style="margin-top:12px"><input type="checkbox" data-paid ${f.paid ? 'checked' : ''}><span>استلمت <b dir="ltr">${S.q[f.plan] ? money(S.q[f.plan].due) : ''}</b> كاش من العميل، وهتتسحب نفس القيمة من محفظتي دلوقتي.</span></label>
+      <p class="muted" style="margin-top:8px;line-height:1.8">قبل الدفع العميل بيأكّد إيميله بكود بيوصله من المنصة. خد من العميل المبلغ ده بس${S.q[f.plan] && Number(S.q[f.plan].remaining) > 0 ? ` — المتبقي ${money(S.q[f.plan].remaining)} بيدفعه لمقدّم الخدمة في المكان، ولو خدت منه أكتر هتتعرّض للإيقاف` : ''}.</p></div>`; };
 
   const draw = () => {
     fix(); const t = ['الخدمة والتفاصيل', 'بيانات العميل', 'الدفع والتأكيد'];
-    m.innerHTML = `<h2 class="pt">حجز جديد لعميل</h2><div class="sd-steps">${[1, 2, 3].map(n => `<i class="${n <= S.step ? 'on' : ''}"></i>`).join('')}<b>${S.step}/3 · ${t[S.step - 1]}</b></div>
+    const st = S.st || {}, warn = st.flagged ? 'الحجز من حسابك موقوف مؤقتًا — تواصل مع الإدارة.' : (st.verified === false ? 'حسابك لسه ما اتوثّقش من الإدارة — مش هتقدر تحجز لعملاء لحد ما يتوثّق.' : '');
+    const left = st.dailyLimit != null ? Math.max(0, Number(st.dailyLimit) - Number(st.usedToday || 0)) : null;
+    m.innerHTML = (warn ? `<div class="card" style="border-color:#b45309"><b>⚠️ ${warn}</b></div>` : '') + `<h2 class="pt">حجز جديد لعميل</h2>${left != null ? `<p class="muted" style="margin:-6px 0 10px">المتاح لك النهارده: ${money(left)}</p>` : ''}<div class="sd-steps">${[1, 2, 3].map(n => `<i class="${n <= S.step ? 'on' : ''}"></i>`).join('')}<b>${S.step}/3 · ${t[S.step - 1]}</b></div>
       ${S.step === 1 ? step1() : S.step === 2 ? step2() : step3()}${sumHtml(S.step === 3)}${barHtml(S.step === 3 ? 'ادفع من المحفظة وأكّد الحجز' : 'متابعة', 'nx', S.step === 3 && !S.f.paid)}`;
   };
   const redrawSum = () => { const o = $('.sd-sum', m), b = $('.sd-bar', m); if (!o || !b) return draw(); o.outerHTML = sumHtml(S.step === 3);
@@ -293,9 +303,31 @@ DS.sellerDesk = (me) => ({ label: 'حجز جديد', icon: 'plus', render: async
     try {
       let bk = S.booking;
       if (!bk) { const body = payload(f.plan, true); body.total = Number(q.total); bk = (await DS.api('/desk/book', { method: 'POST', body })).booking; S.booking = bk; }
+      if (S.verifiedId !== bk.id) { await contactFlow(bk); S.verifiedId = bk.id; }
       await walletFlow(bk, f.wallet);
     } catch (e) { DS.toast(e.message, true); const b = $('#nx', m); if (b) b.disabled = false; }
   }
+  // the customer confirms his own e-mail: the platform mails him a code, the seller types in what the customer reads out
+  function contactFlow(bk) {
+    return new Promise((resolve, reject) => {
+      const masked = String(bk.email || S.f.email || '').replace(/^(.).*(@.*)$/, '$1***$2');
+      let done = false;
+      const dlg = DS.modal({ title: 'تأكيد إيميل العميل', body: `<p class="muted" style="line-height:1.9">بعتنا كود من 6 أرقام على إيميل العميل <b dir="ltr">${esc(masked)}</b> — من المنصة مش منك. اطلب من العميل يفتح إيميله ويقرأ لك الكود.<br>الكود بيوصله مع تفاصيل الحجز والمبلغ، فلو المبلغ مش مظبوط يرفض.</p>
+        <div class="fld"><label>الكود</label><input id="otp" inputmode="numeric" maxlength="6" dir="ltr" style="letter-spacing:6px;font-size:20px" autocomplete="one-time-code"></div>
+        <div class="row"><button class="btn" id="otpgo" type="button">تأكيد</button><button class="btn ghost" id="otpre" type="button">ابعت الكود تاني</button></div><div class="muted" id="otpmsg" style="margin-top:8px"></div>`, actions: [] });
+      const say = t => { const e = $('#otpmsg', dlg.el); if (e) e.textContent = t; };
+      const send = async () => { try { say('بنبعت الكود…'); await pay('/api/seller/otp/send', { orderId: bk.id }); say('اتبعت — ممكن يتأخر دقيقة. بص في الـ Spam لو ما وصلش.'); } catch (e) { say(e.message); } };
+      $('#otpre', dlg.el).onclick = send;
+      $('#otpgo', dlg.el).onclick = async () => {
+        const code = ($('#otp', dlg.el).value || '').trim(); if (!/^\d{6}$/.test(code)) return say('اكتب الكود (6 أرقام)');
+        try { await pay('/api/seller/otp/verify', { orderId: bk.id, code }); done = true; dlg.close(); resolve(); } catch (e) { say(e.message); }
+      };
+      const ov = dlg.el.closest('.ov'), obs = new MutationObserver(() => { if (!document.body.contains(ov)) { obs.disconnect(); if (!done) reject(new Error('لازم العميل يأكّد إيميله قبل الدفع')); } });
+      obs.observe(document.body, { childList: true });
+      send();
+    });
+  }
+
   async function walletFlow(bk, wallet) {
     const due = bk.amountDueNow != null ? bk.amountDueNow : bk.total;
     const dlg = DS.modal({ title: 'الدفع من المحفظة', body: '<div class="empty" id="ws">بنبعت طلب الدفع لمحفظتك…</div>', actions: [] });
@@ -312,6 +344,7 @@ DS.sellerDesk = (me) => ({ label: 'حجز جديد', icon: 'plus', render: async
   function success(bk) {
     const f = S.f, b = { id: bk.id, name: f.name.trim(), email: f.email.trim(), phone: f.phone.trim() };
     m.innerHTML = `<div class="card"><div class="sd-ok">${DS.ic('check')}</div><h2 class="pt" style="margin:0">الحجز اتأكد ✅</h2>
+      <p class="muted" style="margin-top:6px">المنصة بعتت للعميل تأكيد الحجز والفاوتشر على إيميله مع المبلغ المدفوع${Number(bk.remainingAmount) > 0 ? ' والمتبقي' : ''}.</p>
       <p class="muted" style="margin-top:6px;line-height:1.9">رقم الحجز: <b dir="ltr">${esc(bk.id)}</b> · ${esc(b.name)}<br>تم دفع ${money(bk.amountDueNow != null ? bk.amountDueNow : bk.total)} من محفظتك.${Number(bk.remainingAmount) > 0 ? ` المتبقي ${money(bk.remainingAmount)} بيدفعه العميل لمقدّم الخدمة في مكان الخدمة.` : ''}</p>
       ${shareHtml(me, b)}<div class="row" style="margin-top:16px"><button class="btn ghost" id="again">${DS.ic('plus')} حجز جديد</button></div></div>`;
     wireShare(m, me, b); $('#again', m).onclick = () => DS.reload();

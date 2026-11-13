@@ -60,6 +60,37 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', roleLabel: 'س
       } catch (er) { toast(er.message, true); }
     };
   } },
+  // ================= sellers: verification, deposit / limits, risk signals, customer reports =================
+  { label: 'السيلرز', icon: 'shield', render: async m => {
+    const [risk, reps] = await Promise.all([api('/sellers/risk'), api('/sellers/reports?status=open')]);
+    const SIG = { repeat_email: 'نفس الإيميل 3+ مرات', repeat_phone: 'نفس الرقم 3+ مرات', many_per_day: '10+ حجوزات في يوم', many_deposits: '5+ حجوزات بعربون', open_report: 'بلاغ مفتوح', flagged: 'موقوف' };
+    m.innerHTML = `<h2 class="pt">السيلرز — حماية العملاء</h2><p class="muted" style="margin:-6px 0 14px;line-height:1.9">السيلر الجديد مش بيقدر يحجز لعملاء غير بعد التوثيق. العربون متاح بس لمن تفعّله له، وبحد أقصى للمتبقي على العميل. بلاغان على حجزين مختلفين بيوقفوا السيلر تلقائيًا ويتجمّد عمولته على الحجز المُبلَّغ عنه.</p>` +
+      `<div class="card"><span class="ct">بلاغات العملاء المفتوحة (${reps.reports.length})</span>` + table([
+        { h: 'الحجز', f: r => `<b dir="ltr">${esc(r.bookingId)}</b><div class="muted">${dt(r.createdAt)}</div>` }, { h: 'السيلر', f: r => esc(r.seller) },
+        { h: 'العميل', f: r => `<span dir="ltr">${esc(r.contact)}</span>` }, { h: 'التفاصيل', f: r => esc(r.reason) },
+        { h: 'المبلغ', f: r => `إجمالي ${money(r.total)} · مدفوع أونلاين ${money(r.paidOnline)}<div class="muted">عمولة مجمّدة: ${money(r.held)}</div>` },
+        { h: '', f: r => `<button class="btn ghost sm" data-rp="${r.id}" data-up="1">البلاغ صح (إيقاف السيلر)</button> <button class="btn ghost sm" data-rp="${r.id}" data-up="0">مش صح (رجّع العمولة)</button>` }],
+        reps.reports, { empty: 'مفيش بلاغات مفتوحة' }) + `</div>` +
+      `<h2 class="pt" style="margin-top:22px">كل السيلرز (آخر 30 يوم)</h2>` + table([
+        { h: 'السيلر', f: r => `<b>${esc(r.seller)}</b><div class="muted">${r.verified ? '<span class="badge b-green">موثّق</span>' : '<span class="badge b-amber">غير موثّق</span>'} ${r.flagged ? '<span class="badge b-red">موقوف</span>' : ''}</div>` },
+        { h: 'الحجوزات', f: r => `${r.bookings30d} · ${money(r.amount30d)}<div class="muted">عربون: ${r.deposits30d} · أقصى يوم: ${r.maxPerDay}</div>` },
+        { h: 'تكرار', f: r => `نفس الإيميل: ${r.sameEmailMax} · نفس الرقم: ${r.samePhoneMax}` },
+        { h: 'إشارات', f: r => (r.signals || []).map(x => `<span class="badge b-amber">${SIG[x] || x}</span>`).join(' ') || '<span class="muted">—</span>' },
+        { h: 'الصلاحيات', f: r => `عربون: ${r.depositOk ? 'مسموح (متبقي ≤ ' + money(r.depositMaxRemaining) + ')' : 'لأ'}<div class="muted">حد يومي: ${money(r.dailyLimit)}</div>` },
+        { h: '', f: r => `<button class="btn ghost sm" data-sa="ver" data-s="${r.sellerId}">${r.verified ? 'إلغاء التوثيق' : 'توثيق'}</button> <button class="btn ghost sm" data-sa="flag" data-s="${r.sellerId}">${r.flagged ? 'فك الإيقاف' : 'إيقاف'}</button> <button class="btn ghost sm" data-sa="lim" data-s="${r.sellerId}">العربون والحدود</button>` }],
+        risk.sellers, { empty: 'مفيش سيلرز لسه' });
+    m.onclick = async e => {
+      try {
+        const rp = e.target.closest('[data-rp]');
+        if (rp) { if (!confirm(rp.dataset.up === '1' ? 'تأكيد إن البلاغ صح؟ هيتوقف السيلر وعمولة الحجز هتفضل ملغية.' : 'رفض البلاغ؟ عمولة السيلر هترجع.')) return; await api('/sellers/reports/' + rp.dataset.rp, { method: 'POST', body: { upheld: rp.dataset.up === '1' } }); DS.reload(); return; }
+        const b = e.target.closest('[data-sa]'); if (!b) return; const r = risk.sellers.find(x => x.sellerId === b.dataset.s), a = b.dataset.sa;
+        if (a === 'ver') { await api('/sellers/' + r.sellerId + '/controls', { method: 'PUT', body: { verified: !r.verified } }); DS.reload(); }
+        if (a === 'flag') { await api('/sellers/' + r.sellerId + '/controls', { method: 'PUT', body: { flagged: !r.flagged } }); DS.reload(); }
+        if (a === 'lim') { const S = [{ k: 'depositOk', l: 'السماح بالحجز بعربون', t: 'select', opts: [['false', 'لأ — دفع كامل بس'], ['true', 'مسموح']] }, { k: 'depositMax', l: 'أقصى متبقي على العميل في الموقع (جنيه)', t: 'num' }, { k: 'dailyLimit', l: 'الحد اليومي لقيمة الحجوزات (جنيه)', t: 'num' }], f = form(S, { depositOk: String(!!r.depositOk), depositMax: r.depositMaxRemaining, dailyLimit: r.dailyLimit });
+          modal({ title: 'صلاحيات ' + r.seller, body: f, actions: [{ t: 'حفظ', fn: async () => { const v = collect(f, S); await api('/sellers/' + r.sellerId + '/controls', { method: 'PUT', body: { depositOk: String(v.depositOk) === 'true', depositMax: Number(v.depositMax), dailyLimit: Number(v.dailyLimit) } }); DS.reload(); } }] }); }
+      } catch (er) { toast(er.message, true); }
+    };
+  } },
   // ================= customers =================
   { label: 'العملاء', icon: 'users', render: async m => {
     let off = 0;

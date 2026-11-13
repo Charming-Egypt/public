@@ -27,6 +27,8 @@ const rpc = {
     if (['SUCCESS','PAID','CAPTURED'].includes(s)) { b.balanceStatus = 'paid'; return 'paid'; }
     if (['FAILED','FAILURE','DECLINED'].includes(s)) b.lastBalancePaymentStatus = 'failed';
     return 'due'; },
+  service_is_desk_booking: ({ p_id }) => !!bookings[p_id]?.desk,
+  service_mark_contact_verified: ({ p_id }) => { if (bookings[p_id]?.desk && bookings[p_id].status === 'pending_payment') bookings[p_id].contactVerified = true; return null; },
   service_mark_refunded: ({ p_id }) => { if (['completed','cancelled'].includes(bookings[p_id]?.status)) bookings[p_id].status = 'refunded'; return null; },
 };
 let kashier = { next: { response: { result: 'SUCCESS', status: 'SUCCESS', orderId: 'K1', transactionId: 'T1', paymentMethod: { card: { number: '411111******1111', cardBrand: 'Visa', cardToken: 'tok_x' } } } }, last: null };
@@ -191,6 +193,33 @@ ok('autopay: webhook token ignored while AUTO_BALANCE is off', !globalThis.__aut
 mk('B-AP7', { paymentPlan: 'deposit', status: 'completed', amountDueNow: 525, remainingAmount: 525, balanceStatus: 'due' });
 await wh({ merchantOrderId: 'B-AP7-BAL1760000000000', status: 'SUCCESS', amount: 525, kashierOrderId: 'K12' });
 ok('balance webhook with a timestamped reference marks the booking paid', bookings['B-AP7'].balanceStatus === 'paid');
+
+
+// 9b. seller desk: the customer's e-mail code must come before ANY charge of a desk booking
+mk('D-1', { desk: true, email: 'cust@x.y' });
+r = await call('/api/kashier/wallet/initiate', { orderId: 'D-1', amount: 1050, currency: 'EGP', mobilePhone: '01012345678' }); d = await r.json();
+ok('desk: wallet charge refused before the customer confirmed his e-mail', r.status === 403 && d.code === 'contact_proof_required' && !kashier.last?.url.includes('/D-1'), d);
+r = await call('/api/kashier/charge', { orderId: 'D-1', amount: 1050, currency: 'EGP', card }); d = await r.json();
+ok('desk: card charge refused too', r.status === 403 && d.code === 'contact_proof_required', d);
+r = await call('/api/seller/otp/send', { orderId: 'D-1' }, 'tok-u2');
+ok('desk: another account can not request the code (404)', r.status === 404);
+mk('N-1');
+r = await call('/api/seller/otp/send', { orderId: 'N-1' });
+ok('otp: refused for a normal (non-desk) booking', r.status === 400);
+const n1 = notified.length;
+r = await call('/api/seller/otp/send', { orderId: 'D-1' }); d = await r.json();
+const sent = notified[notified.length - 1], code = sent?.html.match(/letter-spacing:6px[^>]*>(\d{6})</)?.[1];
+ok('otp: code is e-mailed to the CUSTOMER (never returned to the seller)', r.status === 200 && notified.length === n1 + 1 && sent.to[0] === 'cust@x.y' && !!code && !JSON.stringify(d).includes(code), d);
+r = await call('/api/seller/otp/verify', { orderId: 'D-1', code: code === '000000' ? '111111' : '000000' });
+ok('otp: wrong code refused', r.status === 400 && !bookings['D-1'].contactVerified);
+r = await call('/api/seller/otp/verify', { orderId: 'D-1', code });
+ok('otp: right code marks the booking contactVerified', r.status === 200 && bookings['D-1'].contactVerified === true);
+mk('D-2', { desk: true, email: 'cust@x.y' });
+r = await call('/api/seller/otp/verify', { orderId: 'D-2', code });
+ok('otp: a code is bound to its booking (not reusable on another one)', r.status === 400 && !bookings['D-2'].contactVerified);
+kashier.next = { response: { result: 'SUCCESS', status: 'PENDING', systemOrderId: 'KW1' }, };
+r = await call('/api/kashier/wallet/initiate', { orderId: 'D-1', amount: 1050, currency: 'EGP', mobilePhone: '01012345678' }); d = await r.json();
+ok('desk: wallet charge starts after the e-mail was confirmed', r.status === 200 && d.status === 'pending', d);
 
 // 10. the service-role key is only ever used server-side, and never leaks
 ok('no response ever contains the service key', true);
