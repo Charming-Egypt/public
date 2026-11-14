@@ -168,6 +168,7 @@ function buildPublic(site) {
   const extra = fs.readFileSync(path.join(ROOT, 'shared', siteCss), 'utf8');
   out.write('site.css', extra); V['site.css'] = sha(extra);
   out.copy('shared/data', 'data');
+  out.copy('shared/contracts', 'contracts');   // partner / seller agreement PDFs (tools/make-contracts.mjs)
   out.copy('shared/img', 'img');   // artwork (transfers banner)
   out.copy('shared/favicon.ico', 'favicon.ico');
 

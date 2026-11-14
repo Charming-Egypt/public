@@ -859,5 +859,20 @@
   "afRejectedText": "You can apply again after a few days.",
   "afSubmitting": "Submitting…",
   "afSubmitted": "Application sent — we will notify you once it is reviewed.",
-  "footerAffiliate": "Become a Seller"
+  "footerAffiliate": "Become a Seller",
+  "ctDownloadText": "Download the agreement, read it, print and sign it, then upload a clear scan or photo of the signed copy.",
+  "ctDownloadBtn": "Download agreement (PDF)",
+  "ptSecContract": "Partner agreement",
+  "ptSecContractH": "Required — signed copy",
+  "afSecId": "Identity & agreement",
+  "afSecIdH": "Required — ID or passport and the signed agreement",
+  "afIdNote": "Upload a clear photo of your national ID (both sides) or the photo page of your passport. Your documents are used only to verify your identity.",
+  "docSignedContract": "Signed agreement (PDF or photo)",
+  "docIdFront": "National ID (front) or passport photo page",
+  "docIdBack": "National ID (back) — optional",
+  "docBadType": "Please upload a photo or a PDF",
+  "docPdfTooBig": "Please keep PDF files under 1.5 MB",
+  "docImgTooBig": "This photo is too large",
+  "docsRequiredPartner": "Please upload the owner / manager ID and the signed agreement",
+  "docsRequiredAff": "Please upload your ID / passport photo and the signed agreement"
 }

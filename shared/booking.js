@@ -99,49 +99,82 @@ async function submitContactForm(e) {
   }
 }
 
-const partnerDocSlots = [
-  { key: 'commercialRegistration', get label() { return t('docCommercialRegistration'); } },
-  { key: 'taxCard', get label() { return t('docTaxCard'); } },
-  { key: 'ownerId', get label() { return t('docOwnerId'); } },
-  { key: 'license', get label() { return t('docLicense'); } }
-];
-const partnerDocs = {};
+// ---- document uploads shared by the partner and the seller (affiliate) applications ----
+// Each group has zones (a container id + its slots); files are kept as data-URLs; images are shrunk before upload so the request stays small.
+const DS_DOCS = {
+  partner: { store: {}, req: ['ownerId', 'signedContract'], zones: [
+    ['partnerDocSlots', [
+      { key: 'commercialRegistration', get label() { return t('docCommercialRegistration'); } },
+      { key: 'taxCard', get label() { return t('docTaxCard'); } },
+      { key: 'ownerId', get label() { return t('docOwnerId'); } },
+      { key: 'license', get label() { return t('docLicense'); } }]],
+    ['partnerContractSlot', [{ key: 'signedContract', get label() { return t('docSignedContract', 'Signed agreement (PDF or photo)'); } }]]] },
+  aff: { store: {}, req: ['idFront', 'signedContract'], zones: [
+    ['affDocSlots', [
+      { key: 'idFront', get label() { return t('docIdFront', 'National ID (front) or passport photo page'); } },
+      { key: 'idBack', get label() { return t('docIdBack', 'National ID (back) — optional'); } }]],
+    ['affContractSlot', [{ key: 'signedContract', get label() { return t('docSignedContract', 'Signed agreement (PDF or photo)'); } }]]] }
+};
+const partnerDocs = DS_DOCS.partner.store;   // kept for older callers
 
-function renderPartnerDocSlots() {
-  const el = document.getElementById('partnerDocSlots');
-  if (!el) return;
-  el.innerHTML = partnerDocSlots.map(slot => {
-    const doc = partnerDocs[slot.key];
-    return `
+function dsContractUrl(kind) { return '/contracts/' + kind + '-' + (I18N.get() === 'ar' ? 'ar' : 'en') + '.pdf'; }
+function dsRenderDocs(g) {
+  const grp = DS_DOCS[g]; if (!grp) return;
+  const ct = document.getElementById(g === 'aff' ? 'ct_affiliate' : 'ct_partner'); if (ct) ct.href = dsContractUrl(g === 'aff' ? 'affiliate' : 'partner');
+  grp.zones.forEach(([id, slots]) => {
+    const el = document.getElementById(id); if (!el) return;
+    el.innerHTML = slots.map(slot => {
+      const doc = grp.store[slot.key], req = grp.req.includes(slot.key);
+      return `
       <div class="partner-doc-slot">
-        <input type="file" id="partnerDoc_${slot.key}" accept="image/*,.pdf" class="hidden" onchange="handlePartnerDocSelect('${slot.key}', this.files[0])">
-        <label class="partner-doc-label">${slot.label}</label>
+        <input type="file" id="dsDoc_${g}_${slot.key}" accept="image/*,.pdf,application/pdf" class="hidden" onchange="dsDocSelect('${g}','${slot.key}', this.files[0]); this.value=''">
+        <label class="partner-doc-label">${slot.label}${req ? ' <span style="color:#dc2626">*</span>' : ''}</label>
         ${doc
-          ? `<div class="partner-doc-filled" onclick="document.getElementById('partnerDoc_${slot.key}').click()">
+          ? `<div class="partner-doc-filled" onclick="document.getElementById('dsDoc_${g}_${slot.key}').click()">
                <i class="fa-solid ${doc.isImage ? 'fa-image' : 'fa-file-pdf'}"></i>
                <span>${esc(doc.name)}</span>
-               <button type="button" onclick="event.stopPropagation(); removePartnerDoc('${slot.key}')"><i class="fa-solid fa-xmark"></i></button>
+               <button type="button" onclick="event.stopPropagation(); dsDocRemove('${g}','${slot.key}')"><i class="fa-solid fa-xmark"></i></button>
              </div>`
-          : `<button type="button" class="partner-doc-empty" onclick="document.getElementById('partnerDoc_${slot.key}').click()"><i class="fa-solid fa-cloud-arrow-up"></i> ${t('uploadLabel')}</button>`}
+          : `<button type="button" class="partner-doc-empty" onclick="document.getElementById('dsDoc_${g}_${slot.key}').click()"><i class="fa-solid fa-cloud-arrow-up"></i> ${t('uploadLabel')}</button>`}
       </div>`;
-  }).join('');
+    }).join('');
+  });
 }
-
-function handlePartnerDocSelect(key, file) {
+function dsShrinkImage(file) {
+  return new Promise((resolve, reject) => {
+    const fr = new FileReader();
+    fr.onerror = () => reject(new Error('read'));
+    fr.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('image'));
+      img.onload = () => {
+        const max = 1600, k = Math.min(1, max / Math.max(img.width, img.height)), c = document.createElement('canvas');
+        c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        resolve(c.toDataURL('image/jpeg', 0.82));
+      };
+      img.src = fr.result;
+    };
+    fr.readAsDataURL(file);
+  });
+}
+async function dsDocSelect(g, key, file) {
   if (!file) return;
-  if (file.size > 4 * 1024 * 1024) { toast('Please keep each file under 4MB', 'error'); return; }
-  const reader = new FileReader();
-  reader.onload = () => {
-    partnerDocs[key] = { name: file.name, data: reader.result, isImage: file.type.startsWith('image/') };
-    renderPartnerDocSlots();
-  };
-  reader.readAsDataURL(file);
+  const isImage = file.type.startsWith('image/'), isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
+  if (!isImage && !isPdf) { toast(t('docBadType', 'Please upload a photo or a PDF'), 'error'); return; }
+  if (isPdf && file.size > 1.5 * 1024 * 1024) { toast(t('docPdfTooBig', 'Please keep PDF files under 1.5 MB'), 'error'); return; }
+  if (isImage && file.size > 15 * 1024 * 1024) { toast(t('docImgTooBig', 'This photo is too large'), 'error'); return; }
+  try {
+    const data = isImage ? await dsShrinkImage(file) : await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(file); });
+    DS_DOCS[g].store[key] = { name: file.name, data, isImage };
+    dsRenderDocs(g);
+  } catch (e) { toast(t('docBadType', 'Please upload a photo or a PDF'), 'error'); }
 }
+function dsDocRemove(g, key) { delete DS_DOCS[g].store[key]; dsRenderDocs(g); }
+function dsDocsPayload(g) { return Object.entries(DS_DOCS[g].store).map(([key, d]) => ({ name: `${key}_${d.name}`, data: d.data })); }
+function dsDocsMissing(g) { return DS_DOCS[g].req.filter(k => !DS_DOCS[g].store[k]); }
 
-function removePartnerDoc(key) {
-  delete partnerDocs[key];
-  renderPartnerDocSlots();
-}
+function renderPartnerDocSlots() { dsRenderDocs('partner'); }
 
 async function submitPartnerForm(e) {
   e.preventDefault();
@@ -152,7 +185,8 @@ async function submitPartnerForm(e) {
   const phone = document.getElementById('partnerPhone').value;
   const email = document.getElementById('partnerEmail').value;
   const message = document.getElementById('partnerMessage').value;
-  const documents = Object.entries(partnerDocs).map(([key, d]) => ({ name: `${key}_${d.name}`, data: d.data }));
+  if (dsDocsMissing('partner').length) { toast(t('docsRequiredPartner', 'Please upload the owner / manager ID and the signed agreement'), 'error'); return; }
+  const documents = dsDocsPayload('partner');
 
   if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
   try {
@@ -162,7 +196,7 @@ async function submitPartnerForm(e) {
     }, true);
     toast('Application submitted — our partnerships team will be in touch!', 'success');
     e.target.reset();
-    Object.keys(partnerDocs).forEach(k => delete partnerDocs[k]);
+    Object.keys(DS_DOCS.partner.store).forEach(k => delete DS_DOCS.partner.store[k]);
     renderPartnerDocSlots();
   } catch (err) {
     toast(err.message || t('errCouldNotSubmitApplication'), 'error');
@@ -197,21 +231,23 @@ async function renderAffiliatePage() {
   if (showForm) {
     const set = (id, v) => { const el = document.getElementById(id); if (el && !el.value && v) el.value = v; };
     set('affFullName', u.displayName || u.name || ''); set('affPhone', u.phone || '');
+    dsRenderDocs('aff');
   }
 }
 
 async function submitAffiliateForm(e) {
   e.preventDefault();
   const btn = e.target.querySelector('button[type="submit"]'), v = id => (document.getElementById(id).value || '').trim();
+  if (dsDocsMissing('aff').length) { toast(t('docsRequiredAff', 'Please upload your ID / passport photo and the signed agreement'), 'error'); return; }
   const channels = [...document.querySelectorAll('input[name="afChannel"]:checked')].map(x => x.value);
   const label = btn ? btn.textContent : '';
   if (btn) { btn.disabled = true; btn.textContent = t('afSubmitting', 'Submitting…'); }
   try {
     await apiFetch('/api/seller-application', { method: 'POST', body: JSON.stringify({
       fullName: v('affFullName'), phone: v('affPhone'), whatsapp: v('affWhatsapp'), city: v('affCity'), experience: v('affExp'),
-      channels, link: v('affLink'), message: v('affMessage'), terms: document.getElementById('affTerms').checked }) }, true);
+      channels, link: v('affLink'), message: v('affMessage'), terms: document.getElementById('affTerms').checked, documents: dsDocsPayload('aff') }) }, true);
     toast(t('afSubmitted', 'Application sent — we will notify you once it is reviewed.'), 'success');
-    e.target.reset();
+    e.target.reset(); Object.keys(DS_DOCS.aff.store).forEach(k => delete DS_DOCS.aff.store[k]);
     await renderAffiliatePage();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } catch (err) {
