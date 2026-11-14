@@ -6,9 +6,23 @@
 const { esc } = DS;
 const BUILTIN = [['ar', 'العربية', 'rtl'], ['en', 'English', 'ltr'], ['ru', 'Русский', 'ltr'], ['de', 'Deutsch', 'ltr'], ['it', 'Italiano', 'ltr'], ['tr', 'Türkçe', 'ltr']];
 const SECTIONS = [['hotels', 'الفنادق', '🏨'], ['excursions', 'الرحلات', '🧭'], ['packages', 'الباكدجات', '🎁'], ['transfers', 'الترانسفير', '🚐'], ['restaurants', 'المطاعم والكافيهات', '🍽️'], ['destinations', 'الوجهات', '📍'], ['journal', 'المجلة (المقالات)', '📰']];
+// every tile / block / link on the public site that can be switched off one by one: [key, label, group]. Keys must match DS_TILES in shared/frontend.js.
+const TILES = [
+  ['hero-weather', 'كارت الطقس', 'الصفحة الرئيسية — الهيرو'], ['hero-cta', 'أزرار الهيرو (احجز / اكتشف)', 'الصفحة الرئيسية — الهيرو'], ['hero-search', 'كارت البحث', 'الصفحة الرئيسية — الهيرو'],
+  ['hero-card-featured', 'بلاطة المميّز', 'الصفحة الرئيسية — الهيرو'], ['hero-card-stats', 'بلاطة الأرقام', 'الصفحة الرئيسية — الهيرو'], ['hero-card-story', 'بلاطة المجلة', 'الصفحة الرئيسية — الهيرو'],
+  ['home-categories', 'شبكة التصنيفات كلها', 'الصفحة الرئيسية — البلوكات'], ['home-cat-excursions', 'بلاطة الرحلات', 'الصفحة الرئيسية — البلوكات'], ['home-cat-transfers', 'بلاطة الترانسفير', 'الصفحة الرئيسية — البلوكات'],
+  ['home-cat-restaurants', 'بلاطة المطاعم', 'الصفحة الرئيسية — البلوكات'], ['home-cat-hotels', 'بلاطة الفنادق', 'الصفحة الرئيسية — البلوكات'],
+  ['home-destinations', 'بلوك الوجهات', 'الصفحة الرئيسية — البلوكات'], ['home-excursions', 'بلوك الرحلات المميزة', 'الصفحة الرئيسية — البلوكات'], ['home-packages', 'بلوك الباكدجات', 'الصفحة الرئيسية — البلوكات'],
+  ['home-hotels', 'بلوك الفنادق', 'الصفحة الرئيسية — البلوكات'], ['home-transfer-promo', 'بانر الترانسفير', 'الصفحة الرئيسية — البلوكات'], ['home-restaurants', 'بلوك المطاعم', 'الصفحة الرئيسية — البلوكات'],
+  ['home-reviews', 'بلوك التقييمات', 'الصفحة الرئيسية — البلوكات'], ['home-articles', 'بلوك المقالات', 'الصفحة الرئيسية — البلوكات'],
+  ['menu-bookings', 'حجوزاتي (في كل القوائم)', 'القوائم والهيدر'], ['menu-reviews', 'التقييمات (في القوائم)', 'القوائم والهيدر'], ['menu-notifications', 'الإشعارات', 'القوائم والهيدر'],
+  ['menu-settings', 'الإعدادات (في القوائم)', 'القوائم والهيدر'], ['menu-theme', 'مفتاح الوضع الليلي', 'القوائم والهيدر'], ['menu-language', 'اختيار اللغة', 'القوائم والهيدر'], ['header-book-cta', 'زر "احجز رحلتك" في الهيدر', 'القوائم والهيدر'],
+  ['footer-brand', 'تعريف الموقع في الفوتر', 'الفوتر'], ['footer-social', 'أيقونات السوشيال', 'الفوتر'], ['footer-col-1', 'عمود الفوتر 1', 'الفوتر'], ['footer-col-2', 'عمود الفوتر 2', 'الفوتر'],
+  ['footer-col-3', 'عمود الفوتر 3', 'الفوتر'], ['footer-payment', 'الدفع والتواصل في الفوتر', 'الفوتر'], ['footer-legal', 'روابط السياسات', 'الفوتر'],
+];
 const RTL = new Set(['ar', 'fa', 'ur', 'he', 'ps', 'sd', 'ku', 'yi']);
 const DEFAULTS = { sections: Object.fromEntries(SECTIONS.map(([k]) => [k, k !== 'hotels'])), languages: { enabled: BUILTIN.map(l => l[0]), default: 'en' },
-  announcement: { enabled: false, text: {}, link: '', tone: 'info' }, maintenance: { enabled: false, message: {} },
+  tiles: {}, announcement: { enabled: false, text: {}, link: '', tone: 'info' }, maintenance: { enabled: false, message: {} },
   site: { name: 'Discover Sharm' } };
 const merge = (d, v) => { const o = Array.isArray(d) ? [] : { ...d }; for (const k of Object.keys(v || {})) o[k] = (v[k] && typeof v[k] === 'object' && !Array.isArray(v[k]) && d && typeof d[k] === 'object') ? merge(d[k], v[k]) : v[k]; return o; };
 
@@ -47,6 +61,11 @@ DS.settingsView = () => async (m) => {
         <div class="grid2">${SECTIONS.map(([k, l, ic]) => `<div class="li" style="margin:0;padding:12px 14px">${sw('sec_' + k, k === 'hotels' ? S.sections[k] === true : S.sections[k] !== false, `<span style="font-size:18px">${ic}</span> ${l}`)}</div>`).join('')}</div>
         <div class="row" style="margin-top:14px"><button class="btn" id="s_sec">حفظ الأقسام</button></div></div>
 
+
+      <div class="card"><span class="ct">البلاطات والعناصر</span><p class="muted" style="margin-bottom:12px">تحكّم في كل بلاطة وبلوك ورابط في الموقع لوحده. المغلق بيختفي فورًا (مفيش حاجة بتتمسح). لو قفلت قسم كامل من فوق، كل ما يخصه بيختفي تلقائي.</p>
+        ${[...new Set(TILES.map(t => t[2]))].map(g => `<h4 style="margin:14px 0 8px">${g}</h4><div class="grid2">${TILES.filter(t => t[2] === g).map(([k, l]) => `<div class="li" style="margin:0;padding:10px 14px">${sw('tile_' + k, (S.tiles || {})[k] !== false, l)}</div>`).join('')}</div>`).join('')}
+        <div class="row" style="margin-top:14px"><button class="btn" id="s_tiles">حفظ البلاطات</button> <button class="btn ghost" id="s_tiles_all">إظهار الكل</button></div></div>
+
       <div class="card"><span class="ct">اللغات</span><p class="muted" style="margin-bottom:12px">فعّل/عطّل لغات الموقع واختار اللغة الافتراضية للزائر الجديد. اللغة اللي بتضيفها بتتترجم واجهتها تلقائيًا، وأي محتوى جديد (رحلات/فنادق/مطاعم) بيتترجم ليها عند الحفظ.</p>
         ${DS.table([{ h: 'اللغة', f: r => `<b>${esc(r.name)}</b> <span class="muted" dir="ltr">${r.code}</span>${r.builtin ? '' : ` <span class="badge b-blue">مضافة · ${r.keys} نص</span>`}` },
           { h: 'مفعّلة', f: r => `<input type="checkbox" data-le="${r.code}" ${en.has(r.code) ? 'checked' : ''}>` },
@@ -79,6 +98,8 @@ DS.settingsView = () => async (m) => {
   m.onclick = async (e) => {
     const b = e.target.closest('button'); if (!b) return;
     try {
+      if (b.id === 's_tiles_all') { TILES.forEach(([k]) => { $('#tile_' + k).checked = true; }); return; }
+      if (b.id === 's_tiles') { S.tiles = {}; TILES.forEach(([k]) => { if (!$('#tile_' + k).checked) S.tiles[k] = false; }); await save(b); }
       if (b.id === 's_sec') { SECTIONS.forEach(([k]) => { S.sections[k] = $('#sec_' + k).checked; }); await save(b); }
       if (b.id === 's_lang') {
         const en = allLangs().filter(c => $(`[data-le="${c}"]`).checked), df = ($('[name=dl]:checked') || {}).dataset ? $('[name=dl]:checked').dataset.ld : S.languages.default;

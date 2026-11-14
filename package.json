@@ -22,7 +22,8 @@
     "test:translate": "node workers/tests/translate.test.mjs",
     "test:content": "node workers/tests/content.test.mjs",
     "export:content": "node tools/export-to-github.mjs",
-    "test:settings": "node workers/tests/settings.test.mjs"
+    "test:settings": "node workers/tests/settings.test.mjs",
+    "test:tiles": "node workers/tests/tiles.test.mjs"
   },
   "engines": {
     "node": ">=18"

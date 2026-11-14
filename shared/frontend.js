@@ -2017,6 +2017,61 @@ function applyCategoryVisibility() {
   if (!SHOW_DESTINATIONS) document.getElementById('destinationsPage')?.remove();
 }
 
+// ---- every tile / block / link the super admin can switch on or off (site settings -> "البلاطات والعناصر") ----
+// key -> how to find its elements. q = CSS selector, up = hide the closest ancestor matching this instead, fn = custom finder.
+// The admin screen (console/settings.js TILES) lists the same keys; workers/tests/tiles.test.mjs checks they stay identical.
+const DS_TILES = {
+  'hero-weather':        { q: '#wxCard' },
+  'hero-cta':            { q: '.dh-cta' },
+  'hero-search':         { q: '#searchCard' },
+  'hero-card-featured':  { q: '#dhFeat' },
+  'hero-card-stats':     { q: '#dhStats' },
+  'hero-card-story':     { q: '#dhStory' },
+  'home-categories':     { q: '.category-tile-grid', up: '.px-5.mb-8' },
+  'home-cat-excursions': { q: '.category-tile[onclick*="excursions"]' },
+  'home-cat-transfers':  { q: '.category-tile[onclick*="transfers"]' },
+  'home-cat-restaurants':{ q: '.category-tile[onclick*="restaurants"]' },
+  'home-cat-hotels':     { q: '.category-tile[onclick*="hotels"]' },
+  'home-destinations':   { q: '#destinationsRow', up: '.mb-8' },
+  'home-excursions':     { q: '#featuredExcursions', up: '.px-5.mb-8' },
+  'home-packages':       { q: '#homePackages' },
+  'home-hotels':         { q: '#featuredHotels', up: '.px-5.mb-8' },
+  'home-transfer-promo': { q: '#transferPromoBanner', up: '.px-5.mb-8' },
+  'home-restaurants':    { q: '#restaurantsRow', up: '.mb-8' },
+  'home-reviews':        { q: '#reviewsRow', up: '.mb-8' },
+  'home-articles':       { q: '#articlesRow', up: '.px-5.mb-8' },
+  'menu-bookings':       { q: '[data-page="bookings"], [onclick*="nav.go(\'bookings\')"]' },
+  'menu-reviews':        { q: '[data-page="reviews"], [onclick*="nav.go(\'reviews\')"]' },
+  'menu-notifications':  { q: '[data-page="notifications"]' },
+  'menu-settings':       { q: '[data-page="settings"], [onclick*="nav.go(\'settings\')"]' },
+  'menu-theme':          { q: '#themeSwitchDrawer' },
+  'menu-language':       { q: '.lang-select', up: 'div' },
+  'header-book-cta':     { q: '.dn-cta' },
+  'footer-brand':        { q: '.footer-brand-col, .footer-tagline' },
+  'footer-social':       { q: '.footer-social' },
+  'footer-col-1':        { fn: () => [...document.querySelectorAll('.footer-desktop .footer-col:not(.footer-payment-col)')].slice(0, 1) },
+  'footer-col-2':        { fn: () => [...document.querySelectorAll('.footer-desktop .footer-col:not(.footer-payment-col)')].slice(1, 2) },
+  'footer-col-3':        { fn: () => [...document.querySelectorAll('.footer-desktop .footer-col:not(.footer-payment-col)')].slice(2, 3) },
+  'footer-payment':      { q: '.footer-payment-col, .footer-payment-note' },
+  'footer-legal':        { q: '.footer-legal-links' },
+};
+function applyTiles() {
+  const tiles = (SITE_SET && SITE_SET.tiles) || {}, hidden = [];
+  let css = document.getElementById('dsTileCss');
+  if (!css) { css = document.createElement('style'); css.id = 'dsTileCss'; document.head.appendChild(css); }
+  const rules = [];
+  for (const [key, d] of Object.entries(DS_TILES)) {
+    let els = [];
+    try { els = d.fn ? d.fn() : [...document.querySelectorAll(d.q)]; } catch { /* bad selector: skip */ }
+    if (d.up) els = els.map(e => e.closest(d.up) || e);
+    els.forEach(e => { const have = (e.getAttribute('data-ds-tile') || '').split(' ').filter(Boolean); if (!have.includes(key)) { have.push(key); e.setAttribute('data-ds-tile', have.join(' ')); } });
+    rules.push(`html[data-ds-hide~="${key}"] [data-ds-tile~="${key}"]{display:none!important}`);
+    if (tiles[key] === false) hidden.push(key);
+  }
+  css.textContent = rules.join('\n');
+  document.documentElement.setAttribute('data-ds-hide', hidden.join(' '));
+}
+
 // Hides (and, when switched back on, restores) EVERY link / tile / home block that points at a section the admin switched off —
 // drawer, desktop nav, bottom nav, footer, home "view all" rows, journal story card, transfer promo. Safe to call again on every settings change.
 function applySectionVisibility() {
@@ -2029,8 +2084,16 @@ function applySectionVisibility() {
       hide(wrap || el, k, !shown);
     });
   }
-  const one = (id, k) => { const el = document.getElementById(id); if (el) hide(el, k, !on[k]); };
-  one('transferPromoBanner', 'transfers'); one('dhStory', 'journal'); one('categoryTileRestaurants', 'restaurants');
+  // whole home blocks / tiles that belong to a section (selector | ancestor to hide instead)
+  const blocks = {
+    excursions: ['#featuredExcursions|.px-5.mb-8'], transfers: ['#transferPromoBanner|.px-5.mb-8'], restaurants: ['#restaurantsRow|.mb-8', '#categoryTileRestaurants'],
+    destinations: ['#destinationsRow|.mb-8', '.dh-btn-ghost[onclick*="destinationsRow"]'], journal: ['#articlesRow|.px-5.mb-8', '#dhStory'], packages: ['#homePackages'],
+  };
+  for (const [k, list] of Object.entries(blocks)) for (const spec of list) {
+    const [q, up] = spec.split('|'); document.querySelectorAll(q).forEach(el => hide((up && el.closest(up)) || el, k, !on[k]));
+  }
+  const card = document.getElementById('searchCard');   // nothing left to search for -> no search card
+  if (card) hide(card, 'search', !(on.excursions || on.transfers || on.hotels));
 }
 
 // ==================== INIT ====================
@@ -2046,7 +2109,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const tick = async () => { if (busy || document.hidden) return; busy = true; try { const st = await window.DS_REFRESH_SETTINGS(); const j = st && st.value ? JSON.stringify(st.value) : null; if (j && j !== last) {
         const was = JSON.parse(last || '{}'), now = st.value;
         last = j; applySiteSettings(st.value);   // announcement / maintenance / contact apply instantly
-        if (JSON.stringify([was.sections, was.languages, was.site]) !== JSON.stringify([now.sections, now.languages, now.site])) dsUpdatedPill();   // sections & languages rebuild the pages: offer a refresh instead of yanking the page
+        if (JSON.stringify([was.sections, was.languages, was.site]) !== JSON.stringify([now.sections, now.languages, now.site])) dsUpdatedPill();   // (tiles apply instantly, no refresh needed)   // sections & languages rebuild the pages: offer a refresh instead of yanking the page
       } } finally { busy = false; } };
     document.addEventListener('visibilitychange', tick); window.addEventListener('focus', tick);
   }
@@ -2071,7 +2134,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   search.init();
 
   applyDesktopLayout();
-  applyCategoryVisibility(); applySectionVisibility();
+  applyCategoryVisibility(); applySectionVisibility(); applyTiles();
   window.addEventListener('resize', applyDesktopLayout);
 
   if (typeof restoreUiState === 'function') restoreUiState();
@@ -2206,7 +2269,7 @@ function applySiteSettings(v) {
   SHOW_TRANSFERS = secFlag('transfers', window.DS_CONFIG.SHOW_TRANSFERS); SHOW_RESTAURANTS = secFlag('restaurants', window.DS_CONFIG.SHOW_RESTAURANTS);
   SHOW_DESTINATIONS = secFlag('destinations', window.DS_CONFIG.SHOW_DESTINATIONS); SHOW_JOURNAL = secFlag('journal', window.DS_CONFIG.SHOW_JOURNAL !== false);
   applyContactSettings(window.DS_CONFIG.CONTACT);   // phone / e-mail / social links: Cloudflare variables (DS_CONTACT_*, DS_SOCIAL_*)
-  applySectionVisibility(); renderSiteBits();
+  applySectionVisibility(); applyTiles(); renderSiteBits();
 }
 const pick = (o) => (o && (o[I18N.get()] || o.en || o.ar || Object.values(o)[0])) || '';
 
