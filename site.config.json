@@ -98,6 +98,12 @@
       "description": "List your hotel, tour or transfer service on Discover Sharm.",
       "nav": "partner"
     },
+    "affiliate": {
+      "path": "/affiliate/",
+      "title": "Affiliate Programme — Discover Sharm",
+      "description": "Work with Discover Sharm as a seller and earn commission on every booking.",
+      "nav": "partner"
+    },
     "cancellationPolicy": {
       "path": "/cancellation-policy/",
       "title": "Cancellation Policy — Discover Sharm",

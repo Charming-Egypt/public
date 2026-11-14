@@ -254,6 +254,21 @@ DS.start({ key: 'admin', title: 'لوحة السوبر أدمن', roleLabel: 'س
         { t: 'مسح', cls: 'red', fn: async () => { if (!confirm('مسح الطلب؟')) return false; await api('/applications/' + a.id, { method: 'DELETE' }); DS.reload(); } }] });
     };
   } },
+  // ================= seller (affiliate) applications =================
+  { label: 'طلبات السيلرز', icon: 'users', render: async m => {
+    const ST = { new: ['جديد', 'blue'], approved: ['مقبول', 'green'], rejected: ['مرفوض', 'red'] }, EXP = { none: 'مفيش خبرة', some: 'خبرة بسيطة', pro: 'شغال في المجال' };
+    const list = (await api('/sellers/applications')).applications;
+    m.innerHTML = '<h2 class="pt">طلبات الشغل كسيلر</h2>' + table([{ h: 'المتقدم', f: a => `<b>${esc(a.fullName)}</b><div class="muted">${esc(a.email || '')}</div>` }, { h: 'التواصل', f: a => `<span dir="ltr">${esc(a.phone)}</span><div class="muted">${esc(a.city || '')}</div>` }, { h: 'الحالة', f: a => DS.badge(ST, a.status) }, { h: 'التاريخ', f: a => dt(a.createdAt) }], list, { click: true, empty: 'مفيش طلبات سيلرز' });
+    m.onclick = e => {
+      const r = e.target.closest('tr[data-i]'); if (!r) return; const a = list[+r.dataset.i], b = document.createElement('div'), open = a.status === 'new';
+      b.innerHTML = `<div class="kv"><b>الاسم</b><span>${esc(a.fullName)}</span><b>إيميل الحساب</b><span>${esc(a.email || '')}</span><b>تليفون</b><span dir="ltr">${esc(a.phone)}</span><b>واتساب</b><span dir="ltr">${esc(a.whatsapp || '—')}</span><b>المدينة</b><span>${esc(a.city || '—')}</span><b>الخبرة</b><span>${esc(EXP[a.experience] || '—')}</span><b>قنوات الترويج</b><span>${esc((a.channels || []).join('، ') || '—')}</span><b>لينك</b><span dir="ltr">${a.link ? esc(a.link) : '—'}</span><b>حجوزات سابقة</b><span>${esc(a.completedBookings ?? 0)}</span></div>
+        ${a.message ? `<div class="fld"><label>رسالة المتقدم</label><div class="muted">${esc(a.message)}</div></div>` : ''}
+        ${open ? `<div class="fld"><label>نسبة عمولة خاصة % (اتركها فاضية = النسبة الافتراضية)</label><input id="cm" type="number" min="0" max="100" step="0.5"></div>` : ''}
+        <div class="fld"><label>ملاحظة (بتظهر للمتقدم لو اترفض)</label><textarea id="nt">${esc(a.adminNote || '')}</textarea></div>`;
+      const decide = approve => async () => { await api('/sellers/applications/' + a.id, { method: 'POST', body: { approve, note: b.querySelector('#nt').value, commission: b.querySelector('#cm') ? b.querySelector('#cm').value : '' } }); DS.reload(); };
+      modal({ title: a.fullName, body: b, actions: open ? [{ t: 'قبول وتفعيل كسيلر', fn: decide(true) }, { t: 'رفض', cls: 'red', fn: decide(false) }] : [] });
+    };
+  } },
   // ================= contact messages =================
   { label: 'الرسائل', icon: 'mail', render: async m => {
     const list = (await api('/messages')).messages, ST = { new: ['جديدة', 'blue'], read: ['اتقرت', 'gray'], replied: ['اتردّ عليها', 'green'] };

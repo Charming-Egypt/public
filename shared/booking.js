@@ -171,6 +171,56 @@ async function submitPartnerForm(e) {
   }
 }
 
+// ==================== AFFILIATE PROGRAMME (a customer applies to work as a seller) ====================
+async function renderAffiliatePage() {
+  const status = document.getElementById('affStatus'), gate = document.getElementById('affGate'), form = document.getElementById('affForm');
+  if (!status || !gate || !form) return;
+  const hide = (el, on) => el.classList.toggle('hidden', !!on);
+  if (!auth.isLoggedIn()) { status.innerHTML = ''; hide(gate, false); hide(form, true); return; }
+  hide(gate, true);
+  let app = null;
+  try { app = (await apiFetch('/api/seller-application', {}, true)).application; } catch (e) { console.error(e); }
+  const u = (typeof currentUser !== 'undefined' && currentUser) || {};
+  const sellerUrl = window.DS_SELLER_URL || 'https://seller.discover-sharm.com';
+  const card = (cls, icon, title, text, extra) => `<div class="pt-status ${cls}"><span class="pt-ico"><i class="fa-solid ${icon}" aria-hidden="true"></i></span><div><h3>${title}</h3><p>${text}</p>${extra || ''}</div></div>`;
+  let showForm = true;
+  if (u.isSeller || (app && app.status === 'approved')) {
+    status.innerHTML = card('ok', 'fa-circle-check', t('afApprovedTitle', "You're a seller!"), t('afApprovedText', 'Your application was approved. Open the seller dashboard to get your code and start earning.'), `<a class="pt-cta-btn" href="${sellerUrl}" target="_blank" rel="noopener">${t('afOpenDash', 'Open seller dashboard')}</a>`);
+    showForm = false;
+  } else if (app && app.status === 'new') {
+    status.innerHTML = card('wait', 'fa-hourglass-half', t('afPendingTitle', 'Your application is under review'), t('afPendingText', "Thanks! We'll notify you as soon as it's reviewed."));
+    showForm = false;
+  } else if (app && app.status === 'rejected') {
+    status.innerHTML = card('no', 'fa-circle-info', t('afRejectedTitle', 'Your last application was not approved'), (app.note ? esc(app.note) + ' — ' : '') + t('afRejectedText', 'You can apply again after a few days.'));
+  } else status.innerHTML = '';
+  hide(form, !showForm);
+  if (showForm) {
+    const set = (id, v) => { const el = document.getElementById(id); if (el && !el.value && v) el.value = v; };
+    set('affFullName', u.displayName || u.name || ''); set('affPhone', u.phone || '');
+  }
+}
+
+async function submitAffiliateForm(e) {
+  e.preventDefault();
+  const btn = e.target.querySelector('button[type="submit"]'), v = id => (document.getElementById(id).value || '').trim();
+  const channels = [...document.querySelectorAll('input[name="afChannel"]:checked')].map(x => x.value);
+  const label = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = t('afSubmitting', 'Submitting…'); }
+  try {
+    await apiFetch('/api/seller-application', { method: 'POST', body: JSON.stringify({
+      fullName: v('affFullName'), phone: v('affPhone'), whatsapp: v('affWhatsapp'), city: v('affCity'), experience: v('affExp'),
+      channels, link: v('affLink'), message: v('affMessage'), terms: document.getElementById('affTerms').checked }) }, true);
+    toast(t('afSubmitted', 'Application sent — we will notify you once it is reviewed.'), 'success');
+    e.target.reset();
+    await renderAffiliatePage();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch (err) {
+    toast(err.message || t('errCouldNotSubmitApplication', 'Could not submit your application'), 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = label; }
+  }
+}
+
 function renderJournalPage() {
   const grid = document.getElementById('journalGrid');
   if (!grid) return;

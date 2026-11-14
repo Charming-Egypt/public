@@ -82,3 +82,11 @@
 - شلت الإجبار على تسجيل الدخول عند أول زيارة (سكريبت `data-gate` في build.mjs وبوابة `showAuth` في الـ init). الزائر بيتصفح كل المحتوى، وتسجيل الدخول/إنشاء الحساب بيتطلب بس عند: الحجز والدفع (فنادق/رحلات/ترانسفير)، المفضلة، وصفحات حجوزاتي/الملف/الإشعارات. بعد الدخول بيكمل نفس العملية تلقائي (`auth.require` + `runPending`).
 - شاشة الدخول بقت overlay فوق الصفحة وفيها زر "متابعة التصفح". فتح `/bookings/` كزائر بيظهر الشاشة، وإغلاقها بيرجع للرئيسية. تسجيل الخروج بيرجع للرئيسية كزائر.
 - نسيت كلمة المرور، "راجع بريدك" بعد التسجيل/الاستعادة (مع إعادة إرسال كل 30 ثانية)، وشاشات روابط الإيميل (تأكيد، كلمة مرور جديدة، رابط منتهي، تغيير الإيميل): كلها بتظهر داخل نفس صفحة الدخول/التسجيل (نفس اللوحة والكارت والحقول). النصوص مترجمة للست لغات.
+
+## Become a Partner redesign + Affiliate (seller) application
+- `src/pages/partner.html`: reorganised into sections (why partner, how it works, 4 numbered form sections, seller call-to-action). Same form ids/logic.
+- New page `/affiliate/` (`src/pages/affiliate.html`): for users with a normal account to apply as a seller. Guests see a log-in card; shows status (under review / approved / rejected with note); form prefilled from the profile.
+- DB: `20261115000100_seller_applications.sql` — `seller_applications` table, `submit_seller_application`, `my_seller_application`, `admin_list_seller_applications`, `admin_decide_seller_application` (approve = is_seller + code + optional commission, notification to the user). **Run this migration.**
+- Admin: new tab "طلبات السيلرز" (approve with optional commission / reject with note). Route `/api/admin/sellers/applications`.
+- Site: `/api/seller-application` in supabase-api.js; footer link "Become a Seller". Texts: en + ar (other languages fall back to English).
+- Not verified: the SQL migration (no Postgres here); icons (FontAwesome blocked in the test browser).

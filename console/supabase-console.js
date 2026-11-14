@@ -378,6 +378,8 @@
 
       // ===== sellers: risk signals, controls (verification / deposits / limits / flag) and customer reports =====
       if (a === 'sellers') {
+        if (b === 'applications' && method === 'GET') return { applications: await rpc('admin_list_seller_applications', { p_status: url.searchParams.get('status') || null }) };
+        if (b === 'applications' && c && method === 'POST') { await rpc('admin_decide_seller_application', { p_id: c, p_approve: !!body.approve, p_note: body.note || null, p_commission: body.commission === '' || body.commission == null ? null : Number(body.commission) }); return { success: true }; }
         if (b === 'risk') return { sellers: await rpc('admin_seller_risk') };
         if (b === 'reports' && !c) return { reports: await rpc('admin_list_seller_reports', { p_status: url.searchParams.get('status') || 'open' }) };
         if (b === 'reports' && method === 'POST') { await rpc('admin_resolve_seller_report', { p_id: Number(c), p_upheld: !!body.upheld }); return { success: true }; }

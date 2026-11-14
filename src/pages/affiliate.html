@@ -1,0 +1,86 @@
+    <div id="affiliatePage" class="page">
+      <div class="min-h-screen">
+        <div class="listing-hero hidden lg:block">
+          <div class="listing-hero-inner">
+            <p class="listing-eyebrow" data-i18n="afEyebrow">— AFFILIATE PROGRAMME</p>
+            <h1 class="listing-title" data-i18n="afTitle">Work with us as a seller</h1>
+            <p class="listing-count" data-i18n="afSub">Earn commission on every booking you bring</p>
+          </div>
+        </div>
+        <div class="px-5 pt-6 pb-4 header-light lg:hidden">
+          <div class="flex items-center gap-3">
+            <button type="button" aria-label="Back" data-i18n-aria="ariaBack" data-back onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+            <div><p class="section-subtitle" data-i18n="afEyebrow">— AFFILIATE PROGRAMME</p><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)" data-i18n="afTitle">Work with us as a seller</h1></div>
+          </div>
+        </div>
+        <div class="px-5 py-6 pb-28">
+          <div class="pt-wrap">
+            <p class="pt-intro" data-i18n="afIntro">Already have a Discover Sharm account? Apply to work with us as a seller: share your code, book for walk-in customers and earn commission on every confirmed booking.</p>
+            <div id="affStatus"></div>
+            <section>
+              <p class="pt-h" data-i18n="afPerksTitle">What you get</p>
+              <div class="pt-grid3">
+              <div class="pt-card pt-benefit"><span class="pt-ico"><i class="fa-solid fa-percent" aria-hidden="true"></i></span><div><h3 data-i18n="afP1T">Commission on every booking</h3><p data-i18n="afP1D">Earn a share of every booking made with your code or through your seller desk.</p></div></div>
+              <div class="pt-card pt-benefit"><span class="pt-ico"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i></span><div><h3 data-i18n="afP2T">Your own seller dashboard</h3><p data-i18n="afP2D">Track bookings and earnings, and book for customers in a few taps.</p></div></div>
+              <div class="pt-card pt-benefit"><span class="pt-ico"><i class="fa-solid fa-money-bill-transfer" aria-hidden="true"></i></span><div><h3 data-i18n="afP3T">Get paid</h3><p data-i18n="afP3D">Request payouts to your bank account or InstaPay.</p></div></div>
+              </div>
+            </section>
+            <section>
+              <p class="pt-h" data-i18n="ptHowTitle">How it works</p>
+              <div class="pt-grid3">
+              <div class="pt-card pt-step"><div class="pt-num">1</div><h3 data-i18n="afS1T">Apply</h3><p data-i18n="afS1D">Fill in the short form below with your details.</p></div>
+              <div class="pt-card pt-step"><div class="pt-num">2</div><h3 data-i18n="afS2T">We review</h3><p data-i18n="afS2D">Our team reviews your application, usually within a few days.</p></div>
+              <div class="pt-card pt-step"><div class="pt-num">3</div><h3 data-i18n="afS3T">Start selling</h3><p data-i18n="afS3D">Get your seller code and open your dashboard.</p></div>
+              </div>
+            </section>
+            <section id="affFormSection">
+              <p class="pt-h" data-i18n="afApplyTitle">Seller application</p>
+              <div id="affGate" class="pt-card hidden">
+                <div class="pt-benefit"><span class="pt-ico"><i class="fa-solid fa-user-lock" aria-hidden="true"></i></span><div><h3 data-i18n="afLoginTitle">Log in to apply</h3><p data-i18n="afLoginText">You need a Discover Sharm account to join the programme. Log in or create one — it only takes a minute.</p></div></div>
+                <button type="button" class="pt-cta-btn" style="margin-top:14px" onclick="auth.require(() => renderAffiliatePage(), t('afLoginReason','Log in or create an account to apply as a seller'))"><span data-i18n="afLoginBtn">Log in / Sign up</span></button>
+              </div>
+              <form id="affForm" class="pt-card pt-form-card hidden" onsubmit="submitAffiliateForm(event)">
+            <div class="pt-sec">
+              <div class="pt-sec-head"><span class="pt-num">1</span><div><h3 data-i18n="afSec1">Your details</h3><small data-i18n="afSec1H">How should we contact you?</small></div></div>
+                <div class="pt-fields">
+                  <div class="pt-field full"><label for="affFullName"><span data-i18n="afFullName">Full name</span> <span class="req">*</span></label><input type="text" id="affFullName" required placeholder="Full name" data-i18n-placeholder="afPhFullName" class="input-field w-full px-3 py-2.5 text-sm"></div>
+                  <div class="pt-field"><label for="affPhone"><span data-i18n="ptPhone">Phone number</span> <span class="req">*</span></label><input type="tel" id="affPhone" required placeholder="Phone number" data-i18n-placeholder="phPhoneNumber" class="input-field w-full px-3 py-2.5 text-sm"></div>
+                  <div class="pt-field"><label for="affWhatsapp"><span data-i18n="afWhatsapp">WhatsApp</span> </label><input type="tel" id="affWhatsapp"  placeholder="WhatsApp (if different)" data-i18n-placeholder="afPhWhatsapp" class="input-field w-full px-3 py-2.5 text-sm"></div>
+                  <div class="pt-field"><label for="affCity"><span data-i18n="afCity">City</span> </label><input type="text" id="affCity"  placeholder="City" data-i18n-placeholder="afPhCity" class="input-field w-full px-3 py-2.5 text-sm"></div>
+                  <div class="pt-field"><label for="affExp"><span data-i18n="afExp">Sales experience</span></label><select id="affExp" class="input-field w-full px-3 py-2.5 text-sm"><option value="none" data-i18n="afExpNone">No experience yet</option><option value="some" data-i18n="afExpSome">Some experience</option><option value="pro" data-i18n="afExpPro">I work in tourism / sales</option></select></div>
+                </div>
+            </div>
+            <div class="pt-sec">
+              <div class="pt-sec-head"><span class="pt-num">2</span><div><h3 data-i18n="afSec2">How will you find customers?</h3><small data-i18n="afSec2H">Pick everything that applies</small></div></div>
+                <div class="pt-chips">
+                  <label class="pt-chip"><input type="checkbox" name="afChannel" value="whatsapp"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> <span data-i18n="afChWhatsapp">WhatsApp</span></label>
+                  <label class="pt-chip"><input type="checkbox" name="afChannel" value="facebook"><i class="fa-brands fa-facebook" aria-hidden="true"></i> <span data-i18n="afChFacebook">Facebook</span></label>
+                  <label class="pt-chip"><input type="checkbox" name="afChannel" value="instagram"><i class="fa-brands fa-instagram" aria-hidden="true"></i> <span data-i18n="afChInstagram">Instagram</span></label>
+                  <label class="pt-chip"><input type="checkbox" name="afChannel" value="tiktok"><i class="fa-brands fa-tiktok" aria-hidden="true"></i> <span data-i18n="afChTiktok">TikTok</span></label>
+                  <label class="pt-chip"><input type="checkbox" name="afChannel" value="friends"><i class="fa-solid fa-user-group" aria-hidden="true"></i> <span data-i18n="afChFriends">Friends & family</span></label>
+                  <label class="pt-chip"><input type="checkbox" name="afChannel" value="walkin"><i class="fa-solid fa-person-walking" aria-hidden="true"></i> <span data-i18n="afChWalkin">Walk-in customers</span></label>
+                  <label class="pt-chip"><input type="checkbox" name="afChannel" value="other"><i class="fa-solid fa-ellipsis" aria-hidden="true"></i> <span data-i18n="afChOther">Other</span></label>
+                </div>
+                <div class="pt-fields" style="margin-top:12px">
+                  <div class="pt-field full"><label for="affLink"><span data-i18n="afLink">Profile or page link</span> </label><input type="url" id="affLink"  placeholder="Profile / page link (optional)" data-i18n-placeholder="afPhLink" class="input-field w-full px-3 py-2.5 text-sm"></div>
+                </div>
+            </div>
+            <div class="pt-sec">
+              <div class="pt-sec-head"><span class="pt-num">3</span><div><h3 data-i18n="afSec3">Tell us more</h3><small data-i18n="ptSec4H">Optional</small></div></div>
+                <textarea id="affMessage" rows="4" placeholder="Why would you like to work with us? (optional)" data-i18n-placeholder="afPhMessage" class="input-field w-full px-3 py-2.5 text-sm"></textarea>
+                <label class="pt-check" style="margin-top:16px"><input type="checkbox" id="affTerms" required><span data-i18n="afTerms">I confirm my details are correct and I agree to the affiliate programme terms: bookings must be genuine, customer data stays private, and commission is paid on confirmed bookings only.</span></label>
+            </div>
+                <div class="pt-actions">
+                  <p class="pt-note" data-i18n="afReplyNote">We will notify you in the app as soon as your application is reviewed.</p>
+                  <button type="submit" class="btn-gold w-full py-3.5 rounded-2xl font-bold text-ink-900" data-i18n="submitApplication">Submit Application</button>
+                </div>
+              </form>
+            </section>
+            <section class="pt-card pt-cta">
+              <div class="pt-benefit"><span class="pt-ico"><i class="fa-solid fa-hotel" aria-hidden="true"></i></span><div><h3 data-i18n="afBizTitle">Own a hotel, trips or transfers?</h3><p data-i18n="afBizText">List your business as a partner instead and receive bookings directly.</p></div></div>
+              <button type="button" class="pt-cta-btn" onclick="nav.go('partner')"><span data-i18n="footerPartner">Become a Partner</span> <i class="fa-solid fa-arrow-right rtl-flip" aria-hidden="true"></i></button>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
