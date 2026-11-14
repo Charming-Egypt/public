@@ -406,5 +406,6 @@ function dsRefCode() {
   }
 
   window.SB = { client: sb, ready, authLink, handle, signOut: () => sb.auth.signOut(),
-    updatePassword: async (password) => { const { error } = await sb.auth.updateUser({ password }); if (error) throw error; } };
+    updatePassword: async (password) => { const { error } = await sb.auth.updateUser({ password }); if (error) throw error; },
+    resendConfirmation: async (email) => { const { error } = await sb.auth.resend({ type: 'signup', email, options: { emailRedirectTo: location.origin + '/?auth=signup' } }); if (error) throw error; } };
 })();

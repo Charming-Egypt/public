@@ -756,5 +756,18 @@
   "pkgPriceFor": "Price for",
   "pkgFixedPrice": "one price for the whole package",
   "balancePayBy": "Pay before",
-  "autoBalanceLabel": "I authorize Discover Sharm to charge the remaining balance to this card automatically, about 24 hours before the payment deadline."
+  "autoBalanceLabel": "I authorize Discover Sharm to charge the remaining balance to this card automatically, about 24 hours before the payment deadline.",
+  "authNeedLoginBook": "Log in or create an account to complete your booking",
+  "authNeedLoginAccount": "Log in or create an account to continue",
+  "authCloseBrowse": "Continue browsing",
+  "authForgotTitle": "Forgot your password?",
+  "authForgotSub": "Enter your email and we will send you a link to choose a new password.",
+  "authSendReset": "Send reset link",
+  "authBackToLogin": "Back to log in",
+  "authCheckInboxTitle": "Check your inbox",
+  "authResetSentText": "If an account exists for {email}, a reset link is on its way. The link works once and only for a short time.",
+  "authConfirmSentTitle": "Confirm your email",
+  "authConfirmSentText": "We sent a confirmation link to {email}. Open it to activate your account, then log in.",
+  "authResend": "Resend email",
+  "authResendDone": "Email sent again"
 }

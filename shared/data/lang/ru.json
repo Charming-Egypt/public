@@ -731,5 +731,18 @@
   "rvKindExcursion": "Экскурсии",
   "rvKindTransfer": "Трансферы",
   "rvKindRestaurant": "Рестораны",
-  "rvKindHotel": "Отели"
+  "rvKindHotel": "Отели",
+  "authNeedLoginBook": "Войдите или создайте аккаунт, чтобы завершить бронирование",
+  "authNeedLoginAccount": "Войдите или создайте аккаунт, чтобы продолжить",
+  "authCloseBrowse": "Продолжить просмотр",
+  "authForgotTitle": "Забыли пароль?",
+  "authForgotSub": "Введите email — мы отправим ссылку для выбора нового пароля.",
+  "authSendReset": "Отправить ссылку",
+  "authBackToLogin": "Назад ко входу",
+  "authCheckInboxTitle": "Проверьте почту",
+  "authResetSentText": "Если аккаунт для {email} существует, ссылка уже в пути. Она работает один раз и недолго.",
+  "authConfirmSentTitle": "Подтвердите email",
+  "authConfirmSentText": "Мы отправили ссылку подтверждения на {email}. Откройте её, чтобы активировать аккаунт, затем войдите.",
+  "authResend": "Отправить снова",
+  "authResendDone": "Письмо отправлено снова"
 }

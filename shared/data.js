@@ -645,6 +645,7 @@ const auth = {
     } catch (e) { auth._needsConfirm = !!e.confirm; toast(e.message, e.confirm ? 'info' : 'error'); return null; }
   },
   logout() {
+    if (!authToken) { nav.showAuth('login'); return; }   // a guest tapping "Log in" in the menu
     try { sessionStorage.removeItem('ds_guest'); } catch {}
     try { window.PWA && PWA.pushLogout && PWA.pushLogout(); } catch {}
     if (window.SB) SB.signOut().catch(() => {});
@@ -652,10 +653,24 @@ const auth = {
     currentUser = null;
     localStorage.removeItem('ds_auth_token');
     localStorage.removeItem('ds_current_user');
-    try { sidebar.close(); } catch {}   // the side menu must not stay open on top of the log-in screen
-    nav.showAuth();
+    try { sidebar.close(); } catch {}
+    location.assign(pathForPage('home'));   // back to browsing as a guest (no forced log-in screen)
   },
   isLoggedIn() { return !!authToken; },
+  _pending: null,
+  // Browsing is open to everybody; actions that need an account (book, pay, favourites, my bookings...) call this.
+  // Logged in -> run now. Guest -> log-in / sign-up overlay, and the action continues by itself right after.
+  require(fn, reason) {
+    if (this.isLoggedIn()) { if (fn) fn(); return true; }
+    this._pending = fn || null;
+    nav.showAuth('login', { reason: reason || t('authNeedLoginAccount', 'Log in or create an account to continue') });
+    return false;
+  },
+  runPending() { const f = this._pending; this._pending = null; if (f) setTimeout(() => { try { f(); } catch (e) { console.error(e); } }, 60); },
+  closeOverlay() {
+    this._pending = null; this._onClose && this._onClose(); this._onClose = null;
+    document.getElementById('authPage')?.classList.add('hidden'); document.body.style.overflow = '';
+  },
   continueAsGuest() {
     localStorage.removeItem('ds_auth_token');
     localStorage.removeItem('ds_current_user');
@@ -685,6 +700,7 @@ function authSetErr(field, msg) {
 function authClearErrors() { ['email', 'password', 'name', 'phone', 'terms'].forEach(f => authSetErr(f, '')); }
 
 function switchAuthMode(mode) {
+  authShowForm();
   authMode = mode;
   authStep = 1;
   const isLogin = mode === 'login';
@@ -800,18 +816,69 @@ function authValidate(step) {
   return ok;
 }
 
-async function authForgotPassword() {
-  const email = authEl('authEmail').value.trim();
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
-    authSetErr('email', t('authErrForgotEmail', 'Enter your email above first, then tap “Forgot password”.'));
-    authEl('authEmail').focus();
-    return;
-  }
-  try {
-    await apiFetch('/api/auth/reset', { method: 'POST', body: JSON.stringify({ email }) }, true);
-    toast(t('authResetSent', 'If an account exists for this email, a reset link is on its way.'), 'info');
-  } catch (e) { toast(e.message, 'error'); }
+// ---- The log-in / sign-up screen also hosts the other account screens (forgot password, check your e-mail, links from e-mails) ----
+// so all of them share one look: same brand panel, same card, same fields and buttons.
+function authShowForm() {
+  authEl('authInfoCard')?.classList.add('hidden');
+  document.querySelector('#authPage .auth-card:not(#authInfoCard)')?.classList.remove('hidden');
+  authEl('authHead')?.classList.remove('hidden');
 }
+function authInfo(html) {
+  const card = authEl('authInfoCard'); if (!card) return null;
+  document.querySelector('#authPage .auth-card:not(#authInfoCard)')?.classList.add('hidden');
+  authEl('authHead')?.classList.add('hidden');
+  card.innerHTML = html; card.classList.remove('hidden');
+  const rs = authEl('authReason'); if (rs) rs.hidden = true;
+  const pg = authEl('authPage'); pg.classList.remove('hidden'); pg.scrollTop = 0; document.body.style.overflow = 'hidden';
+  const sp = document.getElementById('splash'); if (sp) sp.style.display = 'none';
+  return card;
+}
+const authIcon = (cls, tone) => `<div class="auth-link-ico ${tone}"><i class="fa-solid ${cls}" aria-hidden="true"></i></div>`;
+const authBtn = (id, label, cls = 'btn-gold auth-submit w-full') => `<button type="button" id="${id}" class="${cls}">${label}</button>`;
+const authBackLink = () => `<p class="text-center text-white/50 text-xs mt-5"><a href="javascript:void(0)" id="aiBack" class="text-gold-400 font-semibold"><i class="fa-solid fa-arrow-left rtl-flip" aria-hidden="true"></i> ${t('authBackToLogin', 'Back to log in')}</a></p>`;
+
+function authShowForgot(prefill) {
+  const card = authInfo(`${authIcon('fa-key', 'gold')}<h1 class="auth-link-title">${t('authForgotTitle', 'Forgot your password?')}</h1>
+    <p class="auth-link-text">${t('authForgotSub', 'Enter your email and we will send you a link to choose a new password.')}</p>
+    <form id="aiForm" novalidate>
+      <div class="auth-field"><label for="aiEmail">${t('email', 'EMAIL ADDRESS')}</label>
+        <div class="auth-input"><i class="fa-regular fa-envelope auth-input-icon" aria-hidden="true"></i><input type="email" id="aiEmail" autocomplete="email" inputmode="email" maxlength="254" placeholder="you@example.com" value="${esc(prefill || '')}"></div>
+        <p class="auth-err" id="aiErr" role="alert"></p></div>
+      <button type="submit" id="aiSend" class="btn-gold auth-submit w-full">${t('authSendReset', 'Send reset link')}</button>
+    </form>${authBackLink()}`);
+  if (!card) return;
+  card.querySelector('#aiBack').onclick = () => switchAuthMode('login');
+  const inp = card.querySelector('#aiEmail'), err = card.querySelector('#aiErr');
+  card.querySelector('#aiForm').onsubmit = async (e) => {
+    e.preventDefault(); const email = inp.value.trim(); err.textContent = '';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { err.textContent = t('authErrEmail', 'Enter a valid email address.'); inp.focus(); return; }
+    const b = card.querySelector('#aiSend'); b.disabled = true; b.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin" aria-hidden="true"></i>';
+    try { await apiFetch('/api/auth/reset', { method: 'POST', body: JSON.stringify({ email }) }, true); authShowSent('reset', email); }
+    catch (er) { b.disabled = false; b.textContent = t('authSendReset', 'Send reset link'); err.textContent = er.message || 'Error'; }
+  };
+  setTimeout(() => inp.focus(), 80);
+}
+// "check your inbox" screens: after asking for a reset link, and after signing up (the account must be confirmed from the e-mail first)
+function authShowSent(kind, email) {
+  const reset = kind === 'reset';
+  const card = authInfo(`${authIcon(reset ? 'fa-envelope-circle-check' : 'fa-envelope-open-text', 'good')}
+    <h1 class="auth-link-title">${reset ? t('authCheckInboxTitle', 'Check your inbox') : t('authConfirmSentTitle', 'Confirm your email')}</h1>
+    <p class="auth-link-text">${(reset ? t('authResetSentText', 'If an account exists for {email}, a reset link is on its way. The link works once and only for a short time.') : t('authConfirmSentText', 'We sent a confirmation link to {email}. Open it to activate your account, then log in.')).replace('{email}', `<b dir="ltr">${esc(email)}</b>`)}</p>
+    <div class="auth-info-actions">${authBtn('aiLogin', t('authBackToLogin', 'Back to log in'))}<button type="button" id="aiResend" class="auth-link-btn">${t('authResend', 'Resend email')}</button></div>`);
+  if (!card) return;
+  card.querySelector('#aiLogin').onclick = () => switchAuthMode('login');
+  const rs = card.querySelector('#aiResend');
+  rs.onclick = async () => {
+    rs.disabled = true;
+    try {
+      if (reset) await apiFetch('/api/auth/reset', { method: 'POST', body: JSON.stringify({ email }) }, true);
+      else if (window.SB && SB.resendConfirmation) await SB.resendConfirmation(email);
+      toast(t('authResendDone', 'Email sent again'), 'info');
+    } catch (er) { toast(er.message || 'Error', 'error'); }
+    setTimeout(() => { rs.disabled = false; }, 30000);   // one resend per 30 s
+  };
+}
+function authForgotPassword() { authShowForgot((authEl('authEmail') || {}).value); }
 
 async function handleAuthSubmit(e) {
   e.preventDefault();
@@ -839,7 +906,7 @@ async function handleAuthSubmit(e) {
       : await auth.signIn(email, password);
   } catch (err) { console.error(err); }
   if (user) enterApp();
-  else if (auth._needsConfirm) { auth._needsConfirm = false; switchAuthMode('login'); }   // account created, email must be confirmed first
+  else if (auth._needsConfirm) { auth._needsConfirm = false; authShowSent('confirm', email); }   // account created, email must be confirmed first
   else authRenderStep(false);   // failed: restore the button (toast already shown)
 }
 
@@ -847,72 +914,58 @@ async function handleAuthSubmit(e) {
 // SB.authLink (supabase-api.js) has already turned the link into a session; this just tells the visitor what happened.
 function showAuthLinkScreen(link) {
   if (!link) return;
-  document.getElementById('authLinkPage')?.remove();
-  const ov = document.createElement('div');
-  ov.id = 'authLinkPage';
-  ov.className = 'fixed inset-0 overflow-y-auto dark-scene';
-  ov.style.zIndex = '99990';
-  const close = () => { ov.remove(); document.body.style.overflow = ''; };
-  const icon = (cls, tone) => `<div class="auth-link-ico ${tone}"><i class="fa-solid ${cls}" aria-hidden="true"></i></div>`;
-  const shell = (inner) => `
-    <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1600&q=80')] bg-cover bg-center opacity-20"></div>
-    <div class="relative z-10 min-h-full flex items-center justify-center px-5 py-10">
-      <div class="auth-card auth-link-card w-full" style="max-width:440px">${inner}</div>
-    </div>`;
-  const btn = (id, label) => `<button type="button" id="${id}" class="btn-gold auth-submit w-full mt-2">${label}</button>`;
-
+  window.__authKeepOpen = true;   // enterApp() must not close this screen
+  document.getElementById('authLinkPage')?.remove();   // (older overlay, if any)
+  const t_ = (k, f) => t(k, f);
+  const finish = () => { window.__authKeepOpen = false; auth.closeOverlay(); if (typeof enterApp === 'function') enterApp(); };   // the visitor is signed in by the link itself
   const done = (ico, tone, title, text) => {
-    ov.innerHTML = shell(`${icon(ico, tone)}<h1 class="auth-link-title">${title}</h1><p class="auth-link-text">${text}</p>${btn('alContinue', t('authLinkContinue', 'Continue'))}`);
-    ov.querySelector('#alContinue').onclick = close;
+    const card = authInfo(`${authIcon(ico, tone)}<h1 class="auth-link-title">${title}</h1><p class="auth-link-text">${text}</p>${authBtn('alContinue', t_('authLinkContinue', 'Continue'))}`);
+    card.querySelector('#alContinue').onclick = finish;
   };
-
   if (link.kind === 'error') {
     const expired = /expired|invalid|otp/i.test(`${link.code} ${link.message}`);
-    ov.innerHTML = shell(`${icon('fa-link-slash', 'bad')}<h1 class="auth-link-title">${t('authLinkErrorTitle', 'This link is invalid or has expired')}</h1>
-      <p class="auth-link-text">${expired ? t('authLinkErrorText', 'For your security, email links work once and only for a short time. Request a new one and try again.') : esc(link.message)}</p>
-      ${btn('alBack', link.flow === 'recovery' ? t('authLinkResetAgain', 'Request a new reset link') : t('authLinkBackToLogin', 'Back to log in'))}`);
-    ov.querySelector('#alBack').onclick = () => { close(); if (!auth.isLoggedIn()) nav.showAuth(); };
+    const card = authInfo(`${authIcon('fa-link-slash', 'bad')}<h1 class="auth-link-title">${t_('authLinkErrorTitle', 'This link is invalid or has expired')}</h1>
+      <p class="auth-link-text">${expired ? t_('authLinkErrorText', 'For your security, email links work once and only for a short time. Request a new one and try again.') : esc(link.message)}</p>
+      ${authBtn('alBack', link.flow === 'recovery' ? t_('authLinkResetAgain', 'Request a new reset link') : t_('authLinkBackToLogin', 'Back to log in'))}`);
+    card.querySelector('#alBack').onclick = () => { if (link.flow === 'recovery') authShowForgot(); else switchAuthMode('login'); };
   } else if (link.kind === 'recovery') {
-    ov.innerHTML = shell(`${icon('fa-key', 'gold')}<h1 class="auth-link-title">${t('authLinkRecoveryTitle', 'Choose a new password')}</h1>
-      <p class="auth-link-text">${t('authLinkRecoveryText', 'Enter a new password for your account.')}</p>
+    const card = authInfo(`${authIcon('fa-key', 'gold')}<h1 class="auth-link-title">${t_('authLinkRecoveryTitle', 'Choose a new password')}</h1>
+      <p class="auth-link-text">${t_('authLinkRecoveryText', 'Enter a new password for your account.')}</p>
       <form id="alForm" novalidate>
-        <div class="auth-field"><label for="alPw">${t('authNewPassword', 'NEW PASSWORD')}</label>
+        <div class="auth-field"><label for="alPw">${t_('authNewPassword', 'NEW PASSWORD')}</label>
           <div class="auth-input"><i class="fa-solid fa-lock auth-input-icon" aria-hidden="true"></i><input type="password" id="alPw" autocomplete="new-password" minlength="6"></div>
           <div class="auth-strength" id="alStrength" aria-hidden="true"><span></span><span></span><span></span><span></span><em id="alStrengthLabel"></em></div>
           <p class="auth-err" id="alErr1" role="alert"></p></div>
-        <div class="auth-field"><label for="alPw2">${t('authConfirmPassword', 'CONFIRM PASSWORD')}</label>
+        <div class="auth-field"><label for="alPw2">${t_('authConfirmPassword', 'CONFIRM PASSWORD')}</label>
           <div class="auth-input"><i class="fa-solid fa-lock auth-input-icon" aria-hidden="true"></i><input type="password" id="alPw2" autocomplete="new-password"></div>
           <p class="auth-err" id="alErr2" role="alert"></p></div>
-        <button type="submit" id="alSave" class="btn-gold auth-submit w-full">${t('authLinkSavePassword', 'Save new password')}</button>
+        <button type="submit" id="alSave" class="btn-gold auth-submit w-full">${t_('authLinkSavePassword', 'Save new password')}</button>
       </form>`);
-    const pw = ov.querySelector('#alPw'), pw2 = ov.querySelector('#alPw2'), e1 = ov.querySelector('#alErr1'), e2 = ov.querySelector('#alErr2');
+    const pw = card.querySelector('#alPw'), pw2 = card.querySelector('#alPw2'), e1 = card.querySelector('#alErr1'), e2 = card.querySelector('#alErr2');
     pw.addEventListener('input', () => {
-      const sc = pw.value ? authPasswordScore(pw.value) : 0, m = ov.querySelector('#alStrength');
+      const sc = pw.value ? authPasswordScore(pw.value) : 0, m = card.querySelector('#alStrength');
       m.dataset.score = String(sc);
-      ov.querySelector('#alStrengthLabel').textContent = ['', t('authPwWeak', 'Weak'), t('authPwFair', 'Fair'), t('authPwGood', 'Good'), t('authPwStrong', 'Strong')][sc] || '';
+      card.querySelector('#alStrengthLabel').textContent = ['', t_('authPwWeak', 'Weak'), t_('authPwFair', 'Fair'), t_('authPwGood', 'Good'), t_('authPwStrong', 'Strong')][sc] || '';
       e1.textContent = '';
     });
     pw2.addEventListener('input', () => { e2.textContent = ''; });
-    ov.querySelector('#alForm').onsubmit = async (e) => {
+    card.querySelector('#alForm').onsubmit = async (e) => {
       e.preventDefault();
       e1.textContent = e2.textContent = '';
-      if (pw.value.length < 6) { e1.textContent = t('authErrPasswordShort', 'Password must be at least 6 characters.'); pw.focus(); return; }
-      if (pw.value !== pw2.value) { e2.textContent = t('authPwMismatch', 'The two passwords do not match.'); pw2.focus(); return; }
-      const b = ov.querySelector('#alSave'); b.disabled = true; b.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin" aria-hidden="true"></i>';
+      if (pw.value.length < 6) { e1.textContent = t_('authErrPasswordShort', 'Password must be at least 6 characters.'); pw.focus(); return; }
+      if (pw.value !== pw2.value) { e2.textContent = t_('authPwMismatch', 'The two passwords do not match.'); pw2.focus(); return; }
+      const b = card.querySelector('#alSave'); b.disabled = true; b.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin" aria-hidden="true"></i>';
       try {
         await SB.updatePassword(pw.value);
-        done('fa-circle-check', 'good', t('authLinkDoneTitle', 'Password updated'), t('authLinkDoneText', 'Your new password is saved and you are signed in.'));
-      } catch (er) { b.disabled = false; b.textContent = t('authLinkSavePassword', 'Save new password'); e1.textContent = er.message || 'Error'; }
+        done('fa-circle-check', 'good', t_('authLinkDoneTitle', 'Password updated'), t_('authLinkDoneText', 'Your new password is saved and you are signed in.'));
+      } catch (er) { b.disabled = false; b.textContent = t_('authLinkSavePassword', 'Save new password'); e1.textContent = er.message || 'Error'; }
     };
     setTimeout(() => pw.focus(), 80);
   } else if (link.kind === 'email_change') {
-    done('fa-circle-check', 'good', t('authLinkEmailChangedTitle', 'Email address updated'), t('authLinkEmailChangedText', 'Your new email address is confirmed.'));
+    done('fa-circle-check', 'good', t_('authLinkEmailChangedTitle', 'Email address updated'), t_('authLinkEmailChangedText', 'Your new email address is confirmed.'));
   } else {
-    done('fa-circle-check', 'good', t('authLinkConfirmedTitle', 'Email confirmed'), t('authLinkConfirmedText', 'Thank you! Your account is ready and you are signed in.'));
+    done('fa-circle-check', 'good', t_('authLinkConfirmedTitle', 'Email confirmed'), t_('authLinkConfirmedText', 'Thank you! Your account is ready and you are signed in.'));
   }
-  document.body.appendChild(ov);
-  document.body.style.overflow = 'hidden';
-  const hide = document.getElementById('splash'); if (hide) hide.style.display = 'none';
 }
 
 // ==================== GOOGLE SIGN-IN ====================
@@ -1238,6 +1291,7 @@ const favorites = {
     this.render();
   },
   async toggle(id) {
+    if (!auth.isLoggedIn()) { auth.require(() => favorites.toggle(id), t('authNeedLoginAccount', 'Log in or create an account to continue')); return; }
     try {
       await apiFetch('/api/user/favorites', { method: 'POST', body: JSON.stringify({ itemId: id }) });
       const idx = state.favorites.indexOf(id);

@@ -731,5 +731,18 @@
   "rvKindExcursion": "Geziler",
   "rvKindTransfer": "Transferler",
   "rvKindRestaurant": "Restoranlar",
-  "rvKindHotel": "Oteller"
+  "rvKindHotel": "Oteller",
+  "authNeedLoginBook": "Rezervasyonunuzu tamamlamak için giriş yapın veya hesap oluşturun",
+  "authNeedLoginAccount": "Devam etmek için giriş yapın veya hesap oluşturun",
+  "authCloseBrowse": "Göz atmaya devam et",
+  "authForgotTitle": "Şifrenizi mi unuttunuz?",
+  "authForgotSub": "E-postanızı yazın, yeni şifre seçmeniz için bir bağlantı gönderelim.",
+  "authSendReset": "Sıfırlama bağlantısı gönder",
+  "authBackToLogin": "Girişe dön",
+  "authCheckInboxTitle": "Gelen kutunuzu kontrol edin",
+  "authResetSentText": "{email} için bir hesap varsa bağlantı yolda. Bağlantı yalnızca bir kez ve kısa süre çalışır.",
+  "authConfirmSentTitle": "E-postanızı doğrulayın",
+  "authConfirmSentText": "{email} adresine bir doğrulama bağlantısı gönderdik. Hesabınızı etkinleştirmek için açın, sonra giriş yapın.",
+  "authResend": "E-postayı tekrar gönder",
+  "authResendDone": "E-posta tekrar gönderildi"
 }

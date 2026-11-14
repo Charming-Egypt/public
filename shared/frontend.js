@@ -136,11 +136,22 @@ function updateStickyHeaderState() {
 window.addEventListener('scroll', updateStickyHeaderState, { passive: true });
 
 let __entered = false;
+// pages that only make sense with an account: a guest is asked to log in / sign up first (everything else is open to browse, like Booking.com)
+const ACCOUNT_PAGES = ['bookings', 'profile', 'notifications', 'favorites'];
 function enterApp() {
-  document.getElementById('authPage')?.classList.add('hidden');
+  if (!window.__authKeepOpen) { document.getElementById('authPage')?.classList.add('hidden'); document.body.style.overflow = ''; }   // (a link from an e-mail keeps its own screen open until "Continue")
   document.documentElement.removeAttribute('data-gate');
   document.getElementById('mainApp')?.classList.remove('hidden');
-  if (__entered) { updateStickyHeaderState(); if (typeof reviewsPg !== 'undefined') reviewsPg.rerender(); return; }   // signed in from the auth overlay: don't boot twice (the reviews page must unlock, though)
+  if (__entered) {   // signed in from the overlay: don't boot twice — load the account data, unlock the reviews page, then carry on with what the visitor was doing
+    if (auth.isLoggedIn()) {
+      updateDrawerUser((currentUser && (currentUser.displayName || currentUser.email)) || '', (currentUser && currentUser.email) || '', currentUser && currentUser.photoURL);
+      if (SHOW_HOTELS) favorites.load();
+      bookings.load(); notifications.load(); loadUserProfile();
+    }
+    updateStickyHeaderState(); if (typeof reviewsPg !== 'undefined') reviewsPg.rerender();
+    auth.runPending();
+    return;
+  }
   __entered = true;
 
   __catalogLoadPromise = loadCatalogFromWorker();
@@ -166,6 +177,11 @@ function enterApp() {
   const route = document.body.dataset.route || 'home';
   if (route === 'hotels' && !SHOW_HOTELS && !document.body.dataset.detail) { location.replace(pathForPage('home')); return; }   // hotels switched off: no dead page
   const detail = document.body.dataset.detail;
+  if (!detail && ACCOUNT_PAGES.includes(route) && !auth.isLoggedIn()) {   // e.g. /bookings/ opened by a guest
+    auth._onClose = () => location.replace(pathForPage('home'));
+    auth.require(() => nav.activate(route, { initial: true }), t('authNeedLoginAccount', 'Log in or create an account to continue'));
+    updateStickyHeaderState(); return;
+  }
   if (detail) {
     openDetailFromRoute(detail, new URLSearchParams(location.search).get('id'));
   } else {
@@ -186,6 +202,7 @@ const nav = {
     if (page === 'destinations' && !SHOW_DESTINATIONS) return;
     if (page === 'journal' && !SHOW_JOURNAL) return;
     if (!ROUTES[page]) return;
+    if (ACCOUNT_PAGES.includes(page) && !auth.isLoggedIn()) { auth.require(() => nav.go(page, opts)); return; }
 
     const here = document.body.dataset.route;
     if (here === page && !document.body.dataset.detail) { this.activate(page, opts); return; }
@@ -232,11 +249,15 @@ const nav = {
     if (internal && history.length > 1) history.back(); else location.assign(pathForPage('home'));
   },
 
-  showAuth() {
+  // The log-in / sign-up screen as an overlay on top of the page the visitor is on (the site itself stays open for guests).
+  showAuth(mode = 'login', opts = {}) {
     try { sidebar.close(); } catch {}
     document.getElementById('authPage').classList.remove('hidden');
-    document.getElementById('mainApp').classList.add('hidden');
-    switchAuthMode('login');
+    document.body.style.overflow = 'hidden';
+    switchAuthMode(mode);
+    let r = document.getElementById('authReason');
+    if (!r) { r = document.createElement('p'); r.id = 'authReason'; r.className = 'auth-reason'; document.getElementById('authHead').after(r); }
+    r.textContent = opts.reason || ''; r.hidden = !opts.reason;
     initGoogleSignInButton();
   }
 };
@@ -2140,7 +2161,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (typeof restoreUiState === 'function') restoreUiState();
   try { search.updatePaxDisplays(); lf.ctxChanged(); } catch (e) {}   // listing pages: strip + prices follow the searched dates / people
   search.switchTab(search.activeTab);   // card follows what restoreUiState brought back (dates, category, tab)
-  if (auth.isLoggedIn() || sessionStorage.getItem('ds_guest')) { enterApp(); } else { nav.showAuth(); }
+  enterApp();   // always: guests browse freely; log in / sign up is asked only when an action needs an account
   WX.init();
   if (typeof resumeSessionPayment === 'function') resumeSessionPayment();
 });

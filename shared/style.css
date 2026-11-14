@@ -5438,3 +5438,11 @@ html[data-theme="dark"] .rvp-err { color: #fca5a5; }
 .pkg-card .lc-badge i { margin-inline-end: 4px; }
 .pkg-empty-ic { display: block; font-size: 34px; margin: 0 auto 14px; color: var(--ds-accent, #f97316); opacity: .8; }
 .pkg-pill { display: inline-flex; align-items: center; gap: 5px; margin-bottom: 4px; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; background: rgba(249,115,22,.16); color: var(--ds-accent-2, #fb923c); }
+
+/* sign-in overlay: the site is browsable without an account, so the auth screen can always be closed */
+.auth-close { position: absolute; z-index: 20; top: 16px; inset-inline-end: 16px; display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 999px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; transition: background .2s; }
+.auth-close:hover { background: rgba(255,255,255,.16); }
+.auth-reason { margin: 0 0 14px; padding: 10px 14px; border-radius: 12px; background: rgba(251,191,36,.12); border: 1px solid rgba(251,191,36,.28); color: #fbbf24; font-size: 13px; font-weight: 600; }
+.auth-info-actions { display: grid; gap: 10px; margin-top: 8px; }
+.auth-link-btn { background: none; border: 0; color: #fbbf24; font-weight: 600; font-size: 13px; cursor: pointer; padding: 6px; }
+.auth-link-btn[disabled] { opacity: .5; cursor: default; }

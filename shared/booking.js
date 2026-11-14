@@ -819,7 +819,7 @@ function selectRoomOnDetail(hotelId, roomIndex) {
 }
 
 function startBooking(hotelId, roomIndex) {
-  if (!authToken) { toast(t('errLoginToBook'), 'error'); return; }
+  if (!authToken) { auth.require(() => startBooking(hotelId, roomIndex), t('authNeedLoginBook', 'Log in or create an account to complete your booking')); return; }
   if (!allChildAgesSelected()) { toast(t('errSelectChildAgesBooking'), 'error'); openGuestsModal(); return; }
   const h = CATALOG.hotels.find(x => x.id === hotelId);
   const r = h?.rooms?.[roomIndex];
@@ -949,7 +949,7 @@ function computeRoomPricing(room, guests, roomsCount, nights) {
 
 async function payAndConfirmHotelBooking(roomTotal, taxes, total, nights) {
   await loadBkPricing(); total = bkQuote('hotel', roomTotal, planOf('hotel')).total;
-  if (!authToken) { toast(t('errLoginToBook'), 'error'); return; }
+  if (!authToken) { auth.require(() => payAndConfirmHotelBooking(roomTotal, taxes, total, nights), t('authNeedLoginBook', 'Log in or create an account to complete your booking')); return; }
   if (!navigator.onLine && await queueBookingDraft('hotel')) return;
   const btn = document.getElementById('hotelPayBtn'); btn.disabled = true; btn.innerHTML = 'Processing…';
   const orderId = utils.generateId();
@@ -1164,7 +1164,7 @@ function onGalleryScroll(el, dotsId) { const idx = Math.round(el.scrollLeft / el
 // Back-compat alias — existing excursion markup calls this by name directly.
 function onExcursionGalleryScroll(el) { onGalleryScroll(el, 'excursionGalleryDots'); }
 function startExcursionBooking(id) {
-  if (!authToken) { toast(t('errLoginToBook'), 'error'); return; }
+  if (!authToken) { auth.require(() => startExcursionBooking(id), t('authNeedLoginBook', 'Log in or create an account to complete your booking')); return; }
   const x = findExcursionOrPackage(id);
   if (!x) return;
   state.currentExcursion = x;
@@ -1222,7 +1222,7 @@ function submitExcursionDetails(e) { e.preventDefault(); state.bookingDraft.date
 
 async function payAndConfirmExcursionBooking(subtotal, taxes, total) {
   await loadBkPricing(); total = bkQuote('excursion', subtotal, planOf('excursion')).total;
-  if (!authToken) { toast(t('errLoginToBook'), 'error'); return; }
+  if (!authToken) { auth.require(() => payAndConfirmExcursionBooking(subtotal, taxes, total), t('authNeedLoginBook', 'Log in or create an account to complete your booking')); return; }
   if (!navigator.onLine && await queueBookingDraft('excursion')) return;
   const btn = document.getElementById('excursionPayBtn'); btn.disabled = true; btn.innerHTML = 'Processing…';
   const orderId = utils.generateId();
@@ -1271,7 +1271,7 @@ async function payAndConfirmExcursionBooking(subtotal, taxes, total) {
 
 // ==================== TRANSFER BOOKING ====================
 function startTransferBooking(id) {
-  if (!authToken) { toast(t('errLoginToBook'), 'error'); return; }
+  if (!authToken) { auth.require(() => startTransferBooking(id), t('authNeedLoginBook', 'Log in or create an account to complete your booking')); return; }
   const v = CATALOG.transfers.find(i => i.id === id);
   if (!v) return toast(t('errTransferNotFound'), 'error');
   state.currentTransfer = v;
@@ -1377,7 +1377,7 @@ function submitTransferDetails(e) { e.preventDefault(); state.bookingDraft.fligh
 
 async function payAndConfirmTransferBooking(subtotal, taxes, total) {
   await loadBkPricing(); total = bkQuote('transfer', subtotal, planOf('transfer')).total;
-  if (!authToken) { toast(t('errLoginToBook'), 'error'); return; }
+  if (!authToken) { auth.require(() => payAndConfirmTransferBooking(subtotal, taxes, total), t('authNeedLoginBook', 'Log in or create an account to complete your booking')); return; }
   if (!navigator.onLine && await queueBookingDraft('transfer')) return;
   const btn = document.getElementById('transferPayBtn'); btn.disabled = true; btn.innerHTML = 'Processing…';
   const orderId = utils.generateId();

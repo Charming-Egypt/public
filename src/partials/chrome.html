@@ -10,6 +10,7 @@
   </div>
 
   <div id="authPage" class="fixed inset-0 z-[95] hidden dark-scene overflow-y-auto">
+    <button type="button" id="authClose" class="auth-close" onclick="auth.closeOverlay()" aria-label="Close" data-i18n-aria="ariaClose"><i class="fa-solid fa-xmark" aria-hidden="true"></i><span data-i18n="authCloseBrowse">Continue browsing</span></button>
     <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1600&q=80')] bg-cover bg-center opacity-20"></div>
     <div class="ds-waves ds-waves--auth" aria-hidden="true" data-app-only><i></i><i></i><i></i></div>
     <div class="stars-container"></div>
@@ -50,7 +51,7 @@
           <div class="text-center mb-6 lg:hidden">
             <img src="https://blogger.googleusercontent.com/img/a/AVvXsEijXrWtde6tToaU9FtagWqPfjqA6WXHuyb4o-kQ208kWktjrv7N0nDGNdYbT2fl_mIDx4PsLwQ11GKYLYWhnA5n3ccOWGHIW1izBqqhLJhXhfeLFsCAa5pAgAfGvCx0opO6HJ_ZdNjRP3koAnLAEAdzWFbmj7KRiUAWxveqhw3pBPNhoFnBlVJvbwVGmdpQ=s1600" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="auth-logo mx-auto" alt="Discover Sharm" />
           </div>
-          <div class="mb-6 text-center lg:text-start">
+          <div class="mb-6 text-center lg:text-start" id="authHead">
             <h1 class="font-display text-2xl font-bold text-white" id="authTitle" data-i18n="welcomeBack">Welcome Back</h1>
             <p class="text-white/50 text-sm mt-1" id="authSubtitle" data-i18n="authSubtitle">Sign in to manage your bookings</p>
           </div>
@@ -177,6 +178,7 @@
               <a href="javascript:void(0)" onclick="switchAuthMode(authMode === 'login' ? 'signup' : 'login')" id="authSwitchLink" class="text-gold-400 font-semibold" data-i18n="signupBtn">Sign Up</a>
             </p>
           </div>
+          <div class="auth-card auth-link-card hidden" id="authInfoCard" aria-live="polite"></div>
         </div>
       </div>
     </div>

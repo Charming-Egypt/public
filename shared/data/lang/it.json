@@ -731,5 +731,18 @@
   "rvKindExcursion": "Escursioni",
   "rvKindTransfer": "Transfer",
   "rvKindRestaurant": "Ristoranti",
-  "rvKindHotel": "Hotel"
+  "rvKindHotel": "Hotel",
+  "authNeedLoginBook": "Accedi o crea un account per completare la prenotazione",
+  "authNeedLoginAccount": "Accedi o crea un account per continuare",
+  "authCloseBrowse": "Continua a sfogliare",
+  "authForgotTitle": "Password dimenticata?",
+  "authForgotSub": "Inserisci la tua email: ti invieremo un link per scegliere una nuova password.",
+  "authSendReset": "Invia link",
+  "authBackToLogin": "Torna all'accesso",
+  "authCheckInboxTitle": "Controlla la tua posta",
+  "authResetSentText": "Se esiste un account per {email}, un link è in arrivo. Funziona una sola volta e per poco tempo.",
+  "authConfirmSentTitle": "Conferma la tua email",
+  "authConfirmSentText": "Abbiamo inviato un link di conferma a {email}. Aprilo per attivare l'account, poi accedi.",
+  "authResend": "Reinvia email",
+  "authResendDone": "Email inviata di nuovo"
 }

@@ -227,8 +227,7 @@ function buildPublic(site) {
         d.lang = l; d.dir = l === 'ar' ? 'rtl' : 'ltr';
         var ss = JSON.parse(localStorage.getItem('ds_site_settings') || 'null');   // hotels: hidden unless the admin switched them on
         d.dataset.hotels = ss && ss.value && ss.value.sections && ss.value.sections.hotels === true ? 'on' : 'off';
-        var signedIn = localStorage.getItem('ds_auth_token') || (window.DS_HAS_SESSION && DS_HAS_SESSION());
-        if (!signedIn && !sessionStorage.getItem('ds_guest')) d.dataset.gate = 'auth';
+        // (no log-in gate any more: the site is open to guests, like Booking.com — log-in / sign-up is asked only when an action needs an account)
       } catch (e) {}
     })();
     window.DS_CONFIG = ${JSON.stringify({
