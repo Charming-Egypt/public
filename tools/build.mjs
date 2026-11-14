@@ -447,12 +447,14 @@ ${useSupabase ? `document.write('<script src="${SUPABASE_JS}"><\\/script>');` : 
   // ---- installable app (PWA): manifest, icons, head tags, service worker --------------------------------------------------
   const APP_BG = '#f6f5f3';
   const appName = isOwner ? 'Discover Sharm Owner' : isSeller ? 'Discover Sharm Seller' : 'Discover Sharm Admin', shortName = isOwner ? 'DS Owner' : isSeller ? 'DS Seller' : 'DS Admin';
-  out.copy('shared/pwa', 'icons');
+  const ROLE = isOwner ? 'owner' : isSeller ? 'seller' : 'admin';   // each console has its own icon (same logo + coloured role ring/pill): tools/make-role-icons.py
+  out.copy('shared/pwa', 'icons'); out.copy(`shared/pwa-${ROLE}`, 'icons');
+  const RV = sha(Buffer.concat(['icon-512', 'icon-maskable-512', 'apple-touch-icon', 'favicon-32'].map((f) => fs.readFileSync(path.join(ROOT, `shared/pwa-${ROLE}/${f}.png`)))));   // new icon = new URL (icons are cached for 30 days)
   const pwaHead = (h) => h
     .replace(/<meta name="theme-color"[^>]*>/, `<meta name="theme-color" content="${APP_BG}" media="(prefers-color-scheme: light)">\n<meta name="theme-color" content="#0d0d0f" media="(prefers-color-scheme: dark)">`)
     .replace('</head>', `<link rel="manifest" href="/manifest.webmanifest">
-<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
-<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png?v=${RV}">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png?v=${RV}">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -465,10 +467,10 @@ ${useSupabase ? `document.write('<script src="${SUPABASE_JS}"><\\/script>');` : 
     start_url: '/', scope: '/', display: 'standalone', display_override: ['standalone', 'minimal-ui'], orientation: 'portrait',
     background_color: APP_BG, theme_color: APP_BG, categories: ['business', 'productivity'],
     icons: [
-      { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
-      { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
-      { src: '/icons/icon-maskable-192.png', sizes: '192x192', type: 'image/png', purpose: 'maskable' },
-      { src: '/icons/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+      { src: '/icons/icon-192.png?v=' + RV, sizes: '192x192', type: 'image/png', purpose: 'any' },
+      { src: '/icons/icon-512.png?v=' + RV, sizes: '512x512', type: 'image/png', purpose: 'any' },
+      { src: '/icons/icon-maskable-192.png?v=' + RV, sizes: '192x192', type: 'image/png', purpose: 'maskable' },
+      { src: '/icons/icon-maskable-512.png?v=' + RV, sizes: '512x512', type: 'image/png', purpose: 'maskable' },
     ],
   }, null, 2));
   const page = (srcRel, outRel) => {
@@ -491,12 +493,12 @@ ${useSupabase ? `document.write('<script src="${SUPABASE_JS}"><\\/script>');` : 
   } else if (isSeller) page('seller/index.html', 'index.html');
   else page('index.html', 'index.html');
   for (const f of fs.readdirSync(path.join(ROOT, 'console', 'admin-lang'))) out.copy(`console/admin-lang/${f}`, `lang/admin-${f}`);   // console interface languages (see console/i18n.js)
-  out.copy('shared/favicon.ico', 'favicon.ico');
+  out.copy(`shared/pwa-${ROLE}/favicon.ico`, 'favicon.ico');
   out.copy('shared/data/lang/en.json', 'lang/en.json');   // the English UI strings: the source text when a new language is added (console/settings.js)
 
   {   // service worker: pre-cache the shell of this site
     const htmlPages = isOwner ? ['/', ...fs.readdirSync(path.join(ROOT, 'admin-src', 'owner')).map((f) => '/' + f)] : ['/'];
-    const precache = [...new Set([...htmlPages, '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/icon-maskable-192.png', '/icons/apple-touch-icon.png', '/icons/splash-logo.png',
+    const precache = [...new Set([...htmlPages, '/manifest.webmanifest', '/icons/icon-192.png?v=' + RV, '/icons/icon-512.png?v=' + RV, '/icons/icon-maskable-192.png?v=' + RV, '/icons/apple-touch-icon.png?v=' + RV, '/icons/splash-logo.png',
       ...files.map((f) => `/console/${f}?v=${V[f]}`), `/console/supabase-config.js?v=${V['supabase-config.js']}`, ...(isAdmin ? [`/admin.js?v=${V['admin.js']}`] : [])])];
     out.write('sw.js', read('shared/sw-staff.template.js').replaceAll('__VERSION__', sha(JSON.stringify([V, precache]))).replace('__PRECACHE__', JSON.stringify(precache, null, 2)));
   }

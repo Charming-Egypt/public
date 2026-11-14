@@ -46,3 +46,8 @@
 3. عند البناء: `DS_MEDIA_BASE=https://media.discover-sharm.com` ثم ارفع الـ app/www والأدمن.
 4. احفظ أي إعداد من الأدمن مرة، وتأكد إن `…/settings/settings.json` و`…/settings/version.json` ظاهرين.
 بعدها الزوار بيقروا ملفين ثابتين من الـ CDN (بدون Worker ولا قاعدة بيانات) والتغيير بيوصل خلال ~10-15 ثانية.
+
+### أيقونات مميزة لكل داشبورد (2026-11-14)
+- نفس لوجو Discover Sharm والخلفية الكحلي، مع إطار وشارة بلون الدور: Admin بنفسجي، Owner تركواز، Seller أخضر. المصدر: `tools/make-role-icons.py` → `shared/pwa-admin|owner|seller/` (أيقونة عادية + maskable + apple-touch + favicon).
+- `tools/build.mjs` بينسخ أيقونات الدور فوق `shared/pwa` ويضيف `?v=<hash>` لكل روابط الأيقونات. تطبيق الزوار (Discover) لسه بالأيقونة الأصلية.
+- على الموبايل: لازم تمسح تطبيق الداشبورد وتثبّته تاني عشان الأيقونة تتغير.
