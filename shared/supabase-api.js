@@ -51,11 +51,10 @@ function dsRefCode() {
 
   // ---- site settings (sections on/off, languages, announcement, maintenance, contact): public row, cached for instant next load ----
   (() => {
-  const KEY = 'ds_site_settings', FRESH_MS = cfg.mediaBase ? 20 * 1000 : 5 * 60 * 1000;   // on static hosting a recheck is nearly free, so edits show within ~20 s
+  const KEY = 'ds_site_settings', FRESH_MS = cfg.mediaBase ? 10 * 1000 : 2 * 60 * 1000;   // static copy (R2/CDN, no Worker, no database) is rechecked after 10 s; the Worker/database path after 2 min
   let cached = null; try { cached = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch {}
-  // a copy younger than 5 minutes is used as-is: browsing 6 pages makes ONE settings request, not 6
-  if (cached && cached.t && Date.now() - cached.t < FRESH_MS) { window.DS_SETTINGS_READY = Promise.resolve(cached); return; }
-  const fresh = (async () => {
+  // a copy younger than FRESH_MS is used as-is: browsing many pages makes ONE settings request
+  const load = async () => {
     let res;
     if (cfg.mediaBase) {   // static copy published by the settings Worker on every save (no Worker call, no database)
       try { const r = await fetch(await mediaUrl('settings/settings.json')); if (r.ok) { const j = await r.json(); res = { value: j.value || {}, langs: j.langs || [] }; } } catch (e) { /* fall through to the Worker */ }
@@ -76,7 +75,11 @@ function dsRefCode() {
     res.t = Date.now();
     try { localStorage.setItem(KEY, JSON.stringify(res)); } catch {}   // (extra-language strings are ~20 KB each)
     return res;
-  })().catch(() => cached);
+  };
+  // for the live refresher (frontend.js): hits the network only when the stored copy is older than FRESH_MS (so it can never spam); null = nothing new
+  window.DS_REFRESH_SETTINGS = () => { try { const c = JSON.parse(localStorage.getItem(KEY) || 'null'); if (c && c.t && Date.now() - c.t < FRESH_MS) return Promise.resolve(null); } catch {} return load().catch(() => null); };
+  if (cached && cached.t && Date.now() - cached.t < FRESH_MS) { window.DS_SETTINGS_READY = Promise.resolve(cached); return; }
+  const fresh = load().catch(() => cached);
   // never hold the page for more than 2.5 s: use the cached copy if the network is slow
   window.DS_SETTINGS_READY = Promise.race([fresh, new Promise(r => setTimeout(() => r(cached), 2500))]);
 })();

@@ -1400,5 +1400,7 @@
  "حد يومي": "Daily limit",
  "صلاحيات": "Permissions —",
  "تأكيد إن البلاغ صح؟ هيتوقف السيلر وعمولة الحجز هتفضل ملغية": "Confirm the report is valid? The seller will be suspended and the booking's commission stays cancelled",
- "رفض البلاغ؟ عمولة السيلر هترجع": "Reject the report? The seller's commission will be restored"
+ "رفض البلاغ؟ عمولة السيلر هترجع": "Reject the report? The seller's commission will be restored",
+ "الوضع الداكن": "Dark mode",
+ "الوضع الفاتح": "Light mode"
 }

@@ -335,8 +335,17 @@ DS.side = async () => {
 DS.reload = () => { const i = [...$('#nav').children].findIndex(b => b.classList.contains('on')); show(Math.max(0, i)); };
 DS.go = label => { const i = VIEWS.findIndex(v => v.label === label); if (i >= 0) show(i); };
 // desktop = the dark glass console; phones & tablets = the "app" look (console/console-app.css): same look as the public app
-(() => { const mq = window.matchMedia('(max-width:1023px)'), set = () => { document.documentElement.dataset.theme = mq.matches ? 'app' : 'dark'; };
+// desktop = dark (default) or light, remembered in localStorage; phones & tablets = the "app" look (console/console-app.css)
+const THEME_KEY = 'ds_console_theme';
+const savedTheme = () => { try { return localStorage.getItem(THEME_KEY) === 'light' ? 'light' : 'dark'; } catch { return 'dark'; } };
+(() => { const mq = window.matchMedia('(max-width:1023px)'), set = () => { document.documentElement.dataset.theme = mq.matches ? 'app' : savedTheme(); };
   set(); (mq.addEventListener ? mq.addEventListener('change', set) : mq.addListener(set)); })();
+DS.toggleTheme = () => {
+  const d = document.documentElement; if (d.dataset.theme === 'app') return;
+  const t = d.dataset.theme === 'light' ? 'dark' : 'light'; d.dataset.theme = t;
+  try { localStorage.setItem(THEME_KEY, t); } catch {}
+  const b = document.getElementById('themeBtn'); if (b) { b.innerHTML = DS.ic(t === 'light' ? 'moon' : 'sun'); b.title = t === 'light' ? 'الوضع الداكن' : 'الوضع الفاتح'; }
+};
 DS.start = (cfg) => {
   CFG = cfg; document.title = cfg.title;
   document.body.innerHTML = `
@@ -350,11 +359,12 @@ DS.start = (cfg) => {
     <p style="margin:14px 0 0;text-align:center"><a href="#" id="lforgot" style="color:var(--accent,#e8590c);font-weight:700;font-size:13px">نسيت كلمة المرور؟</a></p>
     <div id="lgoogle" class="hide" style="margin-top:16px"><div style="text-align:center;color:var(--muted);font-size:12px;margin-bottom:10px">—</div><div id="gbtn" style="display:flex;justify-content:center"></div></div></form></div></div>
   <div id="app" class="hide"><aside class="side"><div class="brand">${logoMark()}</div><nav id="nav" aria-label="القائمة"></nav>
-    <div class="sfoot"><button id="out" title="خروج">${DS.ic('out')}</button></div></aside>
+    <div class="sfoot"><button id="themeBtn" class="themebtn" type="button" title="${savedTheme() === 'light' ? 'الوضع الداكن' : 'الوضع الفاتح'}">${DS.ic(savedTheme() === 'light' ? 'moon' : 'sun')}</button><button id="out" title="خروج">${DS.ic('out')}</button></div></aside>
     <div class="content"><header class="top"><button class="hav" id="hav" type="button" aria-label="القائمة"></button><div class="greet"><h1 id="greet"></h1><p id="ptitle"></p></div>
       <label class="sbox">${DS.ic('search')}<input id="gs" type="search" placeholder="ابحث في الصفحة..." autocomplete="off"></label>
       <button class="ib" id="rf" title="تحديث">${DS.ic('refresh')}</button><button class="ib mob" id="out2" title="خروج">${DS.ic('out')}</button></header><main id="main"></main></div>
     <aside class="rightp" id="rightp"></aside></div><div id="scrim"></div><div id="toast"></div><nav id="tabbar" aria-label="القائمة"></nav><div id="sheetbg"></div><div id="sheet" role="dialog" aria-label="كل الأقسام"></div>`;
+  $('#themeBtn').onclick = DS.toggleTheme;
   $('#rf').onclick = () => { DS.reload(); DS.side(); };
   $('#gs').oninput = e => {   // live filter of whatever the current page lists (table rows, content cards, review cards)
     const q = e.target.value.trim().toLowerCase();

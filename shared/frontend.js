@@ -2024,6 +2024,12 @@ function applyCategoryVisibility() {
 document.addEventListener('DOMContentLoaded', async () => {
   await loadI18nDict();
   if (window.DS_SETTINGS_READY) { const st = await window.DS_SETTINGS_READY; if (st && st.value) applySiteSettings(st.value); }   // live site settings (sections, announcement, maintenance, contact)
+  // keep the settings live: re-check when the tab regains focus (throttled inside DS_REFRESH_SETTINGS — no timers, no polling); apply only when something changed
+  if (window.DS_REFRESH_SETTINGS) {
+    let last = JSON.stringify(SITE_SET), busy = false;
+    const tick = async () => { if (busy || document.hidden) return; busy = true; try { const st = await window.DS_REFRESH_SETTINGS(); const j = st && st.value ? JSON.stringify(st.value) : null; if (j && j !== last) { last = j; applySiteSettings(st.value); } } finally { busy = false; } };
+    document.addEventListener('visibilitychange', tick); window.addEventListener('focus', tick);
+  }
   I18N.init();
   lf.mountAll(); DS_wrapListings();
   applyContactSettings(window.DS_CONFIG.CONTACT);
