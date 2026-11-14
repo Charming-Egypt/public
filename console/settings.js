@@ -28,7 +28,12 @@ DS.settingsView = () => async (m) => {
   const allLangs = () => BUILTIN.map(l => l[0]).concat(custom.map(l => l.code));
   const save = async (btn, extra) => {
     btn && (btn.disabled = true);
-    try { await DS.api('/settings', { method: 'PUT', body: { value: S } }); DS.toast('تم الحفظ — التغيير ظاهر على الموقع خلال ثواني ✓'); if (extra) extra(); }
+    try {
+      const r = await DS.api('/settings', { method: 'PUT', body: { value: S } });
+      if (r && r.success && r.published === false) DS.toast('اتحفظ، لكن النسخة الثابتة على R2 ما اتحدّثتش: ' + (r.publishError || 'سبب غير معروف') + ' — الموقع مش هيشوف التغيير', 'err');
+      else if (r && r.success === true && r.published === undefined && !(window.DS_SUPABASE && window.DS_SUPABASE.settingsBase)) DS.toast('اتحفظ في قاعدة البيانات بس — DS_SETTINGS_BASE مش مضبوط في بناء الأدمن، فالموقع و R2 مش هيتحدّثوا', 'err');
+      else DS.toast('تم الحفظ — التغيير ظاهر على الموقع خلال ثواني ✓');
+      if (extra) extra(); }
     catch (e) { DS.toast(e.message, true); } finally { btn && (btn.disabled = false); }
   };
   const field = (l, id, v, o = {}) => `<div class="fld"><label>${l}</label><input id="${id}" value="${esc(v || '')}" ${o.dir ? `dir="${o.dir}"` : ''} placeholder="${esc(o.ph || '')}">${o.h ? `<small>${o.h}</small>` : ''}</div>`;

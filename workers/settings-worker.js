@@ -78,7 +78,7 @@ export default {
 
     const url = new URL(req.url), seg = url.pathname.split('/').filter(Boolean).map(decodeURIComponent);
     try {
-      if (seg[0] === 'health') return json({ ok: true });
+      if (seg[0] === 'health') return json({ ok: true, media: { bound: !!env.MEDIA, base: mediaBase(env) || null, ready: hasMedia(env) }, github: !!(env.GITHUB_TOKEN && env.GITHUB_REPO) });
 
       // ---------- public ----------
       if (req.method === 'GET' && seg[0] === 'settings' && seg.length === 1) {
@@ -98,10 +98,14 @@ export default {
       await requireSuperAdmin(env, req);
       const gh = github(env);
       let body = {}; if (req.method === 'POST' || req.method === 'PUT') { const t = await req.text(); if (t.length > MAX_STRINGS + 20_000) throw fail(413, 'Too large'); try { body = t ? JSON.parse(t) : {}; } catch { throw fail(400, 'Invalid JSON'); } }
+      const pub = { published: false, publishError: '' };   // reported back to the admin so a missing R2 binding is never silent
       const save = async (fn, msg) => {
         const saved = await gh.mutateJSON(FILE, (cur) => { const f = norm(cur); const next = fn(f); return next === undefined ? undefined : { ...next, updatedAt: now() }; }, msg);
         const c = edge(); if (c && ctx && ctx.waitUntil) ctx.waitUntil(c.delete(new Request(url.origin + '/settings')).catch(() => {}));   // this location stops serving the old copy
-        if (saved && hasMedia(env)) { try { await publishSettings(env, saved); } catch (e) { console.error('settings publish', e.message); } }   // visitors get it within seconds
+        const cur = saved || ((await gh.getJSON(FILE)) || {}).json;   // unchanged save: still (re)publish the current file, so a stale R2 copy gets fixed
+        if (!cur) pub.publishError = 'no settings file yet';
+        else if (!hasMedia(env)) pub.publishError = !env.MEDIA ? 'R2 binding MEDIA is missing on the settings Worker' : 'MEDIA_BASE variable is missing on the settings Worker';
+        else { try { await publishSettings(env, cur); pub.published = true; } catch (e) { pub.publishError = String(e.message || e); console.error('settings publish', pub.publishError); } }   // visitors get it within seconds
         return saved;
       };
 
@@ -111,7 +115,7 @@ export default {
         if (!v || typeof v !== 'object' || Array.isArray(v)) throw fail(400, 'value must be an object');
         if (JSON.stringify(v).length > MAX_SETTINGS) throw fail(413, 'Settings too large');
         await save((f) => ({ ...f, settings: v }), 'settings updated');
-        return json({ success: true });
+        return json({ success: true, ...pub });
       }
       if (seg[1] === 'languages' && req.method === 'POST') {
         const code = String(body.code || '').trim();
@@ -128,12 +132,12 @@ export default {
           const languages = f.languages.slice(); if (i >= 0) languages[i] = lang; else languages.push(lang);
           return { ...f, languages };
         }, `language ${code} saved`);
-        return json({ success: true });
+        return json({ success: true, ...pub });
       }
       if (seg[1] === 'languages' && seg[2] && req.method === 'DELETE') {
         const code = seg[2];
         await save((f) => (f.languages.some(l => l.code === code) ? { ...f, languages: f.languages.filter(l => l.code !== code) } : undefined), `language ${code} deleted`);
-        return json({ success: true });
+        return json({ success: true, ...pub });
       }
       throw fail(404, 'Not found');
     } catch (e) {

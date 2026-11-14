@@ -1402,5 +1402,8 @@
  "تأكيد إن البلاغ صح؟ هيتوقف السيلر وعمولة الحجز هتفضل ملغية": "Confirm the report is valid? The seller will be suspended and the booking's commission stays cancelled",
  "رفض البلاغ؟ عمولة السيلر هترجع": "Reject the report? The seller's commission will be restored",
  "الوضع الداكن": "Dark mode",
- "الوضع الفاتح": "Light mode"
+ "الوضع الفاتح": "Light mode",
+ "اتحفظ، لكن النسخة الثابتة على R2 ما اتحدّثتش:": "Saved, but the static R2 copy was not updated:",
+ "— الموقع مش هيشوف التغيير": "— the site will not see the change",
+ "اتحفظ في قاعدة البيانات بس — DS_SETTINGS_BASE مش مضبوط في بناء الأدمن، فالموقع و R2 مش هيتحدّثوا": "Saved to the database only — DS_SETTINGS_BASE is not set in the admin build, so the site and R2 will not update"
 }
