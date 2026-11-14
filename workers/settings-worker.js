@@ -62,6 +62,15 @@ const publishSettings = async (env, file) => {
   await env.MEDIA.put('settings/version.json', JSON.stringify({ v }), { httpMetadata: meta });
 };
 
+// keep public.site_settings (read by the booking trigger that blocks switched-off sections) equal to the saved settings; uses the admin's own token
+async function syncDb(env, req, value) {
+  const url = String(env.SUPABASE_URL || '').replace(/\/+$/, ''), key = String(env.SUPABASE_ANON_KEY || ''), token = (req.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '').trim();
+  try {
+    const r = await fetch(`${url}/rest/v1/rpc/admin_set_site_settings`, { method: 'POST', headers: { apikey: key, Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ p_value: value || {} }) });
+    return r.ok ? '' : `database ${r.status}`;
+  } catch (e) { return 'database unreachable'; }
+}
+
 const edge = () => (typeof caches !== 'undefined' && caches.default) || null;
 
 export default {
@@ -115,7 +124,8 @@ export default {
         if (!v || typeof v !== 'object' || Array.isArray(v)) throw fail(400, 'value must be an object');
         if (JSON.stringify(v).length > MAX_SETTINGS) throw fail(413, 'Settings too large');
         await save((f) => ({ ...f, settings: v }), 'settings updated');
-        return json({ success: true, ...pub });
+        const dbErr = await syncDb(env, req, v);   // the database enforces switched-off sections on new bookings
+        return json({ success: true, ...pub, dbSynced: !dbErr, ...(dbErr ? { dbError: dbErr } : {}) });
       }
       if (seg[1] === 'languages' && req.method === 'POST') {
         const code = String(body.code || '').trim();

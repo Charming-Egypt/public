@@ -1405,5 +1405,8 @@
  "الوضع الفاتح": "Light mode",
  "اتحفظ، لكن النسخة الثابتة على R2 ما اتحدّثتش:": "Saved, but the static R2 copy was not updated:",
  "— الموقع مش هيشوف التغيير": "— the site will not see the change",
- "اتحفظ في قاعدة البيانات بس — DS_SETTINGS_BASE مش مضبوط في بناء الأدمن، فالموقع و R2 مش هيتحدّثوا": "Saved to the database only — DS_SETTINGS_BASE is not set in the admin build, so the site and R2 will not update"
+ "اتحفظ في قاعدة البيانات بس — DS_SETTINGS_BASE مش مضبوط في بناء الأدمن، فالموقع و R2 مش هيتحدّثوا": "Saved to the database only — DS_SETTINGS_BASE is not set in the admin build, so the site and R2 will not update",
+ "اتحفظ وظهر على الموقع، لكن قاعدة البيانات ما اتحدّثتش (": "Saved and live on the site, but the database was not updated (",
+ ") — منع الحجز للأقسام المقفولة مش هيشتغل لحد ما تحفظ تاني": ") — blocking bookings for switched-off sections will not work until you save again",
+ "هذا القسم مقفول حاليًا — مش متاح حجزه": "This section is currently closed — it cannot be booked"
 }

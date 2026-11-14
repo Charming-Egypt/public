@@ -2017,6 +2017,22 @@ function applyCategoryVisibility() {
   if (!SHOW_DESTINATIONS) document.getElementById('destinationsPage')?.remove();
 }
 
+// Hides (and, when switched back on, restores) EVERY link / tile / home block that points at a section the admin switched off —
+// drawer, desktop nav, bottom nav, footer, home "view all" rows, journal story card, transfer promo. Safe to call again on every settings change.
+function applySectionVisibility() {
+  const on = { excursions: SHOW_EXCURSIONS, packages: SHOW_PACKAGES, transfers: SHOW_TRANSFERS, restaurants: SHOW_RESTAURANTS, destinations: SHOW_DESTINATIONS, journal: SHOW_JOURNAL, hotels: SHOW_HOTELS };
+  const hide = (el, k, off) => { if (off) { if (el.dataset.dsHid !== k) { el.dataset.dsPrev = el.style.display; el.dataset.dsHid = k; } el.style.display = 'none'; } else if (el.dataset.dsHid === k) { el.style.display = el.dataset.dsPrev || ''; delete el.dataset.dsHid; delete el.dataset.dsPrev; } };
+  for (const [k, shown] of Object.entries(on)) {
+    if (k === 'hotels') continue;   // hotels have their own switches (ds-hotels-ui / hidden classes)
+    document.querySelectorAll(`[onclick*="nav.go('${k}')"], [data-page="${k}"]`).forEach(el => {
+      const wrap = el.matches('[data-i18n="viewAll"]') ? el.closest('.px-5.mb-8, .mb-8') : null;   // a "View all" button belongs to a whole home block
+      hide(wrap || el, k, !shown);
+    });
+  }
+  const one = (id, k) => { const el = document.getElementById(id); if (el) hide(el, k, !on[k]); };
+  one('transferPromoBanner', 'transfers'); one('dhStory', 'journal'); one('categoryTileRestaurants', 'restaurants');
+}
+
 // ==================== INIT ====================
 // Single startup sequence (previously duplicated across two files, which
 // caused the catalog, bookings and profile to each load twice over the
@@ -2027,7 +2043,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   // keep the settings live: re-check when the tab regains focus (throttled inside DS_REFRESH_SETTINGS — no timers, no polling); apply only when something changed
   if (window.DS_REFRESH_SETTINGS) {
     let last = JSON.stringify(SITE_SET), busy = false;
-    const tick = async () => { if (busy || document.hidden) return; busy = true; try { const st = await window.DS_REFRESH_SETTINGS(); const j = st && st.value ? JSON.stringify(st.value) : null; if (j && j !== last) { last = j; applySiteSettings(st.value); } } finally { busy = false; } };
+    const tick = async () => { if (busy || document.hidden) return; busy = true; try { const st = await window.DS_REFRESH_SETTINGS(); const j = st && st.value ? JSON.stringify(st.value) : null; if (j && j !== last) {
+        const was = JSON.parse(last || '{}'), now = st.value;
+        last = j; applySiteSettings(st.value);   // announcement / maintenance / contact apply instantly
+        if (JSON.stringify([was.sections, was.languages, was.site]) !== JSON.stringify([now.sections, now.languages, now.site])) dsUpdatedPill();   // sections & languages rebuild the pages: offer a refresh instead of yanking the page
+      } } finally { busy = false; } };
     document.addEventListener('visibilitychange', tick); window.addEventListener('focus', tick);
   }
   I18N.init();
@@ -2051,7 +2071,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   search.init();
 
   applyDesktopLayout();
-  applyCategoryVisibility();
+  applyCategoryVisibility(); applySectionVisibility();
   window.addEventListener('resize', applyDesktopLayout);
 
   if (typeof restoreUiState === 'function') restoreUiState();
@@ -2173,13 +2193,20 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') search.clo
 
 
 // ==================== SITE SETTINGS (from the admin console) ====================
+function dsUpdatedPill() {
+  if (document.getElementById('dsUpdPill')) return;
+  const ar = (I18N.get && I18N.get()) === 'ar', b = document.createElement('button');
+  b.id = 'dsUpdPill'; b.type = 'button'; b.textContent = ar ? 'الموقع اتحدّث — اضغط للتحديث ↻' : 'Site updated — tap to refresh ↻';
+  b.style.cssText = 'position:fixed;z-index:99999;left:50%;bottom:18px;transform:translateX(-50%);background:#ff6a2b;color:#fff;border:0;border-radius:999px;padding:11px 20px;font:600 14px system-ui,sans-serif;box-shadow:0 8px 26px rgba(0,0,0,.35);cursor:pointer';
+  b.onclick = () => location.reload(); document.body.appendChild(b);
+}
 function applySiteSettings(v) {
   SITE_SET = v || {};
-  SHOW_HOTELS = hotelsOn(); SHOW_EXCURSIONS = secFlag('excursions', window.DS_CONFIG.SHOW_EXCURSIONS);
+  SHOW_HOTELS = hotelsOn(); SHOW_EXCURSIONS = secFlag('excursions', window.DS_CONFIG.SHOW_EXCURSIONS); SHOW_PACKAGES = secFlag('packages', window.DS_CONFIG.SHOW_PACKAGES !== false);
   SHOW_TRANSFERS = secFlag('transfers', window.DS_CONFIG.SHOW_TRANSFERS); SHOW_RESTAURANTS = secFlag('restaurants', window.DS_CONFIG.SHOW_RESTAURANTS);
   SHOW_DESTINATIONS = secFlag('destinations', window.DS_CONFIG.SHOW_DESTINATIONS); SHOW_JOURNAL = secFlag('journal', window.DS_CONFIG.SHOW_JOURNAL !== false);
   applyContactSettings(window.DS_CONFIG.CONTACT);   // phone / e-mail / social links: Cloudflare variables (DS_CONTACT_*, DS_SOCIAL_*)
-  renderSiteBits();
+  applySectionVisibility(); renderSiteBits();
 }
 const pick = (o) => (o && (o[I18N.get()] || o.en || o.ar || Object.values(o)[0])) || '';
 

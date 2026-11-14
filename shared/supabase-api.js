@@ -43,7 +43,7 @@ function dsRefCode() {
   async function mediaUrl(file) {
     const plain = `${cfg.mediaBase}/${file}`;
     try {
-      const r = await fetch(`${cfg.mediaBase}/${file.split('/')[0]}/version.json`);
+      const r = await fetch(`${cfg.mediaBase}/${file.split('/')[0]}/version.json?t=${Math.floor(Date.now() / 10000)}`, { cache: 'no-cache' });   // ?t= = a new URL every 10 s, so a long edge-cache rule can never freeze the pointer
       if (r.ok) { const j = await r.json(); if (j && /^[a-f0-9]{8,64}$/.test(String(j.v))) return `${plain}?v=${j.v}`; }
     } catch (e) { /* no pointer */ }
     return plain;
@@ -57,22 +57,22 @@ function dsRefCode() {
   const load = async () => {
     let res;
     if (cfg.mediaBase) {   // static copy published by the settings Worker on every save (no Worker call, no database)
-      try { const r = await fetch(await mediaUrl('settings/settings.json')); if (r.ok) { const j = await r.json(); res = { value: j.value || {}, langs: j.langs || [] }; } } catch (e) { /* fall through to the Worker */ }
+      try { const r = await fetch(await mediaUrl('settings/settings.json')); if (r.ok) { const j = await r.json(); res = { value: j.value || {}, langs: j.langs || [], src: 'media' }; } } catch (e) { console.warn('[DS] settings: static copy unreachable (CORS / CSP?), using the Worker', e && e.message); }
     }
     if (res) { /* static copy answered */ }
     else if (cfg.settingsBase) {   // settings live in settings.json in the private GitHub data repo; the settings Worker serves them
       const r = await fetch(`${cfg.settingsBase}/settings`);
       if (!r.ok) throw new Error('settings ' + r.status);
-      const j = await r.json(); res = { value: j.value || {}, langs: j.langs || [] };
+      const j = await r.json(); res = { value: j.value || {}, langs: j.langs || [], src: 'worker' };
     } else {
       const [s, l] = await Promise.all([
         sb.from('site_settings').select('value').eq('id', 1).maybeSingle(),
         sb.from('ui_languages').select('code, name, native_name, dir, strings, sort_order').eq('enabled', true).order('sort_order'),
       ]);
       if (s.error && l.error) throw s.error;
-      res = { value: (s.data && s.data.value) || {}, langs: l.data || [] };
+      res = { value: (s.data && s.data.value) || {}, langs: l.data || [], src: 'database' };
     }
-    res.t = Date.now();
+    res.t = Date.now(); console.info('[DS] settings loaded from', res.src);
     try { localStorage.setItem(KEY, JSON.stringify(res)); } catch {}   // (extra-language strings are ~20 KB each)
     return res;
   };

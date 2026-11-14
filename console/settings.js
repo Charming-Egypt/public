@@ -32,6 +32,7 @@ DS.settingsView = () => async (m) => {
       const r = await DS.api('/settings', { method: 'PUT', body: { value: S } });
       if (r && r.success && r.published === false) DS.toast('اتحفظ، لكن النسخة الثابتة على R2 ما اتحدّثتش: ' + (r.publishError || 'سبب غير معروف') + ' — الموقع مش هيشوف التغيير', 'err');
       else if (r && r.success === true && r.published === undefined && !(window.DS_SUPABASE && window.DS_SUPABASE.settingsBase)) DS.toast('اتحفظ في قاعدة البيانات بس — DS_SETTINGS_BASE مش مضبوط في بناء الأدمن، فالموقع و R2 مش هيتحدّثوا', 'err');
+      else if (r && r.dbSynced === false) DS.toast('اتحفظ وظهر على الموقع، لكن قاعدة البيانات ما اتحدّثتش (' + (r.dbError || '') + ') — منع الحجز للأقسام المقفولة مش هيشتغل لحد ما تحفظ تاني', 'err');
       else DS.toast('تم الحفظ — التغيير ظاهر على الموقع خلال ثواني ✓');
       if (extra) extra(); }
     catch (e) { DS.toast(e.message, true); } finally { btn && (btn.disabled = false); }

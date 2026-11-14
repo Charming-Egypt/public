@@ -29,6 +29,22 @@
   }
   // Site settings (+ extra interface languages) live in settings.json in the private GitHub data repo, served by the settings Worker.
   const SB_ = String(cfg.settingsBase || '').replace(/\/+$/, '');
+  // which sections the super admin switched on (site settings → sections). Read from the same static copy the website uses (R2/CDN, no database), cached 60 s.
+  let secCache = null;
+  async function siteSections() {
+    if (secCache && Date.now() - secCache.t < 60000) return secCache.v;
+    let v = null;
+    try {
+      if (cfg.mediaBase) {
+        const mb = String(cfg.mediaBase).replace(/\/+$/, ''), p = await (await fetch(`${mb}/settings/version.json?t=${Math.floor(Date.now() / 10000)}`, { cache: 'no-cache' })).json();
+        v = ((await (await fetch(`${mb}/settings/settings.json?v=${encodeURIComponent(p.v)}`)).json()).value || {}).sections;
+      } else if (SB_) v = (((await (await fetch(SB_ + '/settings')).json()) || {}).value || {}).sections;
+      else { const r = await run(sb.from('site_settings').select('value').eq('id', 1).maybeSingle()); v = ((r && r.value) || {}).sections; }
+    } catch { /* settings unreachable: keep everything visible except hotels */ }
+    secCache = { t: Date.now(), v: v || {} }; return secCache.v;
+  }
+  const KIND_SECTION = { hotel: 'hotels', excursion: 'excursions', package: 'packages', transfer: 'transfers', restaurant: 'restaurants' };
+  const sectionOn = (sec, kind) => { const k = KIND_SECTION[kind]; return k === 'hotels' ? sec.hotels === true : sec[k] !== false; };
   async function settingsApi(method, path, body) {
     const tok = (await sb.auth.getSession()).data.session?.access_token;
     if (!tok) throw Object.assign(new Error('الجلسة انتهت — سجّل دخول تاني'), { status: 401 });
@@ -177,7 +193,8 @@
     if (a === 'desk' && scope === 'seller') {
       if (!who.is_seller) throw fail('مش مسموح', 403);
       if (b === 'catalog') {
-        const rows = await run(sb.from('properties').select('id, kind, data').eq('status', 'published').in('kind', ['hotel', 'excursion', 'package', 'transfer']).limit(1000));
+        let rows = await run(sb.from('properties').select('id, kind, data').eq('status', 'published').in('kind', ['hotel', 'excursion', 'package', 'transfer']).limit(1000));
+        const sec = await siteSections(); rows = rows.filter(r => sectionOn(sec, r.kind));   // a section the admin switched off disappears from the seller desk too
         return { items: rows.map(r => ({ id: r.id, kind: r.kind, name: nameOf(r.data?.hotelName || r.data?.title || r.data?.name || r.data?.vehicleType) || r.id, data: r.data || {} })) };
       }
       if (b === 'status') return { status: await rpc('seller_desk_status') };
