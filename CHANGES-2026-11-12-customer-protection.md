@@ -101,3 +101,7 @@
 
 ## Logout fix
 - Log-out waited for nothing: the page navigated away before Supabase revoked the session, so the stored (cookie) session logged the user straight back in. `auth.logout()` now waits (max 2.5 s) for sign-out, then clears the shared cookie session and local copies.
+
+## Journal article components
+- `shared/style.css`: `.article-body .ab-*` components (chips, stats, cards, swipe cards, spots, tips, links, video) that follow the site theme and accent on app + www.
+- `docs/articles/best-snorkeling-spots-sharm.html`: the snorkeling article converted to them (paste into the admin article content field).
