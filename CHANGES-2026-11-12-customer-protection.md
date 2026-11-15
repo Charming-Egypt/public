@@ -98,3 +98,6 @@
 - Images are shrunk in the browser (max 1600px JPEG) before upload; PDFs max 1.5 MB.
 - Admin: seller applications show the uploaded documents (download links), like partner applications.
 - The contract wording is a standard template — have a lawyer review it before use.
+
+## Logout fix
+- Log-out waited for nothing: the page navigated away before Supabase revoked the session, so the stored (cookie) session logged the user straight back in. `auth.logout()` now waits (max 2.5 s) for sign-out, then clears the shared cookie session and local copies.

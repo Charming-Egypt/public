@@ -644,16 +644,21 @@ const auth = {
       return data.user;
     } catch (e) { auth._needsConfirm = !!e.confirm; toast(e.message, e.confirm ? 'info' : 'error'); return null; }
   },
-  logout() {
+  async logout() {
     if (!authToken) { nav.showAuth('login'); return; }   // a guest tapping "Log in" in the menu
+    try { sidebar.close(); } catch {}
     try { sessionStorage.removeItem('ds_guest'); } catch {}
     try { window.PWA && PWA.pushLogout && PWA.pushLogout(); } catch {}
-    if (window.SB) SB.signOut().catch(() => {});
+    // wait (briefly) for the server to revoke the session: leaving the page first aborts the request and the stored
+    // Supabase session would log the user straight back in on the next load.
+    if (window.SB) { try { await Promise.race([SB.signOut(), new Promise(r => setTimeout(r, 2500))]); } catch {} }
     authToken = null;
     currentUser = null;
-    localStorage.removeItem('ds_auth_token');
-    localStorage.removeItem('ds_current_user');
-    try { sidebar.close(); } catch {}
+    try { window.DS_SESSION_STORAGE && DS_SESSION_STORAGE.removeItem('ds_sb_session'); } catch {}   // the shared (www + app) cookie session
+    try {
+      ['ds_auth_token', 'ds_current_user'].forEach(k => localStorage.removeItem(k));
+      Object.keys(localStorage).filter(k => k.startsWith('ds_sb_session') || /^sb-.*-auth-token/.test(k)).forEach(k => localStorage.removeItem(k));
+    } catch {}
     location.assign(pathForPage('home'));   // back to browsing as a guest (no forced log-in screen)
   },
   isLoggedIn() { return !!authToken; },
