@@ -874,5 +874,13 @@
   "docPdfTooBig": "PDF dosyaları 1,5 MB'ın altında olmalıdır",
   "docImgTooBig": "Bu fotoğraf çok büyük",
   "docsRequiredPartner": "Lütfen işletme sahibi / yönetici kimliğini ve imzalı sözleşmeyi yükleyin",
-  "docsRequiredAff": "Lütfen kimlik / pasaport fotoğrafınızı ve imzalı sözleşmeyi yükleyin"
+  "docsRequiredAff": "Lütfen kimlik / pasaport fotoğrafınızı ve imzalı sözleşmeyi yükleyin",
+  "showMore": "Daha fazla göster",
+  "emEyebrow": "— GÜVENDE KALIN",
+  "emTitle": "Acil ve Önemli Numaralar",
+  "emAmbulance": "Ambulans",
+  "emPolice": "Polis",
+  "emFire": "İtfaiye",
+  "emTourist": "Turist polisi",
+  "emNote": "Mısır'daki her telefondan ücretsiz aramalar. Aramak için karta dokunun."
 }

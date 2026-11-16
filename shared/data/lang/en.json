@@ -874,5 +874,13 @@
   "docPdfTooBig": "Please keep PDF files under 1.5 MB",
   "docImgTooBig": "This photo is too large",
   "docsRequiredPartner": "Please upload the owner / manager ID and the signed agreement",
-  "docsRequiredAff": "Please upload your ID / passport photo and the signed agreement"
+  "docsRequiredAff": "Please upload your ID / passport photo and the signed agreement",
+  "showMore": "Show more",
+  "emEyebrow": "— STAY SAFE",
+  "emTitle": "Emergency & Important Numbers",
+  "emAmbulance": "Ambulance",
+  "emPolice": "Police",
+  "emFire": "Fire department",
+  "emTourist": "Tourist police",
+  "emNote": "Free calls from any phone in Egypt. Tap a card to call."
 }

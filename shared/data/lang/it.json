@@ -874,5 +874,13 @@
   "docPdfTooBig": "I file PDF devono essere inferiori a 1,5 MB",
   "docImgTooBig": "Questa foto è troppo grande",
   "docsRequiredPartner": "Carica il documento del titolare / responsabile e il contratto firmato",
-  "docsRequiredAff": "Carica la foto del documento / passaporto e il contratto firmato"
+  "docsRequiredAff": "Carica la foto del documento / passaporto e il contratto firmato",
+  "showMore": "Mostra altro",
+  "emEyebrow": "— RESTA AL SICURO",
+  "emTitle": "Numeri di emergenza e utili",
+  "emAmbulance": "Ambulanza",
+  "emPolice": "Polizia",
+  "emFire": "Vigili del fuoco",
+  "emTourist": "Polizia turistica",
+  "emNote": "Chiamate gratuite da qualsiasi telefono in Egitto. Tocca una scheda per chiamare."
 }

@@ -176,6 +176,18 @@
 
      
 
+        <!-- Important & emergency numbers -->
+        <div class="px-5 mb-8" id="emergencySection">
+          <div class="mb-4"><p class="section-subtitle" data-i18n="emEyebrow">— STAY SAFE</p><h3 class="section-title" data-i18n="emTitle">Emergency & Important Numbers</h3></div>
+          <div class="em-grid">
+            <a href="tel:123" class="em-card" style="--em:#dc2626"><span class="em-ico"><i class="fa-solid fa-truck-medical" aria-hidden="true"></i></span><span class="em-body"><span class="em-label" data-i18n="emAmbulance">Ambulance</span><span class="em-num" dir="ltr">123</span></span><span class="em-call" aria-hidden="true"><i class="fa-solid fa-phone"></i></span></a>
+            <a href="tel:122" class="em-card" style="--em:#2563eb"><span class="em-ico"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i></span><span class="em-body"><span class="em-label" data-i18n="emPolice">Police</span><span class="em-num" dir="ltr">122</span></span><span class="em-call" aria-hidden="true"><i class="fa-solid fa-phone"></i></span></a>
+            <a href="tel:180" class="em-card" style="--em:#ea580c"><span class="em-ico"><i class="fa-solid fa-fire-extinguisher" aria-hidden="true"></i></span><span class="em-body"><span class="em-label" data-i18n="emFire">Fire department</span><span class="em-num" dir="ltr">180</span></span><span class="em-call" aria-hidden="true"><i class="fa-solid fa-phone"></i></span></a>
+            <a href="tel:126" class="em-card" style="--em:#0d9488"><span class="em-ico"><i class="fa-solid fa-user-shield" aria-hidden="true"></i></span><span class="em-body"><span class="em-label" data-i18n="emTourist">Tourist police</span><span class="em-num" dir="ltr">126</span></span><span class="em-call" aria-hidden="true"><i class="fa-solid fa-phone"></i></span></a>
+          </div>
+          <p class="em-note" data-i18n="emNote">Free calls from any phone in Egypt. Tap a card to call.</p>
+        </div>
+
         <!-- Reviews Row -->
         <div class="mb-8">
           <div class="px-5 flex items-center justify-between mb-4">
@@ -189,8 +201,10 @@
         <div class="px-5 mb-8">
           <div class="flex items-center justify-between mb-4">
             <div><p class="section-subtitle" data-i18n="journalEyebrow">— JOURNAL</p><h3 class="section-title" data-i18n="articlesTitle">Travel Guides & Tips</h3></div>
+            <button onclick="nav.go('journal')" class="text-violet-500 text-sm font-medium flex items-center gap-1" data-i18n="viewAll">View All <i class="fa-solid fa-arrow-left text-xs" aria-hidden="true"></i></button>
           </div>
           <div id="articlesRow" class="space-y-4"><div class="article-card"><div class="sk article-card-img"></div><div class="article-card-body sk-article-lines"><div class="sk sk-line" style="width:85%"></div><div class="sk sk-line" style="width:100%"></div><div class="sk sk-line" style="width:70%"></div></div></div><div class="article-card"><div class="sk article-card-img"></div><div class="article-card-body sk-article-lines"><div class="sk sk-line" style="width:85%"></div><div class="sk sk-line" style="width:100%"></div><div class="sk sk-line" style="width:70%"></div></div></div><div class="article-card"><div class="sk article-card-img"></div><div class="article-card-body sk-article-lines"><div class="sk sk-line" style="width:85%"></div><div class="sk sk-line" style="width:100%"></div><div class="sk sk-line" style="width:70%"></div></div></div></div>
+          <div id="articlesMore" class="hidden mt-4 text-center"><button type="button" onclick="articlesUi.more()" class="px-6 py-3 rounded-2xl text-sm font-bold" style="border:1.5px solid var(--border-field);color:var(--text-primary)" data-i18n="showMore">Show more</button></div>
         </div>
 
         <!-- Footer -->

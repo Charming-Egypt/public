@@ -5567,3 +5567,19 @@ html[dir="rtl"] .article-body a.ab-link::after { content: '←'; }
   .article-body .ab-tips { grid-template-columns: 1fr 1fr; }
   .article-body .ab-snap-card { flex-basis: 260px; }
 }
+
+/* ===== Emergency numbers (home) ===== */
+.em-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.em-card { position: relative; display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 18px; background: var(--bg-card); border: 1px solid var(--border-card); text-decoration: none; overflow: hidden; transition: transform .15s ease, border-color .15s ease; }
+.em-card::before { content: ''; position: absolute; inset-inline-start: 0; top: 14px; bottom: 14px; width: 3px; border-radius: 3px; background: var(--em); }
+.em-card:active { transform: scale(.98); }
+.em-card:hover { border-color: var(--em); }
+.em-ico { width: 42px; height: 42px; border-radius: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 17px; color: var(--em); background: color-mix(in srgb, var(--em) 14%, transparent); }
+.em-body { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.em-label { font-size: 11.5px; font-weight: 600; color: var(--text-secondary); line-height: 1.3; }
+.em-num { font-size: 22px; font-weight: 800; letter-spacing: .02em; color: var(--text-primary); line-height: 1.2; text-align: start; }
+.em-call { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: var(--em); color: #fff; font-size: 11px; }
+.em-note { font-size: 11.5px; color: var(--text-secondary); margin: 12px 2px 0; }
+@media (min-width: 1024px) { .em-grid { grid-template-columns: repeat(4, 1fr); } .em-card { padding: 18px; } .em-num { font-size: 26px; } }
+@media (max-width: 360px) { .em-grid { grid-template-columns: 1fr; } }
+@media (max-width: 520px) { .em-call { display: none; } .em-label { white-space: normal; } }

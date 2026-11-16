@@ -1955,6 +1955,14 @@ const reviewsHomeUi = {
 
 // ==================== ARTICLES RENDERER ====================
 const articlesUi = {
+  shown: 2,                       // the home page starts with the two latest articles; "Show more" reveals two more each time
+  step: 2,
+  // newest first (by the article's date when it has one, otherwise the order of the journal list is kept)
+  latest() {
+    const ts = a => { const v = a.publishedAt || a.date || a.createdAt || a.updatedAt; const n = v ? Date.parse(v) : NaN; return isNaN(n) ? null : n; };
+    return CATALOG.articles.map((a, i) => ({ a, i, t: ts(a) })).sort((x, y) => (y.t ?? -Infinity) - (x.t ?? -Infinity) || x.i - y.i).map(x => x.a);
+  },
+  more() { this.shown += this.step; this.render(); },
   render() {
     const row = document.getElementById('articlesRow');
     if (!row) return;
@@ -1962,7 +1970,8 @@ const articlesUi = {
     // magazine-style grid (image on top, larger) via the CSS media query
     // on .article-card, with the row itself becoming a real grid at lg.
     row.className = 'space-y-4 lg:space-y-0 lg:grid lg:grid-cols-2 xl:grid-cols-3 lg:gap-6';
-    row.innerHTML = CATALOG.articles.map(a => `
+    const all = this.latest(), list = all.slice(0, this.shown);
+    row.innerHTML = list.map(a => `
       <div onclick="showArticlePage('${a.id}')" class="article-card cursor-pointer">
         <img alt="" src="${a.image}" class="article-card-img" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
         <div class="article-card-body">
@@ -1971,6 +1980,8 @@ const articlesUi = {
           ${a.readTimeMinutes ? `<p class="text-[10px]" style="color:var(--text-secondary)"><i class="fa-regular fa-clock"></i> ${a.readTimeMinutes} min read</p>` : ''}
         </div>
       </div>`).join('');
+    const more = document.getElementById('articlesMore');
+    if (more) more.classList.toggle('hidden', all.length <= this.shown);
   }
 };
 
@@ -2062,6 +2073,7 @@ const DS_TILES = {
   'home-hotels':         { q: '#featuredHotels', up: '.px-5.mb-8' },
   'home-transfer-promo': { q: '#transferPromoBanner', up: '.px-5.mb-8' },
   'home-restaurants':    { q: '#restaurantsRow', up: '.mb-8' },
+  'home-emergency':      { q: '#emergencySection' },
   'home-reviews':        { q: '#reviewsRow', up: '.mb-8' },
   'home-articles':       { q: '#articlesRow', up: '.px-5.mb-8' },
   'menu-bookings':       { q: '[data-page="bookings"], [onclick*="nav.go(\'bookings\')"]' },

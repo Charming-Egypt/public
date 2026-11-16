@@ -105,3 +105,9 @@
 ## Journal article components
 - `shared/style.css`: `.article-body .ab-*` components (chips, stats, cards, swipe cards, spots, tips, links, video) that follow the site theme and accent on app + www.
 - `docs/articles/best-snorkeling-spots-sharm.html`: the snorkeling article converted to them (paste into the admin article content field).
+
+## Home: latest articles
+- Home shows the 2 latest articles; "Show more" reveals 2 more each tap; "View All" (section header) opens the full journal page.
+
+## Home: emergency numbers
+- New block above reviews: 4 tap-to-call cards (Ambulance 123, Police 122, Fire 180, Tourist police 126). Can be hidden from admin settings (tile `home-emergency`). 6 languages.

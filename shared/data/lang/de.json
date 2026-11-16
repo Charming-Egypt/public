@@ -874,5 +874,13 @@
   "docPdfTooBig": "PDF-Dateien dürfen höchstens 1,5 MB groß sein",
   "docImgTooBig": "Dieses Foto ist zu groß",
   "docsRequiredPartner": "Bitte laden Sie den Ausweis des Inhabers / Managers und den unterschriebenen Vertrag hoch",
-  "docsRequiredAff": "Bitte laden Sie Ihr Ausweis-/Passfoto und den unterschriebenen Vertrag hoch"
+  "docsRequiredAff": "Bitte laden Sie Ihr Ausweis-/Passfoto und den unterschriebenen Vertrag hoch",
+  "showMore": "Mehr anzeigen",
+  "emEyebrow": "— SICHER UNTERWEGS",
+  "emTitle": "Notruf & wichtige Nummern",
+  "emAmbulance": "Rettungsdienst",
+  "emPolice": "Polizei",
+  "emFire": "Feuerwehr",
+  "emTourist": "Touristenpolizei",
+  "emNote": "Kostenlose Anrufe von jedem Telefon in Ägypten. Karte antippen zum Anrufen."
 }
