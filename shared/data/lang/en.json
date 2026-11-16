@@ -882,5 +882,19 @@
   "emPolice": "Police",
   "emFire": "Fire department",
   "emTourist": "Tourist police",
-  "emNote": "Free calls from any phone in Egypt. Tap a card to call."
+  "emNote": "Free calls from any phone in Egypt. Tap a card to call.",
+  "footerExchange": "Currency Exchange",
+  "fxEyebrow": "— TRAVEL MONEY",
+  "fxTitle": "Currency Exchange",
+  "fxSub": "Convert between the Egyptian pound and major currencies",
+  "fxAmount": "Amount",
+  "fxFrom": "From",
+  "fxTo": "To",
+  "fxPopular": "Against the Egyptian pound",
+  "fxTipsTitle": "Good to know",
+  "fxNote": "These are indicative mid-market rates for reference. Banks and exchange offices apply their own buy/sell rates and fees, so the amount you receive may differ. Always compare, use licensed exchange offices or banks, and keep your receipt.",
+  "fxUpdated": "Rates updated",
+  "fxUnavailable": "Live rates are unavailable right now",
+  "fxUnavailableText": "Check your connection and try again.",
+  "fxRetry": "Try again"
 }

@@ -50,7 +50,8 @@ const ROUTES = {
   terms: '/terms/',
   privacy: '/privacy/',
   partner: '/partner/',
-  affiliate: '/affiliate/'
+  affiliate: '/affiliate/',
+  exchange: '/exchange/'
 };
 
 const PAGE_TITLES = {
@@ -73,7 +74,8 @@ const PAGE_TITLES = {
   terms: 'Terms of Service — Discover Sharm',
   privacy: 'Privacy Policy — Discover Sharm',
   partner: 'Become a Partner — Discover Sharm',
-  affiliate: 'Affiliate Programme — Discover Sharm'
+  affiliate: 'Affiliate Programme — Discover Sharm',
+  exchange: 'Currency Exchange — Discover Sharm'
 };
 
 // Detail ("single item") pages. `open` renders the item into #mainApp;
@@ -233,6 +235,7 @@ const nav = {
     if (page === 'journal') renderJournalPage();
     if (page === 'partner') renderPartnerDocSlots();
     if (page === 'affiliate') renderAffiliatePage();
+    if (page === 'exchange') renderExchangePage();
     if (page === 'excursions' && SHOW_EXCURSIONS) excursionsUi.render();
     if (page === 'packages' && SHOW_PACKAGES) packagesUi.render();
     if (page === 'transfers' && SHOW_TRANSFERS) transfersUi.render();

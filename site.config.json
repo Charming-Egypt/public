@@ -98,6 +98,12 @@
       "description": "List your hotel, tour or transfer service on Discover Sharm.",
       "nav": "partner"
     },
+    "exchange": {
+      "path": "/exchange/",
+      "title": "Currency Exchange — Discover Sharm",
+      "description": "Live currency converter for travellers in Sharm El-Sheikh: EGP, USD, EUR, GBP and more.",
+      "nav": "exchange"
+    },
     "affiliate": {
       "path": "/affiliate/",
       "title": "Affiliate Programme — Discover Sharm",

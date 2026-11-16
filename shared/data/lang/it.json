@@ -882,5 +882,19 @@
   "emPolice": "Polizia",
   "emFire": "Vigili del fuoco",
   "emTourist": "Polizia turistica",
-  "emNote": "Chiamate gratuite da qualsiasi telefono in Egitto. Tocca una scheda per chiamare."
+  "emNote": "Chiamate gratuite da qualsiasi telefono in Egitto. Tocca una scheda per chiamare.",
+  "footerExchange": "Cambio valuta",
+  "fxEyebrow": "— SOLDI IN VIAGGIO",
+  "fxTitle": "Cambio valuta",
+  "fxSub": "Converti tra la sterlina egiziana e le principali valute",
+  "fxAmount": "Importo",
+  "fxFrom": "Da",
+  "fxTo": "A",
+  "fxPopular": "Rispetto alla sterlina egiziana",
+  "fxTipsTitle": "Da sapere",
+  "fxNote": "Questi sono tassi medi indicativi, solo di riferimento. Banche e uffici di cambio applicano propri tassi di acquisto/vendita e commissioni, quindi l'importo ricevuto può variare. Confronta sempre, usa uffici di cambio autorizzati o banche e conserva la ricevuta.",
+  "fxUpdated": "Tassi aggiornati",
+  "fxUnavailable": "I tassi in tempo reale non sono disponibili",
+  "fxUnavailableText": "Controlla la connessione e riprova.",
+  "fxRetry": "Riprova"
 }

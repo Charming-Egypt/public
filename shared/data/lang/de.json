@@ -882,5 +882,19 @@
   "emPolice": "Polizei",
   "emFire": "Feuerwehr",
   "emTourist": "Touristenpolizei",
-  "emNote": "Kostenlose Anrufe von jedem Telefon in Ägypten. Karte antippen zum Anrufen."
+  "emNote": "Kostenlose Anrufe von jedem Telefon in Ägypten. Karte antippen zum Anrufen.",
+  "footerExchange": "Währungsrechner",
+  "fxEyebrow": "— REISEGELD",
+  "fxTitle": "Währungsrechner",
+  "fxSub": "Rechnen Sie zwischen ägyptischem Pfund und wichtigen Währungen um",
+  "fxAmount": "Betrag",
+  "fxFrom": "Von",
+  "fxTo": "Nach",
+  "fxPopular": "Gegenüber dem Ägyptischen Pfund",
+  "fxTipsTitle": "Gut zu wissen",
+  "fxNote": "Dies sind unverbindliche Mittelkurse zur Orientierung. Banken und Wechselstuben wenden eigene An- und Verkaufskurse sowie Gebühren an, der erhaltene Betrag kann daher abweichen. Vergleichen Sie immer, nutzen Sie lizenzierte Wechselstuben oder Banken und bewahren Sie den Beleg auf.",
+  "fxUpdated": "Kurse aktualisiert",
+  "fxUnavailable": "Aktuelle Kurse sind derzeit nicht verfügbar",
+  "fxUnavailableText": "Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+  "fxRetry": "Erneut versuchen"
 }

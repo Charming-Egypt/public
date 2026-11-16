@@ -882,5 +882,19 @@
   "emPolice": "Polis",
   "emFire": "İtfaiye",
   "emTourist": "Turist polisi",
-  "emNote": "Mısır'daki her telefondan ücretsiz aramalar. Aramak için karta dokunun."
+  "emNote": "Mısır'daki her telefondan ücretsiz aramalar. Aramak için karta dokunun.",
+  "footerExchange": "Döviz Çevirici",
+  "fxEyebrow": "— SEYAHAT PARASI",
+  "fxTitle": "Döviz Çevirici",
+  "fxSub": "Mısır lirası ile başlıca para birimleri arasında çevirin",
+  "fxAmount": "Tutar",
+  "fxFrom": "Kaynak",
+  "fxTo": "Hedef",
+  "fxPopular": "Mısır lirasına karşı",
+  "fxTipsTitle": "Bilmekte fayda var",
+  "fxNote": "Bunlar yalnızca bilgi amaçlı, orta piyasa kurlarıdır. Bankalar ve döviz büroları kendi alış/satış kurlarını ve ücretlerini uygular; aldığınız tutar farklı olabilir. Her zaman karşılaştırın, lisanslı döviz bürolarını veya bankaları kullanın ve fişinizi saklayın.",
+  "fxUpdated": "Kurlar güncellendi",
+  "fxUnavailable": "Canlı kurlar şu anda kullanılamıyor",
+  "fxUnavailableText": "Bağlantınızı kontrol edip tekrar deneyin.",
+  "fxRetry": "Tekrar dene"
 }

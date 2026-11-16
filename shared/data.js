@@ -128,12 +128,13 @@ const CURRENCY_SYMBOLS = { EGP: 'ج.م', USD: '$', EUR: '€', GBP: '£', SAR: '
 const DISPLAY_CURRENCIES = ['EGP', 'USD', 'EUR', 'GBP', 'SAR', 'RUB'];
 let currencyRates = null;
 let currencyAvailable = false;
+let currencyUpdatedAt = null;   // when the rates were fetched (shown on the exchange page)
 
 async function initCurrency() {
   try {
     const cached = JSON.parse(localStorage.getItem('ds_fx_cache') || 'null');
     if (cached && cached.rates && (Date.now() - cached.ts) < 6 * 60 * 60 * 1000) {
-      currencyRates = cached.rates;
+      currencyRates = cached.rates; currencyUpdatedAt = cached.ts;
       currencyAvailable = true;
       applyCurrencyAvailability();
       return;
@@ -141,7 +142,7 @@ async function initCurrency() {
     const res = await fetch('https://open.er-api.com/v6/latest/EGP');
     const data = await res.json();
     if (data && data.result === 'success' && data.rates) {
-      currencyRates = data.rates;
+      currencyRates = data.rates; currencyUpdatedAt = Date.now();
       currencyAvailable = true;
       localStorage.setItem('ds_fx_cache', JSON.stringify({ rates: data.rates, ts: Date.now() }));
     } else {

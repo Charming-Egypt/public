@@ -257,6 +257,44 @@ async function submitAffiliateForm(e) {
   }
 }
 
+// ==================== CURRENCY EXCHANGE PAGE ====================
+const FX_LIST = ['EGP', 'USD', 'EUR', 'GBP', 'SAR', 'AED', 'KWD', 'RUB', 'TRY', 'CHF', 'CAD', 'AUD', 'JPY', 'CNY', 'PLN', 'CZK', 'SEK', 'NOK', 'DKK', 'UAH'];
+const FX_TILES = ['USD', 'EUR', 'GBP', 'SAR', 'AED', 'RUB', 'TRY', 'CHF'];
+const fxName = (c) => { try { return new Intl.DisplayNames([I18N.get()], { type: 'currency' }).of(c) || c; } catch { return c; } };
+const fxNum = (n, max) => { try { return new Intl.NumberFormat(I18N.get(), { maximumFractionDigits: max, minimumFractionDigits: 0 }).format(n); } catch { return String(n); } };
+const fxParse = (v) => parseFloat(String(v).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[٬,\s]/g, '').replace('٫', '.')) || 0;
+const fxRate = (from, to) => currencyRates && currencyRates[from] && currencyRates[to] ? currencyRates[to] / currencyRates[from] : null;   // rates are "per 1 EGP"
+const fxDigits = (n) => (n >= 100 ? 2 : n >= 1 ? 3 : 4);
+
+async function renderExchangePage(force) {
+  const from = document.getElementById('fxFrom'), to = document.getElementById('fxTo'); if (!from || !to) return;
+  if (force || !currencyRates) { try { localStorage.removeItem('ds_fx_cache'); } catch {} await initCurrency(); }
+  const err = document.getElementById('fxError');
+  if (!currencyRates) { err.classList.remove('hidden'); document.getElementById('fxGrid').innerHTML = ''; document.getElementById('fxToLine').textContent = '—'; return; }
+  err.classList.add('hidden');
+  const codes = FX_LIST.filter(c => currencyRates[c]);
+  const keepF = from.value || 'USD', keepT = to.value || 'EGP';
+  const opts = codes.map(c => `<option value="${c}" title="${esc(fxName(c))}">${c}</option>`).join('');
+  from.innerHTML = opts; to.innerHTML = opts; from.value = codes.includes(keepF) ? keepF : codes[0]; to.value = codes.includes(keepT) ? keepT : 'EGP';
+  document.getElementById('fxGrid').innerHTML = FX_TILES.filter(c => currencyRates[c]).map(c => {
+    const perUnit = 1 / currencyRates[c];   // EGP for 1 unit of c
+    return `<button type="button" class="fx-tile" onclick="fxPick('${c}')"><span class="fx-code">${c}</span><span class="fx-name">${esc(fxName(c))}</span><span class="fx-val" dir="ltr">${fxNum(perUnit, 2)} <small>EGP</small></span><span class="fx-sub" dir="ltr">1 EGP = ${fxNum(currencyRates[c], 4)} ${c}</span></button>`;
+  }).join('');
+  fxUpdate();
+}
+function fxUpdate() {
+  const f = document.getElementById('fxFrom').value, tt = document.getElementById('fxTo').value, amt = fxParse(document.getElementById('fxAmount').value), r = fxRate(f, tt);
+  if (r === null) return;
+  const out = amt * r;
+  document.getElementById('fxFromLine').textContent = `${fxNum(amt, 2)} ${f} =`;
+  document.getElementById('fxToLine').textContent = `${fxNum(out, out >= 1000 ? 0 : 2)} ${tt}`;
+  document.getElementById('fxRateLine').textContent = `1 ${f} = ${fxNum(r, fxDigits(r))} ${tt}  ·  1 ${tt} = ${fxNum(1 / r, fxDigits(1 / r))} ${f}`;
+  const u = document.getElementById('fxUpdated');
+  if (u) u.textContent = currencyUpdatedAt ? t('fxUpdated', 'Rates updated') + ': ' + new Date(currencyUpdatedAt).toLocaleString(I18N.get(), { dateStyle: 'medium', timeStyle: 'short' }) : '';
+}
+function fxSwap() { const f = document.getElementById('fxFrom'), tt = document.getElementById('fxTo'), v = f.value; f.value = tt.value; tt.value = v; fxUpdate(); }
+function fxPick(c) { const f = document.getElementById('fxFrom'), tt = document.getElementById('fxTo'); f.value = c; tt.value = 'EGP'; fxUpdate(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
 function renderJournalPage() {
   const grid = document.getElementById('journalGrid');
   if (!grid) return;

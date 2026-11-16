@@ -114,3 +114,6 @@
 
 ## Admin journal: hand-written posts
 - Posts added by hand to `journal/journal.json` (no own file) now appear in the admin journal list as published. Opening/saving one creates its normal item file; unpublish/delete work. **Redeploy the content Worker (workers/content-worker.js).** Test added in content.test.mjs.
+
+## Currency exchange page
+- New page `/exchange/` (live converter with swap, 20 currencies, popular-rate tiles against EGP, disclaimer), same rates source/cache as the price currency switcher. Footer links (desktop 'Company' column + mobile links). 6 languages.

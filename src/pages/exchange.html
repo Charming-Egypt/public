@@ -1,0 +1,45 @@
+    <div id="exchangePage" class="page">
+      <div class="min-h-screen">
+        <div class="listing-hero hidden lg:block">
+          <div class="listing-hero-inner">
+            <p class="listing-eyebrow" data-i18n="fxEyebrow">— TRAVEL MONEY</p>
+            <h1 class="listing-title" data-i18n="fxTitle">Currency Exchange</h1>
+            <p class="listing-count" data-i18n="fxSub">Convert between the Egyptian pound and major currencies</p>
+          </div>
+        </div>
+        <div class="px-5 pt-6 pb-4 header-light lg:hidden">
+          <div class="flex items-center gap-3">
+            <button type="button" aria-label="Back" data-i18n-aria="ariaBack" data-back onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+            <div><p class="section-subtitle" data-i18n="fxEyebrow">— TRAVEL MONEY</p><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)" data-i18n="fxTitle">Currency Exchange</h1></div>
+          </div>
+        </div>
+        <div class="px-5 py-6 pb-28">
+          <div class="pt-wrap">
+            <section class="pt-card fx-conv">
+              <div class="fx-row">
+                <div class="pt-field fx-amount"><label for="fxAmount" data-i18n="fxAmount">Amount</label><input id="fxAmount" type="text" inputmode="decimal" value="100" autocomplete="off" class="input-field w-full px-3 py-3 text-lg font-bold" oninput="fxUpdate()"></div>
+              </div>
+              <div class="fx-row fx-pair">
+                <div class="pt-field"><label for="fxFrom" data-i18n="fxFrom">From</label><select id="fxFrom" class="input-field w-full px-3 py-3 text-sm" onchange="fxUpdate()"></select></div>
+                <button type="button" class="fx-swap" onclick="fxSwap()" aria-label="Swap" title="Swap"><i class="fa-solid fa-right-left" aria-hidden="true"></i></button>
+                <div class="pt-field"><label for="fxTo" data-i18n="fxTo">To</label><select id="fxTo" class="input-field w-full px-3 py-3 text-sm" onchange="fxUpdate()"></select></div>
+              </div>
+              <div class="fx-result" aria-live="polite">
+                <p class="fx-from-line" id="fxFromLine"></p>
+                <p class="fx-to-line" id="fxToLine">—</p>
+                <p class="fx-rate-line" id="fxRateLine"></p>
+              </div>
+              <p class="pt-note" style="text-align:start" id="fxUpdated"></p>
+              <div id="fxError" class="hidden pt-status no" style="margin-top:12px"><div><h3 data-i18n="fxUnavailable">Live rates are unavailable right now</h3><p data-i18n="fxUnavailableText">Check your connection and try again.</p><button type="button" class="pt-cta-btn" style="margin-top:12px" onclick="renderExchangePage(true)" data-i18n="fxRetry">Try again</button></div></div>
+            </section>
+            <section>
+              <p class="pt-h" data-i18n="fxPopular">Against the Egyptian pound</p>
+              <div class="fx-grid" id="fxGrid"></div>
+            </section>
+            <section class="pt-card">
+              <div class="pt-benefit"><span class="pt-ico"><i class="fa-solid fa-circle-info" aria-hidden="true"></i></span><div><h3 data-i18n="fxTipsTitle">Good to know</h3><p data-i18n="fxNote">These are indicative mid-market rates for reference. Banks and exchange offices apply their own buy/sell rates and fees, so the amount you receive may differ. Always compare, use licensed exchange offices or banks, and keep your receipt.</p></div></div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
