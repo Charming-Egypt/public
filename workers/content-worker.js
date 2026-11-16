@@ -284,6 +284,20 @@ const newId = () => { const b = crypto.getRandomValues(new Uint8Array(9)); retur
 const GH_STATUS = ['draft', 'published'];
 const staticView = (f) => ({ ...strip(f, RESERVED), id: f.id, status: f.published ? 'published' : 'draft', sortOrder: f.sortOrder ?? 1000 });
 
+// Posts written by hand straight into the public index file (journal/journal.json "items") have no file of their own: they are
+// live on the site, so the admin lists them as published and turns them into a normal item file the first time they are opened / saved.
+const idOk = (id) => /^[A-Za-z0-9_-]{1,64}$/.test(String(id || ''));
+async function indexOnlyItems(gh, kind, haveIds) {
+  const idx = await gh.getJSON(indexPath(kind)).catch(() => null);
+  return (((idx && idx.json && idx.json.items) || []).filter(i => i && idOk(i.id) && !haveIds.has(i.id))).map(i => ({ ...i, kind, published: true }));
+}
+async function loadStatic(gh, kind, id) {
+  const cur = await gh.getJSON(filePath(kind, id));
+  if (cur) return cur;
+  const extra = (await indexOnlyItems(gh, kind, new Set())).find(i => i.id === id);
+  return extra ? { json: extra, sha: null, fromIndex: true } : null;   // sha null: saving creates the file
+}
+
 async function staticList(gh, kind) {
   const dir = CATS[kind].dir;
   const names = (await gh.listDir(`${ROOT}/${dir}`)).map(f => f.name)
@@ -291,10 +305,11 @@ async function staticList(gh, kind) {
   const paths = names.map(id => filePath(kind, id)), got = paths.length ? await gh.readMany(paths) : {};
   const items = [];
   for (const id of names) { try { const f = JSON.parse(got[filePath(kind, id)]); if (f && f.id === id) items.push(f); } catch { /* unreadable file: skipped */ } }
+  items.push(...await indexOnlyItems(gh, kind, new Set(items.map(i => i.id))));
   return sortItems(items).map(staticView);
 }
 async function staticPublish(gh, who, kind, id, published) {
-  const t = now(), cur = await gh.getJSON(filePath(kind, id));
+  const t = now(), cur = await loadStatic(gh, kind, id);
   if (!cur) throw fail(404, 'Not found');
   const file = { ...cur.json, published, updatedAt: t, ...(published ? { publishedAt: t } : {}) };
   await gh.putFile(filePath(kind, id), textToB64(JSON.stringify(file, null, 1)), cur.sha, `${kind} ${id} ${published ? 'published' : 'unpublished'} by ${who.id}`);
@@ -322,11 +337,11 @@ async function staticHandle(gh, who, kind, method, id, action, body) {
     throw fail(404, 'Not found');
   }
   if (!ID_RE.test(id) || id === CATS[kind].dir) throw fail(400, 'Invalid id');
-  if (!action && method === 'GET') { const f = await gh.getJSON(filePath(kind, id)); if (!f) throw fail(404, 'Not found'); return { item: staticView(f.json) }; }
+  if (!action && method === 'GET') { const f = await loadStatic(gh, kind, id); if (!f) throw fail(404, 'Not found'); return { item: staticView(f.json) }; }
   if (!action && method === 'PUT') {
     const content = cleanBody(body, true), meta = adminMeta(body);
     if (meta.status !== undefined && !GH_STATUS.includes(meta.status)) throw fail(400, 'Invalid status');
-    const cur = await gh.getJSON(filePath(kind, id)); if (!cur) throw fail(404, 'Not found');
+    const cur = await loadStatic(gh, kind, id); if (!cur) throw fail(404, 'Not found');
     const t = now(), want = meta.status ? meta.status === 'published' : !!cur.json.published;
     const file = { ...content, id, kind, published: !!cur.json.published, createdAt: cur.json.createdAt || t, updatedAt: t, ...(cur.json.publishedAt ? { publishedAt: cur.json.publishedAt } : {}), sortOrder: meta.sortOrder ?? cur.json.sortOrder ?? 1000 };
     await gh.putFile(filePath(kind, id), textToB64(JSON.stringify(file, null, 1)), cur.sha, `${kind} ${id} edited by ${who.id}`);

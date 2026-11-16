@@ -256,6 +256,21 @@ assert.equal(r.status, 200); assert.equal(readJSON('api/journal/journal.json').i
 r = await call('PUT', `/items/journal/${jid}`, { tok: 'tok-admin', body: { title: { en: 'Top 6 dives' }, status: 'draft' } });
 assert.deepEqual(readJSON('api/journal/journal.json').items, []); assert.equal(readJSON(`api/journal/${jid}.json`).published, false);
 assert.equal((await call('POST', '/items/journal', { tok: 'tok-admin', body: { title: { en: 'y' }, status: 'archived' } })).status, 400, 'github-only kinds have draft/published only');
+// posts written by hand straight into journal.json (no file of their own) are listed, editable and can be unpublished
+{
+  const idxPath = 'api/journal/journal.json';
+  const idx = readJSON(idxPath);
+  files.set(idxPath, { b64: Buffer.from(JSON.stringify({ updatedAt: 'x', items: [{ id: 'manual1', title: { en: 'Hand written' }, excerpt: { en: 'e' }, image: 'i.jpg' }] })).toString('base64'), sha: 'manual-sha' });
+  r = await call('GET', '/items/journal', { tok: 'tok-admin' });
+  const m = r.j.items.find(i => i.id === 'manual1'); assert.ok(m, 'hand-written index post is listed in the admin'); assert.equal(m.status, 'published');
+  r = await call('GET', '/items/journal/manual1', { tok: 'tok-admin' }); assert.equal(r.j.item.title.en, 'Hand written');
+  r = await call('PUT', '/items/journal/manual1', { tok: 'tok-admin', body: { title: { en: 'Edited by admin' }, status: 'published' } }); assert.equal(r.status, 200, r.raw);
+  assert.equal(readJSON('api/journal/manual1.json').title.en, 'Edited by admin'); assert.equal(readJSON(idxPath).items.find(i => i.id === 'manual1').title.en, 'Edited by admin');
+  r = await call('POST', '/items/journal/manual1/unpublish', { tok: 'tok-admin' }); assert.equal(r.status, 200);
+  assert.equal(readJSON(idxPath).items.some(i => i.id === 'manual1'), false);
+  r = await call('DELETE', '/items/journal/manual1', { tok: 'tok-admin' }); assert.equal(r.status, 200);
+  files.set(idxPath, { b64: Buffer.from(JSON.stringify({ updatedAt: 'x', items: [] })).toString('base64'), sha: 'manual-sha2' });
+}
 r = await call('POST', '/items/destinations', { tok: 'tok-admin', body: { name: { en: 'Naama Bay' }, location: { en: 'Sharm' }, status: 'published' } });
 assert.equal(r.status, 200, r.raw); const did = r.j.item.id;
 assert.equal(readJSON('api/destinations/destinations.json').items[0].name.en, 'Naama Bay'); assert.equal(rows.length, rowsBeforeJ);

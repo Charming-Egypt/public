@@ -111,3 +111,6 @@
 
 ## Home: emergency numbers
 - New block above reviews: 4 tap-to-call cards (Ambulance 123, Police 122, Fire 180, Tourist police 126). Can be hidden from admin settings (tile `home-emergency`). 6 languages.
+
+## Admin journal: hand-written posts
+- Posts added by hand to `journal/journal.json` (no own file) now appear in the admin journal list as published. Opening/saving one creates its normal item file; unpublish/delete work. **Redeploy the content Worker (workers/content-worker.js).** Test added in content.test.mjs.
