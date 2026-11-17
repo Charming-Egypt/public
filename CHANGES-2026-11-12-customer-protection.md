@@ -122,3 +122,9 @@
 - 142 custom icons (solid, rounded, knocked-out details, brand orange gradient) replace the Font Awesome look everywhere on the site without touching the markup: `tools/icons/set.mjs` (drawings) → `tools/make-icons.mjs` → `shared/icons.css` (generated on every build, linked on all pages).
 - Icons on orange buttons/circles switch to white or dark ink automatically (detected from style.css); icons with their own colour class (text-white/gold/red/green…) stay flat; emergency cards keep their own colours.
 - Icons that are not in the set (e.g. an unusual icon chosen for a content item in the admin) still fall back to Font Awesome. To add an icon: add a drawing in `tools/icons/set.mjs`.
+
+## Icons: dark/light + bottom bar + white on orange
+- Icon gradient now has a light-mode variant (deeper orange) and a dark-mode one.
+- Bottom-nav icons are neutral grey by default (theme-aware); the orange gradient shows only on the active page or while pressed.
+- Every icon on an orange/gold surface is now always white (the dark-ink variant was removed).
+- Hero search tabs: active tab icon shows the brand gradient, inactive tab icon follows text colour (dark in light mode).
