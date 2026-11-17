@@ -129,3 +129,4 @@
 - Every icon on an orange/gold surface is now always white (the dark-ink variant was removed).
 - Hero search tabs: active tab icon shows the brand gradient, inactive tab icon follows text colour (dark in light mode).
 - Footer: payment icons use real Visa/Mastercard marks (own colours) with flat wallet/cash icons; social icons show their brand colours (they were white-on-grey before).
+- Icons on accent-coloured buttons that use var(--rd-accent) (directions arrow, map pin, meeting-point arrow) are now white; footer social icons really show brand colours (they are mask icons, so colour is set through the icon variables).

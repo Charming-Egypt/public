@@ -46,12 +46,12 @@ html[data-theme="light"] #heroSection .ds-search-tab.active, html[data-theme="li
 .payment-icon-box .fa-cc-mastercard { color: #eb001b; }
 .payment-icon-box .fa-wallet { color: #f97316; }
 .payment-icon-box .fa-money-bill-wave { color: #16a34a; }
-.footer-social-btn .fa-instagram { color: #e1306c; }
-.footer-social-btn .fa-facebook-f, .footer-social-btn .fa-facebook { color: #1877f2; }
-.footer-social-btn .fa-whatsapp { color: #25d366; }
-.footer-social-btn .fa-youtube { color: #ff0000; }
-.footer-social-btn .fa-tiktok { color: var(--text-primary); }
-.footer-social-btn:hover i { color: #fff !important; }
+.footer-social-btn .fa-instagram { --ico-a: #e1306c; --ico-b: #e1306c; }
+.footer-social-btn .fa-facebook-f, .footer-social-btn .fa-facebook { --ico-a: #1877f2; --ico-b: #1877f2; }
+.footer-social-btn .fa-whatsapp { --ico-a: #25d366; --ico-b: #25d366; }
+.footer-social-btn .fa-youtube { --ico-a: #ff0000; --ico-b: #ff0000; }
+.footer-social-btn .fa-tiktok { --ico-a: var(--text-primary); --ico-b: var(--text-primary); }
+.footer-social-btn:hover i { --ico-a: #fff !important; --ico-b: #fff !important; }
 .em-ico, .em-ico * { --ico-a: var(--em); --ico-b: var(--em); }
 .nav-home-logo, .nav-home-logo * { --ico-a: #fff; --ico-b: #fff; }
 .fa-spin { animation: ds-spin 1s linear infinite; }
@@ -61,10 +61,11 @@ html[data-theme="light"] #heroSection .ds-search-tab.active, html[data-theme="li
 {
   const style = fs.readFileSync(path.join(root, 'shared', 'style.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
   const ORANGE = /background(?:-color|-image)?\s*:[^;{}]*#(?:fbbf24|fdba74|ff6b35|ffa62b|fcd34d|f59e0b|fb923c|f97316|d97706|c2410c|ea580c|ff7a2a|e8590c|ffb347|fbbf2[0-9a-f]|f5a623)\b/i;
+  const ORANGE_VAR = /background(?:-color|-image)?\s*:[^;{}]*var\(--(?:rd-accent|ds-accent|ds-accent-2|accent)\)/i;
   const DARK = /(?:^|[;\s])color\s*:\s*(?:#(?:0|1)[0-9a-f]{2,5}\b|#000\b|var\(--ink|black)/i;
   const ink = new Set(), white = new Set();
   for (const m of style.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
-    if (!ORANGE.test(m[2])) continue;
+    if (!(ORANGE.test(m[2]) || ORANGE_VAR.test(m[2]))) continue;
     const dark = DARK.test(m[2]);
     for (let sel of m[1].split(',')) {
       sel = sel.trim().replace(/:(hover|active|focus|focus-visible|disabled)\b/g, '');

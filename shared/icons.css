@@ -443,12 +443,12 @@ html[data-theme="light"] #heroSection .ds-search-tab.active, html[data-theme="li
 .payment-icon-box .fa-cc-mastercard { color: #eb001b; }
 .payment-icon-box .fa-wallet { color: #f97316; }
 .payment-icon-box .fa-money-bill-wave { color: #16a34a; }
-.footer-social-btn .fa-instagram { color: #e1306c; }
-.footer-social-btn .fa-facebook-f, .footer-social-btn .fa-facebook { color: #1877f2; }
-.footer-social-btn .fa-whatsapp { color: #25d366; }
-.footer-social-btn .fa-youtube { color: #ff0000; }
-.footer-social-btn .fa-tiktok { color: var(--text-primary); }
-.footer-social-btn:hover i { color: #fff !important; }
+.footer-social-btn .fa-instagram { --ico-a: #e1306c; --ico-b: #e1306c; }
+.footer-social-btn .fa-facebook-f, .footer-social-btn .fa-facebook { --ico-a: #1877f2; --ico-b: #1877f2; }
+.footer-social-btn .fa-whatsapp { --ico-a: #25d366; --ico-b: #25d366; }
+.footer-social-btn .fa-youtube { --ico-a: #ff0000; --ico-b: #ff0000; }
+.footer-social-btn .fa-tiktok { --ico-a: var(--text-primary); --ico-b: var(--text-primary); }
+.footer-social-btn:hover i { --ico-a: #fff !important; --ico-b: #fff !important; }
 .em-ico, .em-ico * { --ico-a: var(--em); --ico-b: var(--em); }
 .nav-home-logo, .nav-home-logo * { --ico-a: #fff; --ico-b: #fff; }
 .fa-spin { animation: ds-spin 1s linear infinite; }
@@ -472,7 +472,22 @@ html[data-theme="light"] #heroSection .ds-search-tab.active, html[data-theme="li
 .auth-progress-bar span, .auth-progress-bar span *,
 .auth-strength[data-score="2"] span:nth-child(-n+2), .auth-strength[data-score="2"] span:nth-child(-n+2) *,
 .bk-seg-btn.is-active, .bk-seg-btn.is-active *,
+#heroTitleText .italic, #heroTitleText .italic *,
+#heroTitleText span, #heroTitleText span *,
+.rd-badge, .rd-badge *,
+.rd-act-main, .rd-act-main *,
+.rd-tab.on, .rd-tab.on *,
+.rd-item-price, .rd-item-price *,
+.rd-row > i, .rd-row > i *,
+.rd-branch-btns a, .rd-branch-btns a *,
 .dh-badge, .dh-badge *,
+.ex-fact > i:first-child, .ex-fact > i:first-child *,
+.ex-go, .ex-go *,
+.ex-step-dot, .ex-step-dot *,
+.ex-review-btn, .ex-review-btn *,
+.dp-pill, .dp-pill *,
+.dp-map, .dp-map *,
+.dp-map-pin, .dp-map-pin *,
 .wx-icon, .wx-icon *,
 .rvp-badge, .rvp-badge *,
 .rvp-avatar, .rvp-avatar *,
@@ -496,4 +511,5 @@ html[data-theme="light"] #heroSection .ds-search-tab.active, html[data-theme="li
 .bk-stepper li.is-done span, .bk-stepper li.is-done span *,
 .bk-avatar, .bk-avatar *,
 .bk-check input:checked + .bk-check-box, .bk-check input:checked + .bk-check-box *,
+.lc-cta, .lc-cta *,
 #transferPromoBanner .tpb-btn, #transferPromoBanner .tpb-btn * { --ico-a: #fff; --ico-b: #fff; }
