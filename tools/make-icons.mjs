@@ -69,7 +69,7 @@ html[data-theme="light"] #heroSection .ds-search-tab.active, html[data-theme="li
     const dark = DARK.test(m[2]);
     for (let sel of m[1].split(',')) {
       sel = sel.trim().replace(/:(hover|active|focus|focus-visible|disabled)\b/g, '');
-      if (!sel || sel.includes('::') || sel.startsWith('@') || sel.startsWith(':root') || /^(html|body)\b/.test(sel)) continue;
+      if (!sel || sel === '.rd-ico' || sel.includes('::') || sel.startsWith('@') || sel.startsWith(':root') || /^(html|body)\b/.test(sel)) continue;
       (dark ? ink : white).add(sel);
     }
   }
