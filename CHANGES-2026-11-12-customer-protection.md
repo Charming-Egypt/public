@@ -117,3 +117,8 @@
 
 ## Currency exchange page
 - New page `/exchange/` (live converter with swap, 20 currencies, popular-rate tiles against EGP, disclaimer), same rates source/cache as the price currency switcher. Footer links (desktop 'Company' column + mobile links). 6 languages.
+
+## Site icons — new brand icon set
+- 142 custom icons (solid, rounded, knocked-out details, brand orange gradient) replace the Font Awesome look everywhere on the site without touching the markup: `tools/icons/set.mjs` (drawings) → `tools/make-icons.mjs` → `shared/icons.css` (generated on every build, linked on all pages).
+- Icons on orange buttons/circles switch to white or dark ink automatically (detected from style.css); icons with their own colour class (text-white/gold/red/green…) stay flat; emergency cards keep their own colours.
+- Icons that are not in the set (e.g. an unusual icon chosen for a content item in the admin) still fall back to Font Awesome. To add an icon: add a drawing in `tools/icons/set.mjs`.

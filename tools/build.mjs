@@ -19,6 +19,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+await import('./make-icons.mjs');   // shared/icons.css from tools/icons/set.mjs
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
@@ -157,7 +158,7 @@ function buildPublic(site) {
 
   // ---- assets (hashed for cache busting) -----------------------------------------------------------------------------
   const siteCss = `site-${site}.css`;
-  const assetList = ['style.css', 'tailwind.css', 'data.js', 'supabase-api.js', 'booking.js', 'frontend.js', 'reviews-page.js', 'router.js', 'ds-bridge.js', 'ds-site.js'];
+  const assetList = ['style.css', 'icons.css', 'tailwind.css', 'data.js', 'supabase-api.js', 'booking.js', 'frontend.js', 'reviews-page.js', 'router.js', 'ds-bridge.js', 'ds-site.js'];
   const V = {};
   if (site === 'app') assetList.push('pwa.js');
   for (const f of assetList) {
@@ -241,6 +242,7 @@ function buildPublic(site) {
   ${fallbackLogo}
 
   <link rel="stylesheet" href="/style.css?v=${V['style.css']}" />
+  <link rel="stylesheet" href="/icons.css?v=${V['icons.css']}" />
   <link rel="stylesheet" href="/tailwind.css?v=${V['tailwind.css']}" />
   <link rel="stylesheet" href="/site.css?v=${V['site.css']}" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap" rel="stylesheet" />
