@@ -140,8 +140,6 @@ html[data-theme="light"] { --ico-a: #f59e0b; --ico-b: #d9480f; --nav-ico: #5b5b6
 :is(.fa-solid,.fa-regular,.fa-brands).fa-instagram,
 :is(.fa-solid,.fa-regular,.fa-brands).fa-tiktok,
 :is(.fa-solid,.fa-regular,.fa-brands).fa-youtube,
-:is(.fa-solid,.fa-regular,.fa-brands).fa-cc-visa,
-:is(.fa-solid,.fa-regular,.fa-brands).fa-cc-mastercard,
 :is(.fa-solid,.fa-regular,.fa-brands).fa-share-alt { display: inline-block; width: 1em; height: 1em; line-height: 1; vertical-align: -.14em; font-size: inherit; flex-shrink: 0; }
 :is(.fa-solid,.fa-regular,.fa-brands).fa-arrow-right::before,
 :is(.fa-solid,.fa-regular,.fa-brands).fa-arrow-left::before,
@@ -282,8 +280,6 @@ html[data-theme="light"] { --ico-a: #f59e0b; --ico-b: #d9480f; --nav-ico: #5b5b6
 :is(.fa-solid,.fa-regular,.fa-brands).fa-instagram::before,
 :is(.fa-solid,.fa-regular,.fa-brands).fa-tiktok::before,
 :is(.fa-solid,.fa-regular,.fa-brands).fa-youtube::before,
-:is(.fa-solid,.fa-regular,.fa-brands).fa-cc-visa::before,
-:is(.fa-solid,.fa-regular,.fa-brands).fa-cc-mastercard::before,
 :is(.fa-solid,.fa-regular,.fa-brands).fa-share-alt::before { content: "" !important; display: block; width: 100%; height: 100%; background: linear-gradient(135deg, var(--ico-a), var(--ico-b)); -webkit-mask: var(--i) center / contain no-repeat; mask: var(--i) center / contain no-repeat; }
 .fa-arrow-right{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.4'%3E%3Cpath d='M4 12h15M13 6l6 6-6 6'/%3E%3C/g%3E%3C/svg%3E")}
 .fa-arrow-left{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.4'%3E%3Cpath d='M20 12H5M11 6l-6 6 6 6'/%3E%3C/g%3E%3C/svg%3E")}
@@ -424,8 +420,6 @@ html[data-theme="light"] { --ico-a: #f59e0b; --ico-b: #d9480f; --nav-ico: #5b5b6
 .fa-instagram{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cdefs%3E%3Cmask id='k' maskUnits='userSpaceOnUse' x='0' y='0' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23fff'/%3E%3Cg fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.7'%3E%3Cpath d='M8 12a4 4 0 1 0 8 0 4 4 0 1 0 -8 0z' stroke-width='1.8'/%3E%3Cpath d='M17.3 6.7h.01' stroke-width='2.2'/%3E%3C/g%3E%3C/mask%3E%3C/defs%3E%3Cg mask='url(%23k)'%3E%3Cg fill='%23000' stroke='%23000' stroke-width='1.2' stroke-linejoin='round'%3E%3Cpath d='M7 2.500h10A4.500 4.500 0 0 1 21.500 7v10a4.500 4.500 0 0 1-4.500 4.500H7A4.500 4.500 0 0 1 2.500 17V7A4.500 4.500 0 0 1 7 2.500z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
 .fa-tiktok{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.4'%3E%3Cpath d='M14.500 3v11.200a3.800 3.800 0 1 1-3.800-3.800M14.500 3c.3 2.600 2.200 4.400 5 4.600'/%3E%3C/g%3E%3C/svg%3E")}
 .fa-youtube{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cdefs%3E%3Cmask id='k' maskUnits='userSpaceOnUse' x='0' y='0' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23fff'/%3E%3Cg fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.7'%3E%3Cpath fill='%23000' stroke-width='.8' d='M10 9v6l5-3z'/%3E%3C/g%3E%3C/mask%3E%3C/defs%3E%3Cg mask='url(%23k)'%3E%3Cg fill='%23000' stroke='%23000' stroke-width='1.2' stroke-linejoin='round'%3E%3Cpath d='M3.500 5h17A2.500 2.500 0 0 1 23 7.500v9a2.500 2.500 0 0 1-2.500 2.500h-17A2.500 2.500 0 0 1 1 16.500v-9A2.500 2.500 0 0 1 3.500 5z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
-.fa-cc-visa{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cdefs%3E%3Cmask id='k' maskUnits='userSpaceOnUse' x='0' y='0' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23fff'/%3E%3Cg fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.7'%3E%3Cpath d='M6.500 10l2 4 2-4M13 10v4M13 10h2a1.200 1.200 0 0 1 0 2.400h-2M18 10v4'/%3E%3C/g%3E%3C/mask%3E%3C/defs%3E%3Cg mask='url(%23k)'%3E%3Cg fill='%23000' stroke='%23000' stroke-width='1.2' stroke-linejoin='round'%3E%3Cpath d='M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
-.fa-cc-mastercard{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cdefs%3E%3Cmask id='k' maskUnits='userSpaceOnUse' x='0' y='0' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23fff'/%3E%3Cg fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.7'%3E%3Cpath d='M12 7.300a6 6 0 0 1 0 9.400'/%3E%3C/g%3E%3C/mask%3E%3C/defs%3E%3Cg mask='url(%23k)'%3E%3Cg fill='%23000' stroke='%23000' stroke-width='1.2' stroke-linejoin='round'%3E%3Cpath d='M2.5 12a6 6 0 1 0 12 0 6 6 0 1 0 -12 0zM9.5 12a6 6 0 1 0 12 0 6 6 0 1 0 -12 0z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
 .fa-share-alt{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='%23000' stroke='%23000' stroke-width='1.2' stroke-linejoin='round'%3E%3Cpath d='M14.8 5.7a3.2 3.2 0 1 0 6.4 0 3.2 3.2 0 1 0 -6.4 0zM2.8 12a3.2 3.2 0 1 0 6.4 0 3.2 3.2 0 1 0 -6.4 0zM14.8 18.3a3.2 3.2 0 1 0 6.4 0 3.2 3.2 0 1 0 -6.4 0z'/%3E%3C/g%3E%3Cg fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.4'%3E%3Cpath d='M8.8 10.4l6.4-3.6M8.8 13.6l6.4 3.6'/%3E%3C/g%3E%3C/svg%3E")}
 
 /* icons that carry their own colour (white / gold / red / green text utilities) stay flat so meaning is kept */
@@ -443,6 +437,18 @@ html[data-theme="light"] .bottom-nav .nav-item.active, html[data-theme="light"] 
 #heroSection .ds-search-tab, #heroSection .ds-search-tab * { --ico-a: currentColor; --ico-b: currentColor; }
 #heroSection .ds-search-tab.active, #heroSection .ds-search-tab.active * { --ico-a: #ffc21a; --ico-b: #ff5b14; }
 html[data-theme="light"] #heroSection .ds-search-tab.active, html[data-theme="light"] #heroSection .ds-search-tab.active * { --ico-a: #f59e0b; --ico-b: #d9480f; }
+/* footer: payment + social glyphs keep their own brand colours (real brand marks, not the orange set) */
+.payment-icon-box, .payment-icon-box * { --ico-a: currentColor; --ico-b: currentColor; }
+.payment-icon-box .fa-cc-visa { color: #1a56db; }
+.payment-icon-box .fa-cc-mastercard { color: #eb001b; }
+.payment-icon-box .fa-wallet { color: #f97316; }
+.payment-icon-box .fa-money-bill-wave { color: #16a34a; }
+.footer-social-btn .fa-instagram { color: #e1306c; }
+.footer-social-btn .fa-facebook-f, .footer-social-btn .fa-facebook { color: #1877f2; }
+.footer-social-btn .fa-whatsapp { color: #25d366; }
+.footer-social-btn .fa-youtube { color: #ff0000; }
+.footer-social-btn .fa-tiktok { color: var(--text-primary); }
+.footer-social-btn:hover i { color: #fff !important; }
 .em-ico, .em-ico * { --ico-a: var(--em); --ico-b: var(--em); }
 .nav-home-logo, .nav-home-logo * { --ico-a: #fff; --ico-b: #fff; }
 .fa-spin { animation: ds-spin 1s linear infinite; }

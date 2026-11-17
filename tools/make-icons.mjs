@@ -40,6 +40,18 @@ html[data-theme="light"] .bottom-nav .nav-item.active, html[data-theme="light"] 
 #heroSection .ds-search-tab, #heroSection .ds-search-tab * { --ico-a: currentColor; --ico-b: currentColor; }
 #heroSection .ds-search-tab.active, #heroSection .ds-search-tab.active * { --ico-a: #ffc21a; --ico-b: #ff5b14; }
 html[data-theme="light"] #heroSection .ds-search-tab.active, html[data-theme="light"] #heroSection .ds-search-tab.active * { --ico-a: #f59e0b; --ico-b: #d9480f; }
+/* footer: payment + social glyphs keep their own brand colours (real brand marks, not the orange set) */
+.payment-icon-box, .payment-icon-box * { --ico-a: currentColor; --ico-b: currentColor; }
+.payment-icon-box .fa-cc-visa { color: #1a56db; }
+.payment-icon-box .fa-cc-mastercard { color: #eb001b; }
+.payment-icon-box .fa-wallet { color: #f97316; }
+.payment-icon-box .fa-money-bill-wave { color: #16a34a; }
+.footer-social-btn .fa-instagram { color: #e1306c; }
+.footer-social-btn .fa-facebook-f, .footer-social-btn .fa-facebook { color: #1877f2; }
+.footer-social-btn .fa-whatsapp { color: #25d366; }
+.footer-social-btn .fa-youtube { color: #ff0000; }
+.footer-social-btn .fa-tiktok { color: var(--text-primary); }
+.footer-social-btn:hover i { color: #fff !important; }
 .em-ico, .em-ico * { --ico-a: var(--em); --ico-b: var(--em); }
 .nav-home-logo, .nav-home-logo * { --ico-a: #fff; --ico-b: #fff; }
 .fa-spin { animation: ds-spin 1s linear infinite; }

@@ -128,3 +128,4 @@
 - Bottom-nav icons are neutral grey by default (theme-aware); the orange gradient shows only on the active page or while pressed.
 - Every icon on an orange/gold surface is now always white (the dark-ink variant was removed).
 - Hero search tabs: active tab icon shows the brand gradient, inactive tab icon follows text colour (dark in light mode).
+- Footer: payment icons use real Visa/Mastercard marks (own colours) with flat wallet/cash icons; social icons show their brand colours (they were white-on-grey before).
