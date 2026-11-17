@@ -238,14 +238,14 @@ const reviewsPg = (() => {
       <div class="rvp-svc">
         ${v.image ? `<img src="${E(v.image)}" alt="" onerror="this.remove()">` : `<span class="rvp-svc-ico"><i class="fa-solid ${KIND_ICON[v.kind] || 'fa-ticket'}" aria-hidden="true"></i></span>`}
         <div class="rvp-svc-t"><span class="rvp-ok"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> ${tt('rvVoucherOk', 'Voucher verified')}</span><b>${E(v.title || v.id)}</b>
-          <small>${E(v.id)}${v.date ? ' · ' + fmtDate(v.date) : ''}</small></div>
+          <small><code>${E(v.id)}</code>${v.date ? `<span>${fmtDate(v.date)}</span>` : ''}</small></div>
         <button type="button" class="rvp-link" onclick="reviewsPg.reset()">${tt('rvChange', 'Change')}</button>
       </div>
       <form id="rvpForm" novalidate>
         <label for="rvpNat" class="rvp-label">${tt('rvNationality', 'YOUR COUNTRY')}</label>
         <div class="rvp-sel"><span class="rvp-sel-flag" id="rvpNatFlag" aria-hidden="true">${S.nat ? flag(S.nat) : '🌍'}</span>
-          <select id="rvpNat"><option value="">${tt('rvNationalityPick', 'Select your country')}</option>${natOptions()}</select><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></div>
-        <p class="rvp-label">${tt('yourRating', 'YOUR RATING')}</p>
+          <select id="rvpNat" class="lf-keep"><option value="">${tt('rvNationalityPick', 'Select your country')}</option>${natOptions()}</select><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></div>
+        <p class="rvp-label" id="rvpRateLbl">${tt('yourRating', 'YOUR RATING')}</p>
         <div class="rvp-rate" role="radiogroup" aria-label="${tt('yourRating', 'YOUR RATING')}">
           ${[1, 2, 3, 4, 5].map(n => `<button type="button" role="radio" aria-checked="${st === n}" aria-label="${n}" class="${n <= st ? 'on' : ''}" data-n="${n}"><i class="fa-solid fa-star" aria-hidden="true"></i></button>`).join('')}
           <span class="rvp-rate-l" id="rvpRateL">${st ? LAB[st] : tt('rvTapStar', 'Tap a star')}</span>
@@ -290,7 +290,7 @@ const reviewsPg = (() => {
   function paintPics() {
     const el = $('rvpPics'); if (!el) return;
     el.innerHTML = S.files.map((f, i) => `<div class="rvp-pic"><img src="${E(f.url)}" alt=""><button type="button" aria-label="${tt('rvRemove', 'Remove photo')}" onclick="reviewsPg.drop(${i})"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button></div>`).join('')
-      + (S.files.length < MAX_PHOTOS ? `<button type="button" class="rvp-pic add" onclick="document.getElementById('rvpFile').click()"><i class="fa-solid fa-camera" aria-hidden="true"></i><span>${tt('add', 'Add')}</span><small>${S.files.length}/${MAX_PHOTOS}</small></button>` : '');
+      + (S.files.length < MAX_PHOTOS ? `<button type="button" class="rvp-pic add" onclick="document.getElementById('rvpFile').click()"><i class="fa-solid fa-camera" aria-hidden="true"></i><span>${String(tt('add', 'Add')).replace(/<[^>]*>/g, '').trim() || 'Add'}</span><small>${S.files.length}/${MAX_PHOTOS}</small></button>` : '');
   }
   function paintDone(el) {
     const d = S.doneInfo || {};

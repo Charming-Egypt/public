@@ -5365,10 +5365,11 @@ html[data-theme="dark"] .rvp-err { color: #fca5a5; }
 .rvp-svc { display: flex; align-items: center; gap: 14px; padding: 12px; margin-bottom: 12px; border-radius: 20px; background: linear-gradient(135deg, color-mix(in srgb, #10b981 10%, var(--bg-card)), var(--bg-card)); border: 1px solid color-mix(in srgb, #10b981 35%, var(--rv-line)); }
 .rvp-svc img, .rvp-svc-ico { flex: none; width: 62px; height: 62px; border-radius: 16px; object-fit: cover; }
 .rvp-svc-ico { display: grid; place-items: center; font-size: 22px; color: var(--rv-b); background: var(--rv-soft); }
-.rvp-svc-t { flex: 1; min-width: 0; display: grid; gap: 3px; } .rvp-svc-t b { font-family: 'Playfair Display', Georgia, serif; font-size: 16.5px; line-height: 1.25; color: var(--text-primary); }
-.rvp-svc-t small { font-size: 12px; color: var(--text-secondary); font-family: ui-monospace, Menlo, Consolas, monospace; }
+.rvp-svc-t { flex: 1; min-width: 0; display: grid; gap: 3px; } .rvp-svc-t b { font-size: 16px; font-weight: 800; line-height: 1.3; color: var(--text-primary); }
+.rvp-svc-t small { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: 12px; color: var(--text-secondary); }
+.rvp-svc-t small code { font: 700 11.5px/1 ui-monospace, Menlo, Consolas, monospace; letter-spacing: .04em; padding: 3px 7px; border-radius: 8px; background: var(--bg-field); color: var(--text-primary); }
 .rvp-ok { font-size: 11.5px; font-weight: 800; color: #059669; display: inline-flex; align-items: center; gap: 6px; } html[data-theme="dark"] .rvp-ok { color: #6ee7b7; }
-.rvp-link { flex: none; font-size: 12.5px; font-weight: 800; color: var(--rv-b); padding: 8px; }
+.rvp-link { flex: none; align-self: flex-start; font-size: 12px; font-weight: 800; color: var(--rv-a); padding: 6px 12px; border-radius: 999px; border: 1px solid color-mix(in srgb, #f97316 35%, transparent); background: color-mix(in srgb, #f97316 8%, var(--bg-card)); }
 .rvp-rate { display: flex; align-items: center; gap: 6px; margin-bottom: 22px; }
 .rvp-rate button { width: 46px; height: 46px; border-radius: 15px; display: grid; place-items: center; font-size: 24px; color: var(--rv-star-off); background: var(--bg-field); border: 1px solid var(--rv-line); transition: transform .18s cubic-bezier(.3,1.6,.5,1), color .15s, background .15s; }
 .rvp-rate button.on { color: var(--rv-gold); background: color-mix(in srgb, #fbbf24 14%, var(--bg-card)); border-color: color-mix(in srgb, #fbbf24 50%, transparent); }
@@ -5651,3 +5652,38 @@ html[dir="rtl"] .article-body a.ab-link::after { content: '←'; }
 .ex .detail-mobile-bar { box-shadow: 0 -8px 24px -16px rgba(0,0,0,.35); }
 .ex .detail-mobile-bar .btn-gold { background: linear-gradient(135deg, #ffa62b, #f9611a) !important; color: #fff !important; --ico-a: #fff; --ico-b: #fff; border-radius: 99px !important; box-shadow: none; }
 .ex .ex-facts .ex-fact > i:first-child { --ico-a: #f9611a; --ico-b: #f9611a; }
+
+
+/* ================= Review form fixes (2026-11-17) ================= */
+/* (a) country select: the global select rule (specificity 0,2,1) beat .rvp-sel select, so the flag sat on top of the text and a 2nd chevron was drawn.
+       The <select> now carries .lf-keep (see reviews-page.js) which opts it out of the global rule; padding is restated here with enough weight. */
+.rvp .rvp-sel select { padding-block: 0; padding-inline: 50px 42px; background-image: none; cursor: pointer; text-overflow: ellipsis; }
+.rvp-sel-flag { width: 24px; text-align: center; line-height: 1; }
+
+/* (b) stars: selected = solid gold tile + white star, unselected = soft grey star. (The old pale-gold tile got a WHITE glyph from the icon auto-detector = invisible.) */
+.rvp .rvp-rate button { --ico-a: var(--rv-star-off); --ico-b: var(--rv-star-off); }
+.rvp .rvp-rate button.on { background: linear-gradient(135deg, #fbbf24, #f59e0b); border-color: transparent; box-shadow: 0 8px 16px -10px rgba(245,158,11,.9); }
+.rvp .rvp-rate button.on, .rvp .rvp-rate button.on * { --ico-a: #fff; --ico-b: #fff; }
+@media (hover: hover) { .rvp .rvp-rate button:hover { transform: translateY(-2px) scale(1.06); } }
+@media (hover: none) { .rvp .rvp-rate button:hover { transform: none; } }
+.rvp .rvp-rate button:active { transform: scale(.94); }
+.rvp .rvp-rate-l { color: var(--text-primary); min-width: 64px; }
+/* read-only stars in the list/summary: filled = gold, empty = grey (they were all orange before) */
+.rvp .rvp-stars i { --ico-a: var(--rv-star-off); --ico-b: var(--rv-star-off); }
+.rvp .rvp-stars i.on { --ico-a: #fcd34d; --ico-b: #f59e0b; }
+
+/* (c) icons that sit on an orange / green surface are always white */
+.rvp .rvp-tabs button[aria-selected="true"], .rvp .rvp-tabs button[aria-selected="true"] *,
+.rvp .rvp-cta, .rvp .rvp-cta *, .rvp .rvp-submit, .rvp .rvp-submit *,
+.rvp .rvp-chip.on, .rvp .rvp-chip.on *,
+.rvp .rvp-steps li.on span, .rvp .rvp-steps li.on span *, .rvp .rvp-steps li.done span, .rvp .rvp-steps li.done span *,
+.rvp .rvp-done-ico, .rvp .rvp-done-ico *, .rvp .rvp-tick, .rvp .rvp-tick * { --ico-a: #fff; --ico-b: #fff; }
+
+/* (d) photo add tile + fine print */
+.rvp-pic.add { width: 92px; height: 92px; border-radius: 20px; }
+.rvp .rvp-pic.add > i { width: 22px; height: 22px; font-size: 22px; }
+.rvp .rvp-fine { align-items: flex-start; text-align: start; justify-content: center; line-height: 1.55; }
+.rvp .rvp-fine > i { flex: none; margin-top: 2px; --ico-a: var(--text-secondary); --ico-b: var(--text-secondary); }
+
+/* (e) breathing room above the floating bottom bar */
+.rvp .rvp-wrap { padding-bottom: calc(140px + env(safe-area-inset-bottom, 0px)); }
