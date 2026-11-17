@@ -1591,6 +1591,403 @@ function showRestaurantPage(id, opts = {}) {
   const os = openState(r.openHours);
   const openChip = os ? `<span class="rd-open ${os.open ? 'on' : 'off'}"><i></i>${os.open ? t('rdOpenNow', 'Open now') : t('rdClosedNow', 'Closed now')}</span>` : '';
 
+  const infoRow = (icon, label, valueHtml, href, extra = '') => {
+    const inner = `<span class="rd-ico" aria-hidden="true"><i class="fa-solid ${icon}"></i></span><div class="rd-row-txt"><small>${label}</small><p>${valueHtml}</p></div>`;
+    return href ? `<a class="rd-row rd-row-link" href="${href}" ${extra}>${inner}</a>` : `<div class="rd-row">${inner}</div>`;
+  };
+  const infoRows = [
+    r.openHours ? infoRow('fa-clock', t('rdHours', 'Opening hours'), E(r.openHours)) : '',
+    address ? infoRow('fa-location-dot', t('rdAddress', 'Address'), E(address), mapUrl ? E(mapUrl) : '', 'target="_blank" rel="noopener"') : '',
+    phone ? infoRow('fa-phone', t('phPhoneNumber', 'Phone number'), `<span dir="ltr" style="unicode-bidi:plaintext">${E(phone)}</span>`, `tel:${E(tel)}`) : ''
+  ].join('');
+
+  const tabs = [
+    ['ex-overview', t('excSectionOverview', 'Overview')],
+    (inc.length || exc.length || bring.length) ? ['ex-included', t('excSectionIncluded', 'Included')] : null,
+    steps.length ? ['ex-itinerary', t('excSectionItinerary', 'Schedule')] : null,
+    ['ex-reviews', t('sectionReviewsEyebrow', 'Reviews')]
+  ].filter(Boolean);
+
+  page.innerHTML = `
+    <div class="min-h-screen rd ex" style="background:var(--bg-card)">
+      ${detailHero({ images: imgs, icon: 'fa-water', back: 'closeExcursionPage()', cls: 'detail-gallery', badge: x.packageType ? `<span class="dh-badge"><i class="fa-solid fa-gift" aria-hidden="true"></i> ${E(pkgLabel(x.packageType))} · ${E(t('pkgPackage', 'Package'))}</span>` : (x.category ? `<span class="dh-badge">${E(excursionsUi.categoryLabel(x.category))}</span>` : '') })}
+      ${renderPhotoGrid(imgs.length ? imgs : [PLACEHOLDER_IMG])}
+      <div class="detail-layout">
+        <div class="detail-main has-mbar relative -mt-6 rounded-t-[28px] p-5 rd-main ex-main" style="background:var(--bg-card)">
+          <header class="rd-head">
+            <h1 class="rd-title">${E(x.title)}</h1>
+            ${hasRating(x) ? `<div class="rd-rating">${utils.renderStars(x.rating)}<b>${ratingNum(x)}</b>${reviewsN(x) ? `<span>(${reviewsN(x)} ${t('reviewsCountSuffix')})</span>` : ''}</div>` : ''}
+          </header>
+          <div class="ex-facts">
+            <div class="ex-fact"><i class="fa-regular fa-clock" aria-hidden="true"></i><small>${t('exDuration', 'Duration')}</small><b>${E(x.duration || '—')}</b></div>
+            <div class="ex-fact"><i class="fa-solid fa-calendar-check" aria-hidden="true"></i><small>${t('scheduleLabel')}</small><b>${t('dailyLabel')}</b></div>
+            <a class="ex-fact ex-fact-wide ex-map" href="${E(mapHref)}" target="_blank" rel="noopener"><i class="fa-solid fa-location-dot" aria-hidden="true"></i><small>${t('meetingPointLabel')}</small><b>${E(meet)}</b><em class="ex-go"><i class="fa-solid fa-location-arrow" aria-hidden="true"></i><span>${t('branchDirections', 'Directions')}</span></em></a>
+          </div>
+          <div class="ex-trust">
+            <span><i class="fa-solid fa-rotate-left"></i>${t('freeCancellationBadge')}</span>
+            <span><i class="fa-solid fa-bolt"></i>${t('instantConfirmationBadge')}</span>
+            <span><i class="fa-solid fa-shield-heart"></i>${t('secureBookingBadge')}</span>
+          </div>
+          <nav class="rd-tabs" id="rdTabs" aria-label="Sections">${tabs.map((tb, i) => `<button type="button" class="rd-tab ${i === 0 ? 'on' : ''}" data-t="${tb[0]}" onclick="rdGo('${tb[0]}')">${tb[1]}</button>`).join('')}</nav>
+
+          <section class="rd-sec" id="ex-overview"><h3 class="rd-h">${t('overviewHeader')}</h3><p class="rd-about">${E(x.fullDescription || x.description)}</p></section>
+
+          ${(inc.length || exc.length || bring.length) ? `<section class="rd-sec" id="ex-included"><h3 class="rd-h">${t('pricesInclusionsLabel')}</h3>
+            <div class="ex-inc">
+              ${inc.length ? `<div class="ex-inc-card ex-in"><p><i class="fa-solid fa-circle-check"></i>${t('excSectionIncluded')}</p><ul>${inc.map(i => `<li>${E(i)}</li>`).join('')}</ul></div>` : ''}
+              ${exc.length ? `<div class="ex-inc-card ex-out"><p><i class="fa-solid fa-circle-xmark"></i>${t('notIncludedLabel')}</p><ul>${exc.map(i => `<li>${E(i)}</li>`).join('')}</ul></div>` : ''}
+            </div>
+            ${bring.length ? `<h4 class="ex-sub">${t('whatToBringHeader')}</h4><div class="ex-bring">${bring.map(i => `<span><i class="fa-solid fa-suitcase-rolling"></i>${E(i)}</span>`).join('')}</div>` : ''}
+          </section>` : ''}
+
+          ${steps.length ? `<section class="rd-sec" id="ex-itinerary"><h3 class="rd-h">${t('tripItineraryHeader')}<em>${steps.length}</em></h3>
+            <ol class="ex-steps">${steps.map((s, i) => `
+              <li class="ex-step">
+                <span class="ex-step-time">${E(s.time || '')}</span>
+                <span class="ex-step-dot">${i + 1}</span>
+                <div class="ex-step-card"><p class="ex-step-title">${E(s.title || '')}</p>${s.description ? `<p class="ex-step-desc">${E(s.description)}</p>` : ''}</div>
+              </li>`).join('')}</ol>
+          </section>` : ''}
+
+          <section class="rd-sec" id="ex-reviews">
+            <h3 class="rd-h">${t('realStoriesTravelersHeader')}</h3>
+            <div class="rating-summary-block">
+              <div class="rating-summary-score">
+                <p class="rating-summary-number" id="excursionRatingSummary">–</p>
+                <div class="text-gold-500 text-sm" id="excursionRatingStars"></div>
+                <p class="rating-summary-count" id="excursionRatingCount"></p>
+              </div>
+              <div class="rating-bar-chart" id="excursionRatingBars"></div>
+            </div>
+            <button onclick="reviews.openModal('excursion','${x.id}')" class="ex-review-btn">${t('writeReviewBtn')}</button>
+            <div class="space-y-3" id="excursionReviewsList"></div>
+          </section>
+        </div>
+        <aside class="detail-sidebar"><div class="detail-sidebar-card">${bookingCard}</div></aside>
+      </div>
+      <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto backdrop-blur-xl border-t p-4 flex items-center justify-between z-10 detail-mobile-bar" style="background:var(--bg-card); border-color:var(--border-card)">
+        <div>${priceBlock}</div>
+        <button onclick="startExcursionBooking('${x.id}')" class="btn-gold px-7 py-3 rounded-2xl font-bold text-ink-900">${t('bookNowBtn')}</button>
+      </div>
+    </div>`;
+  document.getElementById('mainApp').appendChild(page);
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  page.classList.add('active');
+  window.scrollTo(0, 0);
+  routeToDetail('excursions', x.id, x.title, opts);
+  loadReviews('excursion', x.id, 'excursionReviewsList', 'excursionRatingSummary', 'excursionRatingBars');
+  I18N.set(I18N.get());
+  rdSpy(page);
+}
+
+function closeExcursionPage() { const p = document.getElementById('excursionDetailPage'); if (p) p.remove(); nav.go(state.currentExcursion && state.currentExcursion.__pkg ? 'packages' : 'excursions'); }
+function onGalleryScroll(el, dotsId) { const idx = Math.round(el.scrollLeft / el.clientWidth); document.querySelectorAll(`#${dotsId} .gallery-dot`).forEach((d, i) => d.classList.toggle('active', i === idx)); }
+// Back-compat alias — existing excursion markup calls this by name directly.
+function onExcursionGalleryScroll(el) { onGalleryScroll(el, 'excursionGalleryDots'); }
+function startExcursionBooking(id) {
+  if (!authToken) { auth.require(() => startExcursionBooking(id), t('authNeedLoginBook', 'Log in or create an account to complete your booking')); return; }
+  const x = findExcursionOrPackage(id);
+  if (!x) return;
+  state.currentExcursion = x;
+  state.bookingDraft = { name: currentUser?.displayName || currentUser?.name || '', email: currentUser?.email || '', phone: (currentUser?.countryCode || '') + (currentUser?.phone || ''), participants: pkgByPackage(x) ? pkgPeople(x) : Math.min(15, state.tripPax || 2), payment: 'card', date: search.selectedCheckIn || utils.addDays(utils.todayIso(), 1) };
+  renderExcursionBookingStep(2);
+}
+
+function renderExcursionBookingStep(step) {
+  state.bookingStep = step;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const existing = document.getElementById('excursionBookingFlowPage'); if (existing) existing.remove();
+  const x = state.currentExcursion; const subtotal = exSubtotal(x, state.bookingDraft.participants); const q0 = bkQuote('excursion', subtotal, planOf('excursion')); const taxes = q0.tax + q0.fee; const total = q0.total;
+  const page = document.createElement('div'); page.id = 'excursionBookingFlowPage'; page.className = 'page bk-flow';
+  const summary = bkSummary({
+    img: x.image, title: x.title, sub: `${x.packageType ? pkgLabel(x.packageType) + ' · ' + t('pkgPackage', 'Package') : excursionsUi.categoryLabel(x.category)} · ${x.duration}`, total,
+    rows: [
+      [t('dateLabel'), utils.formatDate(state.bookingDraft.date)],
+      [pkgByPackage(x) ? `${x.title} (${state.bookingDraft.participants} ${t('peopleLabel')})` : `${x.title} × ${state.bookingDraft.participants}`, utils.formatPrice(subtotal)],
+      [t('taxesFeesLabel'), `<span data-bk-tax>${utils.formatPrice(taxes)}</span>`],
+    ],
+  });
+  let main = '';
+  if (step === 2) {
+    main = `
+      ${bkGuestCard()}
+      <form id="bkForm" onsubmit="submitExcursionDetails(event)">
+        ${bkCard('fa-compass', t('tripDetailsHeader'), `
+          ${bkDateField('ekDate', t('dateLabel'), state.bookingDraft.date)}
+          ${pkgByPackage(x) ? `<p class="text-sm" style="color:var(--text-secondary)"><i class="fa-solid fa-users" aria-hidden="true"></i> ${t('pkgForPeople', 'for {n} people').replace('{n}', state.bookingDraft.participants)} — ${t('pkgFixedPrice', 'one price for the whole package')}</p>` : bkCounter('fa-users', t('participantsLabel'), 'ekParticipantsLabel', `${state.bookingDraft.participants} ${t('peopleLabel')}`, 'adjustParticipants(-1)', 'adjustParticipants(1)')}`)}
+      </form>
+      <div class="bk-bar">
+        <div class="bk-bar-total"><small>${t('totalLabel')}</small><b id="ekBarTotal">${utils.formatPrice(total)}</b></div>
+        <button type="submit" form="bkForm" class="btn-violet bk-cta">${t('continueBtn')}<i class="fa-solid fa-arrow-right rtl-flip" aria-hidden="true"></i></button>
+      </div>`;
+  } else if (step === 3) {
+    main = `
+      ${bkCard('fa-coins', t('choosePaymentOptionLabel'), paymentPlanSelector(subtotal, 'excursion'))}
+      ${bkCard('fa-credit-card', t('paymentMethodHeader'), paymentMethodsBlock(state.bookingDraft.payment, 'setExcursionPaymentMethod'))}
+      <div class="bk-bar">
+        <button onclick="payAndConfirmExcursionBooking(${subtotal}, ${taxes}, ${total})" id="excursionPayBtn" class="btn-violet bk-cta bk-cta-wide"><i class="fa-solid fa-lock" aria-hidden="true"></i>${payBtnLabel('excursion', subtotal)}</button>
+      </div>`;
+  }
+  page.innerHTML = bkShell({
+    step, main, side: summary,
+    backAction: step === 2 ? 'closeExcursionBookingFlow()' : 'renderExcursionBookingStep(2)',
+    title: step === 2 ? t('bookingDetailsHeader') : t('paymentStepLabel'),
+  });
+  document.getElementById('mainApp').appendChild(page); page.classList.add('active'); if (!window.__bkKeep) window.scrollTo(0,0);
+}
+
+function setExcursionPaymentMethod(m) { state.bookingDraft.payment = m; renderExcursionBookingStep(3); }
+function closeExcursionBookingFlow() { const p = document.getElementById('excursionBookingFlowPage'); if (p) p.remove(); showExcursionPage(state.currentExcursion.id); }
+function adjustParticipants(delta) { const v = state.bookingDraft.participants + delta; if (v >= 1 && v <= 15) { state.bookingDraft.participants = v; bkRefresh(); } }
+function submitExcursionDetails(e) { e.preventDefault(); state.bookingDraft.date = document.getElementById('ekDate').dataset.value; renderExcursionBookingStep(3); }
+
+async function payAndConfirmExcursionBooking(subtotal, taxes, total) {
+  await loadBkPricing(); total = bkQuote('excursion', subtotal, planOf('excursion')).total;
+  if (!authToken) { auth.require(() => payAndConfirmExcursionBooking(subtotal, taxes, total), t('authNeedLoginBook', 'Log in or create an account to complete your booking')); return; }
+  if (!navigator.onLine && await queueBookingDraft('excursion')) return;
+  const btn = document.getElementById('excursionPayBtn'); btn.disabled = true; btn.innerHTML = 'Processing…';
+  const orderId = utils.generateId();
+  try {
+    const bookingData = {
+      id: orderId,
+      type: state.currentExcursion.__pkg ? 'package' : 'excursion',
+      [state.currentExcursion.__pkg ? 'packageId' : 'excursionId']: state.currentExcursion.id,
+      title: state.currentExcursion.title,
+      image: getImageUrl(state.currentExcursion.image),
+      category: state.currentExcursion.category,
+      name: state.bookingDraft.name,
+      email: state.bookingDraft.email,
+      phone: state.bookingDraft.phone,
+      date: state.bookingDraft.date,
+      participants: state.bookingDraft.participants,
+      payment: state.bookingDraft.payment,
+      total,
+      paymentPlan: planOf('excursion'),
+      currency: 'EGP',
+      priceFormatted: utils.formatPrice(total),
+      status: 'pending_payment',
+      reviewed: false,
+      createdAt: new Date().toISOString(),
+    };
+
+    await apiFetch('/api/user/bookings', { method: 'POST', body: JSON.stringify({ booking: bookingData }) });
+
+    // Direct API charge — customer never leaves this page. Card fields are
+    // collected by our own form (see paymentMethodsBlock) and 3D Secure, if
+    // triggered, opens as an in-page modal rather than a redirect.
+    // Charges exactly what the chosen plan owes now — bookings-worker computes
+    // and stores the same deposit/full split server-side and rejects any other amount.
+    const success = await processKashierPayment(orderId, amountDueNow('excursion', subtotal), 'EGP', btn);
+    if (!success) { btn.disabled = false; btn.innerHTML = payBtnLabel('excursion', subtotal); return; }
+    bookingData.status = 'completed';
+    state.bookings.unshift(bookingData);
+    bookings.render();
+    renderBookingConfirmation(bookingData);
+    btn.disabled = false; btn.innerHTML = t('payNowBtn');
+  } catch (e) {
+    toast('Payment error: ' + e.message, 'error');
+    btn.disabled = false; btn.innerHTML = t('payNowBtn');
+  }
+}
+
+// ==================== TRANSFER BOOKING ====================
+function startTransferBooking(id) {
+  if (!authToken) { auth.require(() => startTransferBooking(id), t('authNeedLoginBook', 'Log in or create an account to complete your booking')); return; }
+  const v = CATALOG.transfers.find(i => i.id === id);
+  if (!v) return toast(t('errTransferNotFound'), 'error');
+  state.currentTransfer = v;
+  state.bookingDraft = {
+    name: currentUser?.displayName || currentUser?.name || '',
+    email: currentUser?.email || '',
+    phone: (currentUser?.countryCode || '') + (currentUser?.phone || ''),
+    direction: 'Airport to Hotel',
+    flightNo: '',
+    address: '',
+    passengers: Math.min(v.capacity || 2, state.tripPax || 2),
+    time: '14:00',
+    payment: 'card',
+    date: search.selectedCheckIn || utils.addDays(utils.todayIso(), 1),
+  };
+  renderTransferBookingStep(2);
+}
+
+function renderTransferBookingStep(step) {
+  state.bookingStep = step;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const existing = document.getElementById('transferBookingFlowPage'); if (existing) existing.remove();
+  const v = state.currentTransfer;
+  const subtotal = v.price;
+  const q0 = bkQuote('transfer', subtotal, planOf('transfer'));
+  const taxes = q0.tax + q0.fee, total = q0.total;
+  const page = document.createElement('div');
+  page.id = 'transferBookingFlowPage';
+  page.className = 'page bk-flow';
+  const summary = bkSummary({
+    img: v.image, title: `${v.vehicleType} ${t('transferSuffix')}`, sub: `${t('upToPassengersPrefix')} ${v.capacity} ${t('passengersLower')}`, total,
+    rows: [
+      [t('dateLabel'), utils.formatDate(state.bookingDraft.date)],
+      [t('timeLabel'), state.bookingDraft.time],
+      [t('passengersLabel'), `${state.bookingDraft.passengers} ${t('peopleLabel')}`],
+      [`${v.vehicleType} ${t('transferSuffix')}`, utils.formatPrice(subtotal)],
+      [t('taxesFeesLabel'), `<span data-bk-tax>${utils.formatPrice(taxes)}</span>`],
+    ],
+  });
+  let main = '';
+  if (step === 2) {
+    main = `
+      ${bkGuestCard()}
+      <form id="bkForm" onsubmit="submitTransferDetails(event)">
+        ${bkCard('fa-route', t('transferDetailsHeader'), `
+          <div class="bk-seg" role="group">
+            <button type="button" onclick="setTransferDirection('Airport to Hotel')" id="dirBtnArrival" class="bk-seg-btn"><i class="fa-solid fa-plane-arrival" aria-hidden="true"></i>${t('airportPickupBtn')}</button>
+            <button type="button" onclick="setTransferDirection('Hotel to Airport')" id="dirBtnDeparture" class="bk-seg-btn"><i class="fa-solid fa-plane-departure" aria-hidden="true"></i>${t('airportDropoffBtn')}</button>
+          </div>
+          <div class="bk-field">
+            <label for="tkFlightNo">${t('phFlightNumber')}</label>
+            <input type="text" id="tkFlightNo" value="${esc(state.bookingDraft.flightNo)}" placeholder="${t('phFlightNumber')}" class="bk-input" dir="ltr">
+          </div>
+          <div class="bk-field" id="hotelField">
+            <label for="tkAddress">${t('hotelNameAddressLabel')}</label>
+            <input type="text" id="tkAddress" required value="${esc(state.bookingDraft.address)}" placeholder="${t('hotelNameAddressLabel')}" class="bk-input">
+          </div>
+          <div class="bk-grid-2">
+            ${bkDateField('tkDate', t('dateLabel'), state.bookingDraft.date)}
+            <div class="date-field bk-date">
+              <i class="fa-regular fa-clock bk-date-ico" aria-hidden="true"></i>
+              <span class="bk-date-text"><label for="tkTime">${t('timeLabel')}</label><input type="time" id="tkTime" value="${state.bookingDraft.time}" class="bk-time" onchange="bkRefresh()"></span>
+            </div>
+          </div>
+          ${bkCounter('fa-users', t('passengersLabel'), 'tkPassengersLabel', `${state.bookingDraft.passengers} ${t('peopleLabel')}`, 'adjustTransferPassengers(-1)', 'adjustTransferPassengers(1)')}`)}
+      </form>
+      <div class="bk-bar">
+        <div class="bk-bar-total"><small>${t('totalLabel')}</small><b>${utils.formatPrice(total)}</b></div>
+        <button type="submit" form="bkForm" class="btn-violet bk-cta">${t('continueBtn')}<i class="fa-solid fa-arrow-right rtl-flip" aria-hidden="true"></i></button>
+      </div>`;
+  } else if (step === 3) {
+    main = `
+      ${bkCard('fa-coins', t('choosePaymentOptionLabel'), paymentPlanSelector(subtotal, 'transfer'))}
+      ${bkCard('fa-credit-card', t('paymentMethodHeader'), paymentMethodsBlock(state.bookingDraft.payment, 'setTransferPaymentMethod'))}
+      <div class="bk-bar">
+        <button onclick="payAndConfirmTransferBooking(${subtotal}, ${taxes}, ${total})" id="transferPayBtn" class="btn-violet bk-cta bk-cta-wide"><i class="fa-solid fa-lock" aria-hidden="true"></i>${payBtnLabel('transfer', subtotal)}</button>
+      </div>`;
+  }
+  page.innerHTML = bkShell({
+    step, main, side: summary,
+    backAction: step === 2 ? 'closeTransferBookingFlow()' : 'renderTransferBookingStep(2)',
+    title: step === 2 ? t('transferDetailsHeader') : t('paymentStepLabel'),
+  });
+  document.getElementById('mainApp').appendChild(page);
+  page.classList.add('active'); if (!window.__bkKeep) window.scrollTo(0,0);
+  if (step === 2) setTransferDirection(state.bookingDraft.direction);
+}
+
+function setTransferDirection(dir) {
+  state.bookingDraft.direction = dir;
+  const a = document.getElementById('dirBtnArrival'), d = document.getElementById('dirBtnDeparture');
+  if (!a || !d) return;
+  a.classList.toggle('is-active', dir === 'Airport to Hotel');
+  d.classList.toggle('is-active', dir === 'Hotel to Airport');
+  a.setAttribute('aria-pressed', String(dir === 'Airport to Hotel'));
+  d.setAttribute('aria-pressed', String(dir === 'Hotel to Airport'));
+}
+
+function setTransferPaymentMethod(m) { state.bookingDraft.payment = m; renderTransferBookingStep(3); }
+function closeTransferBookingFlow() { const p = document.getElementById('transferBookingFlowPage'); if (p) p.remove(); nav.go('transfers'); }
+function adjustTransferPassengers(delta) { const v = state.currentTransfer, n = state.bookingDraft.passengers + delta; if (n >= 1 && n <= v.capacity) { state.bookingDraft.passengers = n; bkRefresh(); } else if (n > v.capacity) toast(t('errPassengersMax').replace('{n}', v.capacity), 'error'); }
+function submitTransferDetails(e) { e.preventDefault(); state.bookingDraft.flightNo = document.getElementById('tkFlightNo').value; state.bookingDraft.address = document.getElementById('tkAddress').value; state.bookingDraft.date = document.getElementById('tkDate').dataset.value; state.bookingDraft.time = document.getElementById('tkTime').value; renderTransferBookingStep(3); }
+
+async function payAndConfirmTransferBooking(subtotal, taxes, total) {
+  await loadBkPricing(); total = bkQuote('transfer', subtotal, planOf('transfer')).total;
+  if (!authToken) { auth.require(() => payAndConfirmTransferBooking(subtotal, taxes, total), t('authNeedLoginBook', 'Log in or create an account to complete your booking')); return; }
+  if (!navigator.onLine && await queueBookingDraft('transfer')) return;
+  const btn = document.getElementById('transferPayBtn'); btn.disabled = true; btn.innerHTML = 'Processing…';
+  const orderId = utils.generateId();
+  try {
+    const bookingData = {
+      id: orderId,
+      type: 'transfer',
+      transferId: state.currentTransfer.id,
+      vehicleType: state.currentTransfer.vehicleType,
+      image: getImageUrl(state.currentTransfer.image),
+      direction: state.bookingDraft.direction,
+      name: state.bookingDraft.name,
+      email: state.bookingDraft.email,
+      phone: state.bookingDraft.phone,
+      flightNo: state.bookingDraft.flightNo,
+      address: state.bookingDraft.address,
+      date: state.bookingDraft.date,
+      time: state.bookingDraft.time,
+      passengers: state.bookingDraft.passengers,
+      payment: state.bookingDraft.payment,
+      total,
+      paymentPlan: planOf('transfer'),
+      currency: 'EGP',
+      priceFormatted: utils.formatPrice(total),
+      status: 'pending_payment',
+      reviewed: false,
+      createdAt: new Date().toISOString(),
+    };
+
+    await apiFetch('/api/user/bookings', { method: 'POST', body: JSON.stringify({ booking: bookingData }) });
+
+    // Direct API charge — customer never leaves this page. Card fields are
+    // collected by our own form (see paymentMethodsBlock) and 3D Secure, if
+    // triggered, opens as an in-page modal rather than a redirect.
+    // Charges exactly what the chosen plan owes now — bookings-worker computes
+    // and stores the same deposit/full split server-side and rejects any other amount.
+    const success = await processKashierPayment(orderId, amountDueNow('transfer', subtotal), 'EGP', btn);
+    if (!success) { btn.disabled = false; btn.innerHTML = payBtnLabel('transfer', subtotal); return; }
+    bookingData.status = 'completed';
+    state.bookings.unshift(bookingData);
+    bookings.render();
+    renderBookingConfirmation(bookingData);
+    btn.disabled = false; btn.innerHTML = t('payNowBtn');
+  } catch (e) {
+    toast('Payment error: ' + e.message, 'error');
+    btn.disabled = false; btn.innerHTML = t('payNowBtn');
+  }
+}
+
+// ==================== RESTAURANT DETAILS ====================
+// Layout: gallery hero -> title card (name, cuisine, price, rating) -> quick actions (call / directions / share)
+//         -> sticky section tabs (About / Menu / Branches / Info) -> menu grouped by category with jump chips.
+// On desktop the photo mosaic replaces the hero and the Info card moves to the sticky sidebar.
+function showRestaurantPage(id, opts = {}) {
+  const r = CATALOG.restaurants.find(x => x.id === id);
+  if (!r) return;
+  const old = document.getElementById('restaurantDetailPage'); if (old) old.remove();
+  const page = document.createElement('div');
+  page.id = 'restaurantDetailPage';
+  page.className = 'page';
+
+  const E = (v) => esc(String(v == null ? '' : v));
+  const L = (v) => (v && typeof v === 'object') ? (v[I18N.get()] || v.en || v.ar || '') : (v || '');
+  const imgs = (r.images && r.images.length ? r.images : [r.image]).filter(Boolean);
+  const gallery = imgs.length ? imgs : [PLACEHOLDER_IMG];
+  const isCafe = r.category === 'cafe' || r.venueType === 'cafe';
+  const pl = Math.min(4, Math.max(1, Number(r.priceLevel) || 2));
+  const priceHtml = `<span class="rd-price" aria-label="${'$'.repeat(pl)}"><b>${'$'.repeat(pl)}</b>${'$'.repeat(4 - pl)}</span>`;
+  const phone = r.phone ? String(r.phone).trim() : '';
+  const tel = phone.replace(/[^\d+]/g, '');
+  const coords = r.coordinates && r.coordinates.lat && r.coordinates.lng ? r.coordinates : null;
+  const mapUrl = r.google_maps_url || (coords ? `https://www.google.com/maps?q=${coords.lat},${coords.lng}` : '');
+  const address = r.address_full || r.location || '';
+  const desc = r.fullDescription || r.description || '';
+  const menu = (r.menu || []).filter(sec => sec && (sec.items || []).length);
+  const branches = r.branches || [];
+  const itemsCount = menu.reduce((n, sec) => n + sec.items.length, 0);
+
+  const action = (href, icon, label, main, extra = '') => `<a class="rd-act ${main ? 'rd-act-main' : ''}" ${extra} href="${href}" aria-label="${label}" title="${label}"><i class="fa-solid ${icon}" aria-hidden="true"></i><span class="rd-sr">${label}</span></a>`;
+  const btn = (fn, icon, label) => `<button type="button" class="rd-act" onclick="${fn}" aria-label="${label}" title="${label}"><i class="fa-solid ${icon}" aria-hidden="true"></i><span class="rd-sr">${label}</span></button>`;
+  const actions = [
+    phone ? action(`tel:${E(tel)}`, 'fa-phone', t('branchCall', 'Call'), true) : '',
+    mapUrl ? action(E(mapUrl), 'fa-location-arrow', t('branchDirections', 'Directions'), !phone, 'target="_blank" rel="noopener"') : '',
+    menu.length ? btn("rdGo('rd-menu')", 'fa-utensils', t('theMenu', 'The Menu')) : '',
+    btn('dhShare()', 'fa-share-nodes', t('rdShare', 'Share'))
+  ].join('');
+  const os = openState(r.openHours);
+  const openChip = os ? `<span class="rd-open ${os.open ? 'on' : 'off'}"><i></i>${os.open ? t('rdOpenNow', 'Open now') : t('rdClosedNow', 'Closed now')}</span>` : '';
+
   const infoRows = `
     ${r.openHours ? `<div class="rd-row"><i class="fa-regular fa-clock" aria-hidden="true"></i><div><small>${t('rdHours', 'Opening hours')}</small><p>${E(r.openHours)}</p></div></div>` : ''}
     ${address ? `<div class="rd-row"><i class="fa-solid fa-location-dot" aria-hidden="true"></i><div><small>${t('rdAddress', 'Address')}</small><p>${E(address)}</p></div></div>` : ''}
@@ -1598,9 +1995,9 @@ function showRestaurantPage(id, opts = {}) {
 
   const tabs = [
     desc ? ['rd-about', t('aboutPlace', 'About')] : null,
-    ['rd-menu', t('theMenu', 'The Menu')],
+    infoRows.trim() ? ['rd-info', t('rdAddress', 'Info'), 'rd-tab-info'] : null,
     branches.length ? ['rd-branches', t('branchesHeader', 'Our branches')] : null,
-    infoRows.trim() ? ['rd-info', t('rdAddress', 'Info'), 'rd-tab-info'] : null
+    ['rd-menu', t('theMenu', 'The Menu')]
   ].filter(Boolean);
 
   const menuHtml = menu.length ? `
@@ -1644,9 +2041,9 @@ function showRestaurantPage(id, opts = {}) {
           <div class="rd-actions">${actions}</div>
           <nav class="rd-tabs" id="rdTabs" aria-label="Sections">${tabs.map((tb, i) => `<button type="button" class="rd-tab ${tb[2] || ''} ${i === 0 ? 'on' : ''}" data-t="${tb[0]}" onclick="rdGo('${tb[0]}')">${tb[1]}</button>`).join('')}</nav>
           ${desc ? `<section class="rd-sec" id="rd-about"><h3 class="rd-h">${t('aboutPlace', 'About')}</h3><p class="rd-about">${E(desc)}</p></section>` : ''}
-          <section class="rd-sec" id="rd-menu"><h3 class="rd-h">${t('theMenu', 'The Menu')}${itemsCount ? `<em>${itemsCount}</em>` : ''}</h3>${menuHtml}</section>
-          ${branches.length ? `<section class="rd-sec" id="rd-branches"><div id="restBranches"><h3 class="rd-h">${t('branchesHeader', 'Our branches')}</h3>${branchesHtml}</div></section>` : ''}
           ${infoRows.trim() ? `<section class="rd-sec rd-info-m" id="rd-info"><h3 class="rd-h">${t('rdAddress', 'Info')}</h3><div class="rd-card">${infoRows}</div></section>` : ''}
+          ${branches.length ? `<section class="rd-sec" id="rd-branches"><div id="restBranches"><h3 class="rd-h">${t('branchesHeader', 'Our branches')}</h3>${branchesHtml}</div></section>` : ''}
+          <section class="rd-sec" id="rd-menu"><h3 class="rd-h">${t('theMenu', 'The Menu')}${itemsCount ? `<em>${itemsCount}</em>` : ''}</h3>${menuHtml}</section>
         </div>
         <aside class="detail-sidebar">
           <div class="detail-sidebar-card rd-side">
