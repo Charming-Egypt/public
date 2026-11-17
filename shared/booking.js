@@ -1140,7 +1140,7 @@ function detailHero({ images, icon = 'fa-image', back, badge = '', cls = '', sha
   const imgs = (images || []).filter(Boolean);
   const list = imgs.length ? imgs : [''];
   window.__lightboxImages = imgs;
-  const slides = list.map((img, i) => `<div class="dh-slide ${img ? '' : 'dh-fail'}" ${img ? `onclick="openLightbox(${i})"` : ''}>${img ? `<img alt="" src="${getImageUrl(img)}" referrerpolicy="no-referrer" ${i ? 'loading="lazy"' : ''} onerror="dhFail(this)">` : ''}<i class="fa-solid ${icon} dh-ph" aria-hidden="true"></i></div>`).join('');
+  const slides = list.map((img, i) => `<div class="dh-slide ${img ? '' : 'dh-fail'}" ${img ? `onclick="openLightbox(${i})"` : ''}>${img ? `<img alt="" src="${getImageUrl(img)}" referrerpolicy="no-referrer" ${i ? 'loading="lazy"' : ''} onerror="dhFail(this)">` : ''}<img class="dh-ph" src="${WATERMARK_IMG}" alt="" aria-hidden="true"></div>`).join('');
   return `
     <div class="dh ${cls}">${window.DS_SITE === 'app' ? '<div class="ds-waves ds-waves--hero" aria-hidden="true"><i></i><i></i><i></i></div>' : ''}
       <div class="dh-track" onscroll="dhScroll(this)">${slides}</div>
