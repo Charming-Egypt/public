@@ -130,3 +130,4 @@
 - Hero search tabs: active tab icon shows the brand gradient, inactive tab icon follows text colour (dark in light mode).
 - Footer: payment icons use real Visa/Mastercard marks (own colours) with flat wallet/cash icons; social icons show their brand colours (they were white-on-grey before).
 - Icons on accent-coloured buttons that use var(--rd-accent) (directions arrow, map pin, meeting-point arrow) are now white; footer social icons really show brand colours (they are mask icons, so colour is set through the icon variables).
+- Trip (excursion) page redesigned: glass fact tiles with gradient icon bubbles, meeting-point card with Directions pill, 3-up trust cards, gradient pill tabs, accent section headings, timeline itinerary, rounded floating book bar.

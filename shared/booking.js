@@ -1224,7 +1224,7 @@ function showExcursionPage(excursionId, opts = {}) {
           <div class="ex-facts">
             <div class="ex-fact"><i class="fa-regular fa-clock" aria-hidden="true"></i><small>${t('exDuration', 'Duration')}</small><b>${E(x.duration || '—')}</b></div>
             <div class="ex-fact"><i class="fa-solid fa-calendar-check" aria-hidden="true"></i><small>${t('scheduleLabel')}</small><b>${t('dailyLabel')}</b></div>
-            <a class="ex-fact ex-fact-wide" href="${E(mapHref)}" target="_blank" rel="noopener"><i class="fa-solid fa-location-dot" aria-hidden="true"></i><small>${t('meetingPointLabel')}</small><b>${E(meet)}</b><em class="ex-go"><i class="fa-solid fa-location-arrow"></i></em></a>
+            <a class="ex-fact ex-fact-wide ex-map" href="${E(mapHref)}" target="_blank" rel="noopener"><i class="fa-solid fa-location-dot" aria-hidden="true"></i><small>${t('meetingPointLabel')}</small><b>${E(meet)}</b><em class="ex-go"><i class="fa-solid fa-location-arrow" aria-hidden="true"></i><span>${t('branchDirections', 'Directions')}</span></em></a>
           </div>
           <div class="ex-trust">
             <span><i class="fa-solid fa-rotate-left"></i>${t('freeCancellationBadge')}</span>

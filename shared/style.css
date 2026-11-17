@@ -5602,3 +5602,58 @@ html[dir="rtl"] .article-body a.ab-link::after { content: '←'; }
 .fx-val { font-size: 19px; font-weight: 800; color: var(--text-primary); margin-top: 4px; }
 .fx-sub { font-size: 11px; color: var(--text-secondary); }
 @media (min-width: 720px) { .fx-conv { padding: 28px; } .fx-row:first-child { max-width: 360px; } .fx-grid { grid-template-columns: repeat(4, 1fr); } .fx-to-line { font-size: 38px; } }
+
+/* =====================================================================
+   Trip page v2 (ex-*) — same language as the home screen: glass cards, orange-gradient icon bubbles, pill tabs, floating book bar.
+   Theme variables only, so it follows light/dark.
+   ===================================================================== */
+.ex .ex-main { border-top-left-radius: 32px !important; border-top-right-radius: 32px !important; box-shadow: 0 -18px 40px -22px rgba(0,0,0,.35); }
+.ex .rd-head { padding-bottom: 12px; }
+.ex .rd-title { font-size: 30px; line-height: 1.12; }
+.ex .rd-rating { display: inline-flex; padding: 6px 12px; border-radius: 99px; background: var(--bg-field); border: 1px solid var(--border-field); margin: 2px 0 0; }
+
+.ex-facts { gap: 12px; margin: 8px 0 14px; }
+.ex-fact { grid-template-columns: 46px 1fr; column-gap: 12px; padding: 14px; border-radius: 22px; background: var(--bg-field); border: 1px solid var(--border-field); box-shadow: 0 10px 24px -18px rgba(0,0,0,.45); }
+.ex-fact > i:first-child { width: 46px; height: 46px; border-radius: 16px; font-size: 18px; color: #fff; background: linear-gradient(135deg, #ffa62b, #f9611a); box-shadow: 0 8px 18px -8px rgba(249,97,26,.7); }
+.ex-fact > i:first-child { --ico-a: #fff; --ico-b: #fff; }
+.ex-fact small { font-size: 10px; letter-spacing: .09em; }
+.ex-fact b { font-size: 14.5px; }
+.ex-map { grid-template-columns: 46px 1fr auto; padding-inline-end: 12px; background: linear-gradient(135deg, color-mix(in srgb, #ff7a2a 14%, var(--bg-field)), var(--bg-field)); border-color: color-mix(in srgb, #ff7a2a 30%, var(--border-field)); }
+.ex-go { position: static; transform: none; width: auto; height: auto; display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 99px; font-size: 11.5px; font-weight: 800; color: #fff; background: linear-gradient(135deg, #ffa62b, #f9611a); box-shadow: 0 8px 18px -8px rgba(249,97,26,.7); --ico-a: #fff; --ico-b: #fff; }
+.ex-fact-wide { padding-inline-end: 12px; }
+
+.ex-trust { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; overflow: visible; padding: 0; }
+.ex-trust span { flex-direction: column; justify-content: center; text-align: center; gap: 6px; padding: 12px 6px; border-radius: 18px; font-size: 11px; line-height: 1.25; font-weight: 700; white-space: normal; color: var(--text-primary); background: var(--bg-field); border: 1px solid var(--border-field); }
+.ex-trust i { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; font-size: 13px; color: #f9611a; background: rgba(249,97,26,.14); }
+
+.ex .rd-tabs { margin: 16px -4px 0; padding: 10px 4px; border-bottom: 0; gap: 6px; }
+.ex .rd-tab { padding: 10px 16px; font-size: 13px; background: var(--bg-field); border: 1px solid var(--border-field); }
+.ex .rd-tab.on { color: #fff; border-color: transparent; background: linear-gradient(135deg, #ffa62b, #f9611a); box-shadow: 0 10px 22px -10px rgba(249,97,26,.8); }
+
+.ex .rd-h { font-size: 21px; font-family: 'Playfair Display', var(--dx-serif, serif); }
+.ex .rd-h::before { content: ""; width: 5px; height: 22px; border-radius: 4px; background: linear-gradient(180deg, #ffa62b, #f9611a); }
+.ex .rd-about { font-size: 15px; line-height: 1.85; padding: 16px 18px; border-radius: 22px; background: var(--bg-field); border: 1px solid var(--border-field); }
+
+.ex-inc-card { padding: 18px; border-radius: 24px; }
+.ex-inc-card > p { font-size: 15px; font-weight: 800; }
+.ex-inc-card > p i { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; font-size: 14px; }
+.ex-in > p i { color: #16a34a; background: color-mix(in srgb, #16a34a 16%, transparent); --ico-a: #16a34a; --ico-b: #16a34a; }
+.ex-out > p i { color: #ef4444; background: color-mix(in srgb, #ef4444 14%, transparent); --ico-a: #ef4444; --ico-b: #ef4444; }
+.ex-bring span { padding: 9px 14px; border-radius: 99px; background: var(--bg-field); border: 1px solid var(--border-field); }
+
+.ex-step { grid-template-columns: 52px 34px 1fr; column-gap: 8px; }
+.ex-step-time { padding-top: 8px; font-size: 11.5px; }
+.ex-step-dot { width: 34px; height: 34px; font-size: 13px; font-weight: 800; color: #fff; background: linear-gradient(135deg, #ffa62b, #f9611a); box-shadow: 0 8px 18px -8px rgba(249,97,26,.8); border: 0; }
+.ex-step:not(:last-child)::before { background: linear-gradient(180deg, color-mix(in srgb, #f9611a 55%, transparent), color-mix(in srgb, #f9611a 8%, transparent)); width: 2px; }
+.ex-step-card { padding: 14px 16px; border-radius: 20px; box-shadow: 0 10px 24px -20px rgba(0,0,0,.5); }
+
+.ex-review-btn { border-radius: 99px; font-weight: 800; border: 1.5px solid color-mix(in srgb, #f9611a 55%, transparent); color: var(--rd-accent-ink); background: color-mix(in srgb, #f9611a 8%, transparent); }
+
+.ex .detail-mobile-bar { border-top-left-radius: 28px; border-top-right-radius: 28px; padding: 14px 18px calc(14px + env(safe-area-inset-bottom)) !important; box-shadow: 0 -16px 36px -18px rgba(0,0,0,.4); backdrop-filter: blur(18px); }
+.ex .detail-mobile-bar .btn-gold { background: linear-gradient(135deg, #ffa62b, #f9611a) !important; color: #fff !important; --ico-a: #fff; --ico-b: #fff; border-radius: 99px !important; padding-inline: 30px !important; box-shadow: 0 12px 26px -10px rgba(249,97,26,.8); }
+.ex-trust i { --ico-a: #f9611a; --ico-b: #f9611a; }
+.ex-map > i:first-child { grid-row: 1 / span 2; grid-column: 1; }
+.ex-map > small { grid-row: 1; grid-column: 2; align-self: end; }
+.ex-map > b { grid-row: 2; grid-column: 2; align-self: start; }
+.ex-map > .ex-go { grid-row: 1 / span 2; grid-column: 3; align-self: center; }
+.ex-go i { position: static; width: auto; height: auto; background: none; box-shadow: none; font-size: 12px; }
