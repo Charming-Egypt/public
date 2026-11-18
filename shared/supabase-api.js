@@ -243,14 +243,17 @@ function dsRefCode() {
         return item;
       });
     }
-    if (file === 'reviews.json') {   // home page testimonials = REAL customer reviews (4★+ with a written comment); the static file is only a fallback while there are none
+    if (file === 'reviews.json') {   // home page testimonials = REAL customer reviews (4★+ with a written comment) first, followed by the default reviews from the static file
       try {
-        const rows = await run(sb.from('reviews').select('id, name, nationality, photo_url, rating, comment, created_at, properties!inner(name, kind, status)')
+        const rows = await run(sb.from('reviews').select('id, name, nationality, photo_url, rating, comment, created_at, properties!inner(id, name, kind, status)')
           .eq('status', 'published').eq('properties.status', 'published').gte('rating', 4).not('comment', 'is', null)
           .order('created_at', { ascending: false }).limit(40));
         const real = rows.filter(r => String(r.comment || '').trim().length >= 25).slice(0, 20)
-          .map(r => ({ id: r.id, name: (r.name || '').trim() || 'Guest', nationality: r.nationality || '', avatar: r.photo_url || '', rating: r.rating, text: String(r.comment).trim(), itemName: r.properties.name || '', section: r.properties.kind }));
-        if (real.length) return real;
+          .map(r => ({ id: r.id, name: (r.name || '').trim() || 'Guest', nationality: r.nationality || '', avatar: r.photo_url || '', rating: r.rating, text: String(r.comment).trim(), itemName: r.properties.name || '', section: r.properties.kind, itemId: r.properties.id || '' }));
+        if (real.length) {   // real reviews first, the default ones after them (they are never hidden)
+          let defaults = []; try { const r = await fetch(`/data/reviews.json${window.DS_DATA_V ? '?v=' + window.DS_DATA_V : ''}`); if (r.ok) defaults = await r.json(); } catch {}
+          return real.concat(defaults);
+        }
       } catch (e) { /* fall through to the static file */ }
     }
     if ((file === 'articles.json' || file === 'destinations.json') && cfg.contentBase) {   // journal posts + destinations: GitHub-backed; until they are exported, the bundled static file keeps the section alive

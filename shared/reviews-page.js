@@ -7,7 +7,7 @@ const reviewsPg = (() => {
   const PAGE = 8, MAX_PHOTOS = 4, MIN_CHARS = 10, MAX_CHARS = 1000;
   const S = {
     tab: 'list', kind: 'all', sort: 'new', photos: false,
-    rows: [], offset: 0, more: false, loading: false, loaded: false,
+    rows: [], offset: 0, dbOffset: 0, dbDone: false, stOffset: 0, more: false, loading: false, loaded: false,
     stats: null, staticRows: null,
     step: 'voucher',            // voucher | form | done
     voucher: null,              // answer of lookup_review_voucher (ok === true)
@@ -50,39 +50,50 @@ const reviewsPg = (() => {
     try { await ensureCatalogLoaded(); } catch {}
     S.staticRows = (CATALOG.reviews || []).map((r, i) => ({
       id: r.id || 's' + i, name: r.name, nationality: r.nationality || r.country || '', photo_url: r.avatar || null, rating: Number(r.rating) || 5, comment: r.text || '', images: [], owner_reply: null, created_at: null,
-      properties: { name: typeof r.itemName === 'string' ? r.itemName : '', kind: r.section || 'excursion', id: null },
+      properties: { name: typeof r.itemName === 'string' ? r.itemName : '', kind: r.section || 'excursion', id: r.itemId || null },   // id → the card's item chip links to that item's page
     }));
     return S.staticRows;
   }
   async function loadStats() {
+    // real + default reviews are counted together
+    const rows = await staticFallback(), st = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    rows.forEach(r => { st[Math.min(5, Math.max(1, r.rating))]++; });
+    const n = rows.length, sum = rows.reduce((s, r) => s + r.rating, 0);
+    let db = null;
     try {
       const c = client(); if (!c) throw 0;
       const { data, error } = await c.rpc('review_stats'); if (error) throw error;
-      if (data && data.count > 0) return data;
+      if (data && data.count > 0) db = data;
     } catch {}
-    const rows = await staticFallback(), st = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-    rows.forEach(r => { st[Math.min(5, Math.max(1, r.rating))]++; });
-    const n = rows.length;
-    return { count: n, avg: n ? rows.reduce((s, r) => s + r.rating, 0) / n : 0, stars: st, photos: 0 };
+    if (!db) return { count: n, avg: n ? sum / n : 0, stars: st, photos: 0 };
+    const count = Number(db.count) + n, stars = {};
+    for (let k = 1; k <= 5; k++) stars[k] = (Number((db.stars || {})[k]) || 0) + st[k];
+    return { ...db, count, avg: (Number(db.avg) * Number(db.count) + sum) / count, stars };
   }
+  // Real reviews come first (paged from the database), then the default reviews, so the defaults stay visible after real ones arrive.
   async function loadRows() {
-    const c = client();
-    if (c) {
+    const c = client(), out = [];
+    if (c && !S.dbDone) {
       try {
         let q = c.from('reviews').select('id, name, nationality, rating, comment, photo_url, images, owner_reply, created_at, properties!inner(id, name, kind, status)')
           .eq('status', 'published').eq('properties.status', 'published').not('comment', 'is', null);
         if (S.kind !== 'all') q = q.eq('properties.kind', S.kind);
         if (S.photos) q = q.neq('images', '[]');
         q = S.sort === 'top' ? q.order('rating', { ascending: false }).order('created_at', { ascending: false }) : q.order('created_at', { ascending: false });
-        const { data, error } = await q.range(S.offset, S.offset + PAGE - 1);
+        const { data, error } = await q.range(S.dbOffset, S.dbOffset + PAGE - 1);
         if (error) throw error;
-        // no real reviews yet and nothing filtered: show the bundled testimonials instead of an empty page
-        if ((data && data.length) || S.offset > 0 || S.kind !== 'all' || S.photos) return { rows: data || [], more: (data || []).length === PAGE };
-      } catch (e) { /* fall through to the bundled testimonials */ }
+        const got = data || [];
+        S.dbOffset += got.length; out.push(...got);
+        if (got.length < PAGE) S.dbDone = true;
+      } catch (e) { S.dbDone = true; }
+    } else S.dbDone = true;
+    let defaults = (await staticFallback()).filter(r => (S.kind === 'all' || r.properties.kind === S.kind) && !S.photos);
+    if (S.sort === 'top') defaults = defaults.slice().sort((a, b) => b.rating - a.rating);
+    if (S.dbDone && out.length < PAGE) {
+      const take = defaults.slice(S.stOffset, S.stOffset + (PAGE - out.length));
+      S.stOffset += take.length; out.push(...take);
     }
-    let rows = (await staticFallback()).filter(r => (S.kind === 'all' || r.properties.kind === S.kind) && !S.photos);
-    if (S.sort === 'top') rows = rows.slice().sort((a, b) => b.rating - a.rating);
-    return { rows: rows.slice(S.offset, S.offset + PAGE), more: rows.length > S.offset + PAGE };
+    return { rows: out, more: !S.dbDone || S.stOffset < defaults.length };
   }
 
   // ---------------------------------------------------------------- read: summary + filters + cards
@@ -153,7 +164,7 @@ const reviewsPg = (() => {
   }
   async function fetchRows(reset) {
     if (S.loading) return;
-    if (reset) { S.rows = []; S.offset = 0; S.more = false; }
+    if (reset) { S.rows = []; S.offset = 0; S.dbOffset = 0; S.dbDone = false; S.stOffset = 0; S.more = false; }
     S.loading = true; paintList();
     try {
       const { rows, more } = await loadRows();

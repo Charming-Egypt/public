@@ -1943,7 +1943,7 @@ const reviewsHomeUi = {
   render() {
     const row = document.getElementById('reviewsRow');
     if (!row) return;
-    row.innerHTML = CATALOG.reviews.map(rv => `
+    row.innerHTML = CATALOG.reviews.slice(0, 24).map(rv => `
       <div class="review-slide-card">
         <div class="flex items-center gap-3 mb-3">
           ${this.avatar(rv, 'review-avatar-badge')}

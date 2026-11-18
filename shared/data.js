@@ -1191,14 +1191,35 @@ const reviews = {
   },
 };
 
+// ==================== DEFAULT REVIEWS PER ITEM ====================
+// shared/data/reviews.json carries an `itemId` + `section` on every review. The real reviews (database) always win; these are only
+// the defaults shown on an item's own page while it has none, in the same shape the live reviews use.
+let __defaultReviewsRaw = null;
+async function defaultReviewsFor(type, id) {
+  // read the static file itself (not CATALOG.reviews): once real reviews exist, the home-page catalog list is replaced by them
+  try {
+    if (!__defaultReviewsRaw) {
+      __defaultReviewsRaw = fetch(`/data/reviews.json${window.DS_DATA_V ? '?v=' + window.DS_DATA_V : ''}`).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+    }
+    const lang = (typeof I18N !== 'undefined' && I18N.get) ? I18N.get() : 'en';
+    return (await __defaultReviewsRaw)
+      .filter(r => r && r.itemId && String(r.itemId) === String(id) && (r.section || 'excursion') === type)
+      .map(r => localizeItem(r, lang))
+      .map(r => ({ id: r.id, name: r.name, rating: Number(r.rating) || 5, comment: r.text || '', photoURL: r.avatar || '', images: [], reply: null, createdAt: null }));
+  } catch (e) { __defaultReviewsRaw = null; return []; }
+}
+
 // ==================== LOAD REVIEWS ====================
 async function loadReviews(type, id, containerId, summaryId, barsId) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
   try {
-    const data = await apiFetch(`/api/reviews?type=${type}&id=${id}`, {}, true);
-    const reviewsList = data.reviews || [];
+    let reviewsList = [];
+    try { reviewsList = (await apiFetch(`/api/reviews?type=${type}&id=${id}`, {}, true)).reviews || []; }
+    catch (e) { console.warn('Live reviews unavailable, using the default ones:', e); }
+    // real reviews first (newest first), then the default reviews written for THIS item: the defaults never disappear when real ones arrive
+    reviewsList = reviewsList.concat(await defaultReviewsFor(type, id));
 
     if (reviewsList.length === 0) {
       container.innerHTML = `<div class="reviews-empty"><i class="fa-regular fa-comments" aria-hidden="true"></i><p>${t('noReviewsYet')}</p></div>`;
