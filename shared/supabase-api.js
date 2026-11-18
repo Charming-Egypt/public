@@ -205,10 +205,10 @@ function dsRefCode() {
       if (!r.ok) throw fail('Reviews unavailable', { status: r.status });
       rows = (await r.json()).reviews || [];
     } else {
-      rows = await run(sb.from('reviews').select('id, name, rating, comment, photo_url, images, owner_reply, created_at')
+      rows = await run(sb.from('reviews').select('id, name, nationality, rating, comment, photo_url, images, owner_reply, created_at')
         .eq('property_id', id).eq('status', 'published').order('created_at', { ascending: false }).limit(50));
     }
-    const d = { reviews: rows.map(r => ({ id: r.id, name: r.name, rating: r.rating, comment: r.comment, photoURL: r.photo_url, images: r.images, reply: r.owner_reply, createdAt: r.created_at })) };
+    const d = { reviews: rows.map(r => ({ id: r.id, name: r.name, nationality: r.nationality || '', rating: r.rating, comment: r.comment, photoURL: r.photo_url, images: r.images, reply: r.owner_reply, createdAt: r.created_at })) };
     try { sessionStorage.setItem(key, JSON.stringify({ t: Date.now(), d })); } catch {}
     return d;
   }

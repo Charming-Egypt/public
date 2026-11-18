@@ -47,10 +47,12 @@ const reviewsPg = (() => {
   // ---------------------------------------------------------------- data
   async function staticFallback() {
     if (S.staticRows) return S.staticRows;
-    try { await ensureCatalogLoaded(); } catch {}
-    S.staticRows = (CATALOG.reviews || []).map((r, i) => ({
-      id: r.id || 's' + i, name: r.name, nationality: r.nationality || r.country || '', photo_url: r.avatar || null, rating: Number(r.rating) || 5, comment: r.text || '', images: [], owner_reply: null, created_at: null,
-      properties: { name: typeof r.itemName === 'string' ? r.itemName : '', kind: r.section || 'excursion', id: r.itemId || null },   // id → the card's item chip links to that item's page
+    const raw = await loadDefaultReviews();
+    S.staticRows = raw.map((r, i) => ({
+      id: r.id || 's' + i, name: r.name, nationality: r.nationality || r.country || '', photo_url: r.avatar || null, rating: Number(r.rating) || 5,
+      comment: r.text || '',   // the multi-language text object: card() picks the writer's language and the translation (reviewTextPair)
+      images: Array.isArray(r.images) ? r.images.filter(Boolean) : [], owner_reply: null, created_at: null,
+      properties: { nameRaw: r.itemName || '', name: '', kind: r.section || 'excursion', id: r.itemId || null },
     }));
     return S.staticRows;
   }
@@ -87,7 +89,7 @@ const reviewsPg = (() => {
         if (got.length < PAGE) S.dbDone = true;
       } catch (e) { S.dbDone = true; }
     } else S.dbDone = true;
-    let defaults = (await staticFallback()).filter(r => (S.kind === 'all' || r.properties.kind === S.kind) && !S.photos);
+    let defaults = (await staticFallback()).filter(r => (S.kind === 'all' || r.properties.kind === S.kind) && (!S.photos || (r.images || []).length));
     if (S.sort === 'top') defaults = defaults.slice().sort((a, b) => b.rating - a.rating);
     if (S.dbDone && out.length < PAGE) {
       const take = defaults.slice(S.stOffset, S.stOffset + (PAGE - out.length));
@@ -134,7 +136,7 @@ const reviewsPg = (() => {
       chip('sort', S.sort === 'new' ? 'top' : 'new', S.sort === 'new' ? tt('rvSortNew', 'Newest') : tt('rvSortTop', 'Top rated'), S.sort === 'new' ? 'fa-clock' : 'fa-arrow-up-wide-short', false);
   }
   function card(r, i) {
-    const p = r.properties || {}, photos = Array.isArray(r.images) ? r.images.filter(Boolean) : [];
+    const p0 = r.properties || {}, p = { ...p0, name: p0.name || (p0.nameRaw ? localizeValue(p0.nameRaw, lang()) : '') }, photos = Array.isArray(r.images) ? r.images.filter(Boolean) : [];
     const key = 'rvp_' + (r.id || i);
     window.__reviewPhotoSets = window.__reviewPhotoSets || {}; window.__reviewPhotoSets[key] = photos;
     const initial = [...String(r.name || 'G').trim()][0] || 'G';
@@ -148,7 +150,7 @@ const reviewsPg = (() => {
         <div class="rvp-who"><div class="rvp-nm"><b>${E(mask(r.name))}</b>${validCC(r.nationality) ? `<span class="rvp-nat" title="${E(countryName(r.nationality))}"><span class="rvp-flag" aria-hidden="true">${flag(r.nationality)}</span><span>${E(countryName(r.nationality))}</span></span>` : ''}</div><span class="rvp-meta">${stars(r.rating, 'sm')}${r.created_at ? `<small>${fmtDate(r.created_at)}</small>` : ''}</span></div>
         <span class="rvp-vbadge"><i class="fa-solid fa-ticket" aria-hidden="true"></i><span>${tt('rvVerified', 'Verified voucher')}</span></span>
       </header>
-      <p class="rvp-text" dir="auto">${E(r.comment)}</p>
+      ${reviewTextHtml('rvp_' + (r.id || i), reviewTextPair(r.comment, r.nationality, lang()), 'rvp-text')}
       ${photos.length ? `<div class="rvp-photos n${Math.min(photos.length, 3)}">${photos.slice(0, 3).map((src, j) => `<button type="button" onclick="openLightboxSet('${key}', ${j})" aria-label="${tt('rvOpenPhoto', 'Open photo')}"><img src="${E(src)}" alt="" loading="lazy">${j === 2 && photos.length > 3 ? `<span>+${photos.length - 3}</span>` : ''}</button>`).join('')}</div>` : ''}
       ${r.owner_reply ? `<div class="rvp-reply"><b><i class="fa-solid fa-reply" aria-hidden="true"></i> ${tt('rvReply', 'Reply from Discover Sharm')}</b><p dir="auto">${E(typeof r.owner_reply === 'string' ? r.owner_reply : r.owner_reply.text || '')}</p></div>` : ''}
       <footer class="rvp-card-foot">${itemChip}</footer>

@@ -896,5 +896,7 @@
   "fxUpdated": "آخر تحديث للأسعار",
   "fxUnavailable": "الأسعار المباشرة مش متاحة دلوقتي",
   "fxUnavailableText": "اتأكد من الاتصال بالإنترنت وجرّب تاني.",
-  "fxRetry": "جرّب تاني"
+  "fxRetry": "جرّب تاني",
+  "rvTranslate": "ترجمة",
+  "rvShowOriginal": "عرض النص الأصلي"
 }

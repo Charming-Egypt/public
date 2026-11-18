@@ -896,5 +896,7 @@
   "fxUpdated": "Kurlar güncellendi",
   "fxUnavailable": "Canlı kurlar şu anda kullanılamıyor",
   "fxUnavailableText": "Bağlantınızı kontrol edip tekrar deneyin.",
-  "fxRetry": "Tekrar dene"
+  "fxRetry": "Tekrar dene",
+  "rvTranslate": "Çevir",
+  "rvShowOriginal": "Orijinali göster"
 }

@@ -5687,3 +5687,14 @@ html[dir="rtl"] .article-body a.ab-link::after { content: '←'; }
 
 /* (e) breathing room above the floating bottom bar */
 .rvp .rvp-wrap { padding-bottom: calc(140px + env(safe-area-inset-bottom, 0px)); }
+
+/* ================= Review language + translate button ================= */
+.rv-tr { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 800; line-height: 1.2; color: #c2410c;
+  background: color-mix(in srgb, #f97316 8%, var(--bg-card)); border: 1px solid color-mix(in srgb, #f97316 30%, transparent); cursor: pointer; transition: background .15s, transform .12s; }
+html[data-theme="dark"] .rv-tr { color: #fdba74; }
+.rv-tr i { font-size: 12px; }
+.rv-tr:active { transform: scale(.97); }
+.rv-tr[aria-pressed="true"] { background: color-mix(in srgb, #f97316 18%, var(--bg-card)); }
+.rv-flag { font-size: .95em; margin-inline-start: 4px; vertical-align: baseline; }
+.rv-q::before { content: "\201C"; } .rv-q::after { content: "\201D"; }
+.review-slide-card .rv-tr { margin-top: 0; margin-bottom: 8px; }

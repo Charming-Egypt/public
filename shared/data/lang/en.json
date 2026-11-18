@@ -896,5 +896,7 @@
   "fxUpdated": "Rates updated",
   "fxUnavailable": "Live rates are unavailable right now",
   "fxUnavailableText": "Check your connection and try again.",
-  "fxRetry": "Try again"
+  "fxRetry": "Try again",
+  "rvTranslate": "Translate",
+  "rvShowOriginal": "Show original"
 }

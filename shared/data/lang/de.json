@@ -896,5 +896,7 @@
   "fxUpdated": "Kurse aktualisiert",
   "fxUnavailable": "Aktuelle Kurse sind derzeit nicht verfügbar",
   "fxUnavailableText": "Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
-  "fxRetry": "Erneut versuchen"
+  "fxRetry": "Erneut versuchen",
+  "rvTranslate": "Übersetzen",
+  "rvShowOriginal": "Original anzeigen"
 }

@@ -896,5 +896,7 @@
   "fxUpdated": "Tassi aggiornati",
   "fxUnavailable": "I tassi in tempo reale non sono disponibili",
   "fxUnavailableText": "Controlla la connessione e riprova.",
-  "fxRetry": "Riprova"
+  "fxRetry": "Riprova",
+  "rvTranslate": "Traduci",
+  "rvShowOriginal": "Mostra originale"
 }

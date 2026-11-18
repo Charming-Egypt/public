@@ -1890,7 +1890,7 @@ function dhRender() {
         <div><b>${n((CATALOG.destinations || []).length)}</b><span>${esc(t('dhStatDest'))}</span></div>
         <div><b>${avg}</b><span>${esc(t('dhStatRating'))}</span></div>
       </div>
-      ${rv ? `<p class="dh-quote">“${esc(String(rv.text || '')).slice(0, 110)}”</p><p class="dh-by">${reviewsHomeUi.avatar(rv, 'dh-by-av')}${esc(rv.name || '')}${reviewsHomeUi.country(rv)}</p>` : ''}`;
+      ${rv ? `<p class="dh-quote">“${esc(reviewTextPair(((CATALOG_RAW.reviews || [])[0] || {}).text, rv.nationality, I18N.get()).orig.slice(0, 110))}”</p><p class="dh-by">${reviewsHomeUi.avatar(rv, 'dh-by-av')}${esc(rv.name || '')}${reviewsHomeUi.country(rv)}</p>` : ''}`;
   }
   const story = document.getElementById('dhStory');
   const a = (CATALOG.articles || [])[0];
@@ -1943,15 +1943,16 @@ const reviewsHomeUi = {
   render() {
     const row = document.getElementById('reviewsRow');
     if (!row) return;
-    row.innerHTML = CATALOG.reviews.slice(0, 24).map(rv => `
+    const lg = (typeof I18N !== 'undefined' && I18N.get) ? I18N.get() : 'en';
+    row.innerHTML = (CATALOG_RAW.reviews || []).slice(0, 24).map((rv, i) => `
       <div class="review-slide-card">
         <div class="flex items-center gap-3 mb-3">
           ${this.avatar(rv, 'review-avatar-badge')}
           <div class="flex-1 min-w-0"><p class="text-sm font-semibold truncate">${esc(rv.name || '')}</p>
             <div class="flex items-center gap-2 min-w-0"><div class="flex">${utils.renderStars(rv.rating)}</div>${this.country(rv)}</div></div>
         </div>
-        <p class="text-xs leading-relaxed mb-3">"${esc(rv.text || '')}"</p>
-        <p class="text-[10px] font-semibold text-violet-500 truncate">${esc(rv.itemName || '')}</p>
+        ${reviewTextHtml('home_' + i, reviewTextPair(rv.text, rv.nationality || rv.country, lg), 'text-xs leading-relaxed mb-3 rv-q')}
+        <p class="text-[10px] font-semibold text-violet-500 truncate">${esc(localizeValue(rv.itemName, lg) || '')}</p>
       </div>`).join('');
   }
 };

@@ -1192,21 +1192,72 @@ const reviews = {
 };
 
 // ==================== DEFAULT REVIEWS PER ITEM ====================
-// shared/data/reviews.json carries an `itemId` + `section` on every review. The real reviews (database) always win; these are only
-// the defaults shown on an item's own page while it has none, in the same shape the live reviews use.
-let __defaultReviewsRaw = null;
+// shared/data/reviews.json carries an `itemId` + `section` on every review (optional `avatar` and `images`: guest photos).
+// Real reviews are listed first and these defaults follow them on the item's own page (same shape the live reviews use),
+// so the page is never empty and nothing is hidden when real ones arrive.
+let __defaultReviewsPromise = null;
+function loadDefaultReviews() {   // the static file itself (not CATALOG.reviews): once real reviews exist, the home-page catalog list contains them too
+  if (!__defaultReviewsPromise) {
+    __defaultReviewsPromise = fetch(`/data/reviews.json${window.DS_DATA_V ? '?v=' + window.DS_DATA_V : ''}`)
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .catch(() => { __defaultReviewsPromise = null; return []; });
+  }
+  return __defaultReviewsPromise;
+}
 async function defaultReviewsFor(type, id) {
-  // read the static file itself (not CATALOG.reviews): once real reviews exist, the home-page catalog list is replaced by them
-  try {
-    if (!__defaultReviewsRaw) {
-      __defaultReviewsRaw = fetch(`/data/reviews.json${window.DS_DATA_V ? '?v=' + window.DS_DATA_V : ''}`).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
-    }
-    const lang = (typeof I18N !== 'undefined' && I18N.get) ? I18N.get() : 'en';
-    return (await __defaultReviewsRaw)
-      .filter(r => r && r.itemId && String(r.itemId) === String(id) && (r.section || 'excursion') === type)
-      .map(r => localizeItem(r, lang))
-      .map(r => ({ id: r.id, name: r.name, rating: Number(r.rating) || 5, comment: r.text || '', photoURL: r.avatar || '', images: [], reply: null, createdAt: null }));
-  } catch (e) { __defaultReviewsRaw = null; return []; }
+  return (await loadDefaultReviews())
+    .filter(r => r && r.itemId && String(r.itemId) === String(id) && (r.section || 'excursion') === type)
+    .map(r => ({ id: r.id, name: r.name, nationality: r.nationality || '', rating: Number(r.rating) || 5, comment: r.text || '', photoURL: r.avatar || '',
+      images: Array.isArray(r.images) ? r.images.filter(Boolean) : [], reply: null, createdAt: null }));
+}
+
+// ==================== REVIEW LANGUAGE + TRANSLATE BUTTON ====================
+// A review is always shown in the language of its writer's country (whatever language the visitor picked); the "Translate" button
+// swaps it to the site language and the same button swaps it back. Default reviews carry the text in all 6 site languages
+// ({en, ar, ru, de, it, tr}); a country whose language is not one of them shows the English text. Real reviews are plain strings
+// (shown as written, no translation available).
+const REVIEW_LANGS = ['en', 'ar', 'ru', 'de', 'it', 'tr'];
+const REVIEW_CC_LANG = (() => {
+  const m = {}, add = (l, list) => list.split(' ').forEach(c => { m[c] = l; });
+  add('ar', 'EG SA AE KW JO QA BH OM IQ LB SY PS YE LY DZ MA TN SD');
+  add('ru', 'RU BY KZ KG');
+  add('de', 'DE AT CH LI');
+  add('it', 'IT SM VA');
+  add('tr', 'TR');
+  return m;
+})();
+function reviewNativeLang(cc) { return REVIEW_CC_LANG[String(cc || '').toUpperCase()] || 'en'; }
+function reviewTextPair(raw, cc, siteLang) {
+  if (raw && typeof raw === 'object') {
+    const nl = reviewNativeLang(cc), tl = REVIEW_LANGS.includes(siteLang) ? siteLang : 'en';
+    const ol = raw[nl] ? nl : 'en', orig = raw[ol] || raw.en || Object.values(raw).find(Boolean) || '';
+    const trans = raw[tl] || raw.en || '';
+    return { orig, origLang: ol, trans: (tl !== ol && trans && trans !== orig) ? trans : '', transLang: tl };
+  }
+  return { orig: String(raw || ''), origLang: '', trans: '', transLang: '' };
+}
+window.__rvTx = window.__rvTx || {};
+// text paragraph + (when there is a translation) the toggle button. `key` must be unique on the page.
+function reviewTextHtml(key, pair, cls) {
+  const id = 'rvtx_' + String(key).replace(/[^\w-]/g, '');
+  const prev = window.__rvTx[id], on = !!(prev && prev.on && prev.o === pair.orig && prev.t === pair.trans && pair.trans);   // keep the choice when the list is repainted
+  window.__rvTx[id] = { o: pair.orig, t: pair.trans, ol: pair.origLang, tl: pair.transLang, on };
+  const shown = on ? pair.trans : pair.orig, lg = on ? pair.transLang : pair.origLang;
+  return `<p class="${cls}" id="${id}" dir="auto"${lg ? ` lang="${lg}"` : ''}>${esc(shown)}</p>` + (pair.trans
+    ? `<button type="button" class="rv-tr" aria-pressed="${on}" onclick="reviewToggleTr('${id}', this)"><i class="fa-solid fa-globe" aria-hidden="true"></i><span>${esc(on ? t('rvShowOriginal', 'Show original') : t('rvTranslate', 'Translate'))}</span></button>` : '');
+}
+function reviewToggleTr(id, btn) {
+  const s = window.__rvTx[id], el = document.getElementById(id); if (!s || !el) return;
+  s.on = !s.on;
+  el.textContent = s.on ? s.t : s.o;
+  const lg = s.on ? s.tl : s.ol; if (lg) el.setAttribute('lang', lg);
+  btn.setAttribute('aria-pressed', String(s.on));
+  const sp = btn.querySelector('span'); if (sp) sp.textContent = s.on ? t('rvShowOriginal', 'Show original') : t('rvTranslate', 'Translate');
+}
+function reviewFlag(cc) {
+  cc = String(cc || '').toUpperCase(); if (!/^[A-Z]{2}$/.test(cc) || typeof countryFlagEmoji !== 'function') return '';
+  let n = cc; try { n = new Intl.DisplayNames([I18N.get()], { type: 'region' }).of(cc) || cc; } catch {}
+  return ` <span class="rv-flag" title="${esc(n)}">${countryFlagEmoji(cc)}</span>`;
 }
 
 // ==================== LOAD REVIEWS ====================
@@ -1247,12 +1298,12 @@ async function loadReviews(type, id, containerId, summaryId, barsId) {
         <div class="review-card-head">
           <div class="review-card-avatar">${rv.photoURL ? `<img src="${rv.photoURL}" alt="">` : initial}</div>
           <div class="flex-1 min-w-0">
-            <p class="review-card-name">${esc(rv.name || t('guest'))}</p>
+            <p class="review-card-name">${esc(rv.name || t('guest'))}${reviewFlag(rv.nationality)}</p>
             <div class="review-card-meta"><span class="review-verified-badge"><i class="fa-solid fa-circle-check"></i> Verified</span>${dateStr ? ` · ${dateStr}` : ''}</div>
           </div>
         </div>
         <div class="text-gold-500 text-xs my-2">${utils.renderStars(rv.rating)}</div>
-        <p class="review-card-comment">${esc(rv.comment || '')}</p>
+        ${reviewTextHtml(setKey, reviewTextPair(rv.comment, rv.nationality, I18N.get()), 'review-card-comment')}
         ${photos.length ? `
           <div class="review-photo-grid">
             ${photos.slice(0, 3).map((img, i) => `
