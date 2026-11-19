@@ -2968,6 +2968,19 @@ html.drawer-anim #revealWave { transition: translate .45s var(--reveal-ease), sc
    No drop shadow on the page edge either: it darkened the menu next to the wave and made the two colours look different. */
 html.drawer-open #mainApp { pointer-events: none; }
 
+/* The bottom bar / headers carry big soft shadows (and blur). Shifted next to the menu they spill onto it and tint the strip beside the wave,
+   so the wave and the menu stopped matching at the bottom. Flat while the menu is open. */
+html.drawer-open .bottom-nav,
+html.drawer-open .sticky-home-header,
+html.drawer-open #desktopNav,
+html.drawer-open .nav-home-logo { box-shadow: none !important; }
+html.drawer-open .bottom-nav,
+html.drawer-open .sticky-home-header { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+
+/* the menu has its own close (X) button — the page's burger button is hidden while the menu is open so there are not two */
+[onclick^="sidebar.open"] { transition: opacity .25s ease; }
+html.drawer-open [onclick^="sidebar.open"] { opacity: 0; pointer-events: none; }
+
 /* the page moves off-screen by a drawer width: never allow a horizontal scrollbar or sideways scroll while open */
 html.drawer-open, html.drawer-open body { overflow-x: hidden; }
 
