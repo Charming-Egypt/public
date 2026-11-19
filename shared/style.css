@@ -2963,11 +2963,11 @@ html.drawer-anim #revealWave { transition: translate .45s var(--reveal-ease), sc
   #revealWave svg { animation: none; }
 }
 
-/* the page edge casts a shadow onto the menu while it is open */
-html.drawer-open #mainApp > .page.active,
-html.drawer-open #mainApp > .page {
-  box-shadow: calc(var(--reveal-dir) * -14px) 0 40px rgba(0, 0, 0, .28);
-}
+/* #mainApp itself is not moved (only its children are), so its box still spans the whole screen ABOVE the menu and would swallow every tap meant for the menu links.
+   While the menu is open the page is inert; #sideDrawerOverlay (over the shifted page) is what catches the "tap the page to close" tap.
+   No drop shadow on the page edge either: it darkened the menu next to the wave and made the two colours look different. */
+html.drawer-open #mainApp { pointer-events: none; }
+
 /* the page moves off-screen by a drawer width: never allow a horizontal scrollbar or sideways scroll while open */
 html.drawer-open, html.drawer-open body { overflow-x: hidden; }
 
