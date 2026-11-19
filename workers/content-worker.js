@@ -477,7 +477,7 @@ async function buildBundle(env) {
     // only branches the super admin approved are public
     db.rest('GET', 'restaurant_branches?status=eq.approved&select=id,property_id,data&order=sort_order.asc,created_at.asc&limit=3000').catch(() => []),
     // home-page testimonials: real customer reviews, 4 stars and up, with a written comment
-    db.rest('GET', 'reviews?status=eq.published&rating=gte.4&comment=not.is.null&properties.status=eq.published&select=id,name,rating,comment,created_at,properties!inner(name,kind,status)&order=created_at.desc&limit=40').catch(() => []),
+    db.rest('GET', 'reviews?status=eq.published&rating=gte.4&comment=not.is.null&properties.status=eq.published&select=id,name,nationality,photo_url,rating,comment,created_at,properties!inner(id,name,kind,status)&order=created_at.desc&limit=40').catch(() => []),
   ]);
   const rated = new Map((meta || []).map(x => [x.id, x]));
   const branches = {};
@@ -489,7 +489,7 @@ async function buildBundle(env) {
     return it;
   });
   const real = (reviewRows || []).filter(r => String(r.comment || '').trim().length >= 25).slice(0, 20)
-    .map(r => ({ id: r.id, name: String(r.name || '').trim() || 'Guest', rating: r.rating, text: String(r.comment).trim(), itemName: (r.properties && r.properties.name) || '', section: r.properties && r.properties.kind }));
+    .map(r => ({ id: r.id, name: String(r.name || '').trim() || 'Guest', nationality: r.nationality || '', avatar: r.photo_url || '', rating: r.rating, text: String(r.comment).trim(), itemName: (r.properties && r.properties.name) || '', section: r.properties && r.properties.kind, itemId: (r.properties && r.properties.id) || '' }));
   const own = (cat) => (cat.fallback && !(cat.items || []).length) ? null : (cat.items || []);
   return {
     v: 1, builtAt: now(),

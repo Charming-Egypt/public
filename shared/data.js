@@ -580,6 +580,14 @@ async function loadCatalogFromWorker() {
         const b = await apiFetch('/api/catalog', {}, true);
         for (const f of files) if (Array.isArray(b[f])) fresh[f] = b[f];
         await Promise.all(files.filter(f => !Array.isArray(b[f])).map(async (f) => { try { fresh[f] = await staticFile(f); } catch (e) { console.warn(`Failed to load ${f}:`, e); } }));
+        // The Worker sends ONLY the real customer reviews. The default reviews (data/reviews.json) must still follow them — real first, defaults after,
+        // never hidden — exactly like the direct-Supabase route does. Without this, one real review meant a home page with one review.
+        if (Array.isArray(b.reviews) && b.reviews.length) {
+          try {
+            const defaults = await staticFile('reviews'), seen = new Set(b.reviews.map(r => String(r.id)));
+            fresh.reviews = b.reviews.concat((Array.isArray(defaults) ? defaults : []).filter(r => !seen.has(String(r.id))));
+          } catch (e) { console.warn('Default reviews unavailable:', e); }
+        }
       } catch (e) { console.warn('Catalog bundle unavailable:', e); fresh = {}; oldWorker = e && e.status === 404; }
     }
     // File-by-file loading only when there is no content Worker, or it has not been updated yet (404). If the bundle merely fails
