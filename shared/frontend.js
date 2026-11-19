@@ -268,15 +268,37 @@ const nav = {
   }
 };
 
+// Side menu, "Reveal" style: the menu sits under the page and opening it slides the page aside (all the motion is CSS —
+// html.drawer-open moves the page, html.drawer-anim turns the transition on only while it is moving, so scrolling never animates).
 const sidebar = {
+  _t: 0,
+  _drawer() { return document.getElementById('sideDrawer'); },
+  isOpen() { const d = this._drawer(); return !!(d && d.classList.contains('open')); },
   open() {
-    document.getElementById('sideDrawer').classList.add('open');
+    const d = this._drawer(); if (!d || this.isOpen()) return;
+    const root = document.documentElement;
+    clearTimeout(this._t);
+    root.classList.add('drawer-anim');
+    d.classList.add('open');
     document.getElementById('sideDrawerOverlay').classList.add('open');
+    // next frame so the browser has the un-shifted position to animate from
+    requestAnimationFrame(() => root.classList.add('drawer-open'));
+    d.removeAttribute('aria-hidden');
+    document.addEventListener('keydown', this._esc);
   },
   close() {
-    document.getElementById('sideDrawer').classList.remove('open');
+    const d = this._drawer(); if (!d) return;
+    const root = document.documentElement;
+    d.classList.remove('open');
     document.getElementById('sideDrawerOverlay').classList.remove('open');
-  }
+    root.classList.remove('drawer-open');
+    d.setAttribute('aria-hidden', 'true');
+    document.removeEventListener('keydown', this._esc);
+    clearTimeout(this._t);
+    // keep the transition on until the page is back, then drop it (a leftover transition would animate every later scroll-shifted header)
+    this._t = setTimeout(() => root.classList.remove('drawer-anim'), 500);
+  },
+  _esc(e) { if (e.key === 'Escape') sidebar.close(); }
 };
 
 // ==================== USER PROFILE ====================

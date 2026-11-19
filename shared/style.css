@@ -2901,36 +2901,48 @@ body:has(#transferDetailPage.active) .bottom-nav {
   background: #fbbf24;
 }
 
-/* ---------- Side Drawer ---------- */
+/* ---------- Side Drawer — "Reveal" style ----------
+   The menu is fixed UNDER the page. Opening it slides the page (content, headers, bottom bar) sideways
+   by the drawer's width, uncovering the menu that was sitting behind it. No dark scrim, no drawer sliding over the page.
+   --drawer-w is the single source of truth for the drawer width and for how far the page travels.
+   --reveal-dir flips the direction: the menu is on the right in RTL (page moves left) and on the left in LTR (page moves right). */
+:root { --drawer-w: min(80vw, 300px); --reveal-dir: 1; --reveal-ease: cubic-bezier(.16, 1, .3, 1); }
+html[dir="rtl"] { --reveal-dir: -1; }
+
 #sideDrawer {
   position: fixed;
   top: 0;
   height: 100%;
-  width: 80%;
-  max-width: 300px;
-  background: var(--chrome-bg-solid);   /* opaque: the page behind must not bleed through */
-  z-index: 95;
-  transition: transform .35s cubic-bezier(.16, 1, .3, 1), background .3s ease;
+  width: var(--drawer-w);
+  background: var(--chrome-bg-solid);   /* opaque: the page edge sliding off must not show through */
+  z-index: 5;                           /* under #mainApp (z-10) and the fixed headers (z-50) — that is the whole trick */
   color: var(--chrome-text);
+  visibility: hidden;                   /* closed: not tabbable, never peeks out from behind a transparent area of the page */
+  transition: visibility 0s linear .45s;
 }
+html[dir="rtl"] #sideDrawer { right: 0; }
+html[dir="ltr"] #sideDrawer { left: 0; }
+#sideDrawer.open { visibility: visible; transition-delay: 0s; }
 
-html[dir="rtl"] #sideDrawer {
-  right: 0;
-  transform: translateX(100%);
+/* the layers that travel: page content + the fixed/sticky chrome that lives outside #mainApp.
+   `translate` (not `transform`) so it never fights the transforms those elements already use. */
+html.drawer-open #mainApp > *,
+html.drawer-open #stickyHomeHeader,
+html.drawer-open #desktopNav {
+  translate: calc(var(--drawer-w) * var(--reveal-dir)) 0;
 }
-
-html[dir="ltr"] #sideDrawer {
-  left: 0;
-  transform: translateX(-100%);
+html.drawer-anim #mainApp > *,
+html.drawer-anim #stickyHomeHeader,
+html.drawer-anim #desktopNav {
+  transition: translate .45s var(--reveal-ease);
 }
-
-html[dir="rtl"] #sideDrawer.open,
-html[dir="ltr"] #sideDrawer.open {
-  transform: translateX(0);
+/* the page edge casts a shadow onto the menu while it is open */
+html.drawer-open #mainApp > .page.active,
+html.drawer-open #mainApp > .page {
+  box-shadow: calc(var(--reveal-dir) * -14px) 0 40px rgba(0, 0, 0, .28);
 }
-/* the drop shadow only exists while the drawer is open — a closed drawer sits just off-screen and its shadow used to bleed in as a grey strip down the screen edge */
-html[dir="rtl"] #sideDrawer.open { box-shadow: -10px 0 40px rgba(0, 0, 0, .25); }
-html[dir="ltr"] #sideDrawer.open { box-shadow: 10px 0 40px rgba(0, 0, 0, .25); }
+/* the page moves off-screen by a drawer width: never allow a horizontal scrollbar or sideways scroll while open */
+html.drawer-open, html.drawer-open body { overflow-x: hidden; }
 
 #sideDrawer [class*="text-white"] {
   color: var(--chrome-text) !important;
@@ -2955,18 +2967,15 @@ html[dir="ltr"] #sideDrawer.open { box-shadow: 10px 0 40px rgba(0, 0, 0, .25); }
 
 #sideDrawerOverlay {
   position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, .5);
-  z-index: 90;
-  opacity: 0;
+  top: 0;
+  bottom: 0;
+  background: transparent;              /* reveal style has no scrim — it only catches the tap that closes the menu */
+  z-index: 96;
   pointer-events: none;
-  transition: opacity .3s;
 }
-
-#sideDrawerOverlay.open {
-  opacity: 1;
-  pointer-events: auto;
-}
+html[dir="ltr"] #sideDrawerOverlay { left: var(--drawer-w); right: 0; }
+html[dir="rtl"] #sideDrawerOverlay { left: 0; right: var(--drawer-w); }
+#sideDrawerOverlay.open { pointer-events: auto; }
 
 .drawer-link {
   display: flex;
