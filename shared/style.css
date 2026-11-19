@@ -2906,7 +2906,7 @@ body:has(#transferDetailPage.active) .bottom-nav {
    by the drawer's width, uncovering the menu that was sitting behind it. No dark scrim, no drawer sliding over the page.
    --drawer-w is the single source of truth for the drawer width and for how far the page travels.
    --reveal-dir flips the direction: the menu is on the right in RTL (page moves left) and on the left in LTR (page moves right). */
-:root { --drawer-w: min(80vw, 300px); --reveal-dir: 1; --reveal-ease: cubic-bezier(.16, 1, .3, 1); }
+:root { --drawer-w: min(80vw, 300px); --reveal-dir: 1; --reveal-ease: cubic-bezier(.22, 1.18, .36, 1); }   /* tiny overshoot = the page settles like liquid */
 html[dir="rtl"] { --reveal-dir: -1; }
 
 #sideDrawer {
@@ -2936,6 +2936,33 @@ html.drawer-anim #stickyHomeHeader,
 html.drawer-anim #desktopNav {
   transition: translate .45s var(--reveal-ease);
 }
+/* ---------- Liquid / Wave Reveal ----------
+   #revealWave is a wavy strip in the menu's colour that rides on the page edge (it travels with the same `translate`).
+   It spreads out from the edge with a springy overshoot and its crest keeps rolling while the menu is open. */
+#revealWave {
+  position: fixed; top: 0; bottom: 0; width: 26px; z-index: 60;
+  color: var(--chrome-bg-solid);
+  pointer-events: none; overflow: hidden;
+  opacity: 0; visibility: hidden;
+  scale: 0 1;
+  will-change: translate, scale;
+}
+html[dir="ltr"] #revealWave { left: -9px;  transform-origin: 9px 50%; }
+html[dir="rtl"] #revealWave { right: -9px; transform-origin: 17px 50%; transform: scaleX(-1); }
+#revealWave svg { display: block; position: absolute; top: 0; left: 0; width: 26px; height: calc(100% + 200px); animation: reveal-wave-roll 2.6s linear infinite; animation-play-state: paused; }
+html.drawer-open #revealWave svg { animation-play-state: running; }
+@keyframes reveal-wave-roll { from { transform: translateY(-200px); } to { transform: translateY(0); } }
+html.drawer-anim #revealWave { visibility: visible; opacity: 1; }
+html.drawer-open #revealWave {
+  translate: calc(var(--drawer-w) * var(--reveal-dir)) 0;
+  scale: 1 1;
+}
+html.drawer-anim #revealWave { transition: translate .45s var(--reveal-ease), scale .6s var(--reveal-ease); }
+@media (prefers-reduced-motion: reduce) {
+  html.drawer-anim #mainApp > *, html.drawer-anim #stickyHomeHeader, html.drawer-anim #desktopNav, html.drawer-anim #revealWave { transition-duration: .01s; }
+  #revealWave svg { animation: none; }
+}
+
 /* the page edge casts a shadow onto the menu while it is open */
 html.drawer-open #mainApp > .page.active,
 html.drawer-open #mainApp > .page {
