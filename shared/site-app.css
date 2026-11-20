@@ -33,36 +33,50 @@
 }
 [data-site="app"] body { background: var(--bg-body); color: var(--text-primary); }
 
-/* ---------- curved tab bar: raised side "ears", long smooth sweep, round cup for the floating button ---------- */
-[data-site="app"] { --ap-nav-h: 110px; }
+/* ---------- curved tab bar (night design): dark navy bar, glowing orange top edge, round cup for the floating centre button, labelled tabs ---------- */
+[data-site="app"] { --ap-nav-h: 78px; }
 [data-site="app"] .bottom-nav {
   height: var(--ap-nav-h) !important; min-height: 0; padding: 0 !important; margin-bottom: env(safe-area-inset-bottom, 0px) !important;
   border-radius: 0 !important; background: transparent !important; border: 0 !important; box-shadow: none !important;
-  backdrop-filter: none !important; -webkit-backdrop-filter: none !important; z-index: 9990; overflow: visible;
-  filter: drop-shadow(0 0 .6px var(--ap-nav-edge)) drop-shadow(0 -6px 16px var(--ap-nav-shadow));
+  backdrop-filter: none !important; -webkit-backdrop-filter: none !important; z-index: 9990; overflow: visible; filter: none !important;
+  --nav-ico: #e9edf3;
 }
-:root[data-site="app"]:not([data-theme="dark"]) { --ap-nav-edge: rgba(22,23,27,.35); --ap-nav-shadow: rgba(20,20,30,.16); }
-:root[data-site="app"][data-theme="dark"] { --ap-nav-edge: rgba(255,255,255,.3); --ap-nav-shadow: rgba(0,0,0,.6); }
 [data-site="app"] .bottom-nav::before {
-  content: ""; position: absolute; inset: 0; z-index: -1; background: var(--bg-body); pointer-events: none;
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 553 150' preserveAspectRatio='none'%3E%3Cpath d='M0 40Q0 0 30 0C120 0 205 30 221.2 62A62 62 0 0 0 331.8 62C348 30 433 0 523 0Q553 0 553 40V105Q553 150 508 150H45Q0 150 0 105Z'/%3E%3C/svg%3E") center / 100% 100% no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 553 150' preserveAspectRatio='none'%3E%3Cpath d='M0 40Q0 0 30 0C120 0 205 30 221.2 62A62 62 0 0 0 331.8 62C348 30 433 0 523 0Q553 0 553 40V105Q553 150 508 150H45Q0 150 0 105Z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  content: ""; position: absolute; left: 0; right: 0; top: -10px; height: calc(var(--ap-nav-h) + 10px + 40px); z-index: -1; pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -10 400 94' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='f' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%230f1a2a'/%3E%3Cstop offset='1' stop-color='%2309111c'/%3E%3C/linearGradient%3E%3ClinearGradient id='s' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%23b4561a'/%3E%3Cstop offset='.2' stop-color='%23f59a2e'/%3E%3Cstop offset='.4' stop-color='%23f08a24'/%3E%3Cstop offset='.6' stop-color='%23f08a24'/%3E%3Cstop offset='.8' stop-color='%23f59a2e'/%3E%3Cstop offset='1' stop-color='%23b4561a'/%3E%3C/linearGradient%3E%3Cfilter id='b' x='-5%25' y='-80%25' width='110%25' height='260%25'%3E%3CfeGaussianBlur stdDeviation='4'/%3E%3C/filter%3E%3C/defs%3E%3Cpath id='p' d='M0 16C25 3 55 0 85 0C125 0 150 10 163.2 24A37 37 0 0 0 236.8 24C250 10 275 0 315 0C345 0 375 3 400 16' fill='none'/%3E%3Cpath d='M0 16C25 3 55 0 85 0C125 0 150 10 163.2 24A37 37 0 0 0 236.8 24C250 10 275 0 315 0C345 0 375 3 400 16V84H0Z' fill='url(%23f)'/%3E%3Cpath d='M0 16C25 3 55 0 85 0C125 0 150 10 163.2 24A37 37 0 0 0 236.8 24C250 10 275 0 315 0C345 0 375 3 400 16' fill='none' stroke='%23f08a24' stroke-width='5' opacity='.45' filter='url(%23b)' vector-effect='non-scaling-stroke'/%3E%3Cpath d='M0 16C25 3 55 0 85 0C125 0 150 10 163.2 24A37 37 0 0 0 236.8 24C250 10 275 0 315 0C345 0 375 3 400 16' fill='none' stroke='url(%23s)' stroke-width='1.6' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E") center top / 100% calc(var(--ap-nav-h) + 10px) no-repeat, linear-gradient(#09111c, #09111c) 0 calc(var(--ap-nav-h) + 9px) / 100% 41px no-repeat;
 }
 [data-site="app"] .bottom-nav > div { position: static; display: block; height: var(--ap-nav-h); }
-[data-site="app"] .bottom-nav .nav-item { position: absolute; top: 44px; width: 58px; height: 58px; margin-left: -29px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary) !important; opacity: 1; transform: none; transition: color .2s, transform .2s; }
+[data-site="app"] .bottom-nav .nav-item {
+  position: absolute; top: 20px; width: 78px; height: 50px; margin-left: -39px; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 5px;
+  color: #e9edf3 !important; opacity: 1; transform: none; transition: color .2s, transform .2s;
+}
+[data-site="app"] .bottom-nav .nav-item .nav-ico { width: 24px; height: 24px; }
 [data-site="app"] .bottom-nav .nav-item i { font-size: 22px; }
-[data-site="app"] .bottom-nav .nav-item:nth-child(1) { left: 12.7%; }
+[data-site="app"] .bottom-nav .nav-label { display: block; font: 500 10.5px/13px 'Inter', system-ui, sans-serif; color: #e3e8ef; white-space: nowrap; }
+[data-site="app"] .bottom-nav .nav-item:nth-child(1) { left: 12%; }
 [data-site="app"] .bottom-nav .nav-item:nth-child(2) { left: 31%; }
 [data-site="app"] .bottom-nav .nav-item:nth-child(4) { left: 69%; }
-[data-site="app"] .bottom-nav .nav-item:nth-child(5) { left: 87.3%; }
-[data-site="app"] .bottom-nav .nav-item.active, [data-site="app"] .bottom-nav .nav-item[aria-current="page"] { color: var(--ap-accent) !important; }
-[data-site="app"] .bottom-nav .nav-item.active::after { display: none; }
-[data-site="app"] .bottom-nav .nav-item-home {
-  position: absolute; left: 50%; top: -6px; width: 62px; height: 62px; margin: 0 0 0 -31px; padding: 0; border-radius: 50%;
-  background: linear-gradient(150deg, #fdba74, #f97316 55%, #c2410c);
-  box-shadow: 0 0 0 7px var(--bg-body), 0 12px 24px -6px rgba(249,115,22,.65); transition: transform .2s; z-index: 2;
+[data-site="app"] .bottom-nav .nav-item:nth-child(5) { left: 87.5%; }
+:root[data-site="app"] .bottom-nav .nav-item.active, :root[data-site="app"] .bottom-nav .nav-item[aria-current="page"],
+:root[data-site="app"] .bottom-nav .nav-item.active i { color: #f59a2e !important; }
+:root[data-site="app"] .bottom-nav .nav-item.active .nav-label, :root[data-site="app"] .bottom-nav .nav-item[aria-current="page"] .nav-label { color: #f59a2e; font-weight: 600; }
+:root[data-site="app"] .bottom-nav .nav-item.active, :root[data-site="app"] .bottom-nav .nav-item.active *,
+:root[data-site="app"] .bottom-nav .nav-item[aria-current="page"], :root[data-site="app"] .bottom-nav .nav-item[aria-current="page"] * { --ico-a: #ffb04d; --ico-b: #f27a14; }
+[data-site="app"] .bottom-nav .nav-item.active::after, [data-site="app"] .bottom-nav .nav-item[aria-current="page"]::after {
+  display: block; content: ""; position: absolute; left: 50%; bottom: -6px; width: 46px; height: 2px; margin-left: -23px; border-radius: 2px;
+  background: linear-gradient(90deg, transparent, #f59a2e 25%, #f59a2e 75%, transparent); box-shadow: 0 0 8px rgba(245,154,46,.8);
 }
-[data-site="app"] .bottom-nav .nav-item-home:active { transform: scale(.92); }
-[data-site="app"] .bottom-nav .nav-home-logo { position: static; transform: none; width: 100%; height: 100%; border-radius: 50%; background: none; box-shadow: none; display: flex; align-items: center; justify-content: center; }
+[data-site="app"] .bottom-nav .nav-ico .notif-badge {
+  top: -7px; right: -9px; width: auto; min-width: 15px; height: 15px; padding: 0 4px; border-radius: 8px; background: #ef2b2b; color: #fff;
+  font: 700 9px/15px 'Inter', system-ui, sans-serif; text-align: center; box-shadow: 0 0 0 1.5px #0b1522;
+}
+[data-site="app"] .bottom-nav .nav-item-home {
+  position: absolute; left: 50%; top: -14px; width: 62px; height: 62px; margin: 0 0 0 -31px; padding: 0; border-radius: 50%; display: block;
+  background: linear-gradient(150deg, #f8a03a, #ee7f1c 55%, #dd6a0e);
+  box-shadow: 0 0 0 6px #0b1522, 0 0 0 7px rgba(255,255,255,.16), 0 10px 22px -4px rgba(240,120,24,.65); transition: transform .2s; z-index: 2;
+}
+[data-site="app"] .bottom-nav .nav-item-home:active { transform: scale(.93); }
+[data-site="app"] .bottom-nav .nav-home-logo { box-shadow: none !important; position: static; transform: none; width: 100%; height: 100%; border-radius: 50%; background: none; box-shadow: none; display: flex; align-items: center; justify-content: center; }
 [data-site="app"] .bottom-nav .nav-home-logo img { width: 70%; height: 70%; object-fit: contain; pointer-events: none; }
 
 /* ---------- home: banner hero + floating search card ---------- */

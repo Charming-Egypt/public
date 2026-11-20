@@ -219,7 +219,7 @@
                 <div class="footer-social">
                   <a href="#" class="footer-social-btn" aria-label="Instagram" title="Instagram"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a>
                   <a href="#" class="footer-social-btn" aria-label="Facebook" title="Facebook"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i></a>
-                  <a href="#" class="footer-social-btn" aria-label="WhatsApp" title="WhatsApp"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i></a>
+                  <a href="#" class="footer-social-btn" aria-label="YouTube" title="YouTube"><i class="fa-brands fa-youtube" aria-hidden="true"></i></a>
                   <a href="#" class="footer-social-btn" aria-label="TikTok" title="TikTok"><i class="fa-brands fa-tiktok" aria-hidden="true"></i></a>
                 </div>
               </div>
@@ -254,11 +254,11 @@
               <div class="footer-col footer-payment-col">
                 <h4 data-i18n="paymentEyebrow">Secure Checkout</h4>
                 <div class="payment-icon-row">
-                  <div class="payment-icon-box"><i class="fa-brands fa-cc-visa" aria-hidden="true"></i></div>
-                  <div class="payment-icon-box"><i class="fa-brands fa-cc-mastercard" aria-hidden="true"></i></div>
-                  <div class="payment-icon-box"><i class="fa-solid fa-wallet" aria-hidden="true"></i></div>
-                  <div class="payment-icon-box"><i class="fa-solid fa-money-bill-wave" aria-hidden="true"></i></div>
-                </div>
+              <div class="payment-icon-box pm-visa-box" aria-label="Visa"><span class="pm-visa">VISA</span></div>
+              <div class="payment-icon-box pm-mc-box" aria-label="Mastercard"><span class="pm-mc"><b></b><b></b></span><em>mastercard</em></div>
+              <div class="payment-icon-box pm-silver" aria-label="E-wallet"><i class="fa-solid fa-wallet" aria-hidden="true"></i></div>
+              <div class="payment-icon-box pm-silver" aria-label="InstaPay"><svg viewBox="0 0 32 22" width="30" height="21" aria-hidden="true"><rect x="1" y="1" width="30" height="20" rx="3.5" fill="#cfd5dd"/><circle cx="16" cy="11" r="5" fill="#2a3340"/><circle cx="16" cy="11" r="2" fill="#cfd5dd"/></svg></div>
+            </div>
                 <p class="footer-payment-note" data-i18n="paymentSecureNote">All payments are processed securely in Egyptian Pounds (EGP). Pay by card or InstaPay/e-wallet.</p>
                 <a href="mailto:support@discover-sharm.com" class="footer-contact-line" data-i18n="supportDiscoverSharmCom"><i class="fa-regular fa-envelope" aria-hidden="true"></i> support@discover-sharm.com</a>
                 <p class="footer-contact-line" data-i18n="sharmElSheikhSouthSinaiEgypt"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Sharm El-Sheikh, South Sinai, Egypt</p>
@@ -282,32 +282,26 @@
           <!-- Mobile footer -->
           <div class="lg:hidden footer-mobile">
             <div class="payment-icon-row justify-center">
-              <div class="payment-icon-box"><i class="fa-brands fa-cc-visa" aria-hidden="true"></i></div>
-              <div class="payment-icon-box"><i class="fa-brands fa-cc-mastercard" aria-hidden="true"></i></div>
-              <div class="payment-icon-box"><i class="fa-solid fa-wallet" aria-hidden="true"></i></div>
-              <div class="payment-icon-box"><i class="fa-solid fa-money-bill-wave" aria-hidden="true"></i></div>
+              <div class="payment-icon-box pm-visa-box" aria-label="Visa"><span class="pm-visa">VISA</span></div>
+              <div class="payment-icon-box pm-mc-box" aria-label="Mastercard"><span class="pm-mc"><b></b><b></b></span><em>mastercard</em></div>
+              <div class="payment-icon-box pm-silver" aria-label="E-wallet"><i class="fa-solid fa-wallet" aria-hidden="true"></i></div>
+              <div class="payment-icon-box pm-silver" aria-label="InstaPay"><svg viewBox="0 0 32 22" width="30" height="21" aria-hidden="true"><rect x="1" y="1" width="30" height="20" rx="3.5" fill="#cfd5dd"/><circle cx="16" cy="11" r="5" fill="#2a3340"/><circle cx="16" cy="11" r="2" fill="#cfd5dd"/></svg></div>
             </div>
             <p class="footer-payment-note" data-i18n="paymentSecureNote">All payments are processed securely in Egyptian Pounds (EGP). Pay by card or InstaPay/e-wallet.</p>
             <div class="footer-social">
               <a href="#" class="footer-social-btn" aria-label="Instagram"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a>
               <a href="#" class="footer-social-btn" aria-label="Facebook"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i></a>
-              <a href="#" class="footer-social-btn" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i></a>
+              <a href="#" class="footer-social-btn" aria-label="YouTube"><i class="fa-brands fa-youtube" aria-hidden="true"></i></a>
               <a href="#" class="footer-social-btn" aria-label="TikTok"><i class="fa-brands fa-tiktok" aria-hidden="true"></i></a>
             </div>
             <div class="footer-mobile-links">
-              <a onclick="nav.go('about')" data-i18n="footerAbout">About</a>
-              <span>·</span>
-              <a onclick="nav.go('contact')" data-i18n="footerContact">Contact</a>
-              <span>·</span>
-              <a onclick="nav.go('partner')" data-i18n="footerPartner">Partner</a>
-              <span>·</span>
-              <a onclick="nav.go('exchange')" data-i18n="footerExchange">Currency Exchange</a>
-              <span>·</span>
-              <a onclick="nav.go('terms')" data-i18n="footerTerms">Terms</a>
-              <span>·</span>
-              <a onclick="nav.go('refundPolicy')" data-i18n="footerRefund">Refund Policy</a>
-              <span>·</span>
-              <a onclick="nav.go('privacy')" data-i18n="footerPrivacy">Privacy</a>
+              <span class="ft-item"><a onclick="nav.go('about')" data-i18n="footerAbout">About Us</a><span aria-hidden="true">·</span></span>
+              <span class="ft-item"><a onclick="nav.go('contact')" data-i18n="footerContact">Contact</a><span aria-hidden="true">·</span></span>
+              <span class="ft-item"><a onclick="nav.go('partner')" data-i18n="footerPartner">Become a Partner</a><span aria-hidden="true">·</span></span>
+              <span class="ft-item"><a onclick="nav.go('exchange')" data-i18n="footerExchange">Currency Exchange</a><span aria-hidden="true">·</span></span>
+              <span class="ft-item"><a onclick="nav.go('terms')" data-i18n="footerTerms">Terms of Service</a><span aria-hidden="true">·</span></span>
+              <span class="ft-item"><a onclick="nav.go('refundPolicy')" data-i18n="footerRefund">Refund Policy</a><span aria-hidden="true">·</span></span>
+              <span class="ft-item"><a onclick="nav.go('privacy')" data-i18n="footerPrivacy">Privacy Policy</a></span>
             </div>
             <p class="footer-copyright" data-i18n="footerCopyright">© 2026 Discover Sharm. All rights reserved.</p>
           </div>

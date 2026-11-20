@@ -2345,7 +2345,7 @@ function applyContactSettings(c) {
   if (!c || !Object.values(c).some(Boolean)) return;   // nothing configured: keep the page's built-in links
   const by = (label) => document.querySelectorAll(`.footer-social-btn[aria-label="${label}"]`);
   const set = (label, url) => by(label).forEach(a => { if (url) { a.href = url; a.target = '_blank'; a.rel = 'noopener'; a.style.display = ''; } else a.style.display = 'none'; });
-  set('Instagram', c.instagram); set('Facebook', c.facebook); set('TikTok', c.tiktok);
+  set('Instagram', c.instagram); set('Facebook', c.facebook); set('TikTok', c.tiktok); set('YouTube', c.youtube);
   const wa = String(c.whatsapp || '').replace(/\D/g, ''); set('WhatsApp', wa ? 'https://wa.me/' + wa : '');
   document.querySelectorAll('.footer-social').forEach(box => { if (c.youtube && !box.querySelector('[aria-label="YouTube"]')) box.insertAdjacentHTML('beforeend', `<a href="${c.youtube}" target="_blank" rel="noopener" class="footer-social-btn" aria-label="YouTube"><i class="fa-brands fa-youtube" aria-hidden="true"></i></a>`); });
   const setText = (a, icon, text) => { a.removeAttribute('data-i18n'); a.innerHTML = `${icon} `; a.appendChild(document.createTextNode(text)); };

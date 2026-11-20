@@ -1500,8 +1500,9 @@ const notifications = {
       </div>`).join('');
   },
   updateBadge() {
-    const hasUnread = this.list.some(n => !n.read);
+    const unread = this.list.filter(n => !n.read).length, hasUnread = unread > 0;
     document.querySelectorAll('.notif-badge').forEach(el => el.classList.toggle('hidden', !hasUnread));
+    document.querySelectorAll('.bottom-nav .notif-badge').forEach(el => { el.textContent = unread > 9 ? '9+' : String(unread); });
   },
   markAllRead() { this.list.forEach(n => n.read = true); this.render(); },
   markRead(id) { const n = this.list.find(x => x.id === id); if (n && !n.read) { n.read = true; this.render(); } }

@@ -500,6 +500,7 @@ html[data-theme="light"] #heroSection .ds-search-tab.active, html[data-theme="li
 .rvp .rvp-rate button.on, .rvp .rvp-rate button.on *,
 .rv-tr, .rv-tr *,
 .rv-tr[aria-pressed="true"], .rv-tr[aria-pressed="true"] *,
+#siteFooter .footer-social-btn, #siteFooter .footer-social-btn *,
 .nav-avatar-circle, .nav-avatar-circle *,
 .review-avatar-badge, .review-avatar-badge *,
 .footer-social-btn, .footer-social-btn *,
