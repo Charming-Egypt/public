@@ -1,0 +1,310 @@
+[
+  {
+    "id": "h1",
+    "category": "budget",
+    "name": {
+      "en": "Cataract Layalina",
+      "ar": "كاتاراكت ليالينا",
+      "ru": "Cataract Layalina",
+      "de": "Cataract Layalina",
+      "it": "Cataract Layalina",
+      "tr": "Cataract Layalina"
+    },
+    "description": {
+      "en": "4-star hotel with sea view",
+      "ar": "فندق 4 نجوم بإطلالة على البحر",
+      "ru": "Роскошный 5-звездочный отель с видом на море",
+      "de": "Luxus-5-Sterne-Hotel mit Meerblick",
+      "it": "Hotel di lusso 5 stelle con vista mare",
+      "tr": "Deniz manzaralı lüks 5 yıldızlı otel"
+    },
+    "fullDescription": {
+      "en": "Experience unparalleled luxury at Discover Grand Hotel. Featuring stunning Red Sea views, world-class amenities, and exceptional service that defines the essence of Sharm El Sheikh hospitality.",
+      "ar": "استمتع بتجربة فخامة لا مثيل لها في فندق ديسكفر جراند، بإطلالات ساحرة على البحر الأحمر ومرافق عالمية المستوى وخدمة استثنائية تجسد روح الضيافة في شرم الشيخ.",
+      "ru": "Ощутите непревзойденную роскошь в Discover Grand Hotel — потрясающий вид на Красное море, первоклассные удобства и безупречный сервис, отражающий дух гостеприимства Шарм-эль-Шейха.",
+      "de": "Erleben Sie unvergleichlichen Luxus im Discover Grand Hotel mit atemberaubendem Blick auf das Rote Meer, erstklassigen Annehmlichkeiten und außergewöhnlichem Service.",
+      "it": "Vivi un lusso senza pari al Discover Grand Hotel, con splendide vedute sul Mar Rosso, servizi di livello mondiale e un'ospitalità eccezionale, tipica di Sharm El Sheikh.",
+      "tr": "Discover Grand Hotel'de eşsiz bir lüks deneyimi yaşayın — büyüleyici Kızıldeniz manzarası, dünya standartlarında olanaklar ve Sharm El Sheikh misafirperverliğini yansıtan üstün hizmet."
+    },
+    "price": 3800,
+    "rating": 5,
+    "reviews": 234,
+    "location": {
+      "en": "123 Naama Bay, Sharm El Sheikh",
+      "ar": "١٢٣ خليج نعمة، شرم الشيخ",
+      "ru": "Naama Bay 123, Шарм-эль-Шейх",
+      "de": "Naama Bay 123, Sharm El Sheikh",
+      "it": "Naama Bay 123, Sharm El Sheikh",
+      "tr": "Naama Bay 123, Sharm El Sheikh"
+    },
+    "image": "https://www.hotelsharmelsheikhegypt.com/data/Pics/OriginalPhoto/10769/1076965/1076965390/pic-cataract-resort-aqua-park-naama-bay-sharm-el-sheikh-42.JPEG",
+    "images": [
+      "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=90",
+      "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=90",
+      "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=90"
+    ],
+    "amenities": {
+      "en": [
+        "Free WiFi",
+        "Breakfast",
+        "Pool",
+        "Spa",
+        "Gym",
+        "Parking"
+      ],
+      "ar": [
+        "واي فاي مجاني",
+        "إفطار",
+        "مسبح",
+        "سبا",
+        "صالة رياضية",
+        "موقف سيارات"
+      ],
+      "ru": [
+        "Бесплатный Wi-Fi",
+        "Завтрак",
+        "Бассейн",
+        "Спа",
+        "Тренажерный зал",
+        "Парковка"
+      ],
+      "de": [
+        "Kostenloses WLAN",
+        "Frühstück",
+        "Pool",
+        "Spa",
+        "Fitnessstudio",
+        "Parkplatz"
+      ],
+      "it": [
+        "WiFi gratuito",
+        "Colazione",
+        "Piscina",
+        "Spa",
+        "Palestra",
+        "Parcheggio"
+      ],
+      "tr": [
+        "Ücretsiz WiFi",
+        "Kahvaltı",
+        "Havuz",
+        "Spa",
+        "Spor Salonu",
+        "Otopark"
+      ]
+    },
+    "bestseller": true,
+    "rooms": [
+      {
+        "type": {
+          "en": "Deluxe Sea View",
+          "ar": "ديلوكس بإطلالة على البحر",
+          "ru": "Делюкс с видом на море",
+          "de": "Deluxe Meerblick",
+          "it": "Deluxe Vista Mare",
+          "tr": "Deniz Manzaralı Delüks"
+        },
+        "price": 3800,
+        "size": "35m²",
+        "beds": {
+          "en": "1 King Bed",
+          "ar": "سرير كينج واحد",
+          "ru": "1 кровать king-size",
+          "de": "1 Kingsize-Bett",
+          "it": "1 letto king",
+          "tr": "1 King Yatak"
+        },
+        "guests": 2,
+        "image": "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=400&q=80",
+        "description": {
+          "en": "A bright, airy room with floor-to-ceiling windows framing the Red Sea. Soft linens, a marble bathroom, and a private balcony make this the hotel's signature room.",
+          "ar": "غرفة مشرقة وواسعة بنوافذ ممتدة من الأرض إلى السقف تطل على البحر الأحمر، مع مفروشات ناعمة وحمام رخامي وشرفة خاصة.",
+          "ru": "Светлый просторный номер с панорамными окнами и видом на Красное море, мраморной ванной комнатой и собственным балконом.",
+          "de": "Ein helles, luftiges Zimmer mit bodentiefen Fenstern zum Roten Meer, weicher Bettwäsche, Marmorbad und privatem Balkon.",
+          "it": "Camera luminosa con finestre a tutta altezza sul Mar Rosso, biancheria morbida, bagno in marmo e balcone privato.",
+          "tr": "Kızıldeniz manzaralı yerden tavana pencereleri, yumuşak nevresimleri, mermer banyosu ve özel balkonuyla otelin amiral gemisi odası."
+        },
+        "baseOccupancy": 2,
+        "extraAdultFee": 950,
+        "freeChildrenPerRoom": 2,
+        "extraChildFee": 480
+      },
+      {
+        "type": {
+          "en": "Premium Suite",
+          "ar": "جناح بريميوم",
+          "ru": "Премиум люкс",
+          "de": "Premium-Suite",
+          "it": "Suite Premium",
+          "tr": "Premium Suit"
+        },
+        "price": 6900,
+        "size": "65m²",
+        "beds": {
+          "en": "1 King Bed",
+          "ar": "سرير كينج واحد",
+          "ru": "1 кровать king-size",
+          "de": "1 Kingsize-Bett",
+          "it": "1 letto king",
+          "tr": "1 King Yatak"
+        },
+        "guests": 3,
+        "image": "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=400&q=80",
+        "description": {
+          "en": "A spacious two-area suite with a separate lounge, walk-in closet, and panoramic sea-facing terrace — ideal for longer stays.",
+          "ar": "جناح فسيح بمنطقتين مع صالة منفصلة وخزانة ملابس وتراس بانورامي مطل على البحر — مثالي للإقامات الطويلة.",
+          "ru": "Просторный люкс из двух зон с отдельной гостиной, гардеробной и панорамной террасой с видом на море.",
+          "de": "Eine geräumige Zwei-Zonen-Suite mit separater Lounge, begehbarem Kleiderschrank und Panoramaterrasse zum Meer.",
+          "it": "Ampia suite a due zone con salotto separato, cabina armadio e terrazza panoramica sul mare.",
+          "tr": "Ayrı oturma alanı, giyinme odası ve denize bakan panoramik teraslı geniş iki bölümlü suit."
+        },
+        "baseOccupancy": 2,
+        "extraAdultFee": 1720,
+        "freeChildrenPerRoom": 2,
+        "extraChildFee": 860
+      }
+    ],
+    "unavailableDates": [
+      "2026-09-05",
+      "2026-09-06",
+      "2026-09-07",
+      "2026-09-23",
+      "2026-10-08"
+    ]
+  },
+  {
+    "id": "h2",
+    "category": "luxury",
+    "name": {
+      "en": "Cataract Resort Aqua Park",
+      "ar": "منتجع كاتاراكت - أكوابارك",
+      "ru": "Cataract Resort Aqua Park",
+      "de": "Cataract Resort Aqua Park",
+      "it": "Cataract Resort Aqua Park",
+      "tr": "Cataract Resort Aqua Park"
+    },
+    "description": {
+      "en": "Elegant suites with panoramic views",
+      "ar": "أجنحة أنيقة بإطلالات بانورامية",
+      "ru": "Элегантные люксы с панорамным видом",
+      "de": "Elegante Suiten mit Panoramablick",
+      "it": "Eleganti suite con vista panoramica",
+      "tr": "Panoramik manzaralı zarif suitler"
+    },
+    "fullDescription": {
+      "en": "Discover Deluxe Suites offers an intimate luxury experience with spacious suites, private balconies overlooking the Red Sea, and personalized service for the discerning traveler.",
+      "ar": "يقدم ديسكفر ديلوكس سويتس تجربة فخامة حميمية بأجنحة واسعة وشرفات خاصة تطل على البحر الأحمر وخدمة شخصية للمسافر المميز.",
+      "ru": "Discover Deluxe Suites предлагает изысканный отдых в просторных люксах с личными балконами с видом на Красное море.",
+      "de": "Discover Deluxe Suites bietet ein intimes Luxuserlebnis mit geräumigen Suiten und privaten Balkonen zum Roten Meer.",
+      "it": "Discover Deluxe Suites offre un'esperienza di lusso intima con ampie suite e balconi privati affacciati sul Mar Rosso.",
+      "tr": "Discover Deluxe Suites, geniş suitleri ve Kızıldeniz'e bakan özel balkonlarıyla samimi bir lüks deneyimi sunar."
+    },
+    "price": 4750,
+    "rating": 5,
+    "reviews": 189,
+    "location": {
+      "en": "456 Sharks Bay, Sharm El Sheikh",
+      "ar": "٤٥٦ خليج القرش، شرم الشيخ",
+      "ru": "Sharks Bay 456, Шарм-эль-Шейх",
+      "de": "Sharks Bay 456, Sharm El Sheikh",
+      "it": "Sharks Bay 456, Sharm El Sheikh",
+      "tr": "Sharks Bay 456, Sharm El Sheikh"
+    },
+    "image": "https://www.hotelsharmelsheikhegypt.com/data/Pics/OriginalPhoto/10769/1076965/1076965390/pic-cataract-resort-aqua-park-naama-bay-sharm-el-sheikh-42.JPEG",
+    "images": [
+      "https://www.hotelsharmelsheikhegypt.com/data/Pics/OriginalPhoto/10769/1076965/1076965390/pic-cataract-resort-aqua-park-naama-bay-sharm-el-sheikh-42.JPEG",
+      "https://cf.bstatic.com/xdata/images/hotel/max1024x768/716939830.jpg?k=430ad9d374253dee495aeaa8203d1952dea38915dc9b601f477f023b5eb79bdf&o=",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSv3Pm7KJNt8Wpq6SVfZjEQEThtRTJvaBtD5M8qlDL0gLQFHYeY6PWoo6A&s=10",
+      "https://q-xx.bstatic.com/xdata/images/hotel/max500/712720873.jpg?k=df9b173165fb80065bba9ad8934216d49e212679a5db7acf3afd68a2dc72a87a&o=",
+      "https://q-xx.bstatic.com/xdata/images/hotel/max500/716940913.jpg?k=b53afcad40447bf4b370c586313ff5defed59dcb20f975d3406e5b623aba88f0&o="
+    ],
+    "amenities": {
+      "en": [
+        "Free WiFi",
+        "Breakfast",
+        "Gym",
+        "Beach Access",
+        "Concierge"
+      ],
+      "ar": [
+        "واي فاي مجاني",
+        "إفطار",
+        "صالة رياضية",
+        "وصول مباشر للشاطئ",
+        "خدمة كونسيرج"
+      ],
+      "ru": [
+        "Бесплатный Wi-Fi",
+        "Завтрак",
+        "Тренажерный зал",
+        "Выход на пляж",
+        "Консьерж"
+      ],
+      "de": [
+        "Kostenloses WLAN",
+        "Frühstück",
+        "Fitnessstudio",
+        "Strandzugang",
+        "Concierge"
+      ],
+      "it": [
+        "WiFi gratuito",
+        "Colazione",
+        "Palestra",
+        "Accesso alla spiaggia",
+        "Concierge"
+      ],
+      "tr": [
+        "Ücretsiz WiFi",
+        "Kahvaltı",
+        "Spor Salonu",
+        "Plaj Erişimi",
+        "Concierge"
+      ]
+    },
+    "bestseller": true,
+    "rooms": [
+      {
+        "type": {
+          "en": "Junior Suite",
+          "ar": "جناح جونيور",
+          "ru": "Джуниор люкс",
+          "de": "Junior-Suite",
+          "it": "Junior Suite",
+          "tr": "Junior Suit"
+        },
+        "price": 4750,
+        "size": "45m²",
+        "beds": {
+          "en": "1 King Bed",
+          "ar": "سرير كينج واحد",
+          "ru": "1 кровать king-size",
+          "de": "1 Kingsize-Bett",
+          "it": "1 letto king",
+          "tr": "1 King Yatak"
+        },
+        "guests": 2,
+        "image": "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=400&q=80",
+        "description": {
+          "en": "An elegant junior suite with a private balcony, sitting area, and rain shower — quiet, comfortable and close to the beach path.",
+          "ar": "جناح جونيور أنيق بشرفة خاصة ومنطقة جلوس ودُش مطري — هادئ ومريح وقريب من ممر الشاطئ.",
+          "ru": "Элегантный джуниор-люкс с личным балконом, зоной отдыха и тропическим душем.",
+          "de": "Eine elegante Junior-Suite mit privatem Balkon, Sitzbereich und Regendusche.",
+          "it": "Un'elegante junior suite con balcone privato, area salotto e doccia a pioggia.",
+          "tr": "Özel balkonu, oturma alanı ve yağmurlama duşuyla şık bir junior suit."
+        },
+        "baseOccupancy": 2,
+        "extraAdultFee": 1190,
+        "freeChildrenPerRoom": 2,
+        "extraChildFee": 600
+      }
+    ],
+    "unavailableDates": [
+      "2026-08-29",
+      "2026-08-30",
+      "2026-09-13",
+      "2026-09-14",
+      "2026-09-15"
+    ]
+  }
+]

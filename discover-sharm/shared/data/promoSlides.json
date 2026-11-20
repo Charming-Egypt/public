@@ -1,0 +1,27 @@
+[
+  {
+    "id": "ps1",
+    "title": {
+      "en": "HSR Shooting",
+      "ar": "HSR Shooting",
+      "de": "HSR Shooting",
+      "it": "HSR Shooting",
+      "ru": "HSR Shooting",
+      "tr": "HSR Shooting"
+    },
+    "subtitle": {
+      "en": "Live fire shooting experience at HSR",
+      "ar": "ضرب نار في HSR",
+      "de": "Live-Schießerlebnis bei HSR",
+      "it": "Esperienza di tiro dal vivo a HSR",
+      "ru": "Стрельба боевыми патронами в HSR",
+      "tr": "HSR'de canlı atış deneyimi"
+    },
+    "date": "29 أكتوبر",
+    "image": "https://images.unsplash.com/photo-1595590424283-b8f17842773f?auto=format&fit=crop&w=900&q=80",
+    "linkType": "url",
+    "linkTarget": "",
+    "order": 1,
+    "active": true
+  }
+]
