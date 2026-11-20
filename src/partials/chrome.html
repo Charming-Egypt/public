@@ -289,14 +289,6 @@
   <input type="file" id="avatarFileInput" accept="image/*" class="hidden" onchange="profileAvatar.handleFile(event)" />
 
   <!-- Side Drawer -->
-  <!-- Liquid edge for the Reveal menu: a wavy strip in the menu's colour that rides on the page's edge while the menu is open (see "Liquid / Wave Reveal" in style.css) -->
-  <div id="revealWave" aria-hidden="true">
-    <svg width="26" height="100%" preserveAspectRatio="none" focusable="false">
-      <defs><pattern id="revealWavePat" width="26" height="200" patternUnits="userSpaceOnUse"><path d="M0,0 L17,0 C27,30 27,70 17,100 C7,130 7,170 17,200 L0,200 Z" fill="currentColor"/></pattern></defs>
-      <rect width="26" height="100%" fill="url(#revealWavePat)"/>
-    </svg>
-  </div>
-
   <div id="sideDrawerOverlay" onclick="sidebar.close()"></div>
   <div id="sideDrawer" aria-hidden="true">
     <div class="p-5 flex flex-col h-full">
@@ -346,6 +338,8 @@
     </div>
   </div>
 
+  <!-- The whole page (headers + content + bottom bar) lives in #revealCard. It is invisible plumbing normally (display:contents); while the side menu is open it becomes the small rounded card of the Reveal effect. Closed in tools/build.mjs after #mainApp. -->
+  <div id="revealCard">
   <!-- Sticky Header -->
   <div class="sticky-home-header" id="stickyHomeHeader">
     <div class="flex items-center justify-between">

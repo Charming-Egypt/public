@@ -2901,12 +2901,11 @@ body:has(#transferDetailPage.active) .bottom-nav {
   background: #fbbf24;
 }
 
-/* ---------- Side Drawer — "Reveal" style ----------
-   The menu is fixed UNDER the page. Opening it slides the page (content, headers, bottom bar) sideways
-   by the drawer's width, uncovering the menu that was sitting behind it. No dark scrim, no drawer sliding over the page.
-   --drawer-w is the single source of truth for the drawer width and for how far the page travels.
-   --reveal-dir flips the direction: the menu is on the right in RTL (page moves left) and on the left in LTR (page moves right). */
-:root { --drawer-w: min(80vw, 300px); --reveal-dir: 1; --reveal-ease: cubic-bezier(.22, 1.18, .36, 1); }   /* tiny overshoot = the page settles like liquid */
+/* ---------- Side Drawer — "Reveal" style (the page shrinks into a card) ----------
+   One flat background for the whole screen. The menu sits on it; opening the menu shrinks the entire page (headers, content, bottom bar)
+   into a smaller rounded card that slides to the side, and the menu is revealed on the empty space it leaves.
+   #revealCard is the page. --drawer-w = how far the card travels; --reveal-dir flips it for RTL (menu on the right, card moves left). */
+:root { --drawer-w: min(80vw, 300px); --reveal-dir: 1; --reveal-scale: .82; --reveal-ease: cubic-bezier(.22, 1, .36, 1); }
 html[dir="rtl"] { --reveal-dir: -1; }
 
 #sideDrawer {
@@ -2914,75 +2913,50 @@ html[dir="rtl"] { --reveal-dir: -1; }
   top: 0;
   height: 100%;
   width: var(--drawer-w);
-  background: var(--chrome-bg-solid);   /* opaque: the page edge sliding off must not show through */
-  z-index: 5;                           /* under #mainApp (z-10) and the fixed headers (z-50) — that is the whole trick */
+  background: transparent;              /* same flat colour as the screen behind it (html.drawer-lock paints it) */
+  z-index: 5;                           /* under the page card (z 10) */
   color: var(--chrome-text);
-  visibility: hidden;                   /* closed: not tabbable, never peeks out from behind a transparent area of the page */
-  transition: visibility 0s linear .45s;
+  visibility: hidden;                   /* closed: not tabbable, never peeks out */
+  opacity: 0;
+  transition: opacity .3s ease, visibility 0s linear .45s;
 }
 html[dir="rtl"] #sideDrawer { right: 0; }
 html[dir="ltr"] #sideDrawer { left: 0; }
-#sideDrawer.open { visibility: visible; transition-delay: 0s; }
+#sideDrawer.open { visibility: visible; opacity: 1; transition-delay: .06s, 0s; }
 
-/* the layers that travel: page content + the fixed/sticky chrome that lives outside #mainApp.
-   `translate` (not `transform`) so it never fights the transforms those elements already use. */
-html.drawer-open #mainApp > *,
-html.drawer-open #stickyHomeHeader,
-html.drawer-open #desktopNav {
-  translate: calc(var(--drawer-w) * var(--reveal-dir)) 0;
-}
-html.drawer-anim #mainApp > *,
-html.drawer-anim #stickyHomeHeader,
-html.drawer-anim #desktopNav {
-  transition: translate .45s var(--reveal-ease);
-}
-/* ---------- Liquid / Wave Reveal ----------
-   #revealWave is a wavy strip in the menu's colour that rides on the page edge (it travels with the same `translate`).
-   It spreads out from the edge with a springy overshoot and its crest keeps rolling while the menu is open. */
-#revealWave {
-  position: fixed; top: 0; bottom: 0; width: 26px; z-index: 60;
-  color: var(--chrome-bg-solid);
-  pointer-events: none; overflow: hidden;
-  opacity: 0; visibility: hidden;
-  scale: 0 1;
-  will-change: translate, scale;
-}
-html[dir="ltr"] #revealWave { left: -9px;  transform-origin: 9px 50%; }
-html[dir="rtl"] #revealWave { right: -9px; transform-origin: 17px 50%; transform: scaleX(-1); }
-#revealWave svg { display: block; position: absolute; top: 0; left: 0; width: 26px; height: calc(100% + 200px); animation: reveal-wave-roll 2.6s linear infinite; animation-play-state: paused; }
-html.drawer-open #revealWave svg { animation-play-state: running; }
-@keyframes reveal-wave-roll { from { transform: translateY(-200px); } to { transform: translateY(0); } }
-html.drawer-anim #revealWave { visibility: visible; opacity: 1; }
-html.drawer-open #revealWave {
-  translate: calc(var(--drawer-w) * var(--reveal-dir)) 0;
-  scale: 1 1;
-}
-html.drawer-anim #revealWave { transition: translate .45s var(--reveal-ease), scale .6s var(--reveal-ease); }
-@media (prefers-reduced-motion: reduce) {
-  html.drawer-anim #mainApp > *, html.drawer-anim #stickyHomeHeader, html.drawer-anim #desktopNav, html.drawer-anim #revealWave { transition-duration: .01s; }
-  #revealWave svg { animation: none; }
-}
+/* the whole screen is one colour while the menu is open */
+html.drawer-lock, html.drawer-lock body { background: var(--chrome-bg-solid) !important; overflow-x: hidden; }
 
-/* #mainApp itself is not moved (only its children are), so its box still spans the whole screen ABOVE the menu and would swallow every tap meant for the menu links.
-   While the menu is open the page is inert; #sideDrawerOverlay (over the shifted page) is what catches the "tap the page to close" tap.
-   No drop shadow on the page edge either: it darkened the menu next to the wave and made the two colours look different. */
-html.drawer-open #mainApp { pointer-events: none; }
+/* Normally #revealCard has no box at all, so nothing about the page changes. */
+#revealCard { display: contents; }
 
-/* The bottom bar / headers carry big soft shadows (and blur). Shifted next to the menu they spill onto it and tint the strip beside the wave,
-   so the wave and the menu stopped matching at the bottom. Flat while the menu is open. */
-html.drawer-open .bottom-nav,
-html.drawer-open .sticky-home-header,
-html.drawer-open #desktopNav,
-html.drawer-open .nav-home-logo { box-shadow: none !important; }
-html.drawer-open .bottom-nav,
-html.drawer-open .sticky-home-header { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+/* Locked = frozen as a viewport-sized layer. The scroll position is kept by shifting #mainApp up by the same amount, so nothing visibly jumps.
+   Being a transformed, viewport-sized box also makes the fixed bottom bar and headers shrink WITH the card. */
+html.drawer-lock #revealCard {
+  display: block;
+  position: fixed; inset: 0; z-index: 10;
+  overflow: hidden;
+  transform-origin: 50% 50%;
+  transform: translateX(0) scale(1);
+  border-radius: 0;
+  background: var(--bg-body, var(--chrome-bg-solid));
+  -webkit-tap-highlight-color: transparent;
+}
+html.drawer-lock #revealCard > #mainApp { margin-top: calc(var(--reveal-scroll, 0px) * -1); }
+html.drawer-anim #revealCard {
+  transition: transform .55s var(--reveal-ease), border-radius .55s var(--reveal-ease), box-shadow .55s ease;
+}
+html.drawer-open #revealCard {
+  transform: translateX(calc(var(--drawer-w) * var(--reveal-dir) * .86)) scale(var(--reveal-scale));
+  border-radius: 34px;
+  box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--chrome-text) 22%, transparent);
+  pointer-events: none;                 /* the page is inert while the menu is open; #sideDrawerOverlay catches the tap that closes it */
+}
+@media (prefers-reduced-motion: reduce) { html.drawer-anim #revealCard { transition-duration: .01s; } }
 
-/* the menu has its own close (X) button — the page's burger button is hidden while the menu is open so there are not two */
+/* the menu has its own close (X) button — the page's burger is hidden while it is open so there are not two */
 [onclick^="sidebar.open"] { transition: opacity .25s ease; }
-html.drawer-open [onclick^="sidebar.open"] { opacity: 0; pointer-events: none; }
-
-/* the page moves off-screen by a drawer width: never allow a horizontal scrollbar or sideways scroll while open */
-html.drawer-open, html.drawer-open body { overflow-x: hidden; }
+html.drawer-open [onclick^="sidebar.open"] { opacity: 0; }
 
 #sideDrawer [class*="text-white"] {
   color: var(--chrome-text) !important;
@@ -3009,12 +2983,12 @@ html.drawer-open, html.drawer-open body { overflow-x: hidden; }
   position: fixed;
   top: 0;
   bottom: 0;
-  background: transparent;              /* reveal style has no scrim — it only catches the tap that closes the menu */
+  background: transparent;              /* no scrim: it only catches the tap that closes the menu */
   z-index: 96;
   pointer-events: none;
 }
-html[dir="ltr"] #sideDrawerOverlay { left: var(--drawer-w); right: 0; }
-html[dir="rtl"] #sideDrawerOverlay { left: 0; right: var(--drawer-w); }
+html[dir="ltr"] #sideDrawerOverlay { left: calc(50vw * (1 - var(--reveal-scale)) + var(--drawer-w) * .86); right: 0; }   /* = exactly where the shrunk card begins */
+html[dir="rtl"] #sideDrawerOverlay { left: 0; right: calc(50vw * (1 - var(--reveal-scale)) + var(--drawer-w) * .86); }
 #sideDrawerOverlay.open { pointer-events: auto; }
 
 .drawer-link {

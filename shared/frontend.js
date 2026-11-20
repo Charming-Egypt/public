@@ -268,35 +268,41 @@ const nav = {
   }
 };
 
-// Side menu, "Reveal" style: the menu sits under the page and opening it slides the page aside (all the motion is CSS —
-// html.drawer-open moves the page, html.drawer-anim turns the transition on only while it is moving, so scrolling never animates).
+// Side menu, "Reveal" style: the menu sits on a flat background and opening it shrinks the whole page (#revealCard) into a rounded card at the side.
+// All the motion is CSS. This only (1) freezes the page as a viewport-sized layer, keeping the scroll position, then (2) toggles html.drawer-open.
 const sidebar = {
-  _t: 0,
+  _t: 0, _y: 0, _href: '',
   _drawer() { return document.getElementById('sideDrawer'); },
   isOpen() { const d = this._drawer(); return !!(d && d.classList.contains('open')); },
   open() {
     const d = this._drawer(); if (!d || this.isOpen()) return;
     const root = document.documentElement;
     clearTimeout(this._t);
+    this._y = window.pageYOffset || 0; this._href = location.href;
+    root.style.setProperty('--reveal-scroll', this._y + 'px');
+    root.classList.add('drawer-lock');
     root.classList.add('drawer-anim');
-    d.classList.add('open');
+    d.classList.add('open'); d.removeAttribute('aria-hidden');
     document.getElementById('sideDrawerOverlay').classList.add('open');
-    // next frame so the browser has the un-shifted position to animate from
-    requestAnimationFrame(() => root.classList.add('drawer-open'));
-    d.removeAttribute('aria-hidden');
+    // two frames: the browser must paint the frozen, un-shrunk page first so there is something to animate from
+    requestAnimationFrame(() => requestAnimationFrame(() => root.classList.add('drawer-open')));
     document.addEventListener('keydown', this._esc);
   },
   close() {
     const d = this._drawer(); if (!d) return;
     const root = document.documentElement;
-    d.classList.remove('open');
+    if (!root.classList.contains('drawer-lock')) return;
+    d.classList.remove('open'); d.setAttribute('aria-hidden', 'true');
     document.getElementById('sideDrawerOverlay').classList.remove('open');
     root.classList.remove('drawer-open');
-    d.setAttribute('aria-hidden', 'true');
     document.removeEventListener('keydown', this._esc);
     clearTimeout(this._t);
-    // keep the transition on until the page is back, then drop it (a leftover transition would animate every later scroll-shifted header)
-    this._t = setTimeout(() => root.classList.remove('drawer-anim'), 500);
+    // once the card is back to full size, unfreeze the page and put the scroll position back (unless the visitor navigated meanwhile)
+    this._t = setTimeout(() => {
+      root.classList.remove('drawer-anim', 'drawer-lock');
+      root.style.removeProperty('--reveal-scroll');
+      if (location.href === this._href) window.scrollTo(0, this._y);
+    }, 580);
   },
   _esc(e) { if (e.key === 'Escape') sidebar.close(); }
 };

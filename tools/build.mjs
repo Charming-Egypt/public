@@ -288,6 +288,7 @@ ${linkify(chrome)}
 ${pageHtml}
 ${linkify(bottomNav)}
   </div>
+  </div><!-- /#revealCard -->
 `;
   };
 
