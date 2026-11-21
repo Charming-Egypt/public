@@ -5729,7 +5729,7 @@ html[data-theme="dark"] .rv-tr { color: #fdba74; }
 :root #siteFooter, :root[data-theme] #siteFooter {
   --ft-top: #05080f; --ft-a: #e8761a; --ft-b: #1c6aa0; --ft-tile: 50%;
   --text-primary: #f2f4f8; --text-secondary: #d3d9e2; --border-card: rgba(255,255,255,.1); --bg-field: rgba(255,255,255,.06);
-  color: #e8ecf2; margin-top: 40px; padding-top: 8px; border: 0;
+  color: #e8ecf2; margin-top: 84px; padding-top: 8px; border: 0;
   background:
     radial-gradient(75% 38% at 0% 42%, rgba(170,82,36,.32), transparent 70%),
     radial-gradient(90% 50% at 100% 100%, rgba(16,96,140,.55), transparent 70%),
