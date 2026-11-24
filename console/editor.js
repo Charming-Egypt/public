@@ -262,7 +262,8 @@ DS.itemEditor = (host, o) => {
     },
     menu: f => {
       const M = D.menu;
-      return `<div class="menu">${M.map((c, i) => `<div class="mcat"><div class="mch"><span class="rn">${i + 1}</span><div class="wrapi">${i18nInput(`menu.${i}.category`, { ph: 'Section name, e.g. Starters', max: 50 }, c.category)}</div>
+      return `<div class="menu"><div class="mcsv"><div class="mt"><b>رفع المنيو من ملف CSV</b><small>أعمدة الملف: القسم، الصنف، السعر، الوصف (اختياري). الأقسام والأصناف بتتكوّن لوحدها والترجمة بتتم عند الحفظ.</small></div>
+        <div class="ba"><button type="button" class="btn sm" data-act="csvpick">📄 رفع ملف CSV</button><button type="button" class="btn ghost sm" data-act="csvtpl">⬇ نموذج جاهز</button><input type="file" accept=".csv,.tsv,.txt,text/csv,text/plain" data-csv hidden></div></div>${M.map((c, i) => `<div class="mcat"><div class="mch"><span class="rn">${i + 1}</span><div class="wrapi">${i18nInput(`menu.${i}.category`, { ph: 'Section name, e.g. Starters', max: 50 }, c.category)}</div>
         <div class="mv"><button type="button" data-act="mup" data-i="${i}" ${i ? '' : 'disabled'}>↑</button><button type="button" data-act="mdn" data-i="${i}" ${i < M.length - 1 ? '' : 'disabled'}>↓</button><button type="button" data-act="mdel" data-i="${i}">حذف القسم</button></div></div>
         ${(c.items || []).map((it, j) => `<div class="mit"><div class="wrapi">${i18nInput(`menu.${i}.items.${j}.name`, { ph: 'Item name', max: 70 }, it.name)}</div>
           <div class="wrapi num"><input class="edi" type="number" min="0" step="any" data-path="menu.${i}.items.${j}.price" data-ty="num" value="${it.price ?? ''}" placeholder="السعر"><span class="fx">EGP</span></div>
@@ -334,6 +335,63 @@ DS.itemEditor = (host, o) => {
     refreshScore(); if (n) DS.toast('تم رفع الصور ✓');
   };
 
+  // ---------- menu CSV import ----------
+  // Reads UTF-8 (BOM ok) or Windows-1256, auto-detects , ; or tab, quoted cells, header names in Arabic/English (or fixed order: section, item, price, description)
+  function parseCsv(txt) {
+    txt = txt.replace(/^﻿/, '');
+    const first = txt.split(/\r?\n/).find(l => l.trim()) || '';
+    const cnt = ch => (first.match(new RegExp(ch === '\t' ? '\\t' : '\\' + ch, 'g')) || []).length;
+    const d = [',', ';', '\t'].map(c => [c, cnt(c)]).sort((a, b) => b[1] - a[1])[0][0];
+    const rows = []; let r = [], c = '', q = false;
+    for (let i = 0; i < txt.length; i++) {
+      const ch = txt[i];
+      if (q) { if (ch === '"') { if (txt[i + 1] === '"') { c += '"'; i++; } else q = false; } else c += ch; }
+      else if (ch === '"') q = true;
+      else if (ch === d) { r.push(c); c = ''; }
+      else if (ch === '\n' || ch === '\r') { if (ch === '\r' && txt[i + 1] === '\n') i++; r.push(c); c = ''; if (r.some(x => x.trim())) rows.push(r); r = []; }
+      else c += ch;
+    }
+    r.push(c); if (r.some(x => x.trim())) rows.push(r);
+    return rows.map(x => x.map(v => v.trim()));
+  }
+  const AR_DIG = s => String(s).replace(/[٠-٩]/g, x => '٠١٢٣٤٥٦٧٨٩'.indexOf(x)).replace(/[۰-۹]/g, x => '۰۱۲۳۴۵۶۷۸۹'.indexOf(x)).replace(/[٫]/g, '.').replace(/[٬،]/g, '');
+  const isAr = s => /[؀-ۿ]/.test(s);
+  const i18nVal = s => { const o = {}; if (s) o[isAr(s) ? 'ar' : 'en'] = s; return o; };
+  const sameName = (ob, s) => Object.values(ob || {}).some(v => String(v).trim().toLowerCase() === s.trim().toLowerCase());
+  async function importMenuCsv(file) {
+    try {
+      const buf = await file.arrayBuffer();
+      let txt = new TextDecoder('utf-8').decode(buf);
+      if (txt.includes('�')) { try { txt = new TextDecoder('windows-1256').decode(buf); } catch (_) {} }
+      const rows = parseCsv(txt);
+      if (!rows.length) return DS.toast('الملف فاضي', true);
+      const H = { cat: /^(القسم|الفئة|قسم|التصنيف|category|section|group|cat)$/i, name: /^(الصنف|الاسم|اسم الصنف|الوجبة|name|item|dish|title)$/i, price: /^(السعر|سعر|price|cost|egp|جنيه)$/i, desc: /^(الوصف|وصف|المكونات|description|desc|details|ingredients)$/i };
+      const head = rows[0].map(x => x.trim()); const idx = {};
+      for (const k in H) idx[k] = head.findIndex(x => H[k].test(x));
+      const hasHead = idx.name >= 0 || idx.price >= 0 || idx.cat >= 0;
+      let body = rows;
+      if (hasHead) { body = rows.slice(1); if (idx.name < 0) idx.name = head.findIndex((x, i) => i !== idx.cat && i !== idx.price && i !== idx.desc); }
+      else { Object.assign(idx, { cat: 0, name: 1, price: 2, desc: 3 }); if (rows[0].length === 3 && isNaN(parseFloat(AR_DIG(rows[0][2])))) {} }
+      if (!hasHead && rows[0].length < 2) return DS.toast('الملف لازم يحتوي على الأقل عمود الصنف والسعر', true);
+      const out = [], by = new Map(); let items = 0, cut = 0, bad = 0, lastCat = '';
+      const cap = (s, n) => { s = String(s || '').trim(); if (s.length > n) { cut++; return s.slice(0, n); } return s; };
+      for (const r of body) {
+        const name = cap(r[idx.name], 70); if (!name) continue;
+        let cat = idx.cat >= 0 ? cap(r[idx.cat], 50) : ''; if (!cat) cat = lastCat || (isAr(name) ? 'الأصناف' : 'Menu'); lastCat = cat;
+        const raw = idx.price >= 0 ? AR_DIG(r[idx.price] || '').replace(/[^\d.]/g, '') : ''; const price = raw === '' ? '' : Number(raw); if (price === '' || isNaN(price)) bad++;
+        const key = cat.toLowerCase(); let g = by.get(key);
+        if (!g) { g = { category: i18nVal(cat), items: [] }; by.set(key, g); out.push(g); }
+        g.items.push({ name: i18nVal(name), price: price === '' || isNaN(price) ? '' : price, description: i18nVal(cap(idx.desc >= 0 ? r[idx.desc] : '', 140)) }); items++;
+      }
+      if (!items) return DS.toast('ما لقيتش أصناف في الملف — اتأكد من عمود الصنف', true);
+      const had = D.menu.length;
+      const msg = `هيتضاف ${out.length} قسم و ${items} صنف من الملف.` + (had ? `\nالمنيو الحالي فيه ${had} قسم — الأقسام بنفس الاسم هتتدمج والباقي هيتضاف في الآخر.` : '') + (bad ? `\n⚠ ${bad} صنف من غير سعر صالح (هتكمّله بعد كده).` : '') + (cut ? `\n⚠ ${cut} نص اتقص لأنه أطول من الحد المسموح.` : '') + '\n\nمتابعة؟';
+      if (!confirm(msg)) return;
+      for (const g of out) { const ex = D.menu.find(c => ['ar', 'en'].some(l => g.category[l] && sameName(c.category, g.category[l]))); if (ex) (ex.items = ex.items || []).push(...g.items); else D.menu.push(g); }
+      markDirty(); redraw('menu'); refreshScore(); DS.toast(`تم استيراد ${items} صنف في ${out.length} قسم ✓ — راجعهم واضغط حفظ`);
+    } catch (e) { DS.toast('تعذّر قراءة الملف: ' + (e.message || e), true); }
+  }
+
   // ---------- events ----------
   root.addEventListener('input', e => {
     const t = e.target, path = t.dataset.path; if (!path) return;
@@ -351,6 +409,7 @@ DS.itemEditor = (host, o) => {
   function addTag(k, v) { v = String(v).trim().replace(/[,،]+$/, ''); if (!v) return; const ob = D[k] || (D[k] = {}); const a = ob[cur] || (ob[cur] = []); if (!a.includes(v)) a.push(v); markDirty(); redraw(k); $(`.edf[data-f="${k}"] .tin`, root)?.focus(); refreshScore(); }
   root.addEventListener('change', async e => {
     const t = e.target;
+    if (t.matches('input[data-csv]')) { const f = t.files[0]; t.value = ''; if (f) importMenuCsv(f); return; }
     if (t.matches('#gal input[type=file]')) { const fs = [...t.files]; t.value = ''; upload(fs); }
     if (t.matches('.rimg input[type=file]')) { const i = t.dataset.i, f = t.files[0]; t.value = ''; if (!f) return; try { DS.toast('جاري رفع الصورة…'); const { url } = await DS.api('/upload', { method: 'POST', body: { image: await DS.compressImage(f) } }); D.rooms[i].image = url; markDirty(); redraw('rooms'); } catch (er) { DS.toast(er.message, true); } }
     if (t.dataset.act === 'rmode') { rangeMode = t.checked; anchor = null; redraw('unavailableDates'); }
@@ -439,6 +498,12 @@ DS.itemEditor = (host, o) => {
     idel: b => { D.itinerary.splice(+b.dataset.i, 1); markDirty(); redraw('itinerary'); refreshScore(); },
     iup: b => { const i = +b.dataset.i; D.itinerary.splice(i - 1, 0, D.itinerary.splice(i, 1)[0]); markDirty(); redraw('itinerary'); },
     idn: b => { const i = +b.dataset.i; D.itinerary.splice(i + 1, 0, D.itinerary.splice(i, 1)[0]); markDirty(); redraw('itinerary'); },
+    csvpick: b => { const i = b.parentNode.querySelector('input[data-csv]'); if (i) i.click(); },
+    csvtpl: () => {
+      const rows = [['القسم', 'الصنف', 'السعر', 'الوصف'], ['مشويات', 'كباب مشكل', '250', 'كباب وكفتة وريش مع أرز وسلطة'], ['مشويات', 'فراخ مشوية', '180', ''], ['Starters', 'Hummus', '60', 'Chickpea dip with tahini'], ['مشروبات', 'عصير ليمون', '45', '']];
+      const csv = '\ufeff' + rows.map(r => r.map(c => /[",\n;]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c).join(',')).join('\r\n');
+      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })); a.download = 'menu-template.csv'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    },
     madd: () => { D.menu.push({ category: {}, items: [{ name: {}, price: '', description: {} }] }); markDirty(); redraw('menu'); refreshScore(); },
     mdel: b => { if (!confirm('حذف القسم وكل أصنافه؟')) return; D.menu.splice(+b.dataset.i, 1); markDirty(); redraw('menu'); refreshScore(); },
     mup: b => { const i = +b.dataset.i; D.menu.splice(i - 1, 0, D.menu.splice(i, 1)[0]); markDirty(); redraw('menu'); },

@@ -293,7 +293,20 @@ textarea.edi{line-height:1.8;resize:vertical;padding-bottom:26px}
 /* menu builder */
 .menu{display:flex;flex-direction:column;gap:14px}.mcat{border:1px solid var(--line);border-radius:20px;background:var(--fld);padding:14px;display:flex;flex-direction:column;gap:10px}
 .mch{display:flex;align-items:center;gap:10px}.mch>.wrapi{flex:1}.mit{display:grid;grid-template-columns:1fr 150px 44px;gap:10px;align-items:start;padding:10px;border-radius:16px;background:var(--w1)}
-.mit .mdesc{grid-column:1/-1}.mit .x2{height:48px}@media(max-width:700px){.mit{grid-template-columns:1fr 44px}.mit .wrapi.num{grid-column:1}}
+.mit>*{min-width:0}.mit .mdesc{grid-column:1/-1}.mit .x2{height:48px}
+/* mobile: header = number + name on row 1, move/delete buttons evenly spread on row 2; item = name / price + ✕ / description */
+@media(max-width:700px){
+.mcat{padding:12px 10px;border-radius:18px}
+.mch{flex-wrap:wrap;gap:8px}.mch>.wrapi{flex:1 1 0;min-width:0}
+.mch .mv{order:3;flex:1 0 100%;gap:8px}.mch .mv button{flex:1;min-height:40px;padding:8px 6px;font-size:13px}.mch .mv button[data-act=mdel]{flex:1.6}
+.mit{grid-template-columns:minmax(0,1fr) 48px;grid-template-areas:"name name" "price del" "desc desc";gap:8px;padding:10px 8px}
+.mit>.wrapi:first-child{grid-area:name}.mit>.wrapi.num{grid-area:price}.mit>.x2{grid-area:del;width:48px}.mit>.mdesc{grid-area:desc}
+.mcat>.btn{width:100%}}
+/* CSV import bar */
+.mcsv{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:14px;border:1.5px dashed var(--line);border-radius:18px;background:var(--fld)}
+.mcsv .mt{flex:1 1 220px;min-width:0}.mcsv .mt b{display:block;font-size:14px}.mcsv .mt small{display:block;color:var(--muted);font-size:12px;line-height:1.7;margin-top:2px}
+.mcsv .ba{display:flex;gap:8px;flex-wrap:wrap}
+@media(max-width:700px){.mcsv .ba{width:100%}.mcsv .ba .btn{flex:1 1 0;justify-content:center}}
 
 /* QR preview: always fits its card */
 #qpv{background:#fff;border-radius:22px;padding:14px;width:min(100%,300px);aspect-ratio:1;margin:6px auto;display:grid;place-items:center;overflow:hidden}

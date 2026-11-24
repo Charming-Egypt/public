@@ -1466,5 +1466,9 @@
  "• الحجز بيتسجّل ليك تلقائيًا. الحجز على إيميلك الشخصي مفيهوش عمولة.": "• The booking is credited to you automatically. A booking made with your own personal email earns no commission.",
  "• حجز بعربون: العميل بيدفع باقي المبلغ": "• Deposit booking: the customer pays the remaining amount",
  "• حجز مدفوع بالكامل: المنصة بتحوّل لك حصتك كاملة بعد تسجيل التنفيذ. • أقل مبلغ للصرف:": "• Fully paid booking: the platform transfers your whole share after the service is recorded. • Minimum payout:",
- "… بننتظر التأكيد": "… waiting for confirmation"
+ "… بننتظر التأكيد": "… waiting for confirmation",
+ "رفع المنيو من ملف CSV": "Upload menu from CSV",
+ "أعمدة الملف: القسم، الصنف، السعر، الوصف (اختياري). الأقسام والأصناف بتتكوّن لوحدها والترجمة بتتم عند الحفظ.": "File columns: section, item, price, description (optional). Sections and items are created automatically; translation happens on save.",
+ "📄 رفع ملف CSV": "📄 Upload CSV file",
+ "⬇ نموذج جاهز": "⬇ Sample template"
 }
