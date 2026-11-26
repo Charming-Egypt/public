@@ -242,7 +242,7 @@ const nav = {
     if (page === 'restaurants' && SHOW_RESTAURANTS) restaurantsUi.renderFull();
     if (page === 'bookings') bookings.render();
     if (page === 'reviews') reviewsPg.init();
-    if (page === 'notifications') notifications.render();
+    if (page === 'notifications') { notifications.render(); notifications.markAllRead(); }   // opening the list = read (saved to the server)
     if (page === 'profile') updateProfileStats();
 
     applyDesktopLayout();

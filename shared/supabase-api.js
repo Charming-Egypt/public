@@ -387,6 +387,13 @@ function dsRefCode() {
       return { notifications: rows.map(n => ({ id: n.id, icon: n.icon, title: n.title, msg: n.msg, read: !!n.read_at, createdAt: n.created_at })) };
     }
 
+    if (path === '/api/notifications/read' && method === 'POST') {
+      need();   // marks the user's own unread notifications as read (RLS + column grant allow read_at only); ids optional = all
+      let q = sb.from('notifications').update({ read_at: new Date().toISOString() }).is('read_at', null);
+      if (Array.isArray(body.ids) && body.ids.length) q = q.in('id', body.ids);
+      await run(q); return { success: true };
+    }
+
     // --- public forms (guests allowed)
     if (path === '/api/push/subscribe' && method === 'POST') { need(); await run(sb.rpc('save_push_subscription', { p: body })); return { success: true }; }
     if (path === '/api/push/unsubscribe' && method === 'POST') { need(); await run(sb.rpc('delete_push_subscription', { p_endpoint: body.endpoint })); return { success: true }; }

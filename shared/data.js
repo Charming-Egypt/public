@@ -1504,8 +1504,12 @@ const notifications = {
     document.querySelectorAll('.notif-badge').forEach(el => el.classList.toggle('hidden', !hasUnread));
     document.querySelectorAll('.bottom-nav .notif-badge').forEach(el => { el.textContent = unread > 9 ? '9+' : String(unread); });
   },
-  markAllRead() { this.list.forEach(n => n.read = true); this.render(); },
-  markRead(id) { const n = this.list.find(x => x.id === id); if (n && !n.read) { n.read = true; this.render(); } }
+  _persist(ids) {   // read state must survive a refresh: save read_at on the server and refresh the cached list
+    try { userCache.set('nt', this.list); } catch (e) {}
+    if (authToken) apiFetch('/api/notifications/read', { method: 'POST', body: JSON.stringify(ids ? { ids } : {}) }).catch(() => {});
+  },
+  markAllRead() { if (!this.list.some(n => !n.read)) return; this.list.forEach(n => n.read = true); this.render(); this._persist(); },
+  markRead(id) { const n = this.list.find(x => x.id === id); if (n && !n.read) { n.read = true; this.render(); this._persist([id]); } }
 };
 
 // ==================== TRANSFER SEARCH ====================
